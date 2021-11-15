@@ -14,7 +14,5 @@ jobs:
         uses: actions/checkout@v2
       - name: installing eslint 
         run: npm install -g eslint
-      - name: installing eslint react plugin
-        run: npm install eslint-plugin-react@latest --save-dev
       - name: Fixing Files
-        run: eslint . --ext .js --fix
+        run: eslint . --ext .js,.jsx --fix
