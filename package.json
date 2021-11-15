@@ -1,0 +1,36 @@
+{
+  "name": "nodejs-code-generator",
+  "version": "0.0.0",
+  "private": true,
+  "author": {
+    "name": "DhiWise",
+    "url": "https://www.dhiwise.com"
+  },
+  "scripts": {
+    "start": "lerna run start",
+    "install": "lerna clean -y && lerna bootstrap --hoist",
+    "test": "jest --runInBand",
+    "commit": "cz",
+    "release_prepatch": "lerna publish prepatch --conventional-commits && conventional-github-releaser --preset angular",
+    "release_patch": "lerna publish patch --conventional-commits && conventional-github-releaser --preset angular",
+    "release_premajor": "lerna publish premajor --conventional-commits && conventional-github-releaser --preset angular",
+    "release": "lerna publish --conventional-commits && conventional-github-releaser --preset angular",
+    "lint": "eslint ."
+  },
+  "jest": {
+    "modulePathIgnorePatterns": [
+      "packages/server/output/*"
+    ]
+  },
+  "devDependencies": {
+    "lerna": "^4.0.0",
+    "commitizen": "^4.2.4",
+    "conventional-github-releaser": "^3.1.2",
+    "cz-lerna-changelog": "^2.0.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-lerna-changelog"
+    }
+  }
+}
