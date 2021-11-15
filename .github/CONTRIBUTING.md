@@ -1,39 +1,128 @@
 # Contributing
 
-We highly appreciate feedback and contributions from the community! If you'd like to contribute to this project, please make sure to review and follow the guidelines below.
+We would ❤️ it if you contributed to the project and helped make it even better.
+All kind of contributions are welcome, including features, issues, documentation, translation, guides, and more.
 
-## Code of conduct
+## Got a question?
 
-In the interest of fostering an open and welcoming environment, please review and follow our [code of conduct](./CODE_OF_CONDUCT.md).
+You can ask questions, consult with more experienced DhiWise users, and discuss DhiWise-related topics in the our [Discord channel](https://discord.gg/hTuNauNjyJ).
 
-## Code and copy reviews
+## Found a bug?
 
-All submissions, including submissions by project members, require review. We
-use GitHub pull requests for this purpose. Consult
-[GitHub Help](https://help.github.com/articles/about-pull-requests/) for more
-information on using pull requests.
+If you find a bug in the source code, you can help us by [submitting an issue](https://github.com/dhiwise/nodejs-code-generator/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=) to our GitHub Repository. Even better, you can submit a Pull Request with a fix.
 
-## Report an issue
+## Missing a feature?
 
-Report all issues through GitHub Issues using the [Report a Bug](https://github.com/DhiWise/nodejs-code-generator/issues/new?template=Bug_report.md) template.
+You can request a new feature by [submitting an issue](https://github.com/dhiwise/nodejs-code-generator/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=) to our GitHub Repository.
 
-To help resolve your issue as quickly as possible, read the template and provide all the requested information.
+If you would like to implement a new feature, please submit an issue with a proposal for your work first, to be sure that we can use it. Please consider what kind of change it is:
 
-## File a feature request
+- For a Major Feature, first open an issue and outline your proposal so that it can be discussed. This will also allow us to better coordinate our efforts, prevent duplication of work, and help you craft the change so that it's successfully integrated in the project.
+- Small Features can be crafted and directly [submitted as a Pull Request](#submit-pr).
 
-We welcome all feature requests, whether it's to add new functionality to an existing extension or to offer an idea for a brand new extension.
+## What do I need to know to help?
 
-File your feature request through GitHub Issues using the [Feature Request template](https://github.com/DhiWise/nodejs-code-generator/issues/new?template=Feature_request.md).
+If you want to help out with a code contribution, our project uses the following stack:
 
-## Create a pull request
+### Server-side
 
-When making pull requests to the repository, make sure to follow these guidelines for both bug fixes and new features:
+- [Node.JS](https://nodejs.org/)
+- [MongoDB](https://docs.mongodb.com/guides/)
+- [mongoose](https://mongoosejs.com/docs/documents.html)
+- [Jest](https://docs.nestjs.com/fundamentals/testing) (for testing)
 
-- Before creating a pull request, file a GitHub Issue so that maintainers and the community can discuss the problem and potential solutions before you spend time on an implementation.
-- In your PR's description, link to any related issues or pull requests to give reviewers the full context of your change.
-- For commit messages, follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format.
-  - For example, if you update documentation for a specific extension, your commit message might be: `docs(extension-name) updated installation documentation`.
+### Client-side
 
-### Features
+- [React](https://reactjs.org/docs/getting-started.html)
 
-Before creating pull requests for new features, first file a GitHub Issue describing the reasoning and motivation for the feature. This gives maintainers and the community the opportunity to provide feedback on your idea before implementing it.
+## <a name="submit-pr"></a> How do I make a contribution?
+
+Never made an open source contribution before? Wondering how contributions work in the in our project? Here's a quick rundown!
+
+Find an issue that you're interested in addressing, or a feature that you'd like to add.
+You can use [this view](https://github.com/dhiwise/nodejs-code-generator/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) which helps new contributors find easy gateways into our project.
+
+Fork the repository associated with the issue to your local GitHub organization. This means that you'll have a copy of the repository under your-GitHub-username/repository-name.
+Clone the repository to your local machine:
+
+```
+git clone https://github.com/amplication/amplication
+
+```
+
+Create a new branch for your fix:
+
+```
+git checkout -b branch-name-here
+```
+
+Make the appropriate changes for the issue you are trying to address or the feature that you want to add.
+
+Once done, stage the changes that are ready to be committed:
+
+```
+git add .
+```
+
+Commit the changes with a short message. (See below for more details on how we structure our commit messages)
+
+```
+git commit -m "<type>(<package>): <subject>"
+```
+
+Push the changes to the remote repository using:
+
+```
+git push origin branch-name-here
+```
+
+In GitHub, submit a pull request to the upstream repository. Title the pull request with a short description of the changes made and the issue or bug number associated with your change.
+
+In the description of the pull request, explain the changes that you made, any issues you think exist with the pull request you made, and any questions you have for the maintainer.
+
+It's okay if your pull request is not perfect (no pull request is), the reviewer will be able to help you fix any problems and improve it!
+
+Wait for the pull request to be reviewed by a maintainer.
+
+Make changes to the pull request if the reviewing maintainer recommends them.
+
+Celebrate your success after your pull request is merged!
+
+### Git Commit Messages
+
+We structure our commit messages like this:
+
+```
+<type>(<package>): <subject>
+```
+
+Example
+
+```
+fix(server): missing entity on init
+```
+
+List of types:
+
+- feat: A new feature
+- fix: A bug fix
+- docs: Changes to the documentation
+- style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- refactor: A code change that neither fixes a bug nor adds a feature
+- perf: A code change that improves performance
+- test: Adding missing or correcting existing tests
+- chore: Changes to the build process or auxiliary tools and libraries such as documentation generation
+
+List of packages:
+
+- server
+- client
+- data-service-gen
+
+### Code of conduct
+
+Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
+
+[Code of Conduct](https://github.com/dhiwise/nodejs-code-generator/blob/master/code_of_conduct.md)
+
+Our Code of Conduct means that you are responsible for treating everyone on the project with respect and courtesy.
