@@ -12,7 +12,9 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v2
-      - name: installing dependencies 
-        run: npm install
+      - name: global eslint install
+        run: npm i -g eslint 
+      - name: installing dev-dependencies 
+        run: npm install --only=dev
       - name: Fixing Files
         run: eslint . --ext .js,.jsx --fix
