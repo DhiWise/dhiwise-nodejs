@@ -1,0 +1,26 @@
+const userModel  = require("../../../model").<%-MODEL%>
+const userAuthSetting = require("../../../model").userAuthSettings
+const userToken = require("../../../model").userToken;
+const {schemaKeys,updateSchemaKeys} = require('../../../validation/<%-MODEL%>Validation')
+const insert<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1);%>Validator = require("../../../validation/genericValidator")(schemaKeys)
+const update<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1);%>Validator = require("../../../validation/genericValidator")(updateSchemaKeys)
+const make<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1);%> = require("../../../entity/<%-MODEL%>")({insert<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1);%>Validator,update<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1);%>Validator})
+const <%-MODEL%>Service = require("../../../services/dbService")({model:userModel,make<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1);%>});
+const userAuthSettingService = require("../../../services/dbService")({model:userAuthSetting});
+const userTokenService = require("../../../services/dbService")({model:userToken});
+<%_if(ROLE_PERMISSION){_%>
+const userRoleModel  =require("../../../model/").userRole;
+const userRoleService = require("../../../services/dbService")({model:userRoleModel});
+const routeRoleModel  =require("../../../model/").routeRole;
+const routeRoleService = require("../../../services/dbService")({model:routeRoleModel});
+<%_}_%>
+const authService = require("../../../services/auth")({model:userModel,<%-MODEL%>Service,userAuthSettingService,userTokenService<%_if(ROLE_PERMISSION){_%>,userRoleService,routeRoleService<%_}_%>});
+<%_if(REGISTER_NOTIFICATION_TYPE==="EMAIL"){_%>
+const sendEmail = require("../../../services/email/emailService");
+<%_}else if(REGISTER_NOTIFICATION_TYPE==="SMS"){_%>
+const sendSMS = require("../../../services/sms/smsService");
+<%_}_%>
+const makeUniqueValidation = require('../../../utils/common.js').makeUniqueValidation(<%-MODEL%>Service);
+const makeAuthController = require("./authController");
+const authController = makeAuthController({authService,makeUniqueValidation,<%-MODEL%>Service,userAuthSettingService,userTokenService,make<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1);%><%_if(REGISTER_NOTIFICATION_TYPE==="EMAIL"){_%>,sendEmail<%_}else if(REGISTER_NOTIFICATION_TYPE==="SMS"){_%>,sendSMS<%_}_%>});
+module.exports = authController

@@ -1,0 +1,63 @@
+{
+    "logo": "",
+    "config": {
+        "projectName": "application1blamnk",
+        "path": "/home/vaidehisoni/Documents/Outputs",
+        "port": "5000",
+        "databaseName": "todo",
+        "isAuthentication": true,
+        "platform": [
+            "admin",
+            "device"
+        ],
+        "types": [
+            "User",
+            "Admin"
+        ],
+        "loginAccess": {
+            "User": [
+                "device"
+            ],
+            "Admin": [
+                "admin"
+            ]
+        },
+        "applicationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjA3ZWIzYWY5ZDA3ZDkwMDE0ZTMzYjJiIiwiX2lkIjoiNjA3ZWIzYWY5ZDA3ZDkwMDE0ZTMzYjJiIn0sImNvbXBhbnlJZCI6IjYwOWNlZTg4NzdmZWY5MDAxNDRiZTcwZiIsImFwcGxpY2F0aW9uSWQiOiI2MTRkNjg0OTE5N2I4YzAwMTRmODQwYjYiLCJpYXQiOjE2MzI0NjI5MjF9.yQrtxOw6x9xqIUz57dQvJ79epKs_aNZexD_xavMtHnk"
+    },
+    "authentication": {
+        "port": "5000",
+        "databaseName": "todo",
+        "isAuthentication": true,
+        "platform": [
+            "admin",
+            "device"
+        ],
+        "types": [
+            "User",
+            "Admin"
+        ],
+        "loginAccess": {
+            "User": [
+                "device"
+            ],
+            "Admin": [
+                "admin"
+            ]
+        },
+        "applicationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjA3ZWIzYWY5ZDA3ZDkwMDE0ZTMzYjJiIiwiX2lkIjoiNjA3ZWIzYWY5ZDA3ZDkwMDE0ZTMzYjJiIn0sImNvbXBhbnlJZCI6IjYwOWNlZTg4NzdmZWY5MDAxNDRiZTcwZiIsImFwcGxpY2F0aW9uSWQiOiI2MTRkNjg0OTE5N2I4YzAwMTRmODQwYjYiLCJpYXQiOjE2MzI0NjI5MjF9.yQrtxOw6x9xqIUz57dQvJ79epKs_aNZexD_xavMtHnk"
+    },
+    "ormType": 1,
+    "databaseType": 1,
+    "code": "E_BAD_REQUEST",
+    "message": "Schema not present for this application",
+    "status": 400,
+    "data": null,
+    "authenticationConfig": {
+        "socialPlatform": []
+    },
+    "id": "oooooooooooo",
+    "applicationId": "614d6849197b8c0014f840b6",
+    "projectType": "MVC",
+    "ORM": "mongoose",
+    "adapter": "mongodb"
+}

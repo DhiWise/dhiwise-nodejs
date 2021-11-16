@@ -1,0 +1,697 @@
+{
+  "id": "NestedNew",
+  "projectType": "CC",
+  "ORM": "sequelize",
+  "adapter": "mssql",
+  "config": {
+    "projectName": "Sequelize_Nested_MVC_Test",
+    "path": "/home/karansantra/Dhiwise/test",
+    "databaseName": "auth",
+    "port": "3000"
+  },
+  "socket": {
+    "selected": true
+  },
+  "authentication": {
+    "tokenExpireTime": "30000",
+    "types": ["Admin", "User", "Guest"],
+    "loginAccess": {
+      "Admin": ["admin", "device", "desktop", "client"],
+      "User": ["device", "desktop", "client"],
+      "Guest": ["device", "desktop", "client"]
+    },
+    "isAuthentication": true,
+    "authModel": "user",
+    "twoFactorAuthentication": {
+      "platform": {
+        "admin": false
+      },
+      "otpSendMedium": {
+        "masterIds": ["60867d62ebfd00625f9c68b6"],
+        "email": true,
+        "emailTemplateId": "60b9e26542048c0015d5ac59",
+        "emailTemplate": "twoFactorLogin"
+      }
+    },
+    "loginWith": {
+      "password": "password"
+    },
+    "loginRateLimit": {
+      "max": 5
+    },
+    "loginRetryLimit": {
+      "max": 5,
+      "key": "loginRetryLimit"
+    },
+    "resetPassword": {
+      "link": {
+        "masterIds": ["60867d6bebfd00625f9c68b7"],
+        "sms": true,
+        "smsTemplateId": "60b9e30842048c0015d5ac5e",
+        "smsTemplate": "resetPassword"
+      },
+      "expireTime": 10
+    },
+    "restrictNoOfDevice": false,
+    "noOfDevice": 3
+  },
+  "templatesData": {
+    "smsTemplate": [
+      {
+        "templateName": "resetPassword",
+        "template": "<table role=\"presentation\" style=\"padding: 26px;border-collapse:collapse;border-spacing:0px;width: 100%;\"\n    cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n    <tbody>\n        <tr>\n            <td style=\" padding: 10px 10px 20px 10px;\">\n                <div>\n                    <div style=\"font-size:20px;font-weight:bold;line-height:24px;text-align:left;color:#212b35;\">\n                        <%=message%>\n           <%=username %>\n                    </div>\n                </div>\n            </td>\n        </tr>\n    </tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n\n",
+        "description": "message",
+        "customJson": [
+          {
+            "templateKey": "message",
+            "mappingKey": "email",
+            "modelId": "60b4cab7178d3200162e0845",
+            "modelName": "user"
+          },
+          {
+            "templateKey": "username",
+            "mappingKey": "username",
+            "modelId": "60b4cab7178d3200162e0845",
+            "modelName": "user"
+          }
+        ]
+      }
+    ],
+    "emailTemplate": [
+      {
+        "templateName": "twoFactorLogin",
+        "template": "<div style=\"font-size: 14px; line-height: 19px; font-weight: normal; font-family: 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback';\">\n<div>cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><br /><br /><tdstyle=\" padding: 10px 10px 20px 10px;\">\n<div>&nbsp;</div>\n<div><divstyle=\"font-size:20px;font-weight:bold;line-height:24px;text-align:left;color:#212b35;\"></div>\n<div>OTP</div>\n<div>&nbsp;</div>\n</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div><pstyle=\"font-size: 14px;color: #000;\"></div>\n<div><strong>Dear User,</strong></div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div><% if(otp) { %></div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div><pstyle=\"margin-top: 5px;margin-bottom: 15px;font-size: 14px;line-height: 1.8;color: #000;\"></div>\n<div>Your OTP code is <strong> <%=otp %></strong></div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div><% } %></div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<div>&nbsp;</div>\n<p><br /><br /></p>",
+        "description": "otp",
+        "customJson": [
+          {
+            "templateKey": "otp",
+            "mappingKey": "username",
+            "modelId": "60b4cab7178d3200162e0845",
+            "modelName": "user"
+          }
+        ]
+      }
+    ]
+  },
+  "models": {
+    "user": {
+      "username": {
+        "type": "STRING",
+        "minLength": 1,
+				"maxLength": 24,
+        "default": "sds",
+				"primary": true,
+				"required": false,
+				"unique": false,
+				"lowercase": true,
+				"match": "/^[a-z]/"
+      },
+      "password": {
+        "type": "CHAR"
+      },
+      "email": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "properties": {
+        "type": "virtualRelation",
+        "ref": "property",
+        "foreignField": "userId",
+        "localField": "_id"
+      },
+      "subProperties": {
+        "type": "virtualRelation",
+        "ref": "subproperty",
+        "foreignField": "userId",
+        "localField": "_id"
+      }
+    },
+    "master": {
+      "name": {
+        "type": "SingleLine"
+      },
+      "normalizeName": {
+        "type": "SingleLine"
+      },
+      "slug": {
+        "type": "SingleLine"
+      },
+      "code": {
+        "type": "SingleLine"
+      },
+      "group": {
+        "type": "SingleLine"
+      },
+      "description": {
+        "type": "MultiLine"
+      },
+      "isActive": {
+        "type": "Boolean",
+        "default": true
+      },
+      "parentId": {
+        "type": "ObjectId"
+      },
+      "isDeleted": {
+        "type": "Boolean",
+        "default": false
+      },
+      "parentName": {
+        "type": "String"
+      },
+      "createdTimestamp": {
+        "type": "Date"
+      },
+      "updatedTimestamp": {
+        "type": "Date"
+      }
+    }
+  },
+  "modelConfig": {
+    "user": {
+      "admin": [
+        "C",
+        "R",
+        "U",
+        "D",
+        "HD",
+        "UP",
+        {
+          "isAuth": true
+        }
+      ],
+      "device": [
+        "C",
+        "R",
+        "UP",
+        {
+          "isAuth": true
+        }
+      ],
+      "client": [
+        "C",
+        "R",
+        {
+          "isAuth": true
+        }
+      ],
+      "desktop": [
+        "C",
+        "R",
+        "UP",
+        {
+          "isAuth": true
+        }
+      ]
+    },
+    "master": {
+      "admin": ["C", "R", "U", "D", "UP"],
+      "device": [
+        "C",
+        "R",
+        "UP",
+        {
+          "isAuth": true
+        }
+      ],
+      "client": [
+        "C",
+        "R",
+        {
+          "isAuth": true
+        }
+      ],
+      "desktop": [
+        "C",
+        "R",
+        "UP",
+        {
+          "isAuth": true
+        }
+      ]
+    }
+  },
+  "modelComment": {
+    "master": {
+      "description": "master model",
+      "attributeComment": {
+        "name": {
+          "comment": "name comment"
+        },
+        "normalizeName": {
+          "comment": "normalizeName comment"
+        },
+        "slug": {
+          "comment": "slug comment"
+        },
+        "code": {
+          "comment": "code comment"
+        },
+        "group": {
+          "comment": "group comment"
+        },
+        "description": {
+          "comment": "desc comment"
+        },
+        "isActive": {
+          "comment": "isActive Field"
+        },
+        "parentId": {
+          "comment": "parentId comment"
+        },
+        "isDeleted": {
+          "comment": "isDeleted Comment"
+        },
+        "parentName": {
+          "comment": "parentName Comment"
+        }
+      }
+    }
+  },
+  "routes": {
+    "apis": [
+      {
+        "model": "user",
+        "method": "post",
+        "api": "/usr/test",
+        "controller": "property",
+        "service": "property",
+        "descriptions": "sdfs",
+        "platform": "admin",
+        "functionName": "aaaaa",
+        "headers": [
+          {
+            "key": "",
+            "value": ""
+          }
+        ],
+        "queryBuilder": [
+          {
+            "populate": [],
+            "select": [],
+            "outputVariable": "xcvgd",
+            "filterJson": {
+              "id": 0.4199866686828726,
+              "type": "group",
+              "path": [0.4199866686828726],
+              "children1": {
+                "a8ab899a-0123-4456-b89a-b179e9b76d4f": {
+                  "type": "rule",
+                  "id": "a8ab899a-0123-4456-b89a-b179e9b76d4f",
+                  "properties": {
+                    "field": "username",
+                    "operator": "equal",
+                    "value": ["assdf"],
+                    "valueSrc": ["value"],
+                    "operatorOptions": null,
+                    "valueType": ["text"]
+                  },
+                  "path": [
+                    0.4199866686828726,
+                    "a8ab899a-0123-4456-b89a-b179e9b76d4f"
+                  ]
+                },
+                "99bbbb8a-cdef-4012-b456-7179e9b78087": {
+                  "type": "rule",
+                  "id": "99bbbb8a-cdef-4012-b456-7179e9b78087",
+                  "properties": {
+                    "field": "name",
+                    "operator": "equal",
+                    "value": ["sdf"],
+                    "valueSrc": ["value"],
+                    "operatorOptions": null,
+                    "valueType": ["text"]
+                  },
+                  "path": [
+                    0.4199866686828726,
+                    "99bbbb8a-cdef-4012-b456-7179e9b78087"
+                  ]
+                }
+              }
+            },
+            "modelId": "607ff16b83cebc001505597c",
+            "model": "user",
+            "queryMode": "find",
+            "filter": "{\"$or\":[{\"username\":\"saloni\"},{\"$and\":[{\"age\":20},{\"age\":20}]}]}",
+            "sort": "{\"age\": 1, \"name\":-1}"
+          }
+        ]
+      }
+    ]
+  },
+  "constants": {
+    "constant": {
+      "JWT": {
+        "ADMIN_SECRET": "myjwtadminsecret",
+        "DEVICE_SECRET": "myjwtdevicesecret",
+        "CLIENT_SECRET": "myjwtclientsecret",
+        "DESKTOP_SECRET": "myjwtdesktopsecret",
+        "EXPIRES_IN": 10000
+      },
+      "USER_ROLE": {
+        "Admin": {
+          "admin": true
+        },
+        "User": 2
+      },
+      "PLATFORM": {
+        "ADMIN": 1,
+        "DEVICE": 2,
+        "CLIENT": 3,
+        "DESKTOP": 4
+      }
+    },
+    "tempConstant": {
+      "PLATFORM": {
+        "ADMIN": 1,
+        "DEVICE": 2,
+        "CLIENT": 3,
+        "DESKTOP": 4
+      }
+    }
+  },
+  "policy": {
+    "checkUser": {
+      "functionName": "checkUser"
+    },
+    "printHello": {
+      "functionName": "helloUser"
+    }
+  },
+  "packages": {},
+  "modelNotifications": {
+    "user": {
+      "method": ["C", "D"],
+      "post": {
+        "email": false,
+        "sms": false,
+        "webNotification": false
+      }
+    },
+    "property": {
+      "method": ["C"],
+      "post": {
+        "email": false,
+        "sms": false,
+        "webNotification": false
+      }
+    }
+  },
+  "modelEnum": {
+    "user": {
+      "name": {
+        "enumAttribute": "DISTANCE_UNIT",
+        "enumFile": "common",
+        "default": "KM"
+      }
+    }
+  },
+  "envVariables": {
+    "environments": ["QA", "PRODUCTION", "DEVELOPMENT"],
+    "customJson": [
+      {
+        "value": {
+          "QA": "381bnbjh",
+          "PRODUCTION": "232323mnnm",
+          "DEVELOPMENT": "12345"
+        },
+        "key": "APPKEY",
+        "dataType": ""
+      }
+    ]
+  },
+  "cronJobs": {
+    "jobConfiguration": [
+      {
+        "functionName": "checkSome",
+        "expression": "*/10 * * * * *",
+        "calls": [
+          {
+            "selected": false,
+            "model": "user",
+            "queryMode": "aggregate",
+            "pipes": [
+              {
+                "operation": "$match",
+                "query": {
+                  "$or": [
+                    {
+                      "role": 1
+                    },
+                    {
+                      "role": 2
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "selected": true,
+            "model": "propertyAttribute",
+            "queryMode": "create",
+            "data": {
+              "total": 7,
+              "createdTimestamp": "2021-12-24T11:48:13.180Z",
+              "updatedTimestamp": "2022-02-10T05:39:28.457Z",
+              "isDeleted": false,
+              "isActive": true
+            },
+            "outputVariable": "someName1",
+            "option": {}
+          },
+          {
+            "selected": true,
+            "model": "master",
+            "queryMode": "findOneAndDelete",
+            "filter": {
+              "_id": "6076b165c05ca95d85da7169"
+            },
+            "outputVariable": "someName2",
+            "option": {}
+          },
+          {
+            "selected": true,
+            "method": "customQuery",
+            "model": "user",
+            "queryMode": "find",
+            "outputVariable": "temp1",
+            "filter": "{\"role\":\"1\"}",
+            "skip": 1,
+            "limit": 10,
+            "populate": [
+              {
+                "path": "role",
+                "select": ["roleName", "code", "-_id"],
+                "match": {
+                  "code": 21
+                },
+                "options": {
+                  "limit": 5
+                }
+              }
+            ],
+            "select": ["username", "email", "-_id", "mobileNo"],
+            "sort": {
+              "name": 1,
+              "createdTimestamp": -1
+            }
+          },
+          {
+            "queryMode": "codeBlock",
+            "code": "if(true){console.log('hello')}"
+          }
+        ],
+        "description": "Test \n Test"
+      },
+      {
+        "functionName": "test",
+        "expression": "*/1 * * * *",
+        "description": "Test \n Test"
+      }
+    ]
+  },
+
+  "nestedCall": {
+    "property": {
+      "admin": {
+        "C": {
+          "pre": [
+            {
+              "model": "propertyAttribute",
+              "method": "C",
+              "dataKey": "propertyAttribute",
+              "outputVariable": "propertyAttributeCreate"
+            },
+            {
+              "model": "master",
+              "method": "U",
+              "dataKey": "masterData",
+              "idKey": "masterId",
+              "outputVariable": "masterUpdated"
+            },
+            {
+              "method": "codeBlock",
+              "code": "if(true){ console.log(`hello`)}"
+            },
+            {
+              "model": "master",
+              "method": "BU",
+              "dataKey": "masterArray",
+              "filterKey": "filterForMaster",
+              "outputVariable": "masters"
+            },
+            {
+              "model": "master",
+              "method": "HD",
+              "idKey": "masterDeleteID",
+              "outputVariable": "masters"
+            }
+          ],
+          "post": [
+            {
+              "method": "customQuery",
+              "model": "user",
+              "queryMode": "find",
+              "outputVariable": "temp1",
+              "filter": "{\"role\":\"1\"}",
+              "skip": 1,
+              "limit": 10,
+              "populate": [
+                {
+                  "path": "role",
+                  "select": [
+                    "roleName",
+                    "code",
+                    "-_id"
+                  ],
+                  "match": {
+                    "code": 21
+                  },
+                  "options": {
+                    "limit": 5
+                  }
+                }
+              ],
+              "select": [
+                "username",
+                "email",
+                "-_id",
+                "mobileNo"
+              ],
+              "sort": {
+                "name": 1,
+                "createdTimestamp": -1
+              }
+            },
+            {
+              "method": "codeBlock",
+              "code": "if(true){ console.log(`hello`)}"
+            },
+            {
+              "method": "customQuery",
+              "queryMode": "create",
+              "outputVariable": "createOP",
+              "model": "master",
+              "data": {
+                "name": "createDoc",
+                "normalizeName": "interface",
+                "slug": "interfaces",
+                "code": "Rubber",
+                "group": "Pizza",
+                "description": "Mexico",
+                "isActive": false,
+                "parentId": "60c70f3e827afc27e2913f0e",
+                "isDeleted": false,
+                "parentName": "Tasty",
+                "createdTimestamp": "2022-06-12T12:25:20.354Z",
+                "updatedTimestamp": "2022-01-11T06:31:06.436Z"
+              }
+            }
+          ]
+        }
+      },
+      "desktop": {
+        "C": {
+          "pre": [
+            {
+              "model": "propertyAttribute",
+              "method": "C",
+              "dataKey": "propertyAttribute",
+              "outputVariable": "someName1"
+            },
+            {
+              "model": "master",
+              "method": "U",
+              "dataKey": "masterData",
+              "idKey": "masterId",
+              "outputVariable": "someName2"
+            }
+          ],
+          "post": []
+        }
+      }
+    }
+  },
+  "filterByLoggedInUser": {
+    "isLoginUser": true,
+    "platform": {
+      "admin": true,
+      "device": true,
+      "desktop": true,
+      "client": false
+    },
+    "models": {
+      "user": {
+        "addedByKey": ""
+      }
+    }
+  },
+  "rateLimit": {
+    "admin": {
+      "user": [
+        {
+          "C": 2,
+          "time": "15*60*1000"
+        },
+        {
+          "UP": 1,
+          "time": "15*60*2000"
+        },
+        {
+          "U": 2,
+          "time": "15*60*4000"
+        }
+      ]
+    }
+  },
+  "hooks": {
+    "user": {
+      "pre": [
+        {
+          "operation": "save",
+          "code": "this.name='abc',this.lastname='anc'"
+        }
+      ],
+      "post": [
+        {
+          "operation": "init",
+          "code": "console.log('init')"
+        }
+      ]
+    }
+  },
+  "newModelConfig": {
+    "user": {
+      "admin": {
+        "C": {
+          "policy": [],
+          "isAuth": true,
+          "attributes": ["username", "email"]
+        }
+      }
+    }
+  }
+}

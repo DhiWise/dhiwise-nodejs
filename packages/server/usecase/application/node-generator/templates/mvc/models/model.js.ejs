@@ -1,0 +1,239 @@
+<%_if(COMMENT){_%>
+/*
+* model : <%-COMMENT.description%>
+*/
+<%_}_%>
+<%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
+<%_if(FLAG){_%>    
+const dayjs = require('dayjs');
+<%_}_%>
+<%_}_%>
+const mongoose = require("mongoose");
+<%_ if(ATTRS_WITH_SEQ){ _%>
+const autoIncrement = require('mongoose-sequence')(mongoose);
+<%_ } _%>
+const mongoosePaginate = require('mongoose-paginate-v2');
+var idValidator = require('mongoose-id-validator');
+<%_ if(DB_UNIQUE) { _%>
+const uniqueValidator = require('mongoose-unique-validator');
+<%_ } _%>
+<%_ if((typeof USER !== "undefined" && typeof IS_AUTH!=="undefined") && (USER && IS_AUTH)){ _%>
+const bcrypt = require("bcrypt");
+const{USER_ROLE} = require("../constants/authConstant");
+const {convertObjectToEnum} = require("../utils/common")
+<%_ } _%>
+<%_if(MODEL_ENUM){_%>
+<%_let a=[]_%>    
+<%_for(let i in MODEL_ENUM){_%>
+<%_for(let j in MODEL_ENUM[i]){_%>    
+<%_if(typeof (MODEL_ENUM[i][j])==='object'){_%>
+<%_if(!a.includes(MODEL_ENUM[i][j].enumFile)){_%>
+<%_a.push(MODEL_ENUM[i][j].enumFile)_%>
+const <%-MODEL_ENUM[i][j].enumFile%>Enum=require("../constants/<%-MODEL_ENUM[i][j].enumFile%>")
+<%_}_%>    
+<%_}else{_%>
+<%_if(!a.includes(MODEL_ENUM[i].enumFile)){_%>
+<%_a.push(MODEL_ENUM[i].enumFile)_%>
+const <%-MODEL_ENUM[i].enumFile%>Enum=require("../constants/<%-MODEL_ENUM[i].enumFile%>")
+<%_}_%>        
+        
+<%_}_%>        
+<%_}_%>   
+<%_}_%>
+<%_}_%>
+<%_ if(typeof VARIABLES !== "undefined") {
+for(let i=0;i< VARIABLES.length; i++) {_%>
+<%-VARIABLES[i]%>
+<%_ } } _%>
+const myCustomLabels = {
+    totalDocs: 'itemCount',
+    docs: 'data',
+    limit: 'perPage',
+    page: 'currentPage',
+    nextPage: 'next',
+    prevPage: 'prev',
+    totalPages: 'pageCount',
+    pagingCounter: 'slNo',
+    meta: 'paginator',
+};
+mongoosePaginate.paginate.options = {
+    customLabels: myCustomLabels
+};
+const Schema = mongoose.Schema;
+const schema = new Schema(
+<%_ var model = DB_SCHEMA _%>
+<%_ var modelArr = Object.keys(model)_%>
+{
+<%_ for(let v in model){ _%>
+<%_if(COMMENT && COMMENT.attributeComment && COMMENT.attributeComment[v]){_%>
+// <%-COMMENT.attributeComment[v].comment%>
+<%_}else{_%>
+
+<%_}_%>
+<%_ let jsonStr = JSON.stringify(model[v]);
+        var finalStr = new String();
+        finalStr = jsonStr.toString().replace(/"/g, "");
+        finalStr = finalStr.replace(/@@/g, '"');
+        finalStr = finalStr.replace(/##/g, "").replace(/^"(.*)"$/, '$1');
+    _%>
+<%_ if(modelArr[modelArr.length-1]!==v){ _%>
+    <%-v%>:<%-finalStr%>,
+<%_}else{_%>
+    <%-v%>:<%-finalStr%>
+<%_ } _%>
+<%_ } _%>
+    },
+    { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } }
+);
+<%_ 
+if(ATTRS_WITH_SEQ){
+    for(const [attributeName, value] of Object.entries(ATTRS_WITH_SEQ) ){
+        if(value.isAutoIncrement){ _%>
+schema.plugin(autoIncrement, {
+    inc_field: "<%-attributeName%>",
+    id:"<%-DB_MODEL%>_<%-attributeName%>_sequence",
+    inc_amount: 1, 
+    start_seq: 1,
+    prefix: "",
+    suffix: "",
+    length: 6
+    });
+<%_     }
+    } 
+}
+_%>
+<%_if(INDEXES && INDEXES.length){_%>
+<%_for(const index of INDEXES){ _%>
+<%_if(index.indexFields && JSON.stringify(index.indexFields)!=='{}'){ _%>
+schema.index(<%-JSON.stringify(index.indexFields)%><%_if(index.options && JSON.stringify(index.options)!=='{}'){_%>,<%-JSON.stringify(index.options)%><%_}_%>)
+<%_} }_%>
+<%_}_%>
+<%_if(VIRTUAL_RELATION && VIRTUAL_RELATION.length>0){_%>
+    <%_for(const VIRTUAL_REL of VIRTUAL_RELATION){ _%>
+    schema.virtual(<%= VIRTUAL_REL.fieldName %>, {
+        ref: <%= VIRTUAL_REL.ref %>,
+        localField: <%= VIRTUAL_REL.localField %>,
+        foreignField: <%= VIRTUAL_REL.foreignField %>,
+        justOne: <%= VIRTUAL_REL.justOne %>
+    });
+<%_}
+}
+_%> 
+<%_if(HOOKS!=='null' && HOOKS){_%>
+<%_if(HOOKS['pre']!==undefined){_%>   
+<%HOOKS['pre'].forEach(function (variable) { -%>
+<%_if(variable['operation']!=='init'){_%>
+schema.pre('<%-variable['operation']%>',async function(next){
+    <%-variable['code']%>
+    next();
+});
+<%_}else{_%>
+schema.pre('init',async function(docs,next){
+    <%-variable['code']%>
+});
+<%_}_%>        
+<% }); -%>
+    
+<%_}if(HOOKS['post']!==undefined){_%>   
+<%HOOKS['post'].forEach(function (variable) { -%>
+<%_if(variable['operation']!=='init'){_%>
+schema.post('<%-variable['operation']%>',async function(docs,next){
+    <%-variable['code']%>
+    next();
+});
+<%_}else{_%>
+schema.post('init',async function(docs,next){
+    <%-variable['code']%>
+});
+<%_}_%>
+<% }); -%>    
+<%_}_%>
+<%_}_%>
+schema.pre('save', async function(next) {
+    this.isDeleted = false;
+    this.isActive = true;
+    <%_ if((typeof USER !== "undefined" && typeof IS_AUTH!=="undefined") && (USER && IS_AUTH)){ _%>
+    if(this.<%-PASSWORD%>){
+        this.<%-PASSWORD%> = await bcrypt.hash(this.<%-PASSWORD%>, 8);
+    }
+    <%_ } _%>
+    next();
+});
+
+schema.pre('insertMany', async function (next, docs) {
+    if (docs && docs.length){
+        for (let index = 0; index < docs.length; index++) {
+        const element = docs[index];
+        element.isDeleted = false;
+        element.isActive = true;
+        }
+    }
+    next();
+});
+
+<%_ if((typeof USER !== "undefined" && typeof IS_AUTH!=="undefined") && (USER && IS_AUTH)){ %>
+schema.methods.isPasswordMatch = async function (password) {
+    const user = this;
+    return bcrypt.compare(password, user.<%-PASSWORD%>);
+};
+<%_ } _%>
+schema.method("toJSON", function () {
+    const { __v, ...object } = this.toObject({virtuals:true});
+    object.id = object._id;
+    <%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
+    <%_for(index of CONCAT_HOOK){_%>
+    <%_for(formateIndex in index){_%>
+    <%_if(typeof (index[formateIndex])==='object'){_%>
+    if(object.<%-formateIndex%>){
+        object.<%-formateIndex%>=<%=index[formateIndex].true%>;
+    }else{
+        object.<%-formateIndex%>=<%=index[formateIndex].false%>;
+    }
+    <%_}else{_%> 
+    <%_if(index[formateIndex].includes('concat')){_%>
+    if(object.<%-STRING_ATT[0]%> && object.<%-STRING_ATT[1]%>){
+        object.<%-formateIndex%>=<%-index[formateIndex]%>;
+    }
+    <%STRING_ATT.shift()%>
+    <%STRING_ATT.shift()%>
+    <%_}else{_%>        
+    object.<%-formateIndex%>=<%-index[formateIndex]%>;
+    <%_}_%>
+    <%_}_%>
+    <%_}_%>   
+    <%_}_%>   
+    <%_}_%> 
+    <%_if(IS_PRIVATE_ATTR !== null && IS_PRIVATE_ATTR === true) {_%>
+        <%_if(PRIVATE_ATTRS !== null && PRIVATE_ATTRS) {_%>
+            <%_Object.keys(PRIVATE_ATTRS).map((t) => {_%>            
+                <%_if(PRIVATE_ATTRS[t]) {_%>            
+                    delete object.<%-t%>
+                <%_}_%>        
+            <%_});_%>        
+        <%_}_%>    
+    <%_}_%>
+    <%_if(IS_PRIVATE_ARRAY_PROPERTY !== null && IS_PRIVATE_ARRAY_PROPERTY === true) {_%>
+        <%_if(ARRAY_PRIVATE_PROPERTY !== null && ARRAY_PRIVATE_PROPERTY) {_%>
+            <%_if(Object.keys(ARRAY_PRIVATE_PROPERTY).length > 0) {_%>
+                <%_Object.keys(ARRAY_PRIVATE_PROPERTY).map((k) => {_%>
+                    if (object.<%-k%>.length > 0){
+                        let _<%-k%> = object.<%-k%>.filter(data => {
+                            delete data.<%-ARRAY_PRIVATE_PROPERTY[k]%>;
+                            return data;
+                        });
+                        object.<%-k%> = _<%-k%>;
+                    }
+                <%_});_%>
+            <%_}_%>    
+        <%_}_%>
+    <%_}_%>
+     
+    return object;
+});
+schema.plugin(mongoosePaginate);
+schema.plugin(idValidator);
+<%if (DB_UNIQUE) { %>
+schema.plugin(uniqueValidator,{ message: 'Error, expected {VALUE} to be unique.' });
+<% } %>
+const <%- DB_MODEL %> = mongoose.model("<%- DB_MODEL %>",schema,"<%- DB_MODEL %>");
+module.exports = <%- DB_MODEL %>

@@ -1,0 +1,3890 @@
+{
+    "logo": "",
+    "config": {
+        "projectName": "rajkaran-backend",
+        "path": "/home/vaidehisoni/Documents/Output",
+        "port": "5000",
+        "databaseName": "rajkaran",
+        "isAuthentication": true,
+        "platform": [
+            "admin",
+            "device"
+        ],
+        "types": [
+            "User",
+            "Admin"
+        ],
+        "loginAccess": {
+            "Admin": [
+                "admin"
+            ],
+            "User": [
+                "device"
+            ]
+        },
+        "applicationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjA3ZmYzYmZmMjEwMjgwMDE1MDY4Njg0IiwiX2lkIjoiNjA3ZmYzYmZmMjEwMjgwMDE1MDY4Njg0In0sImNvbXBhbnlJZCI6IjYwN2ZmNDFiZjIxMDI4MDAxNTA2ODY4OSIsImFwcGxpY2F0aW9uSWQiOiI2MTU4MWU2MjkyOTMzYzAwMTc5MWRjNjEiLCJpYXQiOjE2MzMxNjQ4OTh9.3ievIpt4IAiC2Dihkd8_tVGC_gGorrMUR0eHGK-QJa4"
+    },
+    "authentication": {
+        "port": "5000",
+        "databaseName": "rajkaran",
+        "isAuthentication": true,
+        "platform": [
+            "admin",
+            "device"
+        ],
+        "types": [
+            "User",
+            "Admin"
+        ],
+        "loginAccess": {
+            "Admin": [
+                "admin"
+            ],
+            "User": [
+                "device"
+            ]
+        },
+        "applicationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjA3ZmYzYmZmMjEwMjgwMDE1MDY4Njg0IiwiX2lkIjoiNjA3ZmYzYmZmMjEwMjgwMDE1MDY4Njg0In0sImNvbXBhbnlJZCI6IjYwN2ZmNDFiZjIxMDI4MDAxNTA2ODY4OSIsImFwcGxpY2F0aW9uSWQiOiI2MTU4MWU2MjkyOTMzYzAwMTc5MWRjNjEiLCJpYXQiOjE2MzMxNjQ4OTh9.3ievIpt4IAiC2Dihkd8_tVGC_gGorrMUR0eHGK-QJa4",
+        "restrictNoOfDevice": false,
+        "noOfDevice": 1,
+        "authModule": "user",
+        "loginWith": {
+            "username": [
+                "username",
+                "email"
+            ],
+            "password": "password"
+        },
+        "isTwoFA": null,
+        "twoFactorAuthentication": {
+            "platform": {},
+            "otpSendMedium": {}
+        },
+        "loginRetryLimit": {},
+        "loginRateLimit": {},
+        "loginNextRetryTime": null,
+        "resetPassword": {
+            "link": {}
+        },
+        "isSocialMediaAuth": null,
+        "socialPlatform": [],
+        "externalServiceProviderData": [],
+        "addDataFormate": {}
+    },
+    "ormType": 1,
+    "databaseType": 1,
+    "models": {
+        "committee": {
+            "_id": {
+                "type": "String"
+            },
+            "name": {
+                "type": "String"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "partyId": {
+                "type": "ObjectId",
+                "ref": "party"
+            }
+        },
+        "projectConfig": {
+            "_id": {
+                "type": "String"
+            },
+            "suspendActivationDays": {
+                "type": "Number",
+                "default": 30
+            },
+            "complaintDeadlineDays": {
+                "type": "Number",
+                "default": 25
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            }
+        },
+        "partySurvey": {
+            "_id": {
+                "type": "String"
+            },
+            "partyId": {
+                "type": "ObjectId",
+                "ref": "party"
+            },
+            "userId": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "rating": {
+                "type": "Number"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            }
+        },
+        "questionaire": {
+            "_id": {
+                "type": "String"
+            },
+            "question": {
+                "type": "String",
+                "required": true
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            }
+        },
+        "wef": {
+            "_id": {
+                "type": "String"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "designationId": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "partyId": {
+                "type": "ObjectId",
+                "ref": "party"
+            },
+            "userId": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "fromDate": {
+                "type": "Date"
+            },
+            "toDate": {
+                "type": "Date"
+            }
+        },
+        "appVersion": {
+            "_id": {
+                "type": "String"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "version": {
+                "type": "String",
+                "required": true
+            }
+        },
+        "contract": {
+            "_id": {
+                "type": "String"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "content": {
+                "type": "MultiLine",
+                "required": true
+            },
+            "version": {
+                "type": "String"
+            },
+            "partyType": {
+                "type": "Array"
+            },
+            "isHard": {
+                "type": "Boolean"
+            },
+            "isLatest": {
+                "type": "Boolean"
+            }
+        },
+        "userActivity": {
+            "_id": {
+                "type": "String"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "moduleName": {
+                "type": "String"
+            },
+            "actionType": {
+                "type": "String"
+            },
+            "ipAddress": {
+                "type": "String"
+            },
+            "deviceType": {
+                "type": "String"
+            },
+            "userId": {
+                "type": "ObjectId",
+                "ref": "user"
+            }
+        },
+        "document": {
+            "_id": {
+                "type": "String"
+            },
+            "url": {
+                "type": "String",
+                "required": true
+            },
+            "partyId": {
+                "type": "ObjectId",
+                "ref": "party",
+                "required": true
+            },
+            "type": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "docType": {
+                "type": "Number",
+                "default": 2
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            }
+        },
+        "event": {
+            "name": {
+                "type": "String"
+            },
+            "description": {
+                "type": "String"
+            },
+            "address": {
+                "line1": {
+                    "type": "String"
+                },
+                "line2": {
+                    "type": "String"
+                },
+                "city": {
+                    "type": "String"
+                },
+                "country": {
+                    "type": "String"
+                },
+                "state": {
+                    "type": "String"
+                },
+                "pincode": {
+                    "type": "String"
+                },
+                "lat": {
+                    "type": "Number"
+                },
+                "lng": {
+                    "type": "Number"
+                }
+            },
+            "startDateTime": {
+                "type": "Date"
+            },
+            "endDateTime": {
+                "type": "Date"
+            },
+            "speakers": [
+                {
+                    "_id": false,
+                    "name": {
+                        "type": "String"
+                    },
+                    "image": {
+                        "type": "String"
+                    },
+                    "email": {
+                        "type": "String"
+                    }
+                }
+            ],
+            "organizer": {
+                "name": {
+                    "type": "String"
+                },
+                "image": {
+                    "type": "String"
+                },
+                "email": {
+                    "type": "String"
+                },
+                "url": {
+                    "type": "String"
+                }
+            },
+            "image": {
+                "type": "String"
+            },
+            "attachments": {
+                "type": "Array"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "_id": {
+                "type": "String"
+            }
+        },
+        "follow": {
+            "_id": {
+                "type": "String"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "userId": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "followerId": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "partyId": {
+                "type": "ObjectId",
+                "ref": "party"
+            }
+        },
+        "posts": {
+            "_id": {
+                "type": "String"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "userId": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "partyId": {
+                "type": "ObjectId",
+                "ref": "party"
+            },
+            "postType": {
+                "default": 1,
+                "type": "Number"
+            },
+            "IsAchievement": {
+                "default": false,
+                "type": "Boolean"
+            },
+            "description": {
+                "type": "String"
+            },
+            "documentId": {
+                "type": "ObjectId",
+                "ref": "document"
+            }
+        },
+        "comments": {
+            "_id": {
+                "type": "String"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "postId": {
+                "type": "ObjectId",
+                "ref": "posts",
+                "required": true
+            },
+            "emotions": {
+                "default": 1,
+                "type": "Number"
+            },
+            "rating": {
+                "default": 5,
+                "type": "Number"
+            },
+            "month": {
+                "type": "Number"
+            },
+            "year": {
+                "type": "Number"
+            },
+            "parentCommentId": {
+                "type": "ObjectId",
+                "ref": "comments"
+            }
+        },
+        "complaint": {
+            "_id": {
+                "type": "String"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "complaintAddedBy": {
+                "type": "ObjectId",
+                "ref": "party"
+            },
+            "status": {
+                "default": 2,
+                "type": "Number"
+            },
+            "documents": [
+                {
+                    "_id": false,
+                    "image": {
+                        "type": "String"
+                    },
+                    "video": {
+                        "type": "String"
+                    }
+                }
+            ],
+            "privacy": {
+                "default": 2,
+                "type": "Number"
+            },
+            "isUserAgree": {
+                "type": "Boolean"
+            },
+            "title": {
+                "type": "String"
+            },
+            "description": {
+                "type": "String"
+            },
+            "complaintAssignedId": {
+                "type": "ObjectId",
+                "ref": "party"
+            }
+        },
+        "master": {
+            "name": {
+                "type": "String"
+            },
+            "slug": {
+                "type": "String"
+            },
+            "code": {
+                "type": "String"
+            },
+            "group": {
+                "type": "String"
+            },
+            "description": {
+                "type": "String"
+            },
+            "sequence": {
+                "type": "Number"
+            },
+            "image": {
+                "type": "String"
+            },
+            "parentId": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "parentCode": {
+                "type": "Boolean"
+            },
+            "isDefault": {
+                "type": "Boolean",
+                "default": false
+            },
+            "isDeleted": {
+                "type": "Boolean",
+                "default": false
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "_id": {
+                "type": "String"
+            }
+        },
+        "area": {
+            "_id": {
+                "type": "String"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "cityId": {
+                "type": "ObjectId",
+                "ref": "city",
+                "required": true
+            },
+            "stateId": {
+                "type": "ObjectId",
+                "ref": "state",
+                "required": true
+            },
+            "name": {
+                "type": "String",
+                "required": true
+            }
+        },
+        "city": {
+            "_id": {
+                "type": "String"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "stateId": {
+                "type": "ObjectId",
+                "ref": "state"
+            },
+            "name": {
+                "type": "String",
+                "required": true
+            }
+        },
+        "state": {
+            "_id": {
+                "type": "String"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "name": {
+                "type": "String",
+                "required": true
+            }
+        },
+        "party": {
+            "_id": {
+                "type": "String"
+            },
+            "name": {
+                "type": "String",
+                "required": true,
+                "unique": true
+            },
+            "profile_pic": [
+                {
+                    "_id": false,
+                    "sequence": {
+                        "type": "Number"
+                    },
+                    "url": {
+                        "type": "String"
+                    }
+                }
+            ],
+            "wallPic": [
+                {
+                    "_id": false,
+                    "sequence": {
+                        "type": "Number"
+                    },
+                    "url": {
+                        "type": "String"
+                    }
+                }
+            ],
+            "videos": [
+                {
+                    "_id": false,
+                    "sequence": {
+                        "type": "Number"
+                    }
+                }
+            ],
+            "description": {
+                "type": "String"
+            },
+            "aboutDescription": {
+                "type": "String"
+            },
+            "contactDetails": {
+                "email": {
+                    "type": "String"
+                },
+                "phone_no": {
+                    "type": "String"
+                },
+                "mobile_1": {
+                    "type": "String"
+                },
+                "mobile_2": {
+                    "type": "String"
+                }
+            },
+            "socialLinks": {
+                "website": {
+                    "type": "String"
+                },
+                "facebook": {
+                    "type": "String"
+                },
+                "instagram": {
+                    "type": "String"
+                },
+                "twitter": {
+                    "type": "String"
+                }
+            },
+            "socialHandle": {
+                "type": "JSON"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "type": {
+                "default": 3,
+                "type": "Number",
+                "required": true
+            },
+            "isBlueTickVerified": {
+                "default": false,
+                "type": "Boolean"
+            },
+            "blueTickAt": {
+                "type": "Date"
+            },
+            "blueTickBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "isVerified": {
+                "type": "Boolean"
+            },
+            "committeId": {
+                "type": "ObjectId",
+                "ref": "committee"
+            },
+            "designation": {
+                "type": "ObjectId",
+                "ref": "master"
+            }
+        },
+        "user": {
+            "_id": {
+                "type": "String"
+            },
+            "phone": {
+                "type": "Number",
+                "required": true,
+                "unique": true
+            },
+            "username": {
+                "type": "String",
+                "required": true,
+                "unique": true
+            },
+            "password": {
+                "type": "String",
+                "required": true
+            },
+            "email": {
+                "type": "String",
+                "required": false
+            },
+            "name": {
+                "type": "String",
+                "required": true
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "partyId": {
+                "type": "ObjectId",
+                "ref": "party",
+                "required": false
+            },
+            "blockDate": {
+                "type": "Date"
+            },
+            "isBlocked": {
+                "type": "Boolean"
+            }
+        }
+    },
+    "modelIndexes": {
+        "committee": [],
+        "projectConfig": [],
+        "partySurvey": [],
+        "questionaire": [],
+        "wef": [],
+        "appVersion": [],
+        "contract": [],
+        "userActivity": [],
+        "document": [],
+        "event": [
+            {
+                "isParserRequired": false,
+                "isDefault": false,
+                "fields": [],
+                "_id": "61582a4092933c001791fc37",
+                "name": "index_name",
+                "indexFields": {
+                    "name": 1
+                },
+                "options": {
+                    "unique": true
+                }
+            }
+        ],
+        "follow": [],
+        "posts": [],
+        "comments": [],
+        "complaint": [],
+        "master": [],
+        "area": [],
+        "city": [],
+        "state": [],
+        "party": [],
+        "user": []
+    },
+    "modelConfig": {
+        "committee": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU",
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                }
+            ],
+            "device": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU",
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                }
+            ]
+        },
+        "projectConfig": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": false,
+                    "policy": []
+                },
+                "R"
+            ]
+        },
+        "partySurvey": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ]
+        },
+        "questionaire": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "R"
+            ]
+        },
+        "wef": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ]
+        },
+        "appVersion": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "R"
+            ]
+        },
+        "contract": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "R"
+            ]
+        },
+        "userActivity": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "BC",
+                "BU"
+            ]
+        },
+        "document": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ]
+        },
+        "event": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ]
+        },
+        "follow": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ]
+        },
+        "posts": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ]
+        },
+        "comments": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ]
+        },
+        "complaint": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ]
+        },
+        "master": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": false,
+                    "policy": []
+                }
+            ]
+        },
+        "area": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "R"
+            ]
+        },
+        "city": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "R",
+                "BC",
+                "BU"
+            ]
+        },
+        "state": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "R",
+                "BC"
+            ]
+        },
+        "party": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U"
+            ]
+        },
+        "user": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "BU"
+            ]
+        }
+    },
+    "newModelConfig": {
+        "committee": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "projectConfig": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "R": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false,
+                    "attributes": []
+                }
+            }
+        },
+        "partySurvey": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "questionaire": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "wef": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "appVersion": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "R": {
+                    "isAuth": true,
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "attributes": []
+                }
+            }
+        },
+        "contract": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "userActivity": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "document": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "event": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "follow": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "posts": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "comments": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "complaint": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "master": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {}
+        },
+        "area": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "city": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "state": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "party": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "user": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        }
+    },
+    "modelEnum": {
+        "document": {
+            "docType": {
+                "enumAttribute": "docType",
+                "enumFile": "common",
+                "default": "PNG"
+            }
+        },
+        "posts": {
+            "postType": {
+                "enumAttribute": "POST_TYPE",
+                "enumFile": "posts",
+                "default": "TEXT"
+            }
+        },
+        "comments": {
+            "emotions": {
+                "enumAttribute": "EMOTIONS",
+                "enumFile": "comments",
+                "default": "LIKE"
+            },
+            "rating": {
+                "enumAttribute": "RATE",
+                "enumFile": "comments",
+                "default": "FIVE"
+            }
+        },
+        "complaint": {
+            "status": {
+                "enumAttribute": "STATUS",
+                "enumFile": "complain",
+                "default": "PENDING"
+            },
+            "privacy": {
+                "enumAttribute": "PRIVACY",
+                "enumFile": "complain",
+                "default": "PRIVATE"
+            }
+        },
+        "party": {
+            "type": {
+                "enumAttribute": "PARTY_TYPE",
+                "enumFile": "party",
+                "default": "CITIZEN"
+            }
+        }
+    },
+    "modelPrivate": {},
+    "routes": {
+        "apis": []
+    },
+    "policy": {},
+    "cronJobs": {
+        "jobConfiguration": [
+            {
+                "functionName": "monthlyQuestionAnswer",
+                "expression": "0 0 1 * *"
+            }
+        ]
+    },
+    "constants": {
+        "posts": {
+            "POST_TYPE": {
+                "TEXT": 1,
+                "IMAGE": 2,
+                "VIDEO": 3
+            }
+        },
+        "complain": {
+            "STATUS": {
+                "RESOLVED": 1,
+                "PENDING": 2,
+                "DISPUTED": 3
+            },
+            "PRIVACY": {
+                "PUBLIC": 1,
+                "PRIVATE": 2
+            }
+        },
+        "comments": {
+            "EMOTIONS": {
+                "LIKE": 1,
+                "DISLIKE": 2,
+                "SMILE": 3,
+                "CLAP": 4,
+                "SAD": 5,
+                "LOVE": 6,
+                "CELEBRATE": 7,
+                "INSIGHTFUL": 8
+            },
+            "RATE": {
+                "ONE": 1,
+                "TWO": 2,
+                "THREE": 3,
+                "FOUR": 4,
+                "FIVE": 5
+            }
+        },
+        "common": {
+            "docType": {
+                "ZIP": 1,
+                "PNG": 2,
+                "JPG": 3,
+                "JPEG": 4,
+                "PDF": 5
+            }
+        },
+        "party": {
+            "PARTY_TYPE": {
+                "POLITICAL": 1,
+                "POLITICAN": 2,
+                "CITIZEN": 3,
+                "JOURNALIST": 4,
+                "MEDIA": 5,
+                "CELEBRITY": 6,
+                "ORGANIZATION": 7
+            }
+        }
+    },
+    "applicationConfig": {
+        "restrictNoOfDevice": false,
+        "noOfDevice": 1,
+        "authModule": "user",
+        "loginWith": {
+            "username": [
+                "username",
+                "email"
+            ],
+            "password": "password"
+        },
+        "isTwoFA": null,
+        "twoFactorAuthentication": {
+            "platform": {},
+            "otpSendMedium": {}
+        },
+        "loginRetryLimit": {},
+        "loginRateLimit": {},
+        "loginNextRetryTime": null,
+        "resetPassword": {
+            "link": {}
+        },
+        "isSocialMediaAuth": null,
+        "socialPlatform": [],
+        "externalServiceProviderData": [],
+        "addDataFormate": {}
+    },
+    "fileUpload": {
+        "uploads": [
+            {
+                "validationType": [
+                    "png",
+                    "jpeg",
+                    "jpg",
+                    "gif",
+                    "pdf",
+                    "doc",
+                    "docx",
+                    "xlsx"
+                ],
+                "_id": "616ec8ebc17104001b51a0e9",
+                "platform": [
+                    "admin",
+                    "device"
+                ],
+                "storage": "S3",
+                "authentication": true,
+                "maxSize": 20,
+                "isSingle": true
+            }
+        ]
+    },
+    "packages": {},
+    "environmentVariables": null,
+    "envVariables": null,
+    "templatesData": {},
+    "hooks": {
+        "master": {
+            "pre": [
+                {
+                    "_id": "615825dd92933c001791ee52",
+                    "code": " // 'this' refers to the current document about to be saved\n  const record = this;\n  // create slug using code\n  const slug = record.code.toLowerCase();\n  // Replace and then store it\n  record.slug = slug;",
+                    "type": "pre",
+                    "operation": "save"
+                }
+            ]
+        }
+    },
+    "rolePermission": {
+        "comments": {
+            "C": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "R": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "U": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "D": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "Admin"
+            ]
+        },
+        "complaint": {
+            "R": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "U": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "D": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "Admin"
+            ],
+            "C": [
+                "User",
+                "Admin"
+            ]
+        },
+        "document": {
+            "C": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "R": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "U": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "D": [
+                "PoliticalParty",
+                "Admin"
+            ]
+        },
+        "follow": {
+            "R": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "D": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "C": [
+                "User",
+                "Admin"
+            ],
+            "U": [
+                "User",
+                "Admin"
+            ]
+        },
+        "party": {
+            "R": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "U": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "D": [
+                "PoliticalParty",
+                "Admin"
+            ],
+            "C": [
+                "User",
+                "Admin"
+            ]
+        },
+        "posts": {
+            "C": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "R": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "U": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "Admin"
+            ],
+            "D": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "Admin"
+            ]
+        },
+        "questionaire": {
+            "R": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "C": [
+                "Admin"
+            ],
+            "U": [
+                "Admin"
+            ],
+            "D": [
+                "Admin"
+            ]
+        },
+        "user": {
+            "R": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "U": [
+                "Celebrity",
+                "Media",
+                "Politician",
+                "PoliticalJournalist",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "D": [
+                "PoliticalParty",
+                "Admin"
+            ],
+            "C": [
+                "User",
+                "Admin"
+            ]
+        },
+        "event": {
+            "C": [
+                "Media",
+                "Politician",
+                "PoliticalParty",
+                "Admin"
+            ],
+            "R": [
+                "Media",
+                "Politician",
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "U": [
+                "Media",
+                "Politician",
+                "PoliticalParty",
+                "Admin"
+            ],
+            "D": [
+                "Media",
+                "Politician",
+                "PoliticalParty",
+                "Admin"
+            ]
+        },
+        "committee": {
+            "C": [
+                "PoliticalParty",
+                "Admin"
+            ],
+            "R": [
+                "PoliticalParty",
+                "Admin"
+            ],
+            "U": [
+                "PoliticalParty",
+                "Admin"
+            ],
+            "D": [
+                "PoliticalParty",
+                "Admin"
+            ]
+        },
+        "userActivity": {
+            "C": [
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "R": [
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "U": [
+                "PoliticalParty",
+                "User",
+                "Admin"
+            ],
+            "D": [
+                "Admin"
+            ]
+        },
+        "partySurvey": {
+            "C": [
+                "User",
+                "Admin"
+            ],
+            "R": [
+                "User",
+                "Admin"
+            ],
+            "U": [
+                "Admin"
+            ],
+            "D": [
+                "Admin"
+            ]
+        },
+        "appVersion": {
+            "C": [
+                "Admin"
+            ],
+            "R": [
+                "Admin"
+            ],
+            "U": [
+                "Admin"
+            ],
+            "D": [
+                "Admin"
+            ]
+        },
+        "area": {
+            "C": [
+                "Admin"
+            ],
+            "R": [
+                "Admin"
+            ],
+            "U": [
+                "Admin"
+            ],
+            "D": [
+                "Admin"
+            ]
+        },
+        "city": {
+            "C": [
+                "Admin"
+            ],
+            "R": [
+                "Admin"
+            ],
+            "U": [
+                "Admin"
+            ],
+            "D": [
+                "Admin"
+            ]
+        },
+        "contract": {
+            "C": [
+                "Admin"
+            ],
+            "R": [
+                "Admin"
+            ],
+            "U": [
+                "Admin"
+            ],
+            "D": [
+                "Admin"
+            ]
+        },
+        "master": {
+            "C": [
+                "Admin"
+            ],
+            "R": [
+                "Admin"
+            ],
+            "U": [
+                "Admin"
+            ],
+            "D": [
+                "Admin"
+            ]
+        },
+        "projectConfig": {
+            "C": [
+                "Admin"
+            ],
+            "R": [
+                "Admin"
+            ],
+            "U": [
+                "Admin"
+            ],
+            "D": [
+                "Admin"
+            ]
+        },
+        "state": {
+            "C": [
+                "Admin"
+            ],
+            "R": [
+                "Admin"
+            ],
+            "U": [
+                "Admin"
+            ],
+            "D": [
+                "Admin"
+            ]
+        },
+        "wef": {
+            "C": [
+                "Admin"
+            ],
+            "R": [
+                "Admin"
+            ],
+            "U": [
+                "Admin"
+            ],
+            "D": [
+                "Admin"
+            ]
+        }
+    },
+    "socket": {
+        "selected": false
+    },
+    "nestedCall": {},
+    "authenticationConfig": {
+        "socialPlatform": []
+    },
+    "screenTransitions": [],
+    "id": "rajkaran",
+    "applicationId": "61581e6292933c001791dc61",
+    "projectType": "MVC",
+    "ORM": "mongoose",
+    "adapter": "mongodb"
+}

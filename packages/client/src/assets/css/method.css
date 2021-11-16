@@ -1,0 +1,77 @@
+
+/* methodList */
+.methodList {
+    border: 1px solid var(--color-bg-active);
+    color: var(--color-bg-active);
+    border-radius: var(--border-radius);
+    padding: 0.1rem 0.1rem;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.methodList.put {
+    border: 1px solid var(--color-bg-yellow);
+    color: var(--color-bg-yellow);
+}
+
+.methodList.post {
+    border: 1px solid var(--color-bg-active);
+    color: var(--color-bg-active);
+}
+
+.methodList.delete {
+    border: 1px solid var(--color-bg-deactive);
+    color: var(--color-bg-deactive);
+}
+
+.methodList.get {
+    border: 1px solid var(--color-bg-gray);
+    color: var(--color-bg-gray);
+}
+
+.methodList.patch {
+    border: 1px solid var(--color-bg-blue);
+    color: var(--color-bg-blue);
+}
+
+.methodList.head {
+    border: 1px solid var(--color-bg-orange);
+    color: var(--color-bg-orange);
+}
+
+.methodList.options {
+    border: 1px solid var(--color-bg-pink);
+    color: var(--color-bg-pink);
+}
+
+.methodList.purge {
+    border: 1px solid var(--color-bg-lightGreen);
+    color: var(--color-bg-lightGreen);
+}
+
+.methodList.link {
+    border: 1px solid var(--color-bg-lightblue);
+    color: var(--color-bg-lightblue);
+}
+
+.methodList.unlink {
+    border: 1px solid var(--color-bg-lightorange);
+    color: var(--color-bg-lightorange);
+}
+
+/* node dashboard */
+.nodeManageOperation{
+
+}
+
+@media (max-width:1379px){
+    .menuShortCut:nth-last-child(4){
+        border-bottom: 1px solid var(--color-gray-200);
+    }
+}
+/* app tag */
+.application-NODE_EXPRESS{
+    background-color: rgba(var(--color-node-app),25%);
+    color: rgba(var(--color-node-app),100%);
+    border: none;
+}

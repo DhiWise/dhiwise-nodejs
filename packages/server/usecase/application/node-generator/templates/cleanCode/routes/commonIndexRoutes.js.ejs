@@ -1,0 +1,8 @@
+const express =  require("express")
+const router =  express.Router()
+
+<%_PLATFORM.forEach((p) =>{ _%>
+router.use(require("./<%-p%>Routes"));
+<%_ }) _%>
+
+module.exports = router;

@@ -1,0 +1,97 @@
+const passport = require('passport');
+const { ROLE_RIGHTS, USER_ROLE
+<%_if(CUSTOM_ROUTES){_%><%_ for(let platform in CUSTOM_ROUTES){ _%>
+,<%-platform.toUpperCase()%>_CUSTOM_ROUTES  
+<%_ } _%>
+<%_}_%>
+} = require('../constants/authConstant');
+const message = require("../utils/messages");
+const responseCode = require("../utils/responseCode");
+const sendResponse = require("../helpers/sendResponse");
+const db = require("mongoose");
+const userTokens  = require("../model/userTokens")(db);
+const userTokenService = require('../services/mongoDbService')({ model:userTokens });
+
+const verifyCallback = (req, resolve, reject, requiredRights) => async (err, user, info) => {
+    if (err || info || !user) {
+        return reject("Unauthorized User");
+    }
+    req.user = user;
+    if (!user.isActive) {
+        return reject("User is deactivated");
+    }
+    let userToken = await userTokenService.getSingleDocumentByQuery({token:(req.headers.authorization).replace('Bearer ',''),userId:user.id});
+    if (!userToken){
+        return reject('Token not found');
+    }
+    if (userToken.isTokenExpired){
+        return reject('Token is Expired');
+    }
+    if (requiredRights.length) {
+        for(role in USER_ROLE){
+            if(USER_ROLE[role]===user.role){
+                const userRights = ROLE_RIGHTS[user.role];
+                const hasRequiredRights = requiredRights.some((requiredRight) => userRights.includes(requiredRight));
+                if (!hasRequiredRights || !user.id) {
+                    return reject('Unauthorized user');
+                }
+            }
+        }
+    }
+    resolve();
+};
+
+const auth = (...requiredRights) => async (req, res, next) => {
+<% var c = 0; %>
+let url =req.originalUrl;
+    <% PLATFORM.forEach((v)=>{ c++;  %>
+        <%_ if(c===1){ _%>
+            <%_ if(CUSTOM_ROUTES && CUSTOM_ROUTES.hasOwnProperty(v)){ _%>
+            if(url.includes(<%= v.toLowerCase() %>) || <%-v.toUpperCase()%>_CUSTOM_ROUTES.includes(url)){    
+            <%_}else{_%>
+            if(url.includes(<%= v.toLowerCase() %>)){
+            <%_}_%>
+                return new Promise((resolve, reject) => {
+                    passport.authenticate('<%-v.toLowerCase()%>-rule', { session: false }, verifyCallback(req, resolve, reject, requiredRights))(
+                        req,
+                        res,
+                        next
+                    );
+                })
+                .then(() => next())
+                .catch((err) => {
+                    sendResponse(res,message.unAuthorizedRequest(
+                        { "Content-Type": "application/json" },
+                        responseCode.unAuthorizedRequest,
+                        err
+                    ))
+                 });
+            }
+        <%_ }else{ _%>
+            <%_ if(CUSTOM_ROUTES && CUSTOM_ROUTES.hasOwnProperty(v)){ _%>
+            else if(url.includes(<%= v.toLowerCase() %>) || <%-v.toUpperCase()%>_CUSTOM_ROUTES.includes(url)){    
+            <%_}else{_%>
+            else if(url.includes(<%= v.toLowerCase() %>)){
+            <%_}_%>
+                return new Promise((resolve, reject) => {
+                    passport.authenticate('<%-v.toLowerCase()%>-rule', { session: false }, verifyCallback(req, resolve, reject, requiredRights))(
+                        req,
+                        res,
+                        next
+                    );
+                })
+                .then(() => next())
+                .catch((err) => {
+                    sendResponse(res,message.unAuthorizedRequest(
+                    { "Content-Type": "application/json" },
+                    responseCode.unAuthorizedRequest,
+                    err
+                ))
+                 });
+            }
+        <%_ } _%> 
+    <%  }) %>
+   
+};
+
+module.exports = auth;

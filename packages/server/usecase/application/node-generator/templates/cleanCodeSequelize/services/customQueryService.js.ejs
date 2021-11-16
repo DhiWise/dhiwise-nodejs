@@ -1,0 +1,20 @@
+function makeMongoCustomQueryService(model){
+  const find = async ({
+    filter = {}, attributes=[], order=[] 
+  }) => {
+    const result = await model.findAll({
+      where: filter
+    },
+    {attributes: attributes},
+    {order: order})
+    return result;
+  };
+  return Object.freeze({
+    find,
+  })
+}
+
+module.exports = makeMongoCustomQueryService
+
+
+

@@ -1,0 +1,335 @@
+{
+    "id": "1",
+    "projectType": "MVC",
+    "config": {
+        "projectName": "Project1",
+        "path": "/home/salonisaraiya/Documents/OpenSource",
+        "databaseName": "project1db",
+        "port": "3000"
+    },
+    "authentication": {
+        "platform": [
+            "admin"
+        ],
+        "types": [
+            "User",
+            "Admin"
+        ],
+        "isAuthentication": true,
+        "loginAccess": {
+            "User": [
+                "admin"
+            ]
+        },
+        "authModule": "user",
+        "loginWith": {
+            "username": [
+                "username",
+                "email"
+            ],
+            "password": "password"
+        }
+    },
+    "models": {
+        "user": {
+            "username": {
+                "type": "String",
+                "lowercase": true,
+                "trim": true,
+                "required": true,
+                "minLength": 10,
+                "maxLength": 20
+            },
+            "age": {
+                "type": "Number",
+                "min": 10,
+                "max": 20,
+                "isAutoIncrement": true
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "emails": {
+                "type": "Array"
+            },
+            "address": {
+                "type": "JSON"
+            },
+            "dob": {
+                "type": "Date"
+            }
+        },
+        "address": {
+            "addressLine1": {
+                "type": "String"
+            },
+            "addressLine2": {
+                "type": "String"
+            },
+            "locality": {
+                "type": "String"
+            },
+            "pincode": {
+                "type": "String"
+            },
+            "city": {
+                "type": "String"
+            },
+            "state": {
+                "type": "String"
+            },
+            "country": {
+                "type": "String"
+            }
+        },
+        "master": {
+            "name": {
+                "type": "String",
+                "unique": true
+            },
+            "normalizeName": {
+                "type": "String"
+            },
+            "slug": {
+                "type": "String"
+            },
+            "code": {
+                "type": "String"
+            },
+            "group": {
+                "type": "String"
+            },
+            "description": {
+                "type": "String"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "parentId": {
+                "type": "ObjectId"
+            },
+            "isDeleted": {
+                "type": "Boolean"
+            },
+            "parentName": {
+                "type": "String"
+            },
+            "createdTimestamp": {
+                "type": "Date"
+            },
+            "updatedTimestamp": {
+                "type": "Date"
+            }
+        },
+        "depreciationModel": {
+            "name": {
+                "type": "String"
+            },
+            "ageOfDepreciation": {
+                "type": "Number"
+            },
+            "ageOfConstantDepreciation": {
+                "type": "Number"
+            },
+            "initialDepreciationPer": {
+                "type": "Number"
+            },
+            "scrapValuePer": {
+                "type": "Number"
+            }
+        },
+        "property": {
+            "propertyName": {
+                "type": "String"
+            },
+            "propertyType": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "street": {
+                "type": "String"
+            },
+            "StreetNumber": {
+                "type": "String"
+            },
+            "floorNumber": {
+                "type": "String"
+            },
+            "facing": {
+                "type": "String"
+            },
+            "zip": {
+                "type": "String"
+            },
+            "city": {
+                "type": "String"
+            },
+            "landmark": {
+                "type": "String"
+            },
+            "buildingName": {
+                "type": "String"
+            },
+            "propertyNo": {
+                "type": "Number"
+            },
+            "dateOfPurchase": {
+                "type": "Date"
+            },
+            "amount": {
+                "type": "Number"
+            },
+            "propertySize": {
+                "type": "String"
+            },
+            "userId": {
+                "type": "ObjectId",
+                "ref": "user"
+            }
+        },
+        "propertyAttribute": {
+            "propertyId": {
+                "type": "ObjectId",
+                "ref": "property"
+            },
+            "propertyAttributeType": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "total": {
+                "type": "Number"
+            },
+            "createdTimestamp": {
+                "type": "Date"
+            },
+            "updatedTimestamp": {
+                "type": "Date"
+            }
+        },
+        "subPropertyAttribute": {
+            "propertyId": {
+                "type": "ObjectId",
+                "ref": "property"
+            },
+            "propertyAttributeId": {
+                "type": "ObjectId",
+                "ref": "propertyAttribute"
+            },
+            "attributeName": {
+                "type": "String"
+            },
+            "area": {
+                "type": "Number"
+            },
+            "createdTimestamp": {
+                "type": "Date"
+            },
+            "updatedTimestamp": {
+                "type": "Date"
+            }
+        },
+        "enhancement": {
+            "subPropertyAttributeId": {
+                "type": "ObjectId",
+                "ref": "subPropertyAttribute"
+            },
+            "enhancementTypeId": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "attributeName": {
+                "type": "String"
+            },
+            "nameOfItem": {
+                "type": "String"
+            },
+            "date": {
+                "type": "Date"
+            },
+            "theme": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "subject": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "depreciationModel": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "timeInvested": {
+                "type": "Number"
+            },
+            "pricePerHour": {
+                "type": "Number"
+            },
+            "totalPrice": {
+                "type": "Number"
+            },
+            "description": {
+                "type": "String"
+            },
+            "invoice": [
+                "String"
+            ],
+            "photos": [
+                "String"
+            ]
+        }
+    },
+    "hooks": {
+        "user": {
+            "pre": [
+                {
+                    "operation": "save",
+                    "code": "this.name='abc',this.lastname='anc'"
+                }
+            ],
+            "post": [
+                {
+                    "operation": "init",
+                    "code": "console.log('init')"
+                }
+            ]
+        }
+    },
+    "newModelConfig": {
+        "user": {
+            "admin": {
+                "C": {
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": [
+                        "username",
+                        "email"
+                    ]
+                },
+                "R": {
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": [
+                        "username",
+                        "email"
+                    ]
+                },
+                "U": {
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": [
+                        "username",
+                        "email"
+                    ]
+                },
+                "D": {
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": [
+                        "username",
+                        "email"
+                    ]
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,53 @@
+const express = require('express');
+const session = require('express-session');
+const router = express.Router();
+const passport = require('passport');
+
+const {
+  linkedInStrategy, loginUser 
+} = require('../services/linkedin-login-service');
+
+//linkedin
+linkedInStrategy(passport);
+
+router.use(passport.initialize());
+
+router.use(session({
+  secret: 'my-secret',
+  resave: true,
+  saveUninitialized: false
+}));
+
+passport.serializeUser(function (user, cb) {
+  cb(null, user);
+});
+
+passport.deserializeUser(function (user, cb) {
+  cb(null, user);
+});
+
+router.get('<%-ERROR_URL%>', (req, res) => {
+  return res.loginFailed('Login Failed');
+});
+
+router.get('/auth/linkedin', passport.authenticate('linkedin', {
+  scope: ['r_emailaddress', 'r_liteprofile'],
+  session: false 
+}));
+
+router.get('<%-CALLBACK_URL%>',
+  passport.authenticate('linkedin', { failureRedirect: '<%-ERROR_URL%>' }),
+  function (req, res) {
+    loginUser(req.user.email,req.session.platform).then(result=>{
+      if (result.flag){
+        return res.loginFailed(result.data);
+      }
+      return res.loginSuccess(result.data);
+    })
+      .catch(error=>{
+        return res.failureResponse(error);
+      });
+  }
+);
+
+module.exports = router;

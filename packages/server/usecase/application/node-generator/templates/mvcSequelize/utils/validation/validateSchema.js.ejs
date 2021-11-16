@@ -1,0 +1,26 @@
+/*
+ * modelValidation.js
+ * purpose     : request validation
+ * description : validate each post and put request as per mongoose model
+ **/
+<%let flag=0%>
+const joi = require("joi");
+<%_if(typeof IS_AUTH!=="undefined" && IS_AUTH){_%>
+const {USER_ROLE} = require("../../constants/authConstant");
+const {convertObjectToEnum} = require("../common");  
+<%flag=1%> 
+<%_}_%>
+<%_if(ENUM_VALIDATION){_%>
+<%_if(!IS_AUTH){_%>
+const {convertObjectToEnum} = require("../common");  
+<%_}_%>        
+<%_for(let enumIndex of ENUM_VALIDATION){_%>
+const <%-enumIndex%>Default=require('../../constants/<%-enumIndex%>');    
+<%_}_%>       
+<%_}_%>    
+<%_ if(typeof VARIABLES !== "undefined") {
+for(let i=0;i< VARIABLES.length; i++) {_%>
+<%-VARIABLES[i]%>
+<%_ } } _%>
+exports.schemaKeys = joi.object(<%-VALIDATION_KEY%>).unknown(true);
+exports.updateSchemaKeys = joi.object(<%-UPDATE_VALIDATION_KEY%>).unknown(true);

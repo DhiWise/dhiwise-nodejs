@@ -1,0 +1,135 @@
+<%_ 
+function getRandomInt(length = 4){
+        let numbers = '12345678901234567890';
+        let result = '';
+        for (let i = length; i > 0; --i) {
+            result += numbers[Math.round(Math.random() * (numbers.length - 1))];
+        }
+        return result;
+    }
+_%>
+const db = require('mongoose');
+<%_for(var model in DELETE_DEPENDENCY){
+    let model_FC = (model).charAt(0).toUpperCase() + (model).slice(1); _%>
+let <%-model_FC%> = require("../model/<%-model%>")(db)
+<%_}_%>
+
+<%_for(var model in DELETE_DEPENDENCY){
+    let model_FC = (model).charAt(0).toUpperCase() + (model).slice(1); _%>
+const delete<%-model_FC%> = async (filter) =>{
+    try{
+    <%_if(DELETE_DEPENDENCY[model] && DELETE_DEPENDENCY[model].length){_%>
+        let <%-model.toLowerCase()%> = await <%-model_FC%>.find(filter, {_id:1});
+        if(<%-model.toLowerCase()%>.length){
+            <%-model.toLowerCase()%> = <%-model.toLowerCase()%>.map((obj) => obj._id);
+            <%_(DELETE_DEPENDENCY[model]).forEach((element) => { 
+                const eModel = (element.model).charAt(0).toUpperCase() + (element.model).slice(1);
+                const modelFilter = `${element.model}Filter${getRandomInt(4)}`
+                const modelNewName = `${element.model}${getRandomInt(4)}`
+            _%>
+            const <%-modelFilter%> = {<%=element.refId%>: {"$in": <%-model.toLowerCase()%>}}
+            const <%-modelNewName%> = await delete<%-eModel%>(<%-modelFilter%>);
+            <%_})_%>
+            return await <%-model_FC%>.deleteMany(filter)
+        }else{
+            return "No <%-model%> found."
+        }
+    <%_}else{_%>
+        return await <%-model_FC%>.deleteMany(filter);
+    <%_}_%>
+    }catch(error){
+        throw new Error(error.message);
+    }
+}
+
+<%_}_%>
+<%_for(var model in DELETE_DEPENDENCY){
+    let model_FC = (model).charAt(0).toUpperCase() + (model).slice(1); _%>
+const count<%-model_FC%> = async (filter) =>{
+    try{
+    <%_if(DELETE_DEPENDENCY[model] && DELETE_DEPENDENCY[model].length){_%>
+        let <%-model.toLowerCase()%> = await <%-model_FC%>.find(filter, {_id:1});
+        if(<%-model.toLowerCase()%>.length){
+            <%-model.toLowerCase()%> = <%-model.toLowerCase()%>.map((obj) => obj._id);
+            <%_ let newCntModelName = [];
+            (DELETE_DEPENDENCY[model]).forEach((element) => { 
+                const eModel = (element.model).charAt(0).toUpperCase() + (element.model).slice(1);
+                const modelFilter = `${element.model}Filter${getRandomInt(4)}`
+                const modelNewName = `${element.model}${getRandomInt(4)}Cnt`
+                newCntModelName.push(modelNewName)
+            _%>
+            const <%-modelFilter%> = {<%=element.refId%>: {"$in": <%-model.toLowerCase()%>}}
+            const <%-modelNewName%> = await count<%-eModel%>(<%-modelFilter%>);
+            <%_})_%>
+            const <%-model%>Cnt =  await <%-model_FC%>.countDocuments(filter)
+            let response = {<%-model%> : <%-model%>Cnt  }
+            response = {
+                ...response,
+                <%_ newCntModelName.forEach((cntModel)=>{_%>
+                    ...<%-cntModel%>,
+                <%_})_%>
+            }
+            return response;
+        }
+    <%_}else{_%>
+        const <%-model%>Cnt =  await <%-model_FC%>.countDocuments(filter);
+        return {<%-model%> : <%-model%>Cnt}
+    <%_}_%>
+    }catch(error){
+        throw new Error(error.message);
+    }
+}
+
+<%_}_%>
+<%_for(var model in DELETE_DEPENDENCY){
+    let model_FC = (model).charAt(0).toUpperCase() + (model).slice(1); _%>
+const softDelete<%-model_FC%> = async (filter,loggedInUser) =>{
+    try{
+    <%_if(DELETE_DEPENDENCY[model] && DELETE_DEPENDENCY[model].length){_%>
+        let <%-model.toLowerCase()%> = await <%-model_FC%>.find(filter, {_id:1});
+        if(<%-model.toLowerCase()%>.length){
+            <%-model.toLowerCase()%> = <%-model.toLowerCase()%>.map((obj) => obj._id);
+            <%_(DELETE_DEPENDENCY[model]).forEach((element) => { 
+                const eModel = (element.model).charAt(0).toUpperCase() + (element.model).slice(1);
+                const modelFilter = `${element.model}Filter${getRandomInt(4)}`
+                const modelNewName = `${element.model}${getRandomInt(4)}`
+            _%>
+            const <%-modelFilter%> = {<%=element.refId%>: {"$in": <%-model.toLowerCase()%>}}
+            const <%-modelNewName%> = await softDelete<%-eModel%>(<%-modelFilter%>);
+            <%_})_%>
+            if(loggedInUser && loggedInUser.id)
+                return await <%-model_FC%>.updateMany(filter, {isDeleted:true,updatedBy:loggedInUser.id})
+            else
+                return await <%-model_FC%>.updateMany(filter,{isDeleted:true})
+        }else{
+            return "No <%-model%> found."
+        }
+    <%_}else{_%>
+        if(loggedInUser && loggedInUser.id)
+            return await <%-model_FC%>.updateMany(filter, {isDeleted:true,updatedBy:loggedInUser.id});
+        else
+            return await <%-model_FC%>.updateMany(filter,{isDeleted:true})
+    <%_}_%>
+    }catch(error){
+        throw new Error(error.message);
+    }
+}
+
+<%_}_%>
+
+
+module.exports ={
+    <%_for(var model in DELETE_DEPENDENCY){
+        let model_FC = (model).charAt(0).toUpperCase() + (model).slice(1); _%>
+    delete<%-model_FC%>,
+    <%_}_%>
+    <%_for(var model in DELETE_DEPENDENCY){
+        let model_FC = (model).charAt(0).toUpperCase() + (model).slice(1); _%>
+    count<%-model_FC%>,
+    <%_}_%>
+    <%_for(var model in DELETE_DEPENDENCY){
+        let model_FC = (model).charAt(0).toUpperCase() + (model).slice(1); _%>
+    softDelete<%-model_FC%>,
+    <%_}_%>
+}
+

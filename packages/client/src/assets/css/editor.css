@@ -1,0 +1,58 @@
+.monaco-editor,
+.monaco-editor-background,
+.monaco-editor .inputarea.ime-input {
+    background-color: var(--color-gray-black) !important;
+}
+
+.monaco-editor .margin {
+    background-color: var(--color-gray-black) !important;
+}
+
+.mtk4,
+.mtk9,
+.mtk1 {
+    color: var(--color-gray-white) !important;
+}
+
+.mtk5 {
+    color: var(--color-bg-secondary) !important;
+}
+.readonlyEditor .monaco-editor .view-lines {
+    cursor: not-allowed !important;
+}
+
+.readonlyEditor .monaco-editor .selected-text {
+    background-color: transparent !important;
+}
+
+.readonlyEditor .monaco-mouse-cursor-text {
+    cursor: no-drop !important;
+    background: transparent !important;
+    border: none !important;
+    color: transparent !important;
+}
+.smallEditor .margin-view-overlays{
+    display: none;
+}
+.kCxsfG{
+    padding: 12px !important;
+    background-color: var(--color-gray-200) !important;
+}
+.copyPestCode pre,
+.copyPestCode code{
+    font-size: 14px;
+}
+.htmlDescription a{
+    color: var(--color-text-dark);
+    margin: 0 4px; 
+    display: inline-block;
+}
+.copyEditor button .icon{
+    display: none;
+}
+@media(max-width:1280px){
+    .copyPestCode pre,
+    .copyPestCode code{
+        font-size: 12px;
+    }
+}

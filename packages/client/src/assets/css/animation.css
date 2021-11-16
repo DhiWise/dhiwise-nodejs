@@ -1,0 +1,64 @@
+.checkAnimation{
+    animation: zoom 0.75s;
+}
+@keyframes zoom {
+    0% {
+        transform: scale(0);
+    }
+    5% {
+        transform: scale(0.25);
+    }
+    12% {
+        transform: scale(0.50);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+.animationIcon{
+    animation: rotating 1.5s infinite;
+}
+@keyframes rotating {
+    0% {
+        transform: scale(0.5);
+    }
+    10% {
+        transform: scale(0.9);
+    }
+    50% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes showAnimate {
+    0% {
+        transform: scale(0.5);
+    }
+    10% {
+        transform: scale(0.9);
+    }
+    50% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* animation projectt svg */
+.projectnotFoundImg svg path:nth-child(2) {
+    stroke: var(--color--black-svg);
+    stroke-width: 0.5;
+}
+
+.nodDataFound svg g path {
+    fill: var(--color--black-svg);
+    stroke: var(--color--black-svg);
+}
+
+.nodDataFound svg g>g:nth-child(3) g path {
+    fill: var(--color-bg-secondary);
+}

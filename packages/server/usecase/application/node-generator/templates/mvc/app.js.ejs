@@ -1,0 +1,74 @@
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const dotenv = require('dotenv');
+dotenv.config();
+global.__basedir = __dirname;
+const ejs = require("ejs");
+require('./config/db.js');
+<%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
+const listEndpoints = require('express-list-endpoints')
+<%_}_%>
+<%_ if(typeof IS_AUTH!=="undefined" && IS_AUTH){ _%>
+const passport = require("passport")
+<%_ } _%>
+
+<% Object.keys(modules).sort().forEach(function (variable) { -%>
+let <%- variable %> = require('<%- modules[variable] %>');
+<% }); -%>
+<% Object.keys(localModules).sort().forEach(function (variable) { -%>
+const <%- variable %> = require('<%- localModules[variable] %>');
+<% }); -%>
+<%_ if(typeof PLATFORM !== "undefined" && PLATFORM){ _%>
+<%_ for(const platform of PLATFORM){ _%>
+const {<%-platform.toLowerCase()%>PassportStrategy} = require("./config/<%-platform%>PassportStrategy");
+<%_ } _%>
+<%_ } _%>
+const app = express();
+const corsOptions = {
+    origin: process.env.ALLOW_ORIGIN,
+}
+app.use(cors(corsOptions));
+
+//template engine
+app.set('view engine', 'ejs'); 
+app.set('views', path.join(__dirname, 'views'));
+app.use(require('./utils/responseHandler'));
+
+<%_ if(!NO_PLATFORM && typeof IS_ROUTE!=="undefined" && IS_ROUTE) { _%>
+//all routes 
+const routes =  require("./routes/index")
+<%_ } _%>
+
+<%_uses.forEach(function (use) {_%>
+app.use(<%- use %>);
+<%_});_%>
+<%_ if(!NO_PLATFORM && typeof IS_ROUTE!=="undefined" && IS_ROUTE) { _%>
+app.use(routes)
+<%_ } _%>
+
+<%_ if(typeof PLATFORM !== "undefined" && PLATFORM){ _%>
+<%_ for(const platform of PLATFORM){ _%>
+<%-platform.toLowerCase()%>PassportStrategy(passport);
+<%_ } _%>
+<%_ } _%>
+
+<% mounts.forEach(function (mount) { -%>
+app.use(<%= mount.path %>, <%- mount.code %>);
+<% }); -%>
+
+if (process.env.NODE_ENV !== 'test' ) {
+    <%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
+    const seeder = require('./seeders');
+    const allRegisterRoutes = listEndpoints(app);
+    seeder(allRegisterRoutes).then(()=>{console.log("Seeding done.")});
+    <%_}else if(typeof SEEDER !== "undefined" && SEEDER){_%>
+    const seeder = require('./seeders');
+    seeder().then(()=>{console.log("Seeding done.")});
+    <%_}_%>
+    app.listen(process.env.PORT,()=>{
+        console.log(`your application is running on ${process.env.PORT}`)
+    });
+} else {
+    module.exports = app;
+}

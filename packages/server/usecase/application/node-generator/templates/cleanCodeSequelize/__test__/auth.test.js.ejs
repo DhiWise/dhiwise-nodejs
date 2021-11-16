@@ -1,0 +1,263 @@
+const dotenv = require('dotenv');
+dotenv.config();
+process.env.NODE_ENV = 'test';
+const request = require('supertest');
+const db = require('../../config/dbConnection')
+const app = require('../../app.js');
+const authConstant=require('../../constants/authConstant');
+const routes = require('../../routes.js');
+app.use(routes);
+
+beforeAll(async function () {
+  await db.sync({})
+})
+
+afterAll(async function(){
+  await db.dropAllSchemas()
+  await db.drop()
+  await db.close()
+})
+
+describe('POST /register -> if email and username is given', () => {
+  test('should register a <%-AUTH_MODEL%>', async () => {
+    let registeredUser = await request(app)
+      .post('/<%-PLATFORM%>/auth/register')
+      <%_var finalStr=new String(); 
+      FAKE_DATA_OF_AUTH.role=`@@authConstant.USER_ROLE.${ROLE}@@`;
+        finalStr=JSON.stringify(FAKE_DATA_OF_AUTH); 
+        finalStr=finalStr.replace(/@@"/g, "").replace(/"@@/g, "" ); 
+      _%>
+      .send(<%-finalStr%>);
+    expect(registeredUser.headers['content-type']).toEqual('application/json; charset=utf-8');
+    expect(registeredUser.body.status).toBe('SUCCESS');
+    expect(registeredUser.body.data).toMatchObject({
+      id: expect.any(Number)
+    });
+    expect(registeredUser.statusCode).toBe(200);
+  });
+});
+
+describe('POST /login -> if username and password is correct', () => {
+  test('should return <%-AUTH_MODEL%> with authentication token', async () => {
+    let <%-AUTH_MODEL%> = await request(app)
+      .post('/<%-PLATFORM%>/auth/login')
+      .send(
+        {
+          username: <%=FAKE_DATA_OF_AUTH[USER_LOGIN_WITH.username[0]]%>,
+          password: <%=FAKE_DATA_OF_AUTH[USER_LOGIN_WITH.password]%>
+        }
+      );
+      expect(<%-AUTH_MODEL%>.headers['content-type']).toEqual('application/json; charset=utf-8');
+      expect(<%-AUTH_MODEL%>.body.status).toBe('SUCCESS');
+      expect(<%-AUTH_MODEL%>.body.data).toMatchObject({
+          id: expect.any(Number),
+          token: expect.any(String)
+      }); 
+      expect(<%-AUTH_MODEL%>.statusCode).toBe(200);
+  });
+});
+
+describe('POST /login -> if username is incorrect', () => {
+  test('should return unauthorized status and <%-AUTH_MODEL%> not exists', async () => {
+    let <%-AUTH_MODEL%> = await request(app)
+      .post('/<%-PLATFORM%>/auth/login')
+      .send(
+        {
+          username: 'wrong.username',
+          password: <%=FAKE_DATA_OF_AUTH[USER_LOGIN_WITH.password]%>
+        }
+      );
+
+    expect(<%-AUTH_MODEL%>.headers['content-type']).toEqual('application/json; charset=utf-8');
+    expect(user.body.status).toBe('BAD_REQUEST');
+    expect(user.statusCode).toBe(401);
+  });
+});
+
+describe('POST /login -> if password is incorrect', () => {
+  test('should return unauthorized status and incorrect password', async () => {
+    let <%-AUTH_MODEL%> = await request(app)
+      .post('/<%-PLATFORM%>/auth/login')
+      .send(
+        {
+          username: <%=FAKE_DATA_OF_AUTH[USER_LOGIN_WITH.username[0]]%>,
+          password: 'wrong@password'
+        }
+      );
+
+    expect(<%-AUTH_MODEL%>.headers['content-type']).toEqual('application/json; charset=utf-8');
+    expect(user.body.status).toBe('BAD_REQUEST');
+    expect(user.statusCode).toBe(401);
+  });
+});
+
+describe('POST /login -> if username or password is empty string or has not passed in body', () => {
+  test('should return bad request status and insufficient parameters', async () => {
+    let user = await request(app)
+      .post('/<%-PLATFORM%>/auth/login')
+      .send({});
+
+    expect(user.headers['content-type']).toEqual('application/json; charset=utf-8');
+    expect(user.body.status).toBe('BAD_REQUEST');
+    expect(user.body.message).toBe('Insufficient parameters');
+    expect(user.statusCode).toBe(422);
+  });
+});
+
+describe('POST /forgot-password -> if email has not passed from request body', () => {
+  test('should return bad request status and insufficient parameters', async () => {
+    let user = await request(app)
+      .post('/<%-PLATFORM%>/auth/forgot-password')
+      .send({ email: '' });
+
+    expect(user.headers['content-type']).toEqual('application/json; charset=utf-8');
+    expect(user.body.status).toBe('BAD_REQUEST');
+    expect(user.body.message).toBe('Insufficient parameters');
+    expect(user.statusCode).toBe(422);
+  });
+});
+
+describe('POST /forgot-password -> if email passed from request body is not available in database', () => {
+  test('should return record not found status', async () => {
+    let user = await request(app)
+      .post('/<%-PLATFORM%>/auth/forgot-password')
+      .send({ 'email': 'unavailable.email@hotmail.com', });
+
+    expect(user.headers['content-type']).toEqual('application/json; charset=utf-8');
+    expect(user.body.status).toBe('RECORD_NOT_FOUND');
+    expect(user.body.message).toBe('Record not found with specified criteria.');
+    expect(user.statusCode).toBe(200);
+  });
+});
+
+describe('POST /forgot-password -> if email passed from request body is valid and OTP sent successfully', () => {
+  test('should return success message', async () => {
+    const expectedOutputMessages = [
+      'otp successfully send.',
+      'otp successfully send to your email.',
+      'otp successfully send to your mobile number.'
+    ];
+    let user = await request(app)
+      .post('/<%-PLATFORM%>/auth/forgot-password')
+      .send({ 'email': <%_if(FAKE_DATA_OF_AUTH['email'] !== undefined) {_%><%=FAKE_DATA_OF_AUTH['email']%><%_}else{_%>'valid.mail@hotmail.com'<%_}_%>_%>, });
+
+    expect(user.headers['content-type']).toEqual('application/json; charset=utf-8');
+    expect(user.body.status).toBe('SUCCESS');
+    expect(expectedOutputMessages).toContain(user.body.message);
+    expect(user.statusCode).toBe(200);
+  });
+});
+
+describe('POST /validate-otp -> otp is sent in request body and OTP is correct', () => {
+  test('should return success', () => {
+    return request(app)
+      .post('/<%-PLATFORM%>/auth/login')
+      .send(
+        {
+          username: <%=FAKE_DATA_OF_AUTH[USER_LOGIN_WITH.username[0]]%>,
+          password: <%=FAKE_DATA_OF_AUTH[USER_LOGIN_WITH.password]%>
+        }).then(login => () => {
+          return request(app)
+            <%_if(PLATFORM.toLowerCase() === 'admin'){_%>
+            .get(`/<%-PLATFORM%>/<%-AUTH_MODEL%>/${login.body.data.id}`)
+            <%_}else{_%>
+            .get(`/<%-PLATFORM%>/api/v1/<%-AUTH_MODEL%>/${login.body.data.id}`)
+            <%_}_%>
+            .set({
+              Accept: 'application/json',
+              Authorization: `Bearer ${login.body.data.token}`
+            }).then(foundUser => {
+              return request(app)
+                .post('/<%-PLATFORM%>/auth/validate-otp')
+                .send({ 'otp': foundUser.body.data.resetPasswordLink.code, }).then(<%-AUTH_MODEL%> => {
+                  expect(<%-AUTH_MODEL%>.headers['content-type']).toEqual('application/json; charset=utf-8');
+                  expect(<%-AUTH_MODEL%>.body.status).toBe('SUCCESS');
+                  expect(<%-AUTH_MODEL%>.statusCode).toBe(200);
+                });
+            })
+        });
+  });
+});
+
+describe('POST /validate-otp -> if OTP is incorrect or OTP has expired', () => {
+  test('should return invalid OTP', async () => {
+    let <%-AUTH_MODEL%> = await request(app)
+      .post('/<%-PLATFORM%>/auth/validate-otp')
+      .send({ 'otp': '12334' });
+    expect(<%-AUTH_MODEL%>.headers['content-type']).toEqual('application/json; charset=utf-8');
+    expect(<%-AUTH_MODEL%>.body.status).toBe('FAILURE');
+    expect(<%-AUTH_MODEL%>.statusCode).toBe(200);
+    expect(<%-AUTH_MODEL%>.body.message).toBe('Invalid OTP');
+  });
+});
+
+describe('POST /validate-otp -> if request body is empty or otp has not been sent in body', () => {
+  test('should return insufficient parameter', async () => {
+    let <%-AUTH_MODEL%> = await request(app)
+      .post('/<%-PLATFORM%>/auth/validate-otp')
+      .send({});
+
+    expect(<%-AUTH_MODEL%>.headers['content-type']).toEqual('application/json; charset=utf-8');
+    expect(<%-AUTH_MODEL%>.body.status).toBe('BAD_REQUEST');
+    expect(<%-AUTH_MODEL%>.statusCode).toBe(422);
+  });
+});
+
+describe('PUT /reset-password -> code is sent in request body and code is correct', () => {
+  test('should return success', () => {
+    return request(app)
+      .post('/<%-PLATFORM%>/auth/login')
+      .send(
+        {
+          username: <%=FAKE_DATA_OF_AUTH[USER_LOGIN_WITH.username[0]]%>,
+          password: <%=FAKE_DATA_OF_AUTH[USER_LOGIN_WITH.password]%>
+        }).then(login => () => {
+          return request(app)
+            <%_if(PLATFORM.toLowerCase() === 'admin'){_%>
+            .get(`/<%-PLATFORM%>/<%-AUTH_MODEL%>/${login.body.data.id}`)
+            <%_}else{_%>
+            .get(`/<%-PLATFORM%>/api/v1/<%-AUTH_MODEL%>/${login.body.data.id}`)
+            <%_}_%>
+            .set({
+              Accept: 'application/json',
+              Authorization: `Bearer ${login.body.data.token}`
+            }).then(foundUser => {
+              return request(app)
+                .put('/<%-PLATFORM%>/auth/validate-otp')
+                .send({ 'code': foundUser.body.data.resetPasswordLink.code, 'newPassword':'newPassword'}).then(<%-AUTH_MODEL%> => {
+                  expect(<%-AUTH_MODEL%>.headers['content-type']).toEqual('application/json; charset=utf-8');
+                  expect(<%-AUTH_MODEL%>.body.status).toBe('SUCCESS');
+                  expect(<%-AUTH_MODEL%>.statusCode).toBe(200);
+                });
+            })
+        });
+  });
+});
+
+describe('PUT /reset-password -> if request body is empty or code/newPassword is not given', () => {
+  test('should return insufficient parameter', async () => {
+    let <%-AUTH_MODEL%> = await request(app)
+      .put('/<%-PLATFORM%>/auth/reset-password')
+      .send({});
+
+    expect(<%-AUTH_MODEL%>.headers['content-type']).toEqual('application/json; charset=utf-8');
+    expect(<%-AUTH_MODEL%>.body.status).toBe('BAD_REQUEST');
+    expect(<%-AUTH_MODEL%>.statusCode).toBe(422);
+  });
+});
+
+describe('PUT /reset-password -> if code is invalid', () => {
+  test('should return invalid code', async () => {
+    let <%-AUTH_MODEL%> = await request(app)
+      .put('/<%-PLATFORM%>/auth/reset-password')
+      .send({
+        'code': '123',
+        'newPassword': 'testPassword'
+      });
+
+    expect(<%-AUTH_MODEL%>.headers['content-type']).toEqual('application/json; charset=utf-8');
+    expect(<%-AUTH_MODEL%>.body.status).toBe('FAILURE');
+    expect(<%-AUTH_MODEL%>.body.message).toBe('Invalid Code');
+    expect(<%-AUTH_MODEL%>.statusCode).toBe(200);
+  });
+});

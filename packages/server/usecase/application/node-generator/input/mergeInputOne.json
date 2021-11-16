@@ -1,0 +1,1092 @@
+{
+    "id": "DemoDirTwo",
+    "projectType": "MVC",
+    "config": {
+        "projectName": "projectTwo",
+        "path": "/home/shubhamjasani/Documents/NewStructure",
+        "databaseName": "CleanCodeDemo"
+    },
+    "authentication": {
+        "tokenExpireTime": "30000",
+        "types": [
+            "Admin",
+            "User",
+            "Guest"
+        ],
+        "loginAccess": {
+            "Admin": [
+                "admin",
+                "device",
+                "desktop",
+                "client"
+            ],
+            "User": [
+                "device",
+                "desktop",
+                "client"
+            ],
+            "Guest": [
+                "device",
+                "desktop",
+                "client"
+            ]
+        },
+        "isAuthentication": true,
+        "authModel": "user",
+        "twoFactorAuthentication": {
+            "platform": {
+                "admin": false,
+                "device": true,
+                "desktop": true,
+                "client": true
+            },
+            "otpSendMedium": {
+                "sms": false,
+                "email": true
+            },
+            "smsTemplate": "loginWithOTP"
+        },
+        "loginWith": {
+            "password": "password"
+        },
+        "loginRateLimit": {
+            "max": 5
+        },
+        "loginRetryLimit": {
+            "max": 5,
+            "key": "loginRetryLimit"
+        },
+        "resetPassword": {
+            "otp": {
+                "email": true,
+                "sms": false
+            },
+            "link": {
+                "email": true,
+                "sms": false
+            },
+            "expireTime": 20,
+            "emailTemplate": "resetPassword"
+        },
+        "registerUser": {
+            "emailTemplate": "registerUser"
+        },
+        "restrictNoOfDevice": false,
+        "noOfDevice": 2
+    },
+    "templatesData": {
+        "emailTemplate": [
+            {
+                "model": "user",
+                "attribute": {
+                    "otp": "user.loginOTP.code"
+                },
+                "templateName": "loginWithOTP",
+                "template": "<table role=\"presentation\" style=\"padding: 26px;border-collapse:collapse;border-spacing:0px;width: 100%;\"\ncellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n<tbody>\n    <tr>\n        <td style=\" padding: 10px 10px 20px 10px;\">\n            <div>\n                <div style=\"font-size:20px;font-weight:bold;line-height:24px;text-align:left;color:#212b35;\">\n                    OTP\n                </div>\n            </div>\n        </td>\n    </tr>\n    <tr>\n        <td>\n            <p style=\"font-size: 14px;color: #000;\">\n                <b>Dear User,</b>\n            </p>\n        </td>\n    </tr>\n    <% if(otp) { %>\n    <tr>\n        <td>\n            <p style=\"margin-top: 5px;margin-bottom: 15px;font-size: 14px;line-height: 1.8;color: #000;\">\n                Your OTP code is <strong> <%- otp %></strong>\n            </p>\n        </td>\n    </tr>\n    <% } %>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n"
+            },
+            {
+                "model": "user",
+                "attribute": {
+                    "otp": "user.resetPasswordLink.code"
+                },
+                "templateName": "resetPassword",
+                "template": "<table role=\"presentation\" style=\"padding: 26px;border-collapse:collapse;border-spacing:0px;width: 100%;\"\ncellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n<tbody>\n    <tr>\n        <td style=\" padding: 10px 10px 20px 10px;\">\n            <div>\n                <div style=\"font-size:20px;font-weight:bold;line-height:24px;text-align:left;color:#212b35;\">\n                    <%-otp%>\n                </div>\n            </div>\n        </td>\n    </tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n\n\n"
+            },
+            {
+                "template": "<table role=\"presentation\" style=\"padding: 26px;border-collapse:collapse;border-spacing:0px;width: 100%;\"\ncellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n<tbody>\n    <tr>\n        <td style=\" padding: 10px 10px 20px 10px;\">\n            <div>\n                <div style=\"font-size:20px;font-weight:bold;line-height:24px;text-align:left;color:#212b35;\">\n                    <%-username%>\n                </div>\n            </div>\n        </td>\n    </tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n\n\n",
+                "model": "user",
+                "attribute": {
+                    "username": "user.username"
+                },
+                "templateName": "registerUser"
+            }
+        ],
+        "smsTemplate": []
+    },
+    "models": {
+        "user": {
+            "username": {
+                "type": "String",
+                "lowercase": true,
+                "trim": true,
+                "required": true,
+                "minLength": 10,
+                "maxLength": 20
+            },
+            "age": {
+                "type": "Number",
+                "min": 10,
+                "max": 20
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "emails": {
+                "type": "Array"
+            },
+            "address": {
+                "type": "JSON"
+            },
+            "dob": {
+                "type": "Date"
+            },
+            "properties": {
+                "ref": "property",                
+                "foreignField": "userId",
+                "localField":"_id",
+                "justOne": true
+            },
+            "subProperties":{
+                "ref":"subPropertyAttribute",
+                "foreignField":"userId",
+                "localField":"_id",
+                "justOne":false
+            }
+
+        },
+        "address": {
+            "addressLine1": {
+                "type": "String"
+            },
+            "addressLine2": {
+                "type": "String"
+            },
+            "locality": {
+                "type": "String"
+            },
+            "pincode": {
+                "type": "String"
+            },
+            "city": {
+                "type": "String"
+            },
+            "state": {
+                "type": "String"
+            },
+            "country": {
+                "type": "String"
+            }          
+        },
+        "master": {
+            "name": {
+                "type": "SingleLine",
+                "unique": true
+            },
+            "normalizeName": {
+                "type": "SingleLine"
+            },
+            "slug": {
+                "type": "SingleLine"
+            },
+            "code": {
+                "type": "SingleLine"
+            },
+            "group": {
+                "type": "SingleLine"
+            },
+            "description": {
+                "type": "MultiLine"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "parentId": {
+                "type": "ObjectId"
+            },
+            "isDeleted": {
+                "type": "Boolean"
+            },
+            "parentName": {
+                "type": "String"
+            },
+            "createdTimestamp": {
+                "type": "Date"
+            },
+            "updatedTimestamp": {
+                "type": "Date"
+            }
+        },
+        "property": {
+            "subProperties":{
+                "ref":"subPropertyAttribute",
+                "foreignField":"propertyId",
+                "localField":"_id",            
+                "justOne":false
+            },
+            "propertyName": {
+                "type": "SingleLine"
+            },
+            "propetyType": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "street": {
+                "type": "String"
+            },
+            "StreetNumber": {
+                "type": "String"
+            },
+            "floorNumber": {
+                "type": "String"
+            },
+            "facing": {
+                "type": "String"
+            },
+            "zip": {
+                "type": "String"
+            },
+            "city": {
+                "type": "String"
+            },
+            "landmark": {
+                "type": "String"
+            },
+            "buildingName": {
+                "type": "String"
+            },
+            "propertyNo": {
+                "type": "Number"
+            },
+            "dateOfPurchase": {
+                "type": "Date"
+            },
+            "amount": {
+                "type": "Number"
+            },
+            "propertySize": {
+                "type": "String"
+            },
+            "userId":{
+                "type":"ObjectId",
+                "ref":"user"
+            }
+        },
+        "propertyAttribute": {
+            "propertyId": {
+                "type": "ObjectId",
+                "ref": "property"
+            },
+            "propertyAttributeType": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "total": {
+                "type": "Number"
+            },
+            "createdTimestamp": {
+                "type": "Date"
+            },
+            "updatedTimestamp": {
+                "type": "Date"
+            }
+        },
+        "subPropertyAttribute": {
+
+            "propertyId":{
+                "type": "ObjectId",
+                "ref": "property"
+            },
+            "propertyAttributeId": {
+                "type": "ObjectId",
+                "ref": "propertyAttribute"
+            },
+            "attributeName": {
+                "type": "String"
+            },
+            "area": {
+                "type": "Number"
+            },
+            "createdTimestamp": {
+                "type": "Date"
+            },
+            "updatedTimestamp": {
+                "type": "Date"
+            }
+        }
+    },
+
+    "modelConfig": {
+        "user": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "HD",
+                "UP",
+                {
+                    "isAuth": true
+                }
+            ],
+            "device": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true
+                }
+            ],
+            "client": [
+                "C",
+                "R",
+                {
+                    "isAuth": true
+                }
+            ],
+            "desktop": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true
+                }
+            ]
+        },
+        "master": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP"
+            ],
+            "device": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true
+                }
+            ],
+            "client": [
+                "C",
+                "R",
+                {
+                    "isAuth": true
+                }
+            ],
+            "desktop": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true
+                }
+            ]
+        },
+        "property": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP",
+                {
+                    "isAuth": true
+                }
+            ],
+            "device": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true
+                }
+            ],
+            "client": [
+                "C",
+                "R",
+                {
+                    "isAuth": true
+                }
+            ],
+            "desktop": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true
+                }
+            ]
+        },
+        "propertyAttribute": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP"
+            ],
+            "device": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true
+                }
+            ],
+            "client": [
+                "C",
+                "R",
+                {
+                    "isAuth": true
+                }
+            ],
+            "desktop": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true
+                }
+            ]
+        },
+        "subPropertyAttribute": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP"
+            ],
+            "device": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true
+                }
+            ],
+            "client": [
+                "C",
+                "R",
+                {
+                    "isAuth": true
+                }
+            ],
+            "desktop": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true
+                }
+            ]
+        }
+    },
+    "modelComment": {
+        "master": {
+            "description": "master model",
+            "attributeComment": {
+                "name": {
+                    "comment": "name comment"
+                },
+                "normalizeName": {
+                    "comment": "normalizeName comment"
+                },
+                "slug": {
+                    "comment": "slug comment"
+                },
+                "code": {
+                    "comment": "code comment"
+                },
+                "group": {
+                    "comment": "group comment"
+                },
+                "description": {
+                    "comment": "desc comment"
+                },
+                "isActive": {
+                    "comment": "isActive Field"
+                },
+                "parentId": {
+                    "comment": "parentId comment"
+                },
+                "isDeleted": {
+                    "comment": "isDeleted Comment"
+                },
+                "parentName": {
+                    "comment": "parentName Comment"
+                }
+            }
+        },
+        "property": {
+            "description": "property model",
+            "attributeComment": {
+                "userId": {
+                    "comment": "userId comment"
+                },
+                "propertyName": {
+                    "comment": "property Name comment"
+                },
+                "propetyType": {
+                    "comment": "propetyType comment"
+                },
+                "street": {
+                    "comment": "street comment"
+                },
+                "StreetNumber": {
+                    "comment": "StreetNumber comment"
+                },
+                "floorNumber": {
+                    "comment": "floorNumber comment"
+                },
+                "facing": {
+                    "comment": "facing comment"
+                },
+                "zip": {
+                    "comment": "zip comment"
+                },
+                "city": {
+                    "commnet": "city comment"
+                },
+                "landmark": {
+                    "comment": "landmark comment"
+                },
+                "buildingName": {
+                    "comment": "buildingName comment"
+                },
+                "propertyNo": {
+                    "comment": "propertyNo comment"
+                },
+                "dateOfPurchase": {
+                    "comment": "dateOfPurchase comment"
+                },
+                "amount": {
+                    "comment": "amount comment"
+                },
+                "propertySize": {
+                    "comment": "propertySize comment"
+                }
+            }
+        },
+        "propertyAttribute": {
+            "description": "propertyAttribute model",
+            "attributeComment": {
+                "propertyId": {
+                    "comment": "propertyId comment"
+                },
+                "propertyAttributeType": {
+                    "comment": "propertyAttributeType comment"
+                },
+                "total": {
+                    "comment": "total comment"
+                }
+            }
+        },
+        "subPropertyAttribute": {
+            "description": "subPropertyAttribute model",
+            "attributeComment": {
+                "propertyAttributeId": {
+                    "comment": "propertyAttributeId comment"
+                },
+                "attributeName": {
+                    "comment": "attributeName comment"
+                },
+                "area": {
+                    "comment": "area comment"
+                }
+            }
+        }
+    },
+    "routes": {
+        "apis": [
+            {
+                "method": "post",
+                "api": "/user/dashboard",
+                "controller": "dashboard",
+                "service": "dashboard",
+                "descriptions": "user dashboard",
+                "platform": "dashboard",
+                "functionName": "getTotalCount",
+                "queryBuilder": [
+                    {
+                        "selected": true,
+                        "model": "propertyAttribute",
+                        "queryMode": "create",
+                        "data": {
+                            "total": 7,
+                            "createdTimestamp": "2021-12-24T11:48:13.180Z",
+                            "updatedTimestamp": "2022-02-10T05:39:28.457Z",
+                            "isDeleted": false,
+                            "isActive": true
+                        },
+                        "outputVariable": "someName1",
+                        "option": {}
+                    },
+                    {
+                        "selected": true,
+                        "model": "master",
+                        "queryMode": "findOneAndDelete",
+                        "filter": {
+                            "_id": "6076b165c05ca95d85da7169"
+                        },
+                        "outputVariable": "someName2",
+                        "option": {}
+                    },
+                    {
+                        "selected": true,
+                        "method": "customQuery",
+                        "model": "user",
+                        "queryMode": "find",
+                        "outputVariable": "temp1",
+                        "filter": "{\"role\":\"1\"}",
+                        "skip": 1,
+                        "limit": 10,
+                        "populate": [
+                            {
+                                "path": "role",
+                                "select": [
+                                    "roleName",
+                                    "code",
+                                    "-_id"
+                                ],
+                                "match": {
+                                    "code": 21
+                                },
+                                "options": {
+                                    "limit": 5
+                                }
+                            }
+                        ],
+                        "select": [
+                            "username",
+                            "email",
+                            "-_id",
+                            "mobileNo"
+                        ],
+                        "sort": {
+                            "name": 1,
+                            "createdTimestamp": -1
+                        }
+                    },
+                    {
+                        "selected": true,
+                        "queryMode": "codeBlock",
+                        "code": "if(true){console.log('hello')}"
+                    },
+                    {
+                        "selected": true,
+                        "model": "user",
+                        "queryMode": "aggregate",
+                        "pipes": [
+                            {
+                                "operation": "$match",
+                                "query": {
+                                    "$or": [
+                                        {
+                                            "role": 1
+                                        },
+                                        {
+                                            "role": 2
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "method": "get",
+                "api": "/user/dashboard/total",
+                "controller": "report",
+                "service": "report",
+                "descriptions": "user dashboard",
+                "platform": "dashboard",
+                "functionName": "getTotalProject"
+            },
+            {
+                "method": "put",
+                "api": "/user/test/changepass",
+                "controller": "setting",
+                "service": "setting",
+                "descriptions": "user setitng",
+                "platform": "settings",
+                "functionName": "chnagePassword"
+            },
+            {
+                "method": "post",
+                "api": "/user/timepass",
+                "controller": "timepass",
+                "service": "timepass",
+                "descriptions": "user timepass",
+                "platform": "admin",
+                "functionName": "ttp"
+            }
+        ]
+    },
+    "constants": {
+        "constant": {
+            "JWT": {
+                "ADMIN_SECRET": "myjwtadminsecret",
+                "DEVICE_SECRET": "myjwtdevicesecret",
+                "CLIENT_SECRET": "myjwtclientsecret",
+                "DESKTOP_SECRET": "myjwtdesktopsecret",
+                "EXPIRES_IN": 10000
+            },
+            "USER_ROLE": {
+                "Admin": {
+                    "admin": true
+                },
+                "User": 2
+            },
+            "PLATFORM": {
+                "ADMIN": 1,
+                "DEVICE": 2,
+                "CLIENT": 3,
+                "DESKTOP": 4
+            }
+        },
+        "tempConstant": {
+            "PLATFORM": {
+                "ADMIN": 1,
+                "DEVICE": 2,
+                "CLIENT": 3,
+                "DESKTOP": 4
+            }
+        }
+    },
+    "policy": {
+        "checkUser": {
+            "functionName": "checkUser"
+        },
+        "printHello": {
+            "functionName": "helloUser"
+        }
+    },
+    "packages": {},
+    "modelNotifications": {
+        "user": {
+            "method": [
+                "C",
+                "D"
+            ],
+            "post": {
+                "email": true,
+                "sms": true,
+                "webNotification": true
+            }
+        },
+        "property": {
+            "method": [
+                "C"
+            ],
+            "post": {
+                "email": true,
+                "sms": true,
+                "webNotification": true
+            }
+        }
+    },
+    "envVariables": {
+        "environments": [
+            "QA",
+            "PRODUCTION",
+            "DEVELOPMENT"
+        ],
+        "customJson": [
+            {
+                "value": {
+                    "QA": "381bnbjh",
+                    "PRODUCTION": "232323mnnm",
+                    "DEVELOPMENT": "12345"
+                },
+                "key": "APPKEY",
+                "dataType": ""
+            }
+        ]
+    },
+    "fileUpload": {
+        "uploads": [
+            {
+                "platform": [
+                    "admin",
+                    "device"
+                ],
+                "validationType": [],
+                "storage": "Local",
+                "authentication": true,
+                "maxSize": "10",
+                "isSingle": true
+            }
+        ]
+    },
+    "cronJobs": {
+        "jobConfiguration": [
+            {
+                "functionName": "checkSome",
+                "expression": "*/10 * * * * *",
+                "calls": [
+                    {
+                        "selected": false,
+                        "model": "user",
+                        "queryMode": "aggregate",
+                        "pipes": [
+                            {
+                                "operation": "$match",
+                                "query": {
+                                    "$or": [
+                                        {
+                                            "role": 1
+                                        },
+                                        {
+                                            "role": 2
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "selected": true,
+                        "model": "propertyAttribute",
+                        "queryMode": "create",
+                        "data": {
+                            "total": 7,
+                            "createdTimestamp": "2021-12-24T11:48:13.180Z",
+                            "updatedTimestamp": "2022-02-10T05:39:28.457Z",
+                            "isDeleted": false,
+                            "isActive": true
+                        },
+                        "outputVariable": "someName1",
+                        "option": {}
+                    },
+                    {
+                        "selected": true,
+                        "model": "master",
+                        "queryMode": "findOneAndDelete",
+                        "filter": {
+                            "_id": "6076b165c05ca95d85da7169"
+                        },
+                        "outputVariable": "someName2",
+                        "option": {}
+                    },
+                    {
+                        "selected": true,
+                        "method": "customQuery",
+                        "model": "user",
+                        "queryMode": "find",
+                        "outputVariable": "temp1",
+                        "filter": "{\"role\":\"1\"}",
+                        "skip": 1,
+                        "limit": 10,
+                        "populate": [
+                            {
+                                "path": "role",
+                                "select": [
+                                    "roleName",
+                                    "code",
+                                    "-_id"
+                                ],
+                                "match": {
+                                    "code": 21
+                                },
+                                "options": {
+                                    "limit": 5
+                                }
+                            }
+                        ],
+                        "select": [
+                            "username",
+                            "email",
+                            "-_id",
+                            "mobileNo"
+                        ],
+                        "sort": {
+                            "name": 1,
+                            "createdTimestamp": -1
+                        }
+                    },
+                    {
+                        "queryMode": "codeBlock",
+                        "code": "if(true){console.log('hello')}"
+                    }
+                ],
+                "description":"Test \n Test"
+            },
+            {
+                "functionName": "test",
+                "expression": "*/1 * * * *",
+                "description":"Test \n Test"
+            }
+        ]
+    },
+    "nestedCall": {
+        "admin": {
+            "property": {
+                "D": {
+                    "pre": [
+                        {
+                            "method": "customQuery",
+                            "model": "user",
+                            "queryMode": "find",
+                            "outputVariable": "temp",
+                            "filter": "{\"role\":\"1\"}",
+                            "skip": 1,
+                            "limit": 10,
+                            "populate": [
+                                {
+                                    "path": "role",
+                                    "select": [
+                                        "roleName",
+                                        "code",
+                                        "-_id"
+                                    ],
+                                    "match": {
+                                        "code": 21
+                                    },
+                                    "options": {
+                                        "limit": 5
+                                    }
+                                }
+                            ],
+                            "select": [
+                                "roleName",
+                                "code",
+                                "-_id"
+                            ],
+                            "match": {
+                                "code": 21
+                            },
+                            "options": {
+                                "limit": 5
+                            }
+                        }
+                    ],
+                    "post": [
+                        {
+                            "method": "customQuery",
+                            "model": "user",
+                            "queryMode": "find",
+                            "outputVariable": "temp1",
+                            "filter": "{\"role\":\"1\"}",
+                            "skip": 1,
+                            "limit": 10,
+                            "populate": [
+                                {
+                                    "path": "role",
+                                    "select": [
+                                        "roleName",
+                                        "code",
+                                        "-_id"
+                                    ],
+                                    "match": {
+                                        "code": 21
+                                    },
+                                    "options": {
+                                        "limit": 5
+                                    }
+                                }
+                            ],
+                            "select": [
+                                "username",
+                                "email",
+                                "-_id",
+                                "mobileNo"
+                            ],
+                            "sort": {
+                                "name": 1,
+                                "createdTimestamp": -1
+                            }
+                        },
+                        {
+                            "method": "codeBlock",
+                            "code": "if(true){ console.log(`hello`)}"
+                        }
+                    ]
+                }
+            }
+        },
+        "desktop": {
+            "property": {
+                "C": {
+                    "pre": [
+                        {
+                            "model": "propertyAttribute",
+                            "method": "C",
+                            "dataKey": "propertyAttribute",
+                            "outputVariable": "someName1"
+                        },
+                        {
+                            "model": "master",
+                            "method": "U",
+                            "dataKey": "masterData",
+                            "idKey": "masterId",
+                            "outputVariable": "someName2"
+                        }
+                    ],
+                    "post": []
+                }
+            }
+        }
+    },
+    "filterByLoggedInUser": {
+        "isLoginUser": true,
+        "platform": {
+            "admin": true,
+            "device": true,
+            "desktop": true,
+            "client": false
+        },
+        "models": {
+            "user": {
+                "addedByKey": ""
+            },
+            "master": {
+                "addedByKey": "createdBy"
+            },
+            "property": {
+                "addedByKey": ""
+            }
+        }
+    },
+    "rateLimit": {
+        "admin": {
+            "user": [
+                {
+                    "C": 2,
+                    "time": "15*60*1000"
+                },
+                {
+                    "UP": 1,
+                    "time": "15*60*2000"
+                },
+                {
+                    "U": 2,
+                    "time": "15*60*4000"
+                }
+            ]
+        }
+    },
+    "hooks": {
+        "user": {
+            "pre": [
+                {
+                    "operation": "save",
+                    "code": "this.name='abc',this.lastname='anc'"
+                }
+            ],
+            "post": [
+                {
+                    "operation": "init",
+                    "code": "console.log('init')"
+                }
+            ]
+        }
+    },
+    "newModelConfig": {
+        "user": {
+            "admin": {
+                "C": {
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": [
+                        "username",
+                        "email"
+                    ]
+                }
+            }
+        }
+    }
+}

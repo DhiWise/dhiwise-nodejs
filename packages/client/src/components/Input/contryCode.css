@@ -1,0 +1,58 @@
+.spark-input-wrapper  .react-tel-input{
+    width: 100%;
+}
+.spark-input-wrapper  .react-tel-input input{
+    width: 100%;
+    background-color: var(--color-gray-input);
+    border: 1px solid var(--color-gray-70);
+    border-radius:3px;
+    height: 43px;
+    color: var(--color-text-primary);
+}
+.spark-input-wrapper  .react-tel-input input:focus{
+    border: 1px solid var(--color-bg-primary);
+}
+.spark-input-wrapper .react-tel-input  .flag-dropdown{
+    border: none;
+    left: 2px;
+    top: 2px;
+    bottom: 2px;
+    background-color: transparent;
+}
+.spark-input-wrapper .react-tel-input .selected-flag .arrow{
+    border-top: 4px solid var(--color--black-svg);
+}
+.spark-input-wrapper  .react-tel-input .selected-flag .arrow.up{
+    border-top: none;
+    border-bottom: 4px solid var(--color--black-svg);
+}
+.spark-input-wrapper .react-tel-input .selected-flag,
+.spark-input-wrapper .react-tel-input .flag-dropdown.open .selected-flag{
+    background-color:  var(--color-gray-200);
+}
+.spark-input-wrapper .react-tel-input .country-list{
+    background-color:var(--color-select-dropdown);
+}
+.spark-input-wrapper .react-tel-input .country-list .country{
+    border-bottom:1px solid var(--color-gray-100);
+}
+.spark-input-wrapper .react-tel-input .country-list .country .dial-code{
+    color: var(--color-text-secondary);
+}
+.spark-input-wrapper .react-tel-input .country-list .country.highlight{
+    background-color: var(--color-bg-primary);
+    color: #fff;
+}
+.spark-input-wrapper .react-tel-input .country-list .country.highlight .dial-code{
+    color: #fff;
+}
+.spark-input-wrapper .react-tel-input .country-list .country:hover{
+    background-color: transparent;
+    color: var(--color-text-primary);
+}
+.spark-input-wrapper .react-tel-input .country-list .country:hover .dial-code{
+    color: var(--color-text-primary);
+}
+.react-tel-input :disabled{
+    opacity: 60%;
+}

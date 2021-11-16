@@ -1,0 +1,29 @@
+
+const { Strategy, ExtractJwt } = require("passport-jwt")
+const { JWT } = require("../constants/authConstant")
+const db = require("./db");
+const <%-MODEL%>  =require("../model/<%-MODEL%>")(db)
+
+module.exports = {
+    <%- STRATEGY.toLowerCase() %>PassportStrategy: passport => {
+        const options = {};
+        options.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken(); 
+        options.secretOrKey = JWT.<%- STRATEGY.toUpperCase() %>_SECRET
+        passport.use('<%- STRATEGY.toLowerCase() %>-rule',
+            new Strategy(options, (payload, done) => {
+                <%-MODEL%>.findOne({ _id: payload.id }, (err, user) => {
+                    if (err) {
+                        // console.log(err)
+                        return done(err, false);
+                    }
+                    if (user) {
+                        return done(null, {
+                            ...user.toJSON()
+                        });
+                    }
+                    return done('No User Found', {});
+                });
+            })
+        );
+    }
+}

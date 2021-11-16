@@ -1,0 +1,85 @@
+function makeMongoCustomQueryService(model){
+  const find = async ( { filter = {}, populate, skip, limit, select, sort }) => {
+    let query = model.find(filter)
+    if (select) {
+        query = query.select(select)
+    }
+    if (populate) {
+        query = query.populate(populate)
+    }
+    if (skip) {
+        query = query.skip(skip)
+    }
+    if (limit) {
+        query = query.limit(limit)
+    }
+    if (sort) {
+        query = query.sort(sort)
+    }
+    return await query.exec()
+  }
+  const create = async(data,options={})=>{
+    try {
+        if(data && data.length){
+            return await model.create(data,options)
+        }else{
+            return await model.create([data],options)
+        }
+    } catch (error) {
+        throw new Error(error.message)
+    }
+  }
+  const findOneAndUpdate = async(filter,data,options={new:true})=>{
+    try {
+        return await model.findOneAndUpdate(filter,data,options)        
+    } catch (error) {
+        throw new Error(error.message)
+    }
+  }
+  const findOneAndDelete = async(filter,options={})=>{
+    try {
+        return await model.findOneAndDelete(filter,options)        
+    } catch (error) {
+        throw new Error(error.message)
+    }
+  }
+  const updateMany = async(filter,data,options={})=>{
+    try {
+        const documentsToBeUpdate=await model.find(filter)
+        await model.updateMany(filter,data,options)    
+        return documentsToBeUpdate
+    } catch (error) {
+        throw new Error(error.message)
+    }
+  }
+  const deleteMany = async(filter,options={})=>{
+    try {
+        const documentsToBeDelete=await model.find(filter)
+        await model.deleteMany(filter,data,options)
+        return documentsToBeDelete
+    } catch (error) {
+        throw new Error(error.message)
+    }
+  }
+  const aggregate = async(queries)=>{
+        try {
+            return await model.aggregate(queries)
+        } catch (error) {
+            throw new Error(error.message)
+        }
+    }
+  return Object.freeze({
+    find,
+    findOneAndUpdate,
+    findOneAndDelete,
+    updateMany,
+    deleteMany,
+    create, 
+    aggregate,   
+  })
+}
+
+module.exports = makeMongoCustomQueryService
+
+
+

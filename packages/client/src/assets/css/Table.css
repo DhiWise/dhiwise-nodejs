@@ -1,0 +1,236 @@
+.custom-table table{
+    @apply w-full;
+}
+.custom-table table tbody{
+    /* box-shadow:0 0 0 2px var(--color-gray-200); */
+    border-radius: 5px;
+}
+.custom-table table tr td,
+.custom-table table tr th{
+    padding:0.6rem 0.5rem;
+    font-size:14px;
+    text-align: left;
+    text-transform: inherit;
+}
+.custom-table table tr td{
+    border-top: 1px solid var(--color-gray-200);
+    word-break: break-word;
+}
+.custom-table table tr th{
+    /* @apply uppercase; */
+}
+.custom-table table tr{
+    /* box-shadow:0 0 0 1px var(--color-gray-200); */
+}
+.custom-table table thead tr{
+    box-shadow: none;
+}
+.custom-table table tr:first-child{
+    border-radius:5px 5px 0 0;
+}
+.custom-table table tr:last-child{
+    border-radius:0 0 5px 5px;
+}
+.custom-table td{
+    min-width: min-content;
+}
+.codeTable table th,
+.codeTable table td{
+    min-width: 40px;
+    /* max-width: 40px; */
+    /* width: 40px; */
+}
+.react-json-view .requiredProperty svg,.react-json-view .uniqueProperty svg{
+    fill: green;
+}
+
+.subAtt .spark-checkbox-inner{
+    background-color: var(--color-gray-inputSub);
+    border: 1px solid var(--color-gray-300);
+}
+.tableAuto{
+    overflow: auto;
+    height: 100%;
+    /* width: 1532px; */
+    scrollbar-width: thin;
+    padding: 0 0 0 0;
+}
+/* .tableAuto .scrollarea{
+    width: 100%;
+    height: calc(100vh - 207px);
+}
+.tableAuto .content{
+    min-width: 1532px;
+    padding-right: 10px;
+    overflow: visible;
+} */
+.tableScroll{
+    min-width: min-content;
+    padding: 0 0;
+    overflow: auto;
+    height:100%
+}
+.tableScroll .spark-checkbox-inner{
+    margin: 0;
+}
+.tableScroll td{
+    padding-right: 10px;
+}
+
+/* td {
+    min-width: 250px;
+    width: 250px;
+} */
+.modelPermissionTable .permissionTableList{
+    width: 26rem;
+    min-width: 26rem;
+    max-width: 26rem;
+}
+.modelPermissionLeft{
+    min-width: 250px;
+    width: 250px;
+    max-width: 250px;
+}
+.envTable td{
+    min-width: 250px;
+}
+.envTable .tableInputSelect{
+    width: 100%;
+}
+table{
+    width: 100%;
+}
+.viewAttributeTable tr td:first-child{
+    min-width: 60%;
+    width: 60%;
+}
+.viewAttributeTable tr td:last-child{
+    min-width: 40%;
+    width: 40%;
+}
+.tableInputSelect{
+    width: 8em;
+    min-width: 8rem;
+}
+.smallInput{
+    width: 7em;
+    min-width: 7rem;
+}
+.tableCheck{
+    width: 3em;
+    min-width: 3rem;
+}
+
+
+/* table component */
+.dhiTable{
+    overflow: auto;
+}
+.dhiTable tr th{
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+    font-size: 14px;
+    color: var(--color-text-primary);
+    font-weight: 400;
+    background-color: var(--color-gray-200);
+}
+.dhiTable tr td{
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-size: 14px;
+    color: var(--color-text-primary);
+    font-weight: 400;
+    /* text-align: center; */
+    border-top:1px solid var(--color-gray-200);
+}
+.onlyReadView tr td{
+    border-top: none;
+    border-bottom:1px solid var(--color-gray-350);
+    border-right:1px solid var(--color-gray-350);
+}
+.dhiTable tr td,
+.dhiTable tr th{
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    white-space: nowrap;
+    width: auto;
+}
+.firstColTable tr td:first-child,
+.firstColTable tr th:first-child{
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+}
+.dhiTable thead tr:first-child th{
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.dhiTable tr .subRow tr:first-child th{
+    position: relative;
+    z-index: 0;
+}
+/* .dhiTable.leftSpace tr th:nth-child(2),
+.dhiTable.leftSpace tr td:nth-child(2){
+    padding-left:54px;
+} */
+/* sub row */
+.subRow{
+    padding: 10px 1.25rem 10px 1.25rem !important;
+    border-top: none !important;
+}
+.subRow tr,
+.subRow td{
+    background: var(--color-gray-200);
+    text-align: left;
+}
+.subRow td {
+    /* border-top: none; */
+    padding-top: 0.2rem !important;
+    padding-bottom: 0.2rem !important;
+    font-size: 0.875rem !important;
+}
+.onlyReadView .subRow td{
+    /* padding-top: 0.2rem !important;
+    padding-bottom: 0.2rem !important; */
+    padding: 0.5rem !important;
+    border: 1px solid var(--color-gray-100) !important;
+    border-top: none !important;
+    border-right: none !important;
+    text-align: left;
+}
+.onlyReadView .subRow td:first-child{
+    border-left: none !important;
+}
+/* .onlyReadView .subRow{
+    border-right: none !important;
+} */
+.onlyReadView .subRow th{
+    border-bottom: 1px solid var(--color-gray-100);
+}
+.onlyReadView thead{
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.subRow tr:first-child td{
+    padding-top: 10px !important;
+}
+.subRow tr:last-child td{
+    padding-bottom: 10px !important;
+}
+.firstColTable tr td.subRow td:first-child,
+.firstColTable tr td.subRow th:first-child{
+    width: 60px;
+    min-width: 60px;
+    max-width: 60px;
+}
+
+.reactTable thead:before{
+    content: "";
+    width: 100%;
+    height: 36px;
+    position: fixed;
+    left: 0;
+    background: var(--color-gray-200);
+}

@@ -1,0 +1,13 @@
+<%_if(POLICY.code){_%>
+<%-POLICY.code%>
+<%_}else{_%>
+const <%-POLICY.functionName%>=(req,res,next)=>{
+    try {
+        next();
+    } catch (error) {
+        throw error;
+    }
+}
+    
+module.exports=<%-POLICY.functionName%>
+<%_}_%>
