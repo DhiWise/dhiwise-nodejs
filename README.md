@@ -3,9 +3,8 @@
 
 # Nodejs Code Generator
 <p>
-Node Code Generator is a Open-source package with Ui and APIs to Generate a Backend application using nodejs with different architectures and databases. 
+Node Code Generator accelerates your existing app development process and helps you build web apps instantly with production ready source code. With this package you can create configurable nodejs applications.
 <br/>
-<a href="https://github.com/DhiWise/nodejs-code-generator/issues">Report Bug/Request Feature</a>
 </p>
 
 ## Table of contents
@@ -34,29 +33,44 @@ After Successful run, A user can configure different settings using UI, and buil
 │   ├── server -- APIs cosumed from UI
 ```
 
-## Features
-### Modules
-1. Models along with template models, hooks, indexes, private attribute settings
-2. CRUD APIs with middleware and Attribute selection
-3. Constants
-4. Policy
-5. Environment Variables Setup
+## Development
+Nodejs-code-generator is build using two packages, one is client and other is server. run ```npm i ``` to install all the dependencies from both the packages. 
+
+## <a href="https://github.com/DhiWise/nodejs-code-generator/blob/master/packages/client/README.md">Client</a>
+Client is the front end of the platform that provides you with an easy to use UI for building your next pro-code application. The client is based on React.
+
+## <a href="https://github.com/DhiWise/nodejs-code-generator/blob/master/packages/server/README.md">Server</a>
+Server packages holds the backend APIs that will process and store the user configuaration to build the procode nodejs application and generate the source code. server is build using technologies like nodejs, mongodb, mongoose and many more.
+
+## Features of generated code
+1. User Authentication and Authorization (using Passport)
+2. Social Login APIs
+3. CRUD APIs with middleware and Attribute selection
+4. List API with pagination, populate and queries
+5. Upload attachment API with size and mime-type validation (local and s3)
 6. Role-Permission
-7. Authentication
-8. Custom Routes
-9. Platform and User Configuration
-10. File Upload
-11. Rate Limit
-12. Data Formatting on models
-### About Generated Code
-- ORMs Provided
-  1. mongoose  - for noSQL Database
-  2. sequelize - SQL Databases.
-- Database Covered
-  1. MongoDB
-  2. MySQL
-  3. PostgreSQL
-  4. SQL server
-- Architecture Covered
-  1. MVC
-  2. Clean-Code
+8. Hooks and Indexes
+9. Policy/middleware
+10. Request body validator (using joi)
+11. Standard error and response messages
+12. Test cases
+13. Postman collection and API documentation
+15. Constants
+17. Environment Variables for development, qa and production
+18. Custom Routes
+19. Multiple Platform selection and User type Configuration
+20. MVC and Clean-code Architecuture 
+
+### Supported Databases
+1. MongoDB
+2. SQL Server
+3. MYSQL
+4. PosgreSQL
+
+## Contribution
+
+Have you found a bug :lady_beetle: ? Or maybe you have a nice feature 💡 to contribute ? The <a href="https://github.com/DhiWise/nodejs-code-generator/blob/master/CONTRIBUTING.md">Contribution guide </a> will help you get your development environment ready in minutes.
+
+## Support
+If you have problems or questions go to our Discord channel, we will then try to help you asap:
+https://discord.gg/hTuNauNjyJ
