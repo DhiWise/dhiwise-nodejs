@@ -1,4 +1,4 @@
-# Backend
+# Server
 
 To run: ```node app```
 
