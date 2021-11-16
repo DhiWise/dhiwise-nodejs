@@ -67,11 +67,18 @@ Once done, stage the changes that are ready to be committed:
 git add .
 ```
 
-Commit the changes with a short message. (UI for better commit messages).
+Commit the changes with a short message.
+
+```
+git commit -m "<type>:<package>:<message>"
+```
+
+CLI for better commit messages
 
 ```
 npm run commit
 ```
+
 
 Push the changes to the remote repository using:
 
