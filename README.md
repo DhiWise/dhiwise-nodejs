@@ -13,7 +13,7 @@ Node Code Generator accelerates your existing app development process and helps 
 
 * [Folder Structure](#folder-structure)
 
-* [Features](#features)
+* [Features](#features-of-generated-code)
 
 <br/>
 
@@ -69,7 +69,10 @@ Server packages holds the backend APIs that will process and store the user conf
 
 ## Contribution
 
-Have you found a bug :lady_beetle: ? Or maybe you have a nice feature 💡 to contribute ? The <a href="https://github.com/DhiWise/nodejs-code-generator/blob/master/CONTRIBUTING.md">Contribution guide </a> will help you get your development environment ready in minutes.
+Have you found a bug :lady_beetle: ? <a href="https://github.com/DhiWise/nodejs-code-generator/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=">Report Here </a>
+or you have a nice feature 💡 to contribute ? Add it <a href="https://github.com/DhiWise/nodejs-code-generator/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=">here </a> 
+<br/>
+Our <a href="https://github.com/DhiWise/nodejs-code-generator/blob/master/CONTRIBUTING.md">Contribution guide </a> will help you how to contribute.
 
 ## Support
 If you have problems or questions go to our Discord channel, we will then try to help you asap:
