@@ -1,0 +1,8 @@
+ERRORS IN MODELS:
+<% ERRORS.forEach(function(errorObj){ %>
+ERR at model : <%- errorObj.model %>
+ERR at attribute : <%- errorObj.attribute %>
+<%if(errorObj.value){%>ERR at value : <%- errorObj.value %><%}%>
+<%if(errorObj.message){%>ERR message : <%- errorObj.message %><%}%>
+<%if(errorObj.suggestion){%>suggestion : <%- errorObj.suggestion %><%}%>
+<% }); %>

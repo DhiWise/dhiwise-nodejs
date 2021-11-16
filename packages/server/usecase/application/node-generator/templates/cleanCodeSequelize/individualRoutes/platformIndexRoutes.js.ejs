@@ -1,0 +1,8 @@
+const express = require("express")
+const router =  express.Router()
+
+<%_ CONTROLLERS.forEach(function(controller){ _%>
+router.use("/",require("./<%-controller%>Routes"))
+<%_ })_%>
+
+module.exports =router

@@ -1,0 +1,1054 @@
+{
+    "modelIndexes": {},
+    "hooks": {
+        "user": {
+            "pre": [
+                {
+                    "operation": "save",
+                    "code": "{\n  this.name = 'abc', this.lastname = 'anc';\n  next();\n}"
+                },
+                {
+                    "operation": "save",
+                    "code": "{\n  this.isDeleted = false;\n  this.isActive = true;\n\n  if (this.password) {\n    this.password = await bcrypt.hash(this.password, 8);\n  }\n\n  next();\n}"
+                },
+                {
+                    "operation": "deleteMany",
+                    "code": "{\n  let allRecordByConditions = await mongoose.model('user').find(this._conditions);\n  let dependent = [{\n    model: 'property',\n    refId: 'userId'\n  }];\n  await Promise.all(allRecordByConditions.map(async e => {\n    return await Promise.all(dependent.map(async i => {\n      let where = {};\n      where[i.refId] = e._id;\n      return await mongoose.model(i.model).deleteMany(where, async function (err, result) {\n        if (err) {\n          console.log(`[error] ${err}`);\n          next(err);\n        } else {\n          console.log('success');\n        }\n      });\n    }));\n  }));\n  next();\n}"
+                },
+                {
+                    "operation": "updateMany",
+                    "code": "{\n  if (this._conditions._id) {\n    let allRecordByConditions = await mongoose.model('user').find(this._conditions);\n    let dependent = [{\n      model: 'property',\n      refId: 'userId'\n    }];\n    await Promise.all(allRecordByConditions.map(async e => {\n      return await Promise.all(dependent.map(async i => {\n        let where = {};\n        where[i.refId] = e._id;\n        return await mongoose.model(i).updateMany(where, {\n          isDeleted: true\n        }, async function (err, result) {\n          if (err) {\n            console.log(`[error] ${err}`);\n            next(err);\n          } else {\n            console.log('success');\n          }\n        });\n      }));\n    }));\n    next();\n  } else {\n    next();\n  }\n}"
+                }
+            ],
+            "post": [
+                {
+                    "operation": "init",
+                    "code": "{\n  console.log('init');\n}"
+                }
+            ]
+        }
+    },
+    "packages": {
+        "dependencies": {
+            "axios": "~0.21.1",
+            "bcrypt": "~5.0.0",
+            "cookie-parser": "~1.4.4",
+            "cors": "~2.8.5",
+            "debug": "~2.6.9",
+            "dotenv": "~8.2.0",
+            "ejs": "~3.1.6",
+            "express": "~4.16.1",
+            "express-rate-limit": "~5.2.6",
+            "formidable": "~1.2.2",
+            "joi": "~17.3.0",
+            "jsonwebtoken": "~8.5.1",
+            "moment": "~2.29.1",
+            "mongoose": "~5.11.8",
+            "mongoose-id-validator": "~0.6.0",
+            "mongoose-paginate-v2": "~1.3.12",
+            "mongoose-unique-validator": "~2.0.3",
+            "morgan": "~1.9.1",
+            "node-cron": "~3.0.0",
+            "nodemailer": "~6.5.0",
+            "passport": "~0.4.1",
+            "passport-jwt": "~4.0.0",
+            "uuid": "~8.3.2",
+            "valid-url": "~1.0.9"
+        },
+        "scripts": {
+            "start": "node app.js"
+        }
+    },
+    "newModelConfig": {
+        "user": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "isAuth": false,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "HD": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "isAuth": false,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "desktop": {
+                "C": {
+                    "selected": true,
+                    "isAuth": false,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "client": {
+                "C": {
+                    "selected": true,
+                    "isAuth": false,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            }
+        },
+        "master": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "desktop": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "client": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            }
+        },
+        "depreciationModel": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "desktop": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "client": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            }
+        },
+        "property": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "desktop": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "client": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            }
+        },
+        "propertyAttribute": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "desktop": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "client": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            }
+        },
+        "subPropertyAttribute": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "desktop": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "client": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            }
+        },
+        "enhancement": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [
+                        "policy"
+                    ],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [
+                        "policy"
+                    ],
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [
+                        "policy"
+                    ],
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [
+                        "policy"
+                    ],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [
+                        "policy"
+                    ],
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "desktop": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "UP": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            },
+            "client": {
+                "C": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "isAuth": true,
+                    "policy": [],
+                    "attributes": []
+                }
+            }
+        }
+    },
+    "modelConfig": {
+        "user": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "HD",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "device": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "desktop": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "client": [
+                "C",
+                "R",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ]
+        },
+        "master": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "device": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "desktop": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "client": [
+                "C",
+                "R",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ]
+        },
+        "depreciationModel": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "device": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "desktop": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "client": [
+                "C",
+                "R",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ]
+        },
+        "property": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "device": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "desktop": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "client": [
+                "C",
+                "R",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ]
+        },
+        "propertyAttribute": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "device": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "desktop": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "client": [
+                "C",
+                "R",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ]
+        },
+        "subPropertyAttribute": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "device": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "desktop": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "client": [
+                "C",
+                "R",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ]
+        },
+        "enhancement": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "device": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "desktop": [
+                "C",
+                "R",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ],
+            "client": [
+                "C",
+                "R",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ]
+        }
+    },
+    "policy": {
+        "checkUser": {
+            "functionName": "checkUser",
+            "code": "const checkUser = (req, res) => {\n  try {\n    return;\n  } catch (error) {\n    throw error;\n  }\n};\n\nmodule.exports = checkUser;"
+        },
+        "printHello": {
+            "functionName": "printHello",
+            "code": "const helloUser = (req, res) => {\n  try {\n    return;\n  } catch (error) {\n    throw error;\n  }\n};\n\nmodule.exports = helloUser;"
+        }
+    },
+    "models": {
+        "user": {
+            "age": {
+                "type": "Number",
+                "min": 10,
+                "max": "`${DEFAULT_ROLE}`"
+            },
+            "dob": {
+                "type": "Date"
+            },
+            "emails": {
+                "type": "Array"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "isDeleted": "Boolean",
+            "password": {
+                "type": "String",
+                "required": true
+            },
+            "role": {
+                "type": "Number",
+                "default": "`${convertObjectToEnum(USER_ROLE)}`"
+            },
+            "username": {
+                "type": "String",
+                "lowercase": true,
+                "trim": true,
+                "required": true,
+                "minLength": 10,
+                "maxLength": 20
+            },
+            "properties": {
+                "ref": "property",
+                "type": "virtualRelation",
+                "localField": "_id",
+                "foreignField": "userId"
+            },
+            "subProperties": {
+                "ref": "subPropertyAttribute",
+                "type": "virtualRelation",
+                "localField": "_id",
+                "foreignField": "userId"
+            }
+        }
+    },
+    "modelVariables": {
+        "user": [
+            "const {\n  USER_ROLE,\n  DEFAULT_ROLE\n} = require(\"../config/authConstant\");",
+            "let MIN = 10;",
+            "const {\n  convertObjectToEnum\n} = require(\"../utils/common\");"
+        ]
+    },
+    "validationVariables": {
+        "user": [
+            "const {\n  USER_ROLE,\n  DEFAULT_ROLE\n} = require(\"../../config/authConstant\");",
+            "let MIN = 10;",
+            "const {\n  convertObjectToEnum\n} = require(\"../common\");"
+        ]
+    },
+    "config": {
+        "port": 3000,
+        "databaseName": "auth",
+        "projectName": "demo",
+        "path": "/home/salonisaraiya/Documents/NewStructure/Demo"
+    },
+    "authentication": {
+        "isAuthentication": false
+    },
+    "id": "demo",
+    "projectType": "MVC"
+}

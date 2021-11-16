@@ -1,0 +1,675 @@
+{
+	"logo": "",
+	"config": {
+		"projectName": "SQLServer_MVC",
+		"path": "/home/karansantra/Dhiwise/test",
+		"port": "3000",
+		"databaseName": "test",
+		"platform": [
+			"admin",
+			"device",
+			"desktop",
+			"client"
+		],
+		"types": [
+			"User",
+			"Admin"
+		],
+		"isAuthentication": true,
+		"loginAccess": {
+			"User": [
+				"admin",
+				"device",
+				"desktop"
+			],
+			"Admin": [
+				"admin",
+				"device",
+				"client",
+				"desktop"
+			]
+		}
+	},
+	"nestedCall": {
+        "user": {
+            "admin": {
+                "R": {
+                    "pre": [
+                        {
+                            "queryMode": "find",
+                            "existingVariable": "query",
+                            "filter": {
+                                "email": "Paul.Rempel28@yahoo.com",
+                                "items.qty": {
+                                    "$gte": 1,
+                                    "$lte": 50
+                                }
+                            },
+                            "skip": 0,
+                            "limit": 10,
+                            "populate": [
+                                {
+                                    "path": "items.product_id",
+                                    "select": [
+                                        "brand"
+                                    ]
+                                }
+                            ],
+                            "select": [
+                                "items"
+                            ],
+                            "sort": {
+                                "createdAt": -1
+                            }
+                        }
+                    ]
+                },
+                "SR": {
+                    "pre": [
+                        {
+                            "queryMode": "find",
+                            "existingVariable": "query",
+                            "filter": {
+                                "email": "Paul.Rempel28@yahoo.com",
+                                "items.qty": {
+                                    "$gte": 1,
+                                    "$lte": 50
+                                }
+                            },
+                            "skip": 0,
+                            "limit": 10,
+                            "populate": [
+                                {
+                                    "path": "items.product_id",
+                                    "select": [
+                                        "brand"
+                                    ]
+                                }
+                            ],
+                            "sort": {
+                                "createdAt": -1
+                            }
+                        }
+                    ]
+                },
+                "U": {
+                    "pre": [
+                        {
+                            "queryMode": "find",
+                            "existingVariable": "query",
+                            "filter": {
+                                "email": "Paul.Rempel28@yahoo.com",
+                                "aa": "aaaa",
+                                "items.qty": {
+                                    "$gte": 10,
+                                    "$lte": 50
+                                }
+                            },
+                            "skip": 0,
+                            "limit": 10,
+                            "populate": [
+                                {
+                                    "path": "items.product_id",
+                                    "select": [
+                                        "brand"
+                                    ]
+                                }
+                            ],
+                            "sort": {
+                                "createdAt": -1
+                            }
+                        }
+                    ]
+                },
+                "D": {
+                    "pre": [
+                        {
+                            "queryMode": "find",
+                            "existingVariable": "query",
+                            "filter": {
+                                "email": "Paul.Rempel28@yahoo.com",
+                                "aa": "aaaa",
+                                "items.qty": {
+                                    "$gte": 10,
+                                    "$lte": 50
+                                }
+                            },
+                            "skip": 0,
+                            "limit": 10,
+                            "populate": [
+                                {
+                                    "path": "items.product_id",
+                                    "select": [
+                                        "brand"
+                                    ]
+                                }
+                            ],
+                            "sort": {
+                                "createdAt": -1
+                            }
+                        }
+                    ]
+                },
+                "HD": {
+                    "pre": [
+                        {
+                            "queryMode": "find",
+                            "existingVariable": "query",
+                            "filter": {
+                                "email": "Paul.Rempel28@yahoo.com",
+                                "aa": "aaaa",
+                                "items.qty": {
+                                    "$gte": 10,
+                                    "$lte": 50
+                                }
+                            },
+                            "skip": 0,
+                            "limit": 10,
+                            "populate": [
+                                {
+                                    "path": "items.product_id",
+                                    "select": [
+                                        "brand"
+                                    ]
+                                }
+                            ],
+                            "sort": {
+                                "createdAt": -1
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "order": {
+            "admin": {
+                "C": {
+                    "pre": [
+                        {
+                            "method": "codeBlock",
+                            "code": "const Product = require('../../model/product'); const Cart = require('../../model/cart'); let filter = {}; let options = {}; if (req.body.filter !== undefined){ filter = req.body.filter; } if (!(Array.isArray(req.body.items) && req.body.items.length)) { return utils.inValidParam(isValid.error, res); } const orderData = { user: req.body.user, billingAddress: req.body.billingAddress, shippingMethod: req.body.shippingMethod, paymentMethod: req.body.paymentMethod }; orderData.items = req.body.items.map(item => { return { productId: item.productId, name: item.name, price: item.price, qty: item.qty }; }); orderData.grandTotal = req.body.items.reduce((total, item) => { return total + item.price * item.qty; }, 0); // const data = new Order({ ...req.body, }); let order = await dbService.createDocument(Order,orderData); if (req.body.options !== undefined) { if (req.body.options.populate){ delete req.body.options.populate; } options = { ...req.body.options }; } console.log(typeof order.items,order.items) for (const item of order.items) { let product = await dbService.getSingleDocumentById( Product,item.productId,options); product.quantity = product.quantity - item.qty; await dbService.findOneAndUpdateDocument(Product,{ _id:item.productId },product,{ new:true }); } let query={}; // query._id = req.body.id; query.email = req.body.user.email; let result = await dbService.getDocumentByQuery(Cart,query); result.items = []; await dbService.findOneAndUpdateDocument(Cart,{ _id:result.id },result,{ new:true });"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+	"authentication": {
+		"port": "3000",
+		"databaseName": "test",
+		"platform": [
+			"admin",
+			"device",
+			"desktop",
+			"client"
+		],
+		"types": [
+			"User",
+			"Admin"
+		],
+		"isAuthentication": true,
+		"loginAccess": {
+			"User": [
+				"admin",
+				"device",
+				"desktop"
+			],
+			"Admin": [
+				"admin",
+				"device",
+				"client",
+				"desktop"
+			]
+		},
+		"restrictNoOfDevice": false,
+		"noOfDevice": 1,
+		"authModule": "user",
+		"loginWith": {
+			"password": "password"
+		},
+		"isTwoFA": null,
+		"twoFactorAuthentication": {
+			"platform": {},
+			"otpSendMedium": {}
+		},
+		"loginRetryLimit": {},
+		"loginRateLimit": {},
+		"loginNextRetryTime": null,
+		"resetPassword": {
+			"link": {}
+		},
+		"isSocialMediaAuth": null,
+		"socialPlatform": [],
+		"externalServiceProviderData": []
+	},
+	"ormType": 2,
+	"databaseType": 3,
+	"models": {
+		"user": {
+			"userId": {
+				"type": "INTEGER",
+				"primary": true,
+				"isAutoIncrement": true
+			},
+			"username": {
+				"type": "STRING"
+			},
+			"password": {
+				"type": "STRING"
+			},
+			"email": {
+				"type": "STRING"
+			},
+			"name": {
+				"type": "ENUM"
+			},
+			"isActive": {
+				"type": "Boolean"
+			},
+			"tags": {
+				"type": "String"
+			},
+			"companyId": {
+				"type": "INTEGER",
+				"ref": "companies",
+				"refAttribute": "companyId"
+			}
+		},
+		"companies": {
+			"companyId": {
+				"type": "INTEGER",
+				"primary": true,
+				"isAutoIncrement": true
+			},
+			"companyName": {
+				"type": "STRING"
+			}
+		}
+	},
+	"modelIndexes": {
+		"user": [
+			{
+				"isParserRequired": true,
+				"isDefault": true,
+				"fields": [],
+				"_id": "61037907b5b12c001c9fda27",
+				"name": "UNIQUE",
+				"indexFields": [
+					{
+						"username": 1
+					}
+				]
+			},
+			{
+				"isParserRequired": true,
+				"fields": [
+					{
+						"attribute": "email",
+						"collate": "en_US",
+						"order": "DESC",
+						"length": 5
+					}
+				],
+				"_id": "61037907b5b12c001c9fda28",
+				"name": "BTREE"
+			},
+			{
+				"name": "PARTIAL",
+				"fields": [
+					{
+						"attribute": "isActive",
+						"operator": "where",
+						"value": {
+							"isActive": true
+						}
+					}
+				]
+			},
+			{
+				"name": "GIN",
+				"fields": [
+					{
+						"attribute": "isActive"
+					}
+				]
+			}
+		]
+	},
+	"modelConfig": {
+		"user": {
+			"admin": [
+				"C",
+				"R",
+				"U",
+				"D",
+				"BC",
+				"BU",
+				"HD",
+				{
+					"isAuth": true
+				}
+			],
+			"device": [
+				"C",
+				"R",
+				"U",
+				"D",
+				"BC",
+				"BU",
+				"HD",
+				{
+					"isAuth": true
+				}
+			],
+			"desktop": [
+				"C",
+				"R",
+				"U",
+				"D",
+				"BC",
+				"BU",
+				"HD",
+				{
+					"isAuth": true
+				}
+			],
+			"client": [
+				"C",
+				"R",
+				"U",
+				"D",
+				"BC",
+				"BU",
+				"HD",
+				{
+					"isAuth": true
+				}
+			]
+		}
+	},
+	"newModelConfig": {
+		"user": {
+			"admin": {
+				"C": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"R": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"U": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"D": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BC": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"HD": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				}
+			},
+			"device": {
+				"C": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"R": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"U": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"D": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BC": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"HD": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				}
+			},
+			"desktop": {
+				"C": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"R": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"U": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"D": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BC": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"HD": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				}
+			},
+			"client": {
+				"C": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"R": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"U": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"D": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BC": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				},
+				"HD": {
+					"selected": true,
+					"policy": [],
+					"isAuth": true,
+					"attributes": []
+				}
+			}
+		}
+	},
+	"constants": {
+		"tempConstant": {
+			"PLATEFORM": {
+				"ADMIN": 1,
+				"CLIENT": 2,
+				"MOBILE": 3,
+				"DESKTOP": 4
+			},
+			"TAGS": {
+				"DONE": 1,
+				"LEFT": 2,
+				"OPEN": 3
+			}
+		}
+	},
+	"modelEnum": {
+		"user": {
+			"name": {
+				"enumAttribute": "PLATEFORM",
+				"enumFile": "tempConstant",
+				"default": "ADMIN"
+			},
+			"tags": {
+				"enumAttribute": "TAGS",
+				"enumFile": "tempConstant",
+				"default": "OPEN"
+			}
+		}
+	},
+	"routes": {
+		"apis": []
+	},
+	"policy": {},
+	"cronJobs": {
+		"jobConfiguration": []
+	},
+	"applicationConfig": {
+		"restrictNoOfDevice": false,
+		"noOfDevice": 1,
+		"authModule": "user",
+		"loginWith": {
+			"password": "password"
+		},
+		"isTwoFA": null,
+		"twoFactorAuthentication": {
+			"platform": {},
+			"otpSendMedium": {}
+		},
+		"loginRetryLimit": {},
+		"loginRateLimit": {},
+		"loginNextRetryTime": null,
+		"resetPassword": {
+			"link": {}
+		},
+		"isSocialMediaAuth": null,
+		"socialPlatform": [],
+		"externalServiceProviderData": []
+	},
+	"fileUpload": {
+		"uploads": [
+			{
+				"validationType": [],
+				"_id": "61015094e6d598001c1edb6a",
+				"storage": "local"
+			}
+		]
+	},
+	"packages": {
+		"exceljs":""
+	},
+	"environmentVariables": null,
+	"envVariables": null,
+	"templatesData": {},
+	"hooks": {},
+	"rolePermission": {
+		"user": {
+			"C": [
+				"User",
+				"Admin"
+			],
+			"R": [
+				"User",
+				"Admin"
+			],
+			"U": [
+				"User",
+				"Admin"
+			],
+			"D": [
+				"User",
+				"Admin"
+			]
+		}
+	},
+	"socket": {
+		"selected": true
+	},
+	"authenticationConfig": {
+		"socialPlatform": []
+	},
+	"id": "test2_CC",
+	"applicationId": "test2_CC",
+	"projectType": "MVC",
+	"ORM": "sequelize",
+	"adapter": "postgres"
+}

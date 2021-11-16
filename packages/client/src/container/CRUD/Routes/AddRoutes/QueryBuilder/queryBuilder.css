@@ -1,0 +1,102 @@
+.group{
+    background-color: transparent;
+    border: none;
+}
+.customThemeQueryBuilder .group{
+    background-color: transparent;
+    border: 1px solid var(--color-gray-100);
+    padding: 0.5rem;
+    font-family: var(--font-famliy);
+}
+.qb-lite .group--header:not(:hover) .group--actions{
+    opacity: 1;
+}
+.customThemeQueryBuilder .group--header{
+    justify-content: space-between;
+}
+.customThemeQueryBuilder .group--actions{
+    padding: 0.5rem 0;
+    border-radius: 3px;
+    background-color: var(--color-gray-200);
+    width: max-content;
+    flex: initial;
+}
+.customThemeQueryBuilder .group--actions button{
+    padding: 0.2rem 1rem;
+    font-size: 1rem;
+    font-family: var(--font-famliy);
+    background-color: var(--color-gray-200);
+    cursor: pointer;
+    border-left: 1px solid var(--color-gray-100);
+}
+.customThemeQueryBuilder .group--actions button:first-child{
+    border-left: none;
+}
+.customThemeQueryBuilder .group--actions button:focus{
+    outline: none;
+}
+.customThemeQueryBuilder .group--children.hide--line>.group-or-rule-container>.group-or-rule::before, 
+.customThemeQueryBuilder .group--children.hide--line>.group-or-rule-container>.group-or-rule::after,
+.customThemeQueryBuilder .group--children>.group-or-rule-container>.group-or-rule::before, 
+.customThemeQueryBuilder .group--children>.group-or-rule-container>.group-or-rule::after{
+    border-color:var(--color-gray-100)
+}
+.customThemeQueryBuilder .rule{
+    background-color: var(--color-gray-200);
+}
+.customThemeQueryBuilder input, 
+.customThemeQueryBuilder optgroup, 
+.customThemeQueryBuilder select, 
+.customThemeQueryBuilder textarea{
+    background-color:var(--color-gray-inputSub);
+    padding: 0.625rem;
+    border-radius: 3px;
+    color: var(--color-text-primary);
+    margin-right: 0.2rem;
+}
+.customThemeQueryBuilder select{
+    min-width: 120px;
+}
+
+.customThemeQueryBuilder select:focus{
+    outline: none;
+}
+.customThemeQueryBuilder select option{
+    border: none;
+}
+.customThemeQueryBuilder .group--conjunctions{
+    display: flex;
+    align-items: center;
+    /* background: var(--color-gray-200); */
+    /* padding: 0.4rem; */
+    font-size: 14px;
+}
+.customThemeQueryBuilder .group--conjunctions label{
+    margin-left: 4px;
+    margin-right: 1.5rem;
+}
+.customThemeQueryBuilder .rule--operator, 
+.customThemeQueryBuilder .widget--widget, 
+.customThemeQueryBuilder .widget--valuesrc, 
+.customThemeQueryBuilder .widget--sep {
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+}
+.customThemeQueryBuilder .rule--body {
+    display: flex;
+    align-items: center;
+}
+.query-builder{
+    margin: 0;
+}
+.customThemeQueryBuilder .rule--header button{
+    width: 24px;
+    height: 24px;
+    background: var(--color-gray-300);
+    border-radius: 3px;
+    cursor: pointer;
+}
+.customThemeQueryBuilder .widget--widget label{
+    margin-right: 0.2rem;
+}

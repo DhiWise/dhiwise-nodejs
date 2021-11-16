@@ -1,0 +1,773 @@
+{
+    "logo": "",
+    "config": {
+        "projectName": "application1-mongo-test-mvc",
+        "path": "/home/salonisaraiya/DhiWise/poc/shubham-jasani/output",
+        "port": "5000",
+        "databaseName": "testsb",
+        "isAuthentication": true,
+        "platform": [
+            "admin",
+            "device"
+        ],
+        "types": [
+            "User",
+            "Admin"
+        ],
+        "loginAccess": {
+            "Admin": [
+                "admin"
+            ],
+            "User": [
+                "admin"
+            ]
+        },
+        "applicationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjA5MDM1ZTk5NTFlMmMwMDE0MmZkYWU5IiwiX2lkIjoiNjA5MDM1ZTk5NTFlMmMwMDE0MmZkYWU5In0sImNvbXBhbnlJZCI6IjYwOTAzNjAzOTUxZTJjMDAxNDJmZGFlYiIsImFwcGxpY2F0aW9uSWQiOiI2MTViZTA1OTgxMjc3ZTAwMTQxMzRmMmYiLCJpYXQiOjE2MzM0MTExNjF9.HKmWA1kW2B32VeQq_nHR-3_WtKfezYcEvHmylR16e4k"
+    },
+    "authentication": {
+        "port": "5000",
+        "databaseName": "testsb",
+        "isAuthentication": true,
+        "platform": [
+            "admin",
+            "device"
+        ],
+        "types": [
+            "User",
+            "Admin"
+        ],
+        "loginAccess": {
+            "Admin": [
+                "admin"
+            ],
+            "User": [
+                "admin"
+            ]
+        },
+        "applicationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjA5MDM1ZTk5NTFlMmMwMDE0MmZkYWU5IiwiX2lkIjoiNjA5MDM1ZTk5NTFlMmMwMDE0MmZkYWU5In0sImNvbXBhbnlJZCI6IjYwOTAzNjAzOTUxZTJjMDAxNDJmZGFlYiIsImFwcGxpY2F0aW9uSWQiOiI2MTViZTA1OTgxMjc3ZTAwMTQxMzRmMmYiLCJpYXQiOjE2MzM0MTExNjF9.HKmWA1kW2B32VeQq_nHR-3_WtKfezYcEvHmylR16e4k",
+        "restrictNoOfDevice": false,
+        "credentials": [
+            {
+                "type": "User",
+                "email": "Duane10@hotmail.com",
+                "password": "6NapZd4cGZLj557",
+                "username": "Linwood79"
+            },
+            {
+                "type": "Admin",
+                "email": "Roslyn55@hotmail.com",
+                "password": "Od2lodxHiLPev9J",
+                "username": "Clinton76"
+            }
+        ],
+        "noOfDevice": 1,
+        "authModule": "user",
+        "loginWith": {
+            "username": [
+                "username",
+                "email"
+            ],
+            "password": "password"
+        },
+        "isTwoFA": true,
+        "twoFactorAuthentication": {
+            "platform": {
+                "admin": true
+            },
+            "otpSendMedium": {
+                "masterIds": [
+                    "60867d62ebfd00625f9c68b6"
+                ],
+                "email": true
+            }
+        },
+        "loginRetryLimit": {},
+        "loginRateLimit": {},
+        "loginNextRetryTime": null,
+        "resetPassword": {
+            "link": {}
+        },
+        "isSocialMediaAuth": null,
+        "socialPlatform": [],
+        "externalServiceProviderData": [
+            {
+                "_id": "6178f12e02c44900159ba6cf",
+                "typeId": "60867d6bebfd00625f9c68b7",
+                "type": "SMS",
+                "serviceProviderId": "60867debebfd00625f9c68b9",
+                "serviceProvide": "Gupshup",
+                "customJson": {
+                    "clientId": "",
+                    "clientSecret": ""
+                }
+            }
+        ],
+        "addDataFormate": {}
+    },
+    "ormType": 1,
+    "databaseType": 1,
+    "models": {
+        "Blog": {
+            "_id": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            },
+            "alternativeHeadline": {
+                "type": "String"
+            },
+            "image": {
+                "type": "String"
+            },
+            "publishDate": {
+                "type": "String"
+            },
+            "author": {
+                "name": {
+                    "type": "String"
+                },
+                "image": {
+                    "type": "String"
+                },
+                "email": {
+                    "type": "String"
+                }
+            },
+            "publisher": {
+                "name": {
+                    "type": "String"
+                },
+                "url": {
+                    "type": "String"
+                },
+                "logo": {
+                    "type": "String"
+                }
+            },
+            "articleSection": {
+                "type": "String"
+            },
+            "articleBody": {
+                "type": "String"
+            },
+            "description": {
+                "type": "String"
+            },
+            "slug": {
+                "type": "String"
+            },
+            "url": {
+                "type": "String"
+            },
+            "isDraft": {
+                "type": "Boolean"
+            },
+            "isDeleted": {
+                "type": "Boolean"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            }
+        },
+        "user": {
+            "_id": {
+                "type": "String"
+            },
+            "username": {
+                "type": "String",
+                "trim": true
+            },
+            "password": {
+                "type": "String"
+            },
+            "email": {
+                "type": "String"
+            },
+            "name": {
+                "type": "String"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "createdAt": {
+                "type": "Date"
+            },
+            "updatedAt": {
+                "type": "Date"
+            },
+            "addedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "updatedBy": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "test": {
+                "type": "JSON"
+            }
+        }
+    },
+    "modelIndexes": {
+        "Blog": [
+            {
+                "isParserRequired": false,
+                "isDefault": false,
+                "fields": [],
+                "_id": "61690fcf8678c20014dd7c93",
+                "name": "index_title_publishdate",
+                "indexFields": {
+                    "title": 1,
+                    "publishDate": -1
+                },
+                "options": {
+                    "unique": true
+                }
+            },
+            {
+                "isParserRequired": false,
+                "isDefault": false,
+                "fields": [],
+                "_id": "61690fcf8678c20014dd7c94",
+                "name": "index_title",
+                "indexFields": {
+                    "title": 1
+                }
+            },
+            {
+                "isParserRequired": false,
+                "isDefault": false,
+                "fields": [],
+                "_id": "61690fcf8678c20014dd7c95",
+                "name": "index_publishdate",
+                "indexFields": {
+                    "publishDate": -1
+                }
+            }
+        ],
+        "user": []
+    },
+    "modelConfig": {
+        "Blog": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ]
+        },
+        "user": {
+            "admin": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ],
+            "device": [
+                {
+                    "isAuth": true,
+                    "policy": [
+                        "auth"
+                    ]
+                },
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU"
+            ]
+        }
+    },
+    "newModelConfig": {
+        "Blog": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "attributes": [],
+                    "isAuth": true
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "attributes": [],
+                    "isAuth": true
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "attributes": [],
+                    "isAuth": true
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "attributes": [],
+                    "isAuth": true
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "attributes": [],
+                    "isAuth": true
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "attributes": [],
+                    "isAuth": true
+                }
+            }
+        },
+        "user": {
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "attributes": [],
+                    "isAuth": true
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "attributes": [],
+                    "isAuth": true
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "attributes": [],
+                    "isAuth": true
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "attributes": [],
+                    "isAuth": true
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "attributes": [],
+                    "isAuth": true
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [
+                        "auth"
+                    ],
+                    "attributes": [],
+                    "isAuth": true
+                }
+            }
+        }
+    },
+    "modelEnum": {},
+    "modelPrivate": {},
+    "routes": {
+        "apis": [
+            {
+                "model": "Blog",
+                "method": "post",
+                "api": "/test123",
+                "controller": "Blog",
+                "service": "Blog",
+                "platform": "admin",
+                "functionName": "TestAction",
+                "headers": [
+                    {
+                        "key": "",
+                        "value": ""
+                    }
+                ],
+                "queryBuilder": [
+                    {
+                        "queryMode": "fileUpload",
+                        "validationType": [
+                            "png",
+                            "jpeg"
+                        ],
+                        "_id": "6169100a8678c20014dd7cfa",
+                        "isSingle": true,
+                        "storage": "local",
+                        "maxSize": 10
+                    },
+                    {
+                        "populate": [],
+                        "select": [],
+                        "outputVariable": "test123",
+                        "model": "Blog",
+                        "queryMode": "find",
+                        "filter": "{\"isDraft\":{\"$ne\":true}}",
+                        "dataId": "comp-1620063747955",
+                        "clusterId": "default",
+                        "__v": 0
+                    }
+                ]
+            },
+            {
+                "model": null,
+                "method": "post",
+                "api": "/test-route",
+                "controller": "Report",
+                "service": "Report",
+                "platform": "admin",
+                "functionName": "test",
+                "headers": [
+                    {
+                        "key": "",
+                        "value": ""
+                    }
+                ],
+                "queryBuilder": [
+                    {
+                        "queryMode": "fileUpload",
+                        "validationType": [],
+                        "_id": "615d33eb3a039c00151182ed",
+                        "isSingle": true,
+                        "storage": "local"
+                    },
+                    {
+                        "populate": [],
+                        "select": [],
+                        "outputVariable": "test",
+                        "model": "user",
+                        "queryMode": "find",
+                        "filter": "{\"username\":\"saloni\"}",
+                        "dataId": "comp-1620063747955",
+                        "clusterId": "default",
+                        "__v": 0
+                    }
+                ]
+            }
+        ]
+    },
+    "policy": {},
+    "cronJobs": {
+        "jobConfiguration": []
+    },
+    "constants": {},
+    "applicationConfig": {
+        "restrictNoOfDevice": false,
+        "credentials": [
+            {
+                "type": "User",
+                "email": "Duane10@hotmail.com",
+                "password": "6NapZd4cGZLj557",
+                "username": "Linwood79"
+            },
+            {
+                "type": "Admin",
+                "email": "Roslyn55@hotmail.com",
+                "password": "Od2lodxHiLPev9J",
+                "username": "Clinton76"
+            }
+        ],
+        "noOfDevice": 1,
+        "authModule": "user",
+        "loginWith": {
+            "username": [
+                "username",
+                "email"
+            ],
+            "password": "password"
+        },
+        "isTwoFA": true,
+        "twoFactorAuthentication": {
+            "platform": {
+                "admin": true
+            },
+            "otpSendMedium": {
+                "masterIds": [
+                    "60867d62ebfd00625f9c68b6"
+                ],
+                "email": true
+            }
+        },
+        "loginRetryLimit": {},
+        "loginRateLimit": {},
+        "loginNextRetryTime": null,
+        "resetPassword": {
+            "link": {}
+        },
+        "isSocialMediaAuth": null,
+        "socialPlatform": [],
+        "externalServiceProviderData": [
+            {
+                "_id": "6178f12e02c44900159ba6cf",
+                "typeId": "60867d6bebfd00625f9c68b7",
+                "type": "SMS",
+                "serviceProviderId": "60867debebfd00625f9c68b9",
+                "serviceProvide": "Gupshup",
+                "customJson": {
+                    "clientId": "",
+                    "clientSecret": ""
+                }
+            }
+        ],
+        "addDataFormate": {}
+    },
+    "fileUpload": {
+        "uploads": [
+            {
+                "validationType": [
+                    "png"
+                ],
+                "_id": "6178f12e02c44900159ba6ce",
+                "platform": [
+                    "admin"
+                ],
+                "storage": "local",
+                "authentication": false,
+                "maxSize": 10,
+                "isSingle": true
+            }
+        ]
+    },
+    "packages": {},
+    "environmentVariables": {
+        "environments": [
+            "DEVELOPMENT",
+            "QA"
+        ],
+        "customJson": [
+            {
+                "value": {
+                    "DEVELOPMENT": "testdb",
+                    "QA": "testdb"
+                },
+                "key": "TEST_DB",
+                "dataType": ""
+            }
+        ]
+    },
+    "envVariables": {
+        "environments": [
+            "DEVELOPMENT",
+            "QA"
+        ],
+        "customJson": [
+            {
+                "value": {
+                    "DEVELOPMENT": "testdb",
+                    "QA": "testdb"
+                },
+                "key": "TEST_DB",
+                "dataType": ""
+            }
+        ]
+    },
+    "templatesData": {},
+    "hooks": {
+        "Blog": {
+            "pre": [
+                {
+                    "_id": "61690fcf8678c20014dd7c96",
+                    "code": "// 'this' refers to the current document about to be saved\nconst record = this;\n// create slug using title\nlet slug = record.title.toLowerCase();\nslug = slug.replace(/\\s+/g,\"-\")\n// Replace and then store it\nrecord.slug = slug;",
+                    "operation": "save",
+                    "type": "pre"
+                }
+            ]
+        }
+    },
+    "rolePermission": {},
+    "socket": {
+        "selected": false
+    },
+    "activityLog": {
+        "selected": true
+    },
+    "nestedCall": {
+        "Blog": {
+            "device": {
+                "D": {
+                    "pre": [
+                        {
+                            "queryMode": "find",
+                            "existingVariable": "query",
+                            "filter": "{\"isActive\":true}"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "modelAdvanceOptions": {},
+    "authenticationConfig": {
+        "socialPlatform": []
+    },
+    "screenTransitions": [],
+    "id": "TestNestedCall",
+    "applicationId": "615be05981277e0014134f2f",
+    "projectType": "MVC",
+    "ORM": "mongoose",
+    "adapter": "mongodb"
+}

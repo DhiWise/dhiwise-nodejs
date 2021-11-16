@@ -1,0 +1,810 @@
+{
+    "logo": "",
+    "config": {
+        "projectName": "hk-node",
+        "path": "/home/karansantra/Dhiwise/test",
+        "port": "3000",
+        "databaseName": "hk-export",
+        "platform": [
+            "admin",
+            "device"
+        ],
+        "types": [
+            "User",
+            "Admin"
+        ],
+        "isAuthentication": true,
+        "loginAccess": {
+            "User": [
+                "device"
+            ],
+            "Admin": [
+                "admin"
+            ]
+        }
+    },
+    "authentication": {
+        "port": "3000",
+        "databaseName": "hk-export",
+        "platform": [
+            "admin",
+            "device"
+        ],
+        "types": [
+            "User",
+            "Admin"
+        ],
+        "isAuthentication": true,
+        "loginAccess": {
+            "User": [
+                "device"
+            ],
+            "Admin": [
+                "admin"
+            ]
+        },
+        "authModule": null,
+        "loginWith": {},
+        "isTwoFA": null,
+        "twoFactorAuthentication": {},
+        "loginRetryLimit": {},
+        "loginRateLimit": {},
+        "loginNextRetryTime": null,
+        "resetPassword": {},
+        "isSocialMediaAuth": null,
+        "socialPlatform": [],
+        "externalServiceProviderData": []
+    },
+    "models": {
+        "dfdf": {
+            "derwe": {
+                "type": "Number"
+            }
+        },
+        "test": {
+            "sdsds": {
+                "type": "Number"
+            }
+        },
+        "Account": {
+            "stockCategory": {
+                "type": "String"
+            },
+            "prefix": {
+                "type": "String"
+            },
+            "gender": {
+                "type": "String"
+            },
+            "name": {
+                "type": "String"
+            },
+            "profileImage": {
+                "type": "String"
+            },
+            "code": {
+                "type": "String"
+            },
+            "displayName": {
+                "type": "String"
+            },
+            "companyName": {
+                "type": "String"
+            },
+            "companyType": {
+                "type": "String"
+            },
+            "ledgerType": {
+                "type": "String"
+            },
+            "normalizeName": {
+                "type": "String"
+            },
+            "accountType": {
+                "type": "String"
+            },
+            "grpCompany": {
+                "type": "String"
+            },
+            "departmentHead": {
+                "type": "String"
+            },
+            "department": {
+                "type": "String"
+            },
+            "dateOfJoin": {
+                "type": "String"
+            },
+            "dateOfAnniversary": {
+                "type": "String"
+            },
+            "addressType": {
+                "type": "String"
+            },
+            "address": {
+                "type": "String"
+            },
+            "landMark": {
+                "type": "String"
+            },
+            "street": {
+                "type": "String"
+            },
+            "area": {
+                "type": "String"
+            },
+            "zipCode": {
+                "type": "String"
+            },
+            "country": {
+                "type": "Email"
+            },
+            "state": {
+                "type": "String"
+            },
+            "city": {
+                "type": "String"
+            },
+            "emails": {
+                "type": "JSON"
+            },
+            "Website": {
+                "type": "JSON"
+            },
+            "faxes": {
+                "type": "JSON"
+            },
+            "phones": {
+                "type": "JSON"
+            },
+            "mobiles": {
+                "type": "JSON"
+            },
+            "bank": {
+                "type": "JSON"
+            },
+            "social": {
+                "type": "JSON"
+            },
+            "defaultNarration": {
+                "type": "String"
+            },
+            "orderEmail": {
+                "type": "String"
+            },
+            "newStoneEmail": {
+                "type": "String"
+            },
+            "newsEventEmail": {
+                "type": "String"
+            },
+            "noOfEmployee": {
+                "type": "String"
+            },
+            "contactSource": {
+                "type": "String"
+            },
+            "dateOfBirth": {
+                "type": "String"
+            },
+            "accountName": {
+                "type": "String"
+            },
+            "isSubscribeForNewGoodFavourite": {
+                "type": "String"
+            },
+            "isSubscribeForNewGoodPurchase": {
+                "type": "String"
+            },
+            "isSubscribeForNotification": {
+                "type": "String"
+            },
+            "gstNo": {
+                "type": "String"
+            },
+            "verifyBy": {
+                "type": "String"
+            },
+            "verifyDate": {
+                "type": "String"
+            },
+            "seller": {
+                "type": "String"
+            },
+            "businessType": {
+                "type": "String"
+            },
+            "designation": {
+                "type": "String"
+            },
+            "howKnow": {
+                "type": "String"
+            },
+            "referenceFrom": {
+                "type": "String"
+            },
+            "isDeleted": {
+                "type": "Boolean"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "androidPlayerId": {
+                "type": "JSON"
+            },
+            "iosPlayerId": {
+                "type": "JSON"
+            },
+            "status": {
+                "type": "Number"
+            },
+            "connectedSockets": {
+                "type": "JSON"
+            },
+            "hkId": {
+                "type": "String"
+            },
+            "hkExtra": {
+                "type": "JSON"
+            },
+            "updateIp": {
+                "type": "String"
+            },
+            "createIp": {
+                "type": "String"
+            },
+            "updatedBy": {
+                "type": "String"
+            },
+            "createdBy": {
+                "type": "String"
+            },
+            "user": {
+                "type": "String"
+            }
+        },
+        "user": {
+            "username": {
+                "type": "String"
+            },
+            "password": {
+                "type": "String"
+            },
+            "email": {
+                "type": "String"
+            },
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "modelIndexes": {
+        "dfdf": [],
+        "test": [],
+        "Account": [],
+        "user": [
+            {
+                "_id": "60d4309b9b4d95001423f2c2",
+                "name": "test_tewws-weweq",
+                "indexFields": {
+                    "username": 1
+                },
+                "options": {
+                    "unique": false,
+                    "expireAfterSeconds": 3
+                }
+            }
+        ]
+    },
+    "modelConfig": {
+        "dfdf": {
+            "device": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU",
+                "HD",
+                {
+                    "isAuth": true
+                }
+            ],
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU",
+                "HD",
+                {
+                    "isAuth": true
+                }
+            ]
+        },
+        "test": {
+            "device": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU",
+                "HD",
+                {
+                    "isAuth": true
+                }
+            ],
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU",
+                "HD",
+                {
+                    "isAuth": true
+                }
+            ]
+        },
+        "Account": {
+            "device": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU",
+                "HD",
+                {
+                    "isAuth": true
+                }
+            ],
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU",
+                "HD",
+                {
+                    "isAuth": true
+                }
+            ]
+        },
+        "user": {
+            "device": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU",
+                "HD",
+                {
+                    "isAuth": true
+                }
+            ],
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "BC",
+                "BU",
+                "HD",
+                {
+                    "isAuth": true
+                }
+            ]
+        }
+    },
+    "newModelConfig": {
+        "dfdf": {
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "HD": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "HD": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "test": {
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "HD": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "HD": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "Account": {
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "HD": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "HD": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        },
+        "user": {
+            "device": {
+                "C": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "HD": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            },
+            "admin": {
+                "C": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "R": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "U": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "D": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BC": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "BU": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                },
+                "HD": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true,
+                    "attributes": []
+                }
+            }
+        }
+    },
+    "modelEnum": {
+        "dfdf": {},
+        "test": {},
+        "user": {}
+    },
+    "routes": {
+        "apis": []
+    },
+    "policy": {},
+    "cronJobs": {
+        "jobConfiguration": []
+    },
+    "constants": {},
+    "applicationConfig": {
+        "authModule": null,
+        "loginWith": {},
+        "isTwoFA": null,
+        "twoFactorAuthentication": {},
+        "loginRetryLimit": {},
+        "loginRateLimit": {},
+        "loginNextRetryTime": null,
+        "resetPassword": {},
+        "isSocialMediaAuth": null,
+        "socialPlatform": [],
+        "externalServiceProviderData": []
+    },
+    "fileUpload": {},
+    "packages": {},
+    "environmentVariables": null,
+    "envVariables": null,
+    "templatesData": {},
+    "hooks": {},
+    "rolePermission": {},
+    "socket": {
+        "selected": false
+    },
+    "authenticationConfig": {
+        "isBiometric": "",
+        "socialPlatform": []
+    },
+    "id": "codeBlock-Issue-Ref",
+    "applicationId": "60cc640fbb744b0014ce7d80",
+    "projectType": "MVC"
+}

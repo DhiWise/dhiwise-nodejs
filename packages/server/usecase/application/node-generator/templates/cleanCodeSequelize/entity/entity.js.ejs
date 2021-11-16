@@ -1,0 +1,29 @@
+
+function buildMake<%-ENTITY_NAME_FC-%>({insert<%-ENTITY_NAME_FC-%>Validator,update<%-ENTITY_NAME_FC-%>Validator}){
+    return function make<%-ENTITY_NAME_FC-%>(data,validatorName){
+        let isValid =''
+        switch(validatorName){
+            case 'insert<%-ENTITY_NAME_FC-%>Validator':
+                 isValid = insert<%-ENTITY_NAME_FC-%>Validator(data)
+                 break;
+
+             case 'update<%-ENTITY_NAME_FC-%>Validator':
+                 isValid=update<%-ENTITY_NAME_FC-%>Validator(data)  
+                 break; 
+        }
+        if(isValid.error){
+            throw new Error({
+                name:"ValidationError",
+                message:`Invalid data in <%-ENTITY_NAME_FC-%> entity. ${isValid.error}`
+            })
+        }
+      
+        return {
+            <%_ for(const key of ENTITY_KEYS){ _%>
+                <%-key%>:data.<%-key%>,
+            <%_} _%>            
+        }
+    }
+}
+module.exports =  buildMake<%-ENTITY_NAME_FC-%>
+

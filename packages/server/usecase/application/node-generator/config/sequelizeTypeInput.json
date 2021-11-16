@@ -1,0 +1,25 @@
+{
+    "model": {
+        "key": {
+            "type": ["STRING", "TEXT", "CHAR", "BOOLEAN", "INTEGER", "BIGINT", "FLOAT", "REAL", "DOUBLE", "DECIMAL", "DATE", "DATEONLY", "ENUM", "JSON", "GEOMETRY", "GEOGRAPHY", "TINYSTRING", "TINYINTEGER"],
+            "lowercase": "boolean",
+            "trim": "boolean",
+            "required": "boolean",
+            "unique": "boolean",
+            "match": "Regex",
+            "minLength": "number",
+            "maxLength": "number",
+            "min": "number",
+            "max": "number",
+            "enum": "Object",
+            "default": "number",
+            "isAutoIncrement": "boolean",
+            "tiny": "boolean",
+            "primary": "boolean",
+            "ref": "string",
+            "refAttribute": "string",
+            "innerDataType": "string",
+            "relType": "number"
+        }
+    }
+}

@@ -1,8 +1,6 @@
 name: Check ESLint on Pull Request
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -12,9 +10,7 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v2
-      - name: global eslint install
-        run: npm i -g eslint 
-      - name: installing dev-dependencies 
-        run: npm install --only=dev
+      - name: installing eslint 
+        run: npm i -g eslint
       - name: Fixing Files
-        run: eslint . --ext .js,.jsx --fix
+        run: eslint . --ext .js --fix

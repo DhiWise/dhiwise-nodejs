@@ -1,0 +1,52 @@
+const express = require('express');
+const router = express.Router();
+const session = require('express-session');
+const passport = require('passport');
+
+const {
+  githubStrategy, loginUser 
+} = require('../services/github-login-service');
+
+//github
+githubStrategy(passport);
+
+router.use(passport.initialize());
+
+router.use(session({
+  secret: 'my-secret',
+  resave: true,
+  saveUninitialized: false
+}));
+
+passport.serializeUser(function (user, cb) {
+  cb(null, user);
+});
+
+passport.deserializeUser(function (user, cb) {
+  cb(null, user);
+});
+
+router.get('<%-ERROR_URL%>', (req, res) => {
+  return res.loginFailed('Login Failed');
+});
+
+router.get('/auth/github', passport.authenticate('github', {
+  scope: ['public_profile', 'email'],
+  session: false 
+}));
+
+router.get('<%-CALLBACK_URL%>',
+  passport.authenticate('github', { failureRedirect: '<%-ERROR_URL%>' }),
+  function (req, res) {
+    loginUser(req.user.email,req.session.platform).then(result=>{
+      if (result.flag){
+        return res.loginFailed(result.data);
+      }
+      return res.loginSuccess(result.data);
+    })
+      .catch(error=>{
+        return res.failureResponse(error);
+      });
+  });
+
+module.exports = router;

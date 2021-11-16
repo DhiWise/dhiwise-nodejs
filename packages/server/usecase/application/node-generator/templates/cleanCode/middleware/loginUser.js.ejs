@@ -1,0 +1,44 @@
+const jwt = require("jsonwebtoken");
+const message = require("../utils/messages");
+const responseCode = require("../utils/responseCode")
+const sendResponse = require("../helpers/sendResponse")
+<%_ PLATFORM.forEach((v)=>{ _%>
+const <%-v%>Secret = require("../config/constant").JWT.<%-v.toUpperCase()%>_SECRET;
+<%_ }) _%>    
+const authenticateJWT = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        let url = req.originalUrl;
+        let secret = '';
+        <%_ var c = 0; PLATFORM.forEach((v)=>{ c++;  _%>
+            <%_ if(c===1){ _%>
+            if(url.includes(<%= v %>)){
+                secret = <%-v%>Secret;
+            }
+            <%_ }else{ _%>
+            else if(url.includes(<%= v%>)){
+                secret = <%-v%>Secret;
+            }
+            <%_ } _%> 
+        <%_  }) _%>
+        jwt.verify(token,secret, (err, user) => {
+            if (err) {
+                sendResponse(res,  message.unAuthorizedRequest(
+                    { "Content-Type": "application/json" },
+                    responseCode.unAuthorizedRequest,
+                    err
+                ))
+            }
+            req.user = user;
+            next();
+        });
+    } else {
+        sendResponse(res,  message.unAuthorizedRequest(
+            { "Content-Type": "application/json" },
+            responseCode.unAuthorizedRequest,
+            {}
+        ))
+    }
+};
+module.exports = authenticateJWT

@@ -1,0 +1,1714 @@
+{
+    "id": "project_32",
+    "projectType": "MVC",
+    "config": {
+        "projectName": "APICustomization",
+        "path": "/home/salonisaraiya/Documents/NewStructure",
+        "databaseName": "auth"
+    },
+    "authentication": {
+        "tokenExpireTime": "30000",
+        "types": [
+            "Admin",
+            "User",
+            "Guest"
+        ],
+        "loginAccess": {
+            "Admin": [
+                "admin",
+                "device",
+                "desktop",
+                "client"
+            ],
+            "User": [
+                "device",
+                "desktop",
+                "client"
+            ],
+            "Guest": [
+                "device",
+                "desktop",
+                "client"
+            ]
+        },
+        "isAuthentication": true,
+        "authModel": "user",
+        "twoFactorAuthentication": {
+            "platform": {
+                "admin": false,
+                "device": true,
+                "desktop": true,
+                "client": true
+            },
+            "otpSendMedium": {
+                "sms": false,
+                "email": true
+            },
+            "smsTemplate": "loginWithOTP"
+        },
+        "loginWith": {
+            "password": "password"
+        },
+        "loginRateLimit": {
+            "max": 5
+        },
+        "loginRetryLimit": {
+            "max": 5,
+            "key": "loginRetryLimit"
+        },
+        "resetPassword": {
+            "otp": {
+                "email": true,
+                "sms": false
+            },
+            "link": {
+                "email": true,
+                "sms": false
+            },
+            "expireTime": 20,
+            "emailTemplate": "resetPassword"
+        },
+        "registerUser": {
+            "emailTemplate": "registerUser"
+        },
+        "restrictNoOfDevice": false,
+        "noOfDevice": 2
+    },
+    "templatesData": {
+        "emailTemplate": [
+            {
+                "model": "user",
+                "attribute": {
+                    "otp": "user.loginOTP.code"
+                },
+                "templateName": "loginWithOTP",
+                "template": "<table role=\"presentation\" style=\"padding: 26px;border-collapse:collapse;border-spacing:0px;width: 100%;\"\ncellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n<tbody>\n    <tr>\n        <td style=\" padding: 10px 10px 20px 10px;\">\n            <div>\n                <div style=\"font-size:20px;font-weight:bold;line-height:24px;text-align:left;color:#212b35;\">\n                    OTP\n                </div>\n            </div>\n        </td>\n    </tr>\n    <tr>\n        <td>\n            <p style=\"font-size: 14px;color: #000;\">\n                <b>Dear User,</b>\n            </p>\n        </td>\n    </tr>\n    <% if(otp) { %>\n    <tr>\n        <td>\n            <p style=\"margin-top: 5px;margin-bottom: 15px;font-size: 14px;line-height: 1.8;color: #000;\">\n                Your OTP code is <strong> <%- otp %></strong>\n            </p>\n        </td>\n    </tr>\n    <% } %>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n"
+            },
+            {
+                "model": "user",
+                "attribute": {
+                    "otp": "user.resetPasswordLink.code"
+                },
+                "templateName": "resetPassword",
+                "template": "<table role=\"presentation\" style=\"padding: 26px;border-collapse:collapse;border-spacing:0px;width: 100%;\"\ncellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n<tbody>\n    <tr>\n        <td style=\" padding: 10px 10px 20px 10px;\">\n            <div>\n                <div style=\"font-size:20px;font-weight:bold;line-height:24px;text-align:left;color:#212b35;\">\n                    <%-otp%>\n                </div>\n            </div>\n        </td>\n    </tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n\n\n"
+            },
+            {
+                "template": "<table role=\"presentation\" style=\"padding: 26px;border-collapse:collapse;border-spacing:0px;width: 100%;\"\ncellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n<tbody>\n    <tr>\n        <td style=\" padding: 10px 10px 20px 10px;\">\n            <div>\n                <div style=\"font-size:20px;font-weight:bold;line-height:24px;text-align:left;color:#212b35;\">\n                    <%-username%>\n                </div>\n            </div>\n        </td>\n    </tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n\n\n",
+                "model": "user",
+                "attribute": {
+                    "username": "user.username"
+                },
+                "templateName": "registerUser"
+            }
+        ],
+        "smsTemplate": []
+    },
+    "models": {
+        "user": {
+            "username": {
+                "type": "MultiLine",
+                "required": true
+            },
+            "xyz": {
+                "pqr": "SingleLine",
+                "omg": [
+                    "String"
+                ]
+            },
+            "type": {
+                "type": {
+                    "type": "String"
+                }
+            },
+            "password": {
+                "type": "String"
+            },
+            "email": {
+                "type": "Email",
+                "unique": true
+            },
+            "mobileNo": {
+                "type": "Decimal",
+                "unique": true
+            },
+            "sso_auth": {
+                "googleId": {
+                    "gmailId": {
+                        "type": "SingleLine"
+                    }
+                },
+                "fbId": {
+                    "type": "SingleLine"
+                },
+                "twitterId": {
+                    "type": "SingleLine"
+                },
+                "instaId": {
+                    "type": "SingleLine"
+                }
+            },
+            "role": {
+                "type": "SingleLine"
+            }
+        },
+        "master": {
+            "name": {
+                "type": "SingleLine",
+                "unique": true
+            },
+            "normalizeName": {
+                "type": "SingleLine"
+            },
+            "slug": {
+                "type": "SingleLine"
+            },
+            "code": {
+                "type": "SingleLine"
+            },
+            "group": {
+                "type": "SingleLine"
+            },
+            "description": {
+                "type": "MultiLine"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "parentId": {
+                "type": "ObjectId"
+            },
+            "isDeleted": {
+                "type": "Boolean"
+            },
+            "parentName": {
+                "type": "String"
+            },
+            "createdTimestamp": {
+                "type": "Date"
+            },
+            "updatedTimestamp": {
+                "type": "Date"
+            }
+        },
+        "depreciationModel": {
+            "name": {
+                "type": "String"
+            },
+            "ageOfDepreciation": {
+                "type": "Number"
+            },
+            "ageOfConstantDepreciation": {
+                "type": "Number"
+            },
+            "initialDepreciationPer": {
+                "type": "Number"
+            },
+            "scrapValuePer": {
+                "type": "Number"
+            }
+        },
+        "property": {
+            "userId": {
+                "type": "ObjectId",
+                "ref": "user"
+            },
+            "propertyName": {
+                "type": "SingleLine"
+            },
+            "propetyType": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "street": {
+                "type": "String"
+            },
+            "StreetNumber": {
+                "type": "String"
+            },
+            "floorNumber": {
+                "type": "String"
+            },
+            "facing": {
+                "type": "String"
+            },
+            "zip": {
+                "type": "String"
+            },
+            "city": {
+                "type": "String"
+            },
+            "landmark": {
+                "type": "String"
+            },
+            "buildingName": {
+                "type": "String"
+            },
+            "propertyNo": {
+                "type": "Number"
+            },
+            "dateOfPurchase": {
+                "type": "Date"
+            },
+            "amount": {
+                "type": "Number"
+            },
+            "propertySize": {
+                "type": "String"
+            }
+        },
+        "propertyAttribute": {
+            "propertyId": {
+                "type": "ObjectId",
+                "ref": "property"
+            },
+            "propertyAttributeType": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "total": {
+                "type": "Number"
+            },
+            "createdTimestamp": {
+                "type": "Date"
+            },
+            "updatedTimestamp": {
+                "type": "Date"
+            }
+        },
+        "subPropertyAttribute": {
+            "propertyAttributeId": {
+                "type": "ObjectId",
+                "ref": "propertyAttribute"
+            },
+            "attributeName": {
+                "type": "String"
+            },
+            "area": {
+                "type": "Number"
+            },
+            "createdTimestamp": {
+                "type": "Date"
+            },
+            "updatedTimestamp": {
+                "type": "Date"
+            }
+        },
+        "enhancement": {
+            "subPropertyAttributeId": {
+                "type": "ObjectId",
+                "ref": "subPropertyAttribute"
+            },
+            "enhancementTypeId": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "attributeName": {
+                "type": "String"
+            },
+            "nameOfItem": {
+                "type": "String"
+            },
+            "date": {
+                "type": "Date"
+            },
+            "theme": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "subject": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "depreciationModel": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "timeInvested": {
+                "type": "Number"
+            },
+            "pricePerHour": {
+                "type": "Number"
+            },
+            "totalPrice": {
+                "type": "Number"
+            },
+            "description": {
+                "type": "String"
+            },
+            "invoice": [
+                "String"
+            ],
+            "photos": [
+                "String"
+            ]
+        }
+    },
+    "modelConfig": {
+        "admin": {
+            "user": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": false
+                },
+                "createBulk": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "count": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "aggregate": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "update": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "bulkUpdate": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "partialUpdate": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "upsert": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "upsertMany": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "softDelete": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "delete": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "softDeleteAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "deleteAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                }
+            },
+            "master": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "createBulk": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "count": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "property": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "depreciationModel": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "enhancement": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "propertyAttribute": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "subPropertyAttribute": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            }
+        },
+        "desktop": {
+            "user": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": false
+                },
+                "createBulk": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "count": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "aggregation": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "update": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "bulkUpdate": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "partialUpdate": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "upsert": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "upsertMany": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "softDelete": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "delete": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "softDeleteAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "deleteAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                }
+            },
+            "master": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "createBulk": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "count": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "property": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "depreciationModel": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "enhancement": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "propertyAttribute": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "subPropertyAttribute": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            }
+        },
+        "device": {
+            "user": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": false
+                },
+                "createBulk": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "count": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "aggregation": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "update": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "bulkUpdate": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "partialUpdate": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "upsert": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "upsertMany": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "softDelete": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "delete": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "softDeleteAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "deleteAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                }
+            },
+            "master": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "createBulk": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "count": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "property": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "depreciationModel": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "enhancement": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "propertyAttribute": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "subPropertyAttribute": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            }
+        },
+        "client": {
+            "user": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": false
+                },
+                "createBulk": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "count": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "aggregation": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "update": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "bulkUpdate": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "partialUpdate": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "upsert": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "upsertMany": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "softDelete": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "delete": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "softDeleteAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "deleteAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                }
+            },
+            "master": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "createBulk": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                },
+                "count": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "property": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "depreciationModel": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "enhancement": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "propertyAttribute": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            },
+            "subPropertyAttribute": {
+                "create": {
+                    "selected": true,
+                    "policy": [
+                        "customPolicy"
+                    ],
+                    "isAuth": true
+                },
+                "findAll": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": true
+                },
+                "findById": {
+                    "selected": true,
+                    "policy": [],
+                    "isAuth": false
+                }
+            }
+        }
+    },
+    "modelComment": {
+        "master": {
+            "description": "master model",
+            "attributeComment": {
+                "name": {
+                    "comment": "name comment"
+                },
+                "normalizeName": {
+                    "comment": "normalizeName comment"
+                },
+                "slug": {
+                    "comment": "slug comment"
+                },
+                "code": {
+                    "comment": "code comment"
+                },
+                "group": {
+                    "comment": "group comment"
+                },
+                "description": {
+                    "comment": "desc comment"
+                },
+                "isActive": {
+                    "comment": "isActive Field"
+                },
+                "parentId": {
+                    "comment": "parentId comment"
+                },
+                "isDeleted": {
+                    "comment": "isDeleted Comment"
+                },
+                "parentName": {
+                    "comment": "parentName Comment"
+                }
+            }
+        },
+        "depreciationModel": {
+            "description": "depreciation model",
+            "attributeComment": {
+                "name": {
+                    "comment": "name Comment"
+                },
+                "ageOfDepreciation": {
+                    "comment": "ageOfDepreciation comment"
+                },
+                "ageOfConstantDepreciation": {
+                    "comment": "ageOfConstantDepreciation comment"
+                },
+                "initialDepreciationPer": {
+                    "comment": "initialDepreciationPer comment"
+                },
+                "scrapValuePer": {
+                    "comment": "scrapValuePer comment"
+                }
+            }
+        },
+        "property": {
+            "description": "property model",
+            "attributeComment": {
+                "userId": {
+                    "comment": "userId comment"
+                },
+                "propertyName": {
+                    "comment": "property Name comment"
+                },
+                "propetyType": {
+                    "comment": "propetyType comment"
+                },
+                "street": {
+                    "comment": "street comment"
+                },
+                "StreetNumber": {
+                    "comment": "StreetNumber comment"
+                },
+                "floorNumber": {
+                    "comment": "floorNumber comment"
+                },
+                "facing": {
+                    "comment": "facing comment"
+                },
+                "zip": {
+                    "comment": "zip comment"
+                },
+                "city": {
+                    "commnet": "city comment"
+                },
+                "landmark": {
+                    "comment": "landmark comment"
+                },
+                "buildingName": {
+                    "comment": "buildingName comment"
+                },
+                "propertyNo": {
+                    "comment": "propertyNo comment"
+                },
+                "dateOfPurchase": {
+                    "comment": "dateOfPurchase comment"
+                },
+                "amount": {
+                    "comment": "amount comment"
+                },
+                "propertySize": {
+                    "comment": "propertySize comment"
+                }
+            }
+        },
+        "propertyAttribute": {
+            "description": "propertyAttribute model",
+            "attributeComment": {
+                "propertyId": {
+                    "comment": "propertyId comment"
+                },
+                "propertyAttributeType": {
+                    "comment": "propertyAttributeType comment"
+                },
+                "total": {
+                    "comment": "total comment"
+                }
+            }
+        },
+        "subPropertyAttribute": {
+            "description": "subPropertyAttribute model",
+            "attributeComment": {
+                "propertyAttributeId": {
+                    "comment": "propertyAttributeId comment"
+                },
+                "attributeName": {
+                    "comment": "attributeName comment"
+                },
+                "area": {
+                    "comment": "area comment"
+                }
+            }
+        },
+        "enhancement": {
+            "description": "enhancement model",
+            "attributeComment": {
+                "subPropertyAttributeId": {
+                    "comment": "subPropertyAttributeId comment"
+                },
+                "enhancementTypeId": {
+                    "comment": "enhancementTypeId comment"
+                },
+                "attributeName": {
+                    "comment": "attributeName comment"
+                },
+                "nameOfItem": {
+                    "comment": "nameOfItem comment"
+                },
+                "date": {
+                    "comment": "date comment"
+                },
+                "theme": {
+                    "comment": "theme comment"
+                },
+                "subject": {
+                    "comment": "subject comment"
+                },
+                "depreciationModel": {
+                    "comment": "depreciationModel comment"
+                },
+                "timeInvested": {
+                    "comment": "timeInvested comment"
+                },
+                "pricePerHour": {
+                    "comment": "pricePerHour comment"
+                },
+                "totalPrice": {
+                    "comment": "totalPrice comment"
+                },
+                "description": {
+                    "comment": "description comment"
+                },
+                "invoice": {
+                    "comment": "invoice comment"
+                },
+                "photos": {
+                    "comment": "photos comment"
+                }
+            }
+        }
+    },
+    "routes": {
+        "apis": [
+            {
+                "method": "post",
+                "api": "/user/dashboard",
+                "controller": "dashboard",
+                "service": "dashboard",
+                "descriptions": "user dashboard",
+                "platform": "dashboard",
+                "functionName": "getTotalCount",
+                "queryBuilder": [
+                    {
+                        "model": "user",
+                        "queryMode": "find",
+                        "outputVariable": "temp",
+                        "filter": {
+                            "name": "/John/i",
+                            "age": {
+                                "$gte": 18,
+                                "$lte": 50
+                            }
+                        },
+                        "skip": 1,
+                        "limit": 10,
+                        "populate": [
+                            {
+                                "path": "role",
+                                "select": [
+                                    "roleName",
+                                    "code",
+                                    "-_id"
+                                ],
+                                "match": {
+                                    "code": 21
+                                },
+                                "options": {
+                                    "limit": 5
+                                }
+                            }
+                        ],
+                        "select": [
+                            "username",
+                            "email",
+                            "-_id",
+                            "mobileNo"
+                        ]
+                    },
+                    {
+                        "model": "user",
+                        "queryMode": "find",
+                        "outputVariable": "temp1",
+                        "filter": {
+                            "name": "/John/i",
+                            "age": {
+                                "$gte": 18,
+                                "$lte": 50
+                            }
+                        },
+                        "limit": 10,
+                        "populate": [
+                            {
+                                "path": "role",
+                                "select": [
+                                    "roleName",
+                                    "code",
+                                    "-_id"
+                                ],
+                                "match": {
+                                    "code": 21
+                                },
+                                "options": {
+                                    "limit": 5
+                                },
+                                "populate": [
+                                    {
+                                        "path": "role",
+                                        "select": [
+                                            "roleName",
+                                            "code",
+                                            "-_id"
+                                        ],
+                                        "match": {
+                                            "code": 21
+                                        },
+                                        "options": {
+                                            "limit": 5
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "select": [
+                            "username",
+                            "email",
+                            "-_id",
+                            "mobileNo"
+                        ],
+                        "sort": {
+                            "name": 1,
+                            "createdTimestamp": -1
+                        }
+                    },
+                    {
+                        "method": "codeBlock",
+                        "code": "if(true){ console.log(`hello`)}"
+                    }
+                ]
+            },
+            {
+                "method": "get",
+                "api": "/user/dashboard/total",
+                "controller": "report",
+                "service": "report",
+                "descriptions": "user dashboard",
+                "platform": "dashboard",
+                "functionName": "getTotalProject"
+            },
+            {
+                "method": "put",
+                "api": "/user/test/changepass",
+                "controller": "setting",
+                "service": "setting",
+                "descriptions": "user setitng",
+                "platform": "settings",
+                "functionName": "chnagePassword"
+            },
+            {
+                "method": "post",
+                "api": "/user/timepass",
+                "controller": "timepass",
+                "service": "timepass",
+                "descriptions": "user timepass",
+                "platform": "admin",
+                "functionName": "ttp"
+            }
+        ]
+    },
+    "constants": {
+        "constant": {
+            "JWT": {
+                "ADMIN_SECRET": "myjwtadminsecret",
+                "DEVICE_SECRET": "myjwtdevicesecret",
+                "CLIENT_SECRET": "myjwtclientsecret",
+                "DESKTOP_SECRET": "myjwtdesktopsecret",
+                "EXPIRES_IN": 10000
+            },
+            "USER_ROLE": {
+                "Admin": {
+                    "admin": true
+                },
+                "User": 2
+            },
+            "PLATFORM": {
+                "ADMIN": 1,
+                "DEVICE": 2,
+                "CLIENT": 3,
+                "DESKTOP": 4
+            }
+        },
+        "tempConstant": {
+            "PLATFORM": {
+                "ADMIN": 1,
+                "DEVICE": 2,
+                "CLIENT": 3,
+                "DESKTOP": 4
+            }
+        }
+    },
+    "policy": {
+        "checkUser": {
+            "functionName": "checkUser"
+        },
+        "printHello": {
+            "functionName": "helloUser"
+        }
+    },
+    "packages": {},
+    "modelNotifications": {
+        "user": {
+            "create": {
+                "selected": true,
+                "post": {
+                    "email": true,
+                    "sms": true,
+                    "webNotification": false
+                }
+            },
+            "createBulk": {
+                "selected": true,
+                "pre": {
+                    "email": true,
+                    "sms": true,
+                    "webNotification": true
+                }
+            },
+            "findAll": {
+                "selected": true,
+                "post": {
+                    "email": true,
+                    "sms": true,
+                    "webNotification": true
+                }
+            }
+        }
+    },
+    "fieldSelection": {
+        "admin": {
+            "user": {
+                "create": {
+                    "selected": true,
+                    "fields": [
+                        "username",
+                        "email"
+                    ]
+                },
+                "findAll": {
+                    "selected": true,
+                    "fields": [
+                        "username",
+                        "email"
+                    ]
+                },
+                "findById": {
+                    "selected": true,
+                    "fields": [
+                        "username",
+                        "email"
+                    ]
+                }
+            },
+            "property": {
+                "findById": {
+                    "selected": true,
+                    "fields": [
+                        "propertyName"
+                    ]
+                }
+            }
+        }
+    },
+    "envVariables": {
+        "environments": [
+            "QA",
+            "PRODUCTION",
+            "DEVELOPMENT"
+        ],
+        "customJson": [
+            {
+                "value": {
+                    "QA": "381bnbjh",
+                    "PRODUCTION": "232323mnnm",
+                    "DEVELOPMENT": "12345"
+                },
+                "key": "APPKEY",
+                "dataType": ""
+            }
+        ]
+    },
+    "fileUpload": {
+        "uploads": [
+            {
+                "platform": [
+                    "admin",
+                    "device"
+                ],
+                "validationType": [],
+                "storage": "Local",
+                "authentication": true,
+                "maxSize": "10",
+                "isSingle": true
+            }
+        ]
+    },
+    "cronJobs": {
+        "jobConfiguration": [
+            {
+                "functionName": "checkSome",
+                "expression": "*/1 * * * *"
+            },
+            {
+                "functionName": "test",
+                "expression": "*/1 * * * *"
+            }
+        ]
+    },
+    "headerSettings": {
+        "req": {
+            "admin": {
+                "master": {
+                    "create": {
+                        "selected": true,
+                        "headers": {
+                            "key": "121212132"
+                        }
+                    }
+                }
+            }
+        },
+        "res": {
+            "admin": {
+                "master": {
+                    "create": {
+                        "selected": true,
+                        "headers": {
+                            "Content-Type": "application/pdf",
+                            "X-API_KEY": "12323232321212"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "hooks": {
+        "user": {
+            "pre": [
+                {
+                    "operation": "save",
+                    "code": "this.name='abc',this.lastname='anc'"
+                }
+            ],
+            "post": [
+                {
+                    "operation": "init",
+                    "code": "console.log('init')"
+                }
+            ]
+        }
+    },
+    "filterByLoggedInUser": {
+        "isLoginUser": true,
+        "platform": {
+            "admin": true,
+            "device": true,
+            "desktop": true,
+            "client": false
+        },
+        "models": {
+            "user": {
+                "addedByKey": ""
+            },
+            "master": {
+                "addedByKey": "createdBy"
+            },
+            "property": {
+                "addedByKey": ""
+            }
+        }
+    },
+    "rateLimit": {
+        "admin": {
+            "user": {
+                "create": {
+                    "selected": true,
+                    "limit": 2,
+                    "time": "15*60*1000"
+                },
+                "update": {
+                    "selected": true,
+                    "limit": 2,
+                    "time": "15*60*1000"
+                }
+            }
+        }
+    }
+}

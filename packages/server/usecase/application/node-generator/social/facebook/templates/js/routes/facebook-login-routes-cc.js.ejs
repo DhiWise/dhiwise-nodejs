@@ -1,0 +1,76 @@
+const express = require('express');
+const session = require('express-session');
+const router = express.Router();
+const passport = require('passport');
+
+const { facebookStrategy,loginUser } = require('../services/facebook-login-service');
+const message = require("../utils/messages");
+const responseCode = require("../utils/responseCode");
+const sendResponse = require("../helpers/sendResponse");
+
+//facebook
+facebookStrategy(passport);
+
+router.use(passport.initialize());
+
+router.use(session({
+    secret: 'my-secret',
+    resave:true,
+    saveUninitialized:false
+}));
+
+passport.serializeUser(function (user, cb) {
+    cb(null, user);
+});
+
+passport.deserializeUser(function (user, cb) {
+    cb(null, user);
+});
+
+router.get('<%-ERROR_URL%>', (req, res) => {
+    let result = message.loginFailed(
+                    { "Content-Type": "application/json" },
+                    responseCode.unAuthorizedRequest,
+                    'Login Failed'
+                );
+    sendResponse(res,result);
+})
+
+router.get("/auth/facebook",passport.authenticate('facebook', {scope: ['profile'],session:false}));
+
+router.get("<%-CALLBACK_URL%>",
+    passport.authenticate('facebook', {
+        failureRedirect: '<%-ERROR_URL%>'
+    }),
+    function(req,res){
+        loginUser(req.user.email,req.session.platform).then(user=>{
+            if(user.flag){
+                let result = message.loginSuccess(
+                    { "Content-Type": "application/json" },
+                    responseCode.success,
+                    user.data
+                );
+                sendResponse(res,result);
+            }
+            else{
+                let result = message.loginFailed(
+                    { "Content-Type": "application/json" },
+                    responseCode.unAuthorizedRequest,
+                    user.data
+                );
+                sendResponse(res,result);
+            }
+            
+        })
+        .catch(error=>{
+            let result = message.failureResponse(
+                { "Content-Type": "application/json" },
+                responseCode.internalServerError,
+                error.message
+            );
+            sendResponse(res,result);
+        })
+    }
+);
+
+module.exports = router;

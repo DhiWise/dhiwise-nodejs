@@ -1,0 +1,36 @@
+const <%-SERVICE_NAME%>Service = require("../../../services/<%-PLATFORM%>/<%-SERVICE_NAME%>Service.js")
+const make<%-SERVICE_NAME_FC%>Controller = require("./<%-SERVICE_NAME%>.js")
+<%_
+let models = UNIQ_TASK_MODELS
+let modelFC=""
+if(models){ _%>
+<%_if(IS_CQ){_%>
+const makeMongoCustomQueryService=require("../../../services/customQueryService");
+<%_}_%>
+let entities={}
+let cqServices={}
+<%_
+for(const model of models){
+_%>
+const <%-model%>Model = require("../../../model").<%-model%>
+<%_if(IS_CQ){_%>
+const <%-model%>CqService=makeMongoCustomQueryService(<%-model%>Model)
+cqServices.<%-model%>CqService=<%-model%>CqService
+<%_}_%>
+<%_ } } 
+models = UNIQ_REQUIRE_VALIDATION_MODELS
+if(models){
+for(const model of models){ 
+modelFC=model.charAt(0).toUpperCase() + model.slice(1);_%>
+const {schemaKeys:<%-model%>SchemaKeys,updateSchemaKeys:<%-model%>UpdateSchemaKeys} = require('../../../validation/<%-model%>Validation')
+const insert<%-modelFC%>Validator = require("../../../validation/genericValidator")(<%-model%>SchemaKeys)
+const update<%-modelFC%>Validator = require("../../../validation/genericValidator")(<%-model%>UpdateSchemaKeys)
+const make<%-modelFC%>=require("../../../entity/propertyAttribute")({insert<%-modelFC%>Validator,update<%-modelFC%>Validator})
+entities.make<%-modelFC%>=make<%-modelFC%>
+<%_ } } _%> 
+<%_ if((UNIQ_REQUIRE_VALIDATION_MODELS && UNIQ_REQUIRE_VALIDATION_MODELS.length) || (UNIQ_TASK_MODELS && UNIQ_TASK_MODELS.length)){ %>
+const <%-SERVICE_NAME%>Controller = make<%-SERVICE_NAME_FC%>Controller({service:<%-SERVICE_NAME%>Service, ...entities, ...cqServices})
+<%_}else{_%>
+const <%-SERVICE_NAME%>Controller = make<%-SERVICE_NAME_FC%>Controller({service:<%-SERVICE_NAME%>Service, })
+<%_ } _%>
+module.exports = <%-SERVICE_NAME%>Controller

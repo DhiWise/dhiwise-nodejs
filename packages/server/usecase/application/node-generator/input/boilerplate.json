@@ -1,0 +1,74 @@
+{
+	"logo": "",
+	"config": {
+		"projectName": "boilerplateMVC",
+		"path": "/home/salonisaraiya/Documents/OpenSource",
+		"port": "5000",
+		"databaseName": "domusDB",
+		"platform": [
+			"admin",
+			"device",
+			"desktop",
+			"client"
+		],
+		"types": [
+			"User",
+			"Admin"
+		],
+		"isAuthentication": true,
+		"loginAccess": {
+			"User": [
+				"device",
+				"desktop",
+				"client"
+			],
+			"Admin": [
+				"admin",
+				"device",
+				"desktop",
+				"client"
+			]
+		}
+	},
+	"authentication": {
+		"port": "5000",
+		"databaseName": "domusDB",
+		"platform": [
+			"admin",
+			"device",
+			"desktop",
+			"client"
+		],
+		"types": [
+			"User",
+			"Admin"
+		],
+		"isAuthentication": true,
+		"loginAccess": {
+			"User": [
+				"device",
+				"desktop",
+				"client"
+			],
+			"Admin": [
+				"admin",
+				"device",
+				"desktop",
+				"client"
+			]
+		}
+	},
+	"ormType": 1,
+	"databaseType": 1,
+	"code": "E_BAD_REQUEST",
+	"message": "Schema not present for this application",
+	"status": 400,
+	"data": null,
+	"authenticationConfig": {
+		"socialPlatform": []
+	},
+	"id": "2",
+	"applicationId": "6114c2367fd34c0015d797c6",
+	"projectType": "MVC",
+	"ORM": "mongoose"
+}

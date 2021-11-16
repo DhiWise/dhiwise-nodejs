@@ -1,0 +1,18 @@
+<%_ROUTES.forEach((v,i)=>{_%>
+/* 
+* <%-v.descriptions%>
+*/
+const <%-v.functionName%>=()=>{
+    try {
+        return true;
+    } catch (error) {
+        throw error;
+    }
+}    
+<%_ })_%>
+module.exports={
+<%_ROUTES.forEach((v,i)=>{_%>
+    <%- v.functionName %>,
+<%_ })_%>    
+}
+

@@ -1,0 +1,1068 @@
+{
+	"logo": "",
+	"config": {
+		"projectName": "Application93-MongoDb-MVC",
+		"path": "/home/node/DhiWise/poc/shubham-jasani/output",
+		"port": "5000",
+		"databaseName": "application93",
+		"isAuthentication": true,
+		"platform": [
+			"admin",
+			"device",
+			"client"
+		],
+		"types": [
+			"User",
+			"Admin"
+		],
+		"loginAccess": {
+			"Admin": [
+				"admin"
+			],
+			"User": [
+				"device",
+				"client"
+			]
+		},
+		"applicationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjEwOGM5NGY0ODQ1MzMwMDE1YTU3NDA3IiwiX2lkIjoiNjEwOGM5NGY0ODQ1MzMwMDE1YTU3NDA3In0sImNvbXBhbnlJZCI6IjYxMDhjOTRmNDg0NTMzMDAxNWE1NzQwOSIsImFwcGxpY2F0aW9uSWQiOiI2MTNhZWZjNzAzZGU3ODAwMTQ1NDE3NmQiLCJpYXQiOjE2MzEyNTI0MjN9.sXQg_cjrPq2Xm4-DKvVjt4ND6rwVVP1nObkfGlRW3QU"
+	},
+	"authentication": {
+		"port": "5000",
+		"databaseName": "application93",
+		"isAuthentication": true,
+		"platform": [
+			"admin",
+			"device",
+			"client"
+		],
+		"types": [
+			"User",
+			"Admin"
+		],
+		"loginAccess": {
+			"Admin": [
+				"admin"
+			],
+			"User": [
+				"device",
+				"client"
+			]
+		},
+		"applicationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjEwOGM5NGY0ODQ1MzMwMDE1YTU3NDA3IiwiX2lkIjoiNjEwOGM5NGY0ODQ1MzMwMDE1YTU3NDA3In0sImNvbXBhbnlJZCI6IjYxMDhjOTRmNDg0NTMzMDAxNWE1NzQwOSIsImFwcGxpY2F0aW9uSWQiOiI2MTNhZWZjNzAzZGU3ODAwMTQ1NDE3NmQiLCJpYXQiOjE2MzEyNTI0MjN9.sXQg_cjrPq2Xm4-DKvVjt4ND6rwVVP1nObkfGlRW3QU",
+		"restrictNoOfDevice": true,
+		"noOfDevice": 2,
+		"authModule": "user",
+		"loginWith": {
+			"username": [
+				"username"
+			],
+			"password": "password"
+		},
+		"isTwoFA": true,
+		"twoFactorAuthentication": {
+			"platform": {
+				"device": true
+			},
+			"otpSendMedium": {
+				"masterIds": [
+					"60867d6bebfd00625f9c68b7"
+				],
+				"sms": true
+			}
+		},
+		"loginRetryLimit": {
+			"max": 5,
+			"reActiveTime": 10
+		},
+		"loginRateLimit": {},
+		"loginNextRetryTime": null,
+		"resetPassword": {
+			"link": {}
+		},
+		"isSocialMediaAuth": null,
+		"socialPlatform": [],
+		"externalServiceProviderData": [],
+		"addDataFormate": {}
+	},
+	"ormType": 1,
+	"databaseType": 1,
+	"models": {
+		"master": {
+			"name": {
+				"type": "String"
+			},
+			"parentId": {
+				"type": "ObjectId",
+				"ref": "master"
+			},
+			"isDefault": {
+				"type": "String"
+			},
+			"normalizedName": {
+				"type": "String"
+			},
+			"_id": {
+				"type": "String"
+			},
+			"isActive": {
+				"type": "Boolean"
+			},
+			"createdAt": {
+				"type": "Date"
+			},
+			"updatedAt": {
+				"type": "Date"
+			},
+			"addedBy": {
+				"type": "ObjectId",
+				"ref": "user"
+			},
+			"updatedBy": {
+				"type": "ObjectId",
+				"ref": "user"
+			}
+		},
+		"employee_salary": {
+			"employeeId": {
+				"type": "ObjectId",
+				"ref": "employees"
+			},
+			"departmentId": {
+				"type": "ObjectId",
+				"ref": "departments"
+			},
+			"salary": {
+				"type": "Number"
+			},
+			"_id": {
+				"type": "String"
+			},
+			"isActive": {
+				"type": "Boolean"
+			},
+			"createdAt": {
+				"type": "Date"
+			},
+			"updatedAt": {
+				"type": "Date"
+			},
+			"addedBy": {
+				"type": "ObjectId",
+				"ref": "user"
+			},
+			"updatedBy": {
+				"type": "ObjectId",
+				"ref": "user"
+			},
+			"employeeType": {
+				"default": 4,
+				"type": "Number"
+			}
+		},
+		"employees": {
+			"employeeName": {
+				"type": "String"
+			},
+			"_id": {
+				"type": "String"
+			},
+			"isActive": {
+				"type": "Boolean"
+			},
+			"createdAt": {
+				"type": "Date"
+			},
+			"updatedAt": {
+				"type": "Date"
+			},
+			"addedBy": {
+				"type": "ObjectId",
+				"ref": "user"
+			},
+			"updatedBy": {
+				"type": "ObjectId",
+				"ref": "user"
+			},
+			"dateOfJoining": {
+				"type": "Date"
+			},
+			"employeeJSON": {
+				"fname": {
+					"type": "String"
+				},
+				"lname": {
+					"type": "String"
+				},
+				"email": {
+					"type": "String"
+				}
+			}
+		},
+		"departments": {
+			"_id": {
+				"type": "String"
+			},
+			"isActive": {
+				"type": "Boolean"
+			},
+			"createdAt": {
+				"type": "Date"
+			},
+			"updatedAt": {
+				"type": "Date"
+			},
+			"addedBy": {
+				"type": "ObjectId",
+				"ref": "user"
+			},
+			"updatedBy": {
+				"type": "ObjectId",
+				"ref": "user"
+			},
+			"departmentName": {
+				"type": "String"
+			},
+			"departmentData": [
+				{
+					"_id": false,
+					"deptCode": {
+						"type": "String"
+					},
+					"mobile": {
+						"type": "String"
+					}
+				}
+			]
+		},
+		"user": {
+			"username": {
+				"type": "String"
+			},
+			"password": {
+				"type": "String"
+			},
+			"email": {
+				"type": "String"
+			},
+			"name": {
+				"type": "String"
+			},
+			"_id": {
+				"type": "String"
+			},
+			"isActive": {
+				"type": "Boolean"
+			},
+			"createdAt": {
+				"type": "Date"
+			},
+			"updatedAt": {
+				"type": "Date"
+			},
+			"addedBy": {
+				"type": "ObjectId",
+				"ref": "user"
+			},
+			"updatedBy": {
+				"type": "ObjectId",
+				"ref": "user"
+			}
+		}
+	},
+	"modelIndexes": {
+		"master": [],
+		"employee_salary": [],
+		"employees": [],
+		"departments": [],
+		"user": []
+	},
+	"modelConfig": {
+		"master": {
+			"admin": [
+				{
+					"isAuth": false,
+					"policy": []
+				},
+				"C",
+				"R",
+				"U",
+				"D",
+				"BC",
+				"BU"
+			],
+			"device": [
+				{
+					"isAuth": false,
+					"policy": []
+				},
+				"BC",
+				"BU"
+			],
+			"client": [
+				{
+					"isAuth": false,
+					"policy": []
+				},
+				"BC",
+				"BU"
+			]
+		},
+		"employee_salary": {
+			"admin": [
+				{
+					"isAuth": true,
+					"policy": [
+						"auth"
+					]
+				},
+				"C",
+				"R",
+				"U",
+				"D",
+				"BC",
+				"BU"
+			],
+			"device": [
+				{
+					"isAuth": true,
+					"policy": [
+						"auth"
+					]
+				},
+				"R",
+				"BC",
+				"BU"
+			],
+			"client": [
+				{
+					"isAuth": true,
+					"policy": [
+						"auth"
+					]
+				},
+				"R",
+				"BC",
+				"BU"
+			]
+		},
+		"employees": {
+			"admin": [
+				{
+					"isAuth": true,
+					"policy": [
+						"auth"
+					]
+				},
+				"C",
+				"R",
+				"U",
+				"D",
+				"BC",
+				"BU"
+			],
+			"device": [
+				{
+					"isAuth": true,
+					"policy": [
+						"auth"
+					]
+				},
+				"R",
+				"BC",
+				"BU"
+			],
+			"client": [
+				{
+					"isAuth": true,
+					"policy": [
+						"auth"
+					]
+				},
+				"R",
+				"BC",
+				"BU"
+			]
+		},
+		"departments": {
+			"admin": [
+				{
+					"isAuth": true,
+					"policy": [
+						"auth"
+					]
+				},
+				"C",
+				"R",
+				"U",
+				"D",
+				"BC",
+				"BU"
+			],
+			"device": [
+				{
+					"isAuth": false,
+					"policy": []
+				},
+				"R",
+				"BC",
+				"BU"
+			],
+			"client": [
+				{
+					"isAuth": false,
+					"policy": []
+				},
+				"R",
+				"BC",
+				"BU"
+			]
+		},
+		"user": {
+			"admin": [
+				{
+					"isAuth": true,
+					"policy": [
+						"auth"
+					]
+				},
+				"C",
+				"R",
+				"U",
+				"D",
+				"BC",
+				"BU"
+			],
+			"device": [
+				{
+					"isAuth": false,
+					"policy": []
+				},
+				"BC",
+				"BU"
+			],
+			"client": [
+				{
+					"isAuth": false,
+					"policy": []
+				},
+				"BC",
+				"BU"
+			]
+		}
+	},
+	"newModelConfig": {
+		"master": {
+			"admin": {
+				"C": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				},
+				"R": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				},
+				"U": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				},
+				"D": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				},
+				"BC": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				}
+			},
+			"device": {
+				"BC": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				}
+			},
+			"client": {
+				"BC": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				}
+			}
+		},
+		"employee_salary": {
+			"admin": {
+				"C": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"R": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"U": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"D": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BC": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				}
+			},
+			"device": {
+				"R": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BC": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				}
+			},
+			"client": {
+				"R": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BC": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				}
+			}
+		},
+		"employees": {
+			"admin": {
+				"C": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"R": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"U": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"D": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BC": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				}
+			},
+			"device": {
+				"R": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BC": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				}
+			},
+			"client": {
+				"R": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BC": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				}
+			}
+		},
+		"departments": {
+			"admin": {
+				"C": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"R": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"U": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"D": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BC": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				}
+			},
+			"device": {
+				"R": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": [
+						"departmentName"
+					]
+				},
+				"BC": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				}
+			},
+			"client": {
+				"R": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": [
+						"departmentName"
+					]
+				},
+				"BC": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				}
+			}
+		},
+		"user": {
+			"admin": {
+				"C": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"R": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"U": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"D": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BC": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [
+						"auth"
+					],
+					"isAuth": true,
+					"attributes": []
+				}
+			},
+			"device": {
+				"BC": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				}
+			},
+			"client": {
+				"BC": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				},
+				"BU": {
+					"selected": true,
+					"policy": [],
+					"isAuth": false,
+					"attributes": []
+				}
+			}
+		}
+	},
+	"modelEnum": {
+		"employee_salary": {
+			"employeeType": {
+				"enumAttribute": "EMPLOYEE_TYPE",
+				"enumFile": "employee_salary_constants",
+				"default": "PROGRAMMER_ANALYST"
+			}
+		}
+	},
+	"modelPrivate": {
+		"employee_salary": {
+			"isActive": true,
+			"createdAt": true,
+			"updatedAt": true,
+			"addedBy": true
+		},
+		"employees": {
+			"employeeJSON": {
+				"email": true
+			},
+			"createdAt": true,
+			"updatedAt": true
+		},
+		"departments": {
+			"departmentData": {
+				"mobile": true
+			},
+			"createdAt": true,
+			"updatedAt": true,
+			"addedBy": true,
+			"updatedBy": true
+		}
+	},
+	"routes": {
+		"apis": []
+	},
+	"policy": {},
+	"cronJobs": {
+		"jobConfiguration": []
+	},
+	"constants": {
+		"employee_salary_constants": {
+			"EMPLOYEE_TYPE": {
+				"ADMIN": 1,
+				"MANAGEMENT": 2,
+				"TECH_LEADS": 3,
+				"PROGRAMMER_ANALYST": 4,
+				"INTERN": 5
+			}
+		}
+	},
+	"applicationConfig": {
+		"restrictNoOfDevice": true,
+		"noOfDevice": 2,
+		"authModule": "user",
+		"loginWith": {
+			"username": [
+				"username"
+			],
+			"password": "password"
+		},
+		"isTwoFA": true,
+		"twoFactorAuthentication": {
+			"platform": {
+				"device": true
+			},
+			"otpSendMedium": {
+				"masterIds": [
+					"60867d6bebfd00625f9c68b7"
+				],
+				"sms": true
+			}
+		},
+		"loginRetryLimit": {
+			"max": 5,
+			"reActiveTime": 10
+		},
+		"loginRateLimit": {},
+		"loginNextRetryTime": null,
+		"resetPassword": {
+			"link": {}
+		},
+		"isSocialMediaAuth": null,
+		"socialPlatform": [],
+		"externalServiceProviderData": [],
+		"addDataFormate": {}
+	},
+	"fileUpload": {
+		"uploads": []
+	},
+	"packages": {},
+	"environmentVariables": null,
+	"envVariables": null,
+	"templatesData": {},
+	"hooks": {
+		"master": {
+			"pre": [
+				{
+					"_id": "613af15003de780014541e75",
+					"code": "this.normalizedName = this.name != undefined ? this.name.toLowerCase() : \"\";",
+					"type": "pre",
+					"operation": "save"
+				}
+			]
+		}
+	},
+	"rolePermission": {
+		"user": {
+			"C": [
+				"User",
+				"Admin"
+			],
+			"R": [
+				"User",
+				"Admin"
+			],
+			"U": [
+				"User",
+				"Admin"
+			],
+			"D": [
+				"User",
+				"Admin"
+			]
+		}
+	},
+	"socket": {
+		"selected": false
+	},
+	"nestedCall": {
+		"departments": {
+			"client": {
+				"R": {
+					"pre": [
+						{
+							"queryMode": "find",
+							"existingVariable": "query"
+						}
+					]
+				}
+			},
+			"device": {
+				"SR": {
+					"pre": [
+						{
+							"queryMode": "find",
+							"existingVariable": "query"
+						}
+					]
+				}
+			}
+		}
+	},
+	"authenticationConfig": {
+		"socialPlatform": []
+	},
+	"id": "6148198fdae4e200143ba996",
+	"applicationId": "613aefc703de78001454176d",
+	"projectType": "MVC",
+	"ORM": "mongoose",
+	"adapter": "mongodb"
+}

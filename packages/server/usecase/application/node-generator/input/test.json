@@ -1,0 +1,952 @@
+{
+  "logo": "",
+  "directoryStructure": {
+    "root": "projectOne",
+    "mainJsFile": "app/app.js",
+    "public": "uploads ",
+    "model": "app/models",
+    "view": "views",
+    "controller": "app/controllers",
+    "constant": "constants",
+    "configuration": "app/config",
+    "routes": "app/routes",
+    "envFiles": "services/env/.env",
+    "service": "services",
+    "middleware": "policy",
+    "dbConnectionFile": "app/connection/db.js"
+},
+  "config": {
+    "projectName": "CC_Sequelize_With_DIR",
+    "path": "/home/shubhamjasani/Documents/DhiWiseGen",
+    "port": "5000",
+    "databaseName": "ellvin_db",
+    "platform": [
+      "admin",
+      "device",
+      "client",
+      "desktop"
+    ],
+    "types": [
+      "User",
+      "Admin"
+    ],
+    "isAuthentication": true,
+    "loginAccess": {
+      "Admin": [
+        "admin"
+      ],
+      "User": [
+        "device",
+        "client",
+        "desktop"
+      ]
+    },
+    "applicationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjYxM2JhZWRhNjE2MzVkMDAxZDZkYTkzNCIsInRpbWVvdXQiOnsiaW5BY3RpdmVUaW1lIjoxMCwibG9ja1NjcmVlblRpbWUiOjMwfSwiaXNBY3RpdmUiOnRydWUsImlzRGVsZXRlZCI6ZmFsc2UsImlzQmxvY2tlZCI6ZmFsc2UsImFuZHJvaWRQbGF5ZXJJZCI6W10sImlvc1BsYXllcklkIjpbXSwiZGVmYXVsdFBhc3N3b3JkIjpmYWxzZSwid3JvbmdMb2dpbkF0dGVtcHRzIjowLCJpc0JsYWNrVGhlbWUiOnRydWUsInN0ZXAiOjAsImlzT3RwTWFpbFNlbmQiOmZhbHNlLCJpc0ludGVybmFsVXNlciI6ZmFsc2UsImlzTWFya2V0aW5nTWFpbENvbnNlbnQiOnRydWUsImlzT3duZXIiOmZhbHNlLCJmaXJzdE5hbWUiOiJNb2hhbW1lZCIsImxhc3ROYW1lIjoiQXJiYXoiLCJ1c2VybmFtZSI6ImZpcXNlYSIsImVtYWlsIjoiZmlxc2VhQGdtYWlsLmNvbSIsInN0YXR1cyI6MiwidHlwZSI6MywibWVyZ2VGTE5hbWUiOiJNb2hhbW1lZCBBcmJheiIsIm1lcmdlTEZOYW1lIjoiQXJiYXogTW9oYW1tZWQiLCJnb29nbGVBdXRoSWQiOiIxMTEzNDQ2ODgxMjAyNTg5Mjc3NjciLCJvdHAiOltdLCJyZXNldFBhc3N3b3JkTGluayI6W10sImxvZ2luSGlzdG9yeSI6W10sImNyZWF0ZWRBdCI6IjIwMjEtMDktMTBUMTk6MTU6MzguMDg5WiIsInVwZGF0ZWRBdCI6IjIwMjEtMDktMTBUMTk6MTU6MzkuNzkwWiIsIl9fdiI6MCwiaHVic3BvdCI6eyJ0b2tlbiI6ImV5SjBlWEFpT2lKS1YxUWlMQ0poYkdjaU9pSklVekkxTmlKOS5leUp6ZFdJaU9pSm1hWEZ6WldGQVoyMWhhV3d1WTI5dElpd2lZWFZrSWpvaU1UazVNVGt3TlRFaUxDSnNZWE4wWDI1aGJXVWlPaUpCY21KaGVpSXNJbVY0Y0NJNk1UWXpNVE0wTkRVek9Dd2lhV0YwSWpveE5qTXhNekF4TXpNNExDSm1hWEp6ZEY5dVlXMWxJam9pVFc5b1lXMXRaV1FpZlEuSGFTTXdtWEo1bGs3UERtQkhvSkVyT3l5ME5TdHVzQ25yb2NVVzVtR0lRWSIsImV4cGlyZXNBdCI6IjIwMjEtMDktMTFUMDc6MTU6MzguMzkzWiJ9LCJsb2dnZWRJblNlc3Npb24iOnsiY3VycmVudCI6eyJpcCI6IjQ5LjIwNy4yMDkuNzAiLCJhZGRyZXNzIjp7ImNvdW50cnkiOiJJTiIsInJlZ2lvbiI6IkFQIiwiY2l0eSI6IkVsdXJ1IiwibGF0aXR1ZGUiOjE2LjcxMzEsImxvbmdpdHVkZSI6ODEuMTA0NH0sInRpbWUiOiIyMDIxLTA5LTEwVDE5OjE1OjM4LjM5N1oifSwicHJldmlvdXMiOnsiYWRkcmVzcyI6e319fSwic2Vzc2lvbklkIjoiNGQyOGEwZTMtNWU4MS00OGY0LWJiODQtYjU0ZTkwYjA5NzVlIiwiem9ob0N1c3RvbWVySWQiOiI1MzIxODkwMDAwMDE3MjAxMzAifSwiY29tcGFueUlkIjoiNjEzYmFlZGE2MTYzNWQwMDFkNmRhOTM2IiwiYXBwbGljYXRpb25JZCI6IjYxM2JiMGM1ODdjMjU3MDAyNDQ5OGVjMSIsImlhdCI6MTYzMTMwMTgyOX0.oVbf-S-dYlpGV56b6BS4nvFPfe0PIdBgBI0CXuycN_c"
+  },
+
+  "authentication": {
+    "port": "5000",
+    "databaseName": "ellvin_db",
+    "platform": [
+      "admin",
+      "device",
+      "client",
+      "desktop"
+    ],
+    "types": [
+      "User",
+      "Admin"
+    ],
+    "isAuthentication": true,
+    "loginAccess": {
+      "Admin": [
+        "admin"
+      ],
+      "User": [
+        "device",
+        "client",
+        "desktop"
+      ]
+    },
+    "applicationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjYxM2JhZWRhNjE2MzVkMDAxZDZkYTkzNCIsInRpbWVvdXQiOnsiaW5BY3RpdmVUaW1lIjoxMCwibG9ja1NjcmVlblRpbWUiOjMwfSwiaXNBY3RpdmUiOnRydWUsImlzRGVsZXRlZCI6ZmFsc2UsImlzQmxvY2tlZCI6ZmFsc2UsImFuZHJvaWRQbGF5ZXJJZCI6W10sImlvc1BsYXllcklkIjpbXSwiZGVmYXVsdFBhc3N3b3JkIjpmYWxzZSwid3JvbmdMb2dpbkF0dGVtcHRzIjowLCJpc0JsYWNrVGhlbWUiOnRydWUsInN0ZXAiOjAsImlzT3RwTWFpbFNlbmQiOmZhbHNlLCJpc0ludGVybmFsVXNlciI6ZmFsc2UsImlzTWFya2V0aW5nTWFpbENvbnNlbnQiOnRydWUsImlzT3duZXIiOmZhbHNlLCJmaXJzdE5hbWUiOiJNb2hhbW1lZCIsImxhc3ROYW1lIjoiQXJiYXoiLCJ1c2VybmFtZSI6ImZpcXNlYSIsImVtYWlsIjoiZmlxc2VhQGdtYWlsLmNvbSIsInN0YXR1cyI6MiwidHlwZSI6MywibWVyZ2VGTE5hbWUiOiJNb2hhbW1lZCBBcmJheiIsIm1lcmdlTEZOYW1lIjoiQXJiYXogTW9oYW1tZWQiLCJnb29nbGVBdXRoSWQiOiIxMTEzNDQ2ODgxMjAyNTg5Mjc3NjciLCJvdHAiOltdLCJyZXNldFBhc3N3b3JkTGluayI6W10sImxvZ2luSGlzdG9yeSI6W10sImNyZWF0ZWRBdCI6IjIwMjEtMDktMTBUMTk6MTU6MzguMDg5WiIsInVwZGF0ZWRBdCI6IjIwMjEtMDktMTBUMTk6MTU6MzkuNzkwWiIsIl9fdiI6MCwiaHVic3BvdCI6eyJ0b2tlbiI6ImV5SjBlWEFpT2lKS1YxUWlMQ0poYkdjaU9pSklVekkxTmlKOS5leUp6ZFdJaU9pSm1hWEZ6WldGQVoyMWhhV3d1WTI5dElpd2lZWFZrSWpvaU1UazVNVGt3TlRFaUxDSnNZWE4wWDI1aGJXVWlPaUpCY21KaGVpSXNJbVY0Y0NJNk1UWXpNVE0wTkRVek9Dd2lhV0YwSWpveE5qTXhNekF4TXpNNExDSm1hWEp6ZEY5dVlXMWxJam9pVFc5b1lXMXRaV1FpZlEuSGFTTXdtWEo1bGs3UERtQkhvSkVyT3l5ME5TdHVzQ25yb2NVVzVtR0lRWSIsImV4cGlyZXNBdCI6IjIwMjEtMDktMTFUMDc6MTU6MzguMzkzWiJ9LCJsb2dnZWRJblNlc3Npb24iOnsiY3VycmVudCI6eyJpcCI6IjQ5LjIwNy4yMDkuNzAiLCJhZGRyZXNzIjp7ImNvdW50cnkiOiJJTiIsInJlZ2lvbiI6IkFQIiwiY2l0eSI6IkVsdXJ1IiwibGF0aXR1ZGUiOjE2LjcxMzEsImxvbmdpdHVkZSI6ODEuMTA0NH0sInRpbWUiOiIyMDIxLTA5LTEwVDE5OjE1OjM4LjM5N1oifSwicHJldmlvdXMiOnsiYWRkcmVzcyI6e319fSwic2Vzc2lvbklkIjoiNGQyOGEwZTMtNWU4MS00OGY0LWJiODQtYjU0ZTkwYjA5NzVlIiwiem9ob0N1c3RvbWVySWQiOiI1MzIxODkwMDAwMDE3MjAxMzAifSwiY29tcGFueUlkIjoiNjEzYmFlZGE2MTYzNWQwMDFkNmRhOTM2IiwiYXBwbGljYXRpb25JZCI6IjYxM2JiMGM1ODdjMjU3MDAyNDQ5OGVjMSIsImlhdCI6MTYzMTMwMTgyOX0.oVbf-S-dYlpGV56b6BS4nvFPfe0PIdBgBI0CXuycN_c",
+    "restrictNoOfDevice": false,
+    "noOfDevice": 1,
+    "authModule": "user",
+    "loginWith": {
+      "username": [
+        "username",
+        "email"
+      ],
+      "password": "password"
+    },
+    "isTwoFA": null,
+    "twoFactorAuthentication": {
+      "platform": {},
+      "otpSendMedium": {}
+    },
+    "loginRetryLimit": {},
+    "loginRateLimit": {},
+    "loginNextRetryTime": null,
+    "resetPassword": {
+      "link": {},
+      "expireTime": 60
+    },
+    "isSocialMediaAuth": null,
+    "socialPlatform": [],
+    "externalServiceProviderData": []
+  },
+  "ormType": 2,
+  "databaseType": 3,
+  "models": {
+    "products": {
+      "isActive": {
+        "type": "BOOLEAN"
+      },
+      "createdAt": {
+        "type": "DATE"
+      },
+      "updatedAt": {
+        "type": "DATE"
+      },
+      "addedBy": {
+        "type": "INTEGER",
+        "ref": "user",
+        "refAttribute": "id"
+      },
+      "updatedBy": {
+        "type": "INTEGER",
+        "ref": "user",
+        "refAttribute": "id"
+      },
+      "status": {
+        "type": "BOOLEAN",
+        "default": true
+      },
+      "viewed": {
+        "type": "INTEGER"
+      },
+      "weight": {
+        "type": "FLOAT"
+      },
+      "weight_class_id": {
+        "type": "STRING",
+        "default": null
+      },
+      "time_available": {
+        "type": "DATE",
+        "default": null
+      },
+      "tax_class_id": {
+        "type": "STRING",
+        "default": null
+      },
+      "price": {
+        "type": "FLOAT"
+      },
+      "quantity": {
+        "type": "INTEGER",
+        "default": 1
+      },
+      "name": {
+        "type": "STRING"
+      },
+      "description": {
+        "type": "STRING",
+        "default": null
+      },
+      "tag": {
+        "type": "STRING",
+        "default": null
+      },
+      "meta_title": {
+        "type": "STRING",
+        "default": null
+      },
+      "meta_description": {
+        "type": "STRING",
+        "default": null
+      },
+      "meta_keyword": {
+        "type": "STRING",
+        "default": null
+      }
+    },
+    "categories": {
+      "isActive": {
+        "type": "BOOLEAN"
+      },
+      "createdAt": {
+        "type": "DATE"
+      },
+      "updatedAt": {
+        "type": "DATE"
+      },
+      "addedBy": {
+        "type": "INTEGER",
+        "ref": "user",
+        "refAttribute": "id"
+      },
+      "updatedBy": {
+        "type": "INTEGER",
+        "ref": "user",
+        "refAttribute": "id"
+      },
+      "name": {
+        "type": "STRING"
+      },
+      "image": {
+        "type": "STRING",
+        "default": null
+      },
+      "description": {
+        "type": "STRING",
+        "default": null
+      },
+      "meta_title": {
+        "type": "STRING",
+        "default": null
+      },
+      "meta_description": {
+        "type": "STRING",
+        "default": null
+      },
+      "meta_keyword": {
+        "type": "STRING",
+        "default": null
+      },
+      "parent_id": {
+        "type": "INTEGER"
+      },
+      "status": {
+        "type": "BOOLEAN",
+        "default": false
+      }
+    },
+    "user": {
+      "username": {
+        "type": "STRING"
+      },
+      "password": {
+        "type": "STRING"
+      },
+      "email": {
+        "type": "STRING"
+      },
+      "name": {
+        "type": "STRING"
+      },
+      "isActive": {
+        "type": "BOOLEAN"
+      },
+      "createdAt": {
+        "type": "DATE"
+      },
+      "updatedAt": {
+        "type": "DATE"
+      },
+      "addedBy": {
+        "type": "INTEGER",
+        "ref": "user",
+        "refAttribute": "id"
+      },
+      "updatedBy": {
+        "type": "INTEGER",
+        "ref": "user",
+        "refAttribute": "id"
+      }
+    }
+  },
+  "modelIndexes": {
+    "products": [],
+    "categories": [],
+    "user": []
+  },
+  "modelConfig": {
+    "products": {
+      "admin": [
+        {
+          "isAuth": true,
+          "policy": [
+            "auth"
+          ]
+        },
+        "C",
+        "R",
+        "U",
+        "D",
+        "BC",
+        "BU"
+      ],
+      "device": [
+        {
+          "isAuth": true,
+          "policy": [
+            "auth"
+          ]
+        },
+        "R",
+        "BC",
+        "BU"
+      ],
+      "client": [
+        {
+          "isAuth": true,
+          "policy": [
+            "auth"
+          ]
+        },
+        "R",
+        "BC",
+        "BU"
+      ],
+      "desktop": [
+        {
+          "isAuth": true,
+          "policy": [
+            "auth"
+          ]
+        },
+        "R",
+        "BC",
+        "BU"
+      ]
+    },
+    "categories": {
+      "admin": [
+        {
+          "isAuth": true,
+          "policy": [
+            "auth"
+          ]
+        },
+        "C",
+        "R",
+        "U",
+        "D",
+        "BC",
+        "BU"
+      ],
+      "device": [
+        {
+          "isAuth": true,
+          "policy": [
+            "auth"
+          ]
+        },
+        "R",
+        "BC",
+        "BU"
+      ],
+      "client": [
+        {
+          "isAuth": true,
+          "policy": [
+            "auth"
+          ]
+        },
+        "R",
+        "BC",
+        "BU"
+      ],
+      "desktop": [
+        {
+          "isAuth": true,
+          "policy": [
+            "auth"
+          ]
+        },
+        "R",
+        "BC",
+        "BU"
+      ]
+    },
+    "user": {
+      "admin": [
+        {
+          "isAuth": true,
+          "policy": [
+            "auth"
+          ]
+        },
+        "C",
+        "R",
+        "U",
+        "D",
+        "BC",
+        "BU"
+      ],
+      "device": [
+        {
+          "isAuth": true,
+          "policy": [
+            "auth"
+          ]
+        },
+        "R",
+        "U",
+        "BC",
+        "BU"
+      ],
+      "client": [
+        {
+          "isAuth": true,
+          "policy": [
+            "auth"
+          ]
+        },
+        "R",
+        "U",
+        "BC",
+        "BU"
+      ],
+      "desktop": [
+        {
+          "isAuth": true,
+          "policy": [
+            "auth"
+          ]
+        },
+        "R",
+        "U",
+        "BC",
+        "BU"
+      ]
+    }
+  },
+  "newModelConfig": {
+    "products": {
+      "admin": {
+        "C": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "R": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "U": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "D": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BC": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BU": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        }
+      },
+      "device": {
+        "R": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BC": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BU": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        }
+      },
+      "client": {
+        "R": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BC": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BU": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        }
+      },
+      "desktop": {
+        "R": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BC": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BU": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        }
+      }
+    },
+    "categories": {
+      "admin": {
+        "C": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "R": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "U": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "D": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BC": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BU": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        }
+      },
+      "device": {
+        "R": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BC": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BU": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        }
+      },
+      "client": {
+        "R": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BC": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BU": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        }
+      },
+      "desktop": {
+        "R": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BC": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BU": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        }
+      }
+    },
+    "user": {
+      "admin": {
+        "C": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "R": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "U": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "D": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BC": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BU": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        }
+      },
+      "device": {
+        "R": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "U": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BC": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BU": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        }
+      },
+      "client": {
+        "R": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "U": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BC": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BU": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        }
+      },
+      "desktop": {
+        "R": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "U": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BC": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        },
+        "BU": {
+          "selected": true,
+          "policy": [
+            "auth"
+          ],
+          "isAuth": true,
+          "attributes": []
+        }
+      }
+    }
+  },
+  "modelEnum": {
+    "products": {},
+    "categories": {}
+  },
+  "routes": {
+    "apis": []
+  },
+  "policy": {},
+  "cronJobs": {
+    "jobConfiguration": []
+  },
+  "constants": {},
+  "applicationConfig": {
+    "restrictNoOfDevice": false,
+    "noOfDevice": 1,
+    "authModule": "user",
+    "loginWith": {
+      "username": [
+        "username",
+        "email"
+      ],
+      "password": "password"
+    },
+    "isTwoFA": null,
+    "twoFactorAuthentication": {
+      "platform": {},
+      "otpSendMedium": {}
+    },
+    "loginRetryLimit": {},
+    "loginRateLimit": {},
+    "loginNextRetryTime": null,
+    "resetPassword": {
+      "link": {},
+      "expireTime": 60
+    },
+    "isSocialMediaAuth": null,
+    "socialPlatform": [],
+    "externalServiceProviderData": []
+  },
+  "fileUpload": {
+    "uploads": []
+  },
+  "packages": {},
+  "environmentVariables": null,
+  "envVariables": null,
+  "templatesData": {},
+  "hooks": {},
+  "rolePermission": {
+    "categories": {
+      "C": [
+        "Plant",
+        "Admin"
+      ],
+      "R": [
+        "Plant",
+        "Store",
+        "User",
+        "Admin"
+      ],
+      "U": [
+        "Plant",
+        "Admin"
+      ],
+      "D": [
+        "Admin"
+      ]
+    },
+    "products": {
+      "C": [
+        "Plant",
+        "Admin"
+      ],
+      "R": [
+        "Plant",
+        "Store",
+        "User",
+        "Admin"
+      ],
+      "U": [
+        "Plant",
+        "Store",
+        "Admin"
+      ],
+      "D": [
+        "Admin"
+      ]
+    },
+    "user": {
+      "R": [
+        "Plant",
+        "Store",
+        "User",
+        "Admin"
+      ],
+      "U": [
+        "Plant",
+        "Store",
+        "User",
+        "Admin"
+      ],
+      "C": [
+        "Admin"
+      ],
+      "D": [
+        "Admin"
+      ]
+    }
+  },
+  "socket": {
+    "selected": false
+  },
+  "nestedCall": {},
+  "authenticationConfig": {
+    "socialPlatform": []
+  },
+  "id": "555",
+  "applicationId": "613bb0c587c2570024498ec1",
+  "projectType": "CC",
+  "ORM": "sequelize",
+  "adapter": "mysql"
+}

@@ -1,0 +1,19 @@
+{
+    "user":{
+      "admin":{
+        "C":["ADMIN","USER","SUPER_USER"],
+        "U":["ADMIN"]
+      },
+      "client":{
+        "R":["USER","SUPER_USER"]
+      }                             
+    },
+    "property":{
+      "admin":{
+        "C":["ADMIN"]
+      },
+      "client":{
+        "C":["USER","SUPER_USER"]
+      }
+    }
+  }

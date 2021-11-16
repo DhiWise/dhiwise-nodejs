@@ -1,0 +1,4 @@
+module.exports = {
+  MASTER_MEDIUM: { GENERAL: 1 },
+  MASTER_PARENT_CODES: { SOCIAL_AUTH: 'SOCIAL_AUTH' },
+};

@@ -1,0 +1,55 @@
+const <%-DB_MODEL %>Model = require('../../../model').<%- DB_MODEL %>
+const {schemaKeys,updateSchemaKeys} = require('../../../validation/<%-DB_MODEL%>Validation')
+const insert<%-DB_MODEL_FC%>Validator = require("../../../validation/genericValidator")(schemaKeys)
+const update<%-DB_MODEL_FC%>Validator = require("../../../validation/genericValidator")(updateSchemaKeys)
+const make<%-DB_MODEL_FC%>=require("../../../entity/<%-DB_MODEL%>")({insert<%-DB_MODEL_FC%>Validator,update<%-DB_MODEL_FC%>Validator})
+const <%-DB_MODEL%>Service = require("../../../services/dbService")({model:<%-DB_MODEL %>Model,make<%-DB_MODEL_FC%>})
+const make<%-DB_MODEL_FC%>Controller = require("./<%- DB_MODEL %>")
+
+<%_
+let shouldPassCQ_Imports = false
+let models = UNIQ_TASK_MODELS
+let modelFC=""
+if(models && models.length){  shouldPassCQ_Imports = true_%>
+<%_if(IS_CQ){_%>
+const makeMongoCustomQueryService=require("../../../services/customQueryService");
+<%_}_%>
+let entities={}
+let cqServices={}
+let modelServices={}
+<%_
+let modelFC=""
+for(const model of models){
+    modelFC=model.charAt(0).toUpperCase() + model.slice(1);
+_%>
+<%_if(model !== DB_MODEL){_%>
+const <%-model%>Model = require("../../../model").<%-model%>
+const {schemaKeys:<%-model%>SchemaKeys,updateSchemaKeys:<%-model%>UpdateSchemaKeys} = require('../../../validation/<%-model%>Validation')
+const insert<%-modelFC%>Validator = require("../../../validation/genericValidator")(<%-model%>SchemaKeys)
+const update<%-modelFC%>Validator = require("../../../validation/genericValidator")(<%-model%>UpdateSchemaKeys)
+const make<%-modelFC%>=require("../../../entity/<%-model%>")({insert<%-modelFC%>Validator,update<%-modelFC%>Validator})
+const <%-model%>Service=require("../../../services/dbService")({model:<%-model%>Model,make<%-modelFC%>})
+<%_}_%>
+modelServices.<%-model%>Service=<%-model%>Service
+entities.make<%-modelFC%>=make<%-modelFC%>
+<%_if(IS_CQ){_%>
+const <%-model%>CqService=makeMongoCustomQueryService(<%-model%>Model)
+cqServices.<%-model%>CqService=<%-model%>CqService
+<%_}_%>
+
+<%_ } } _%>
+<%_var customRouteServices=[]_%>
+<%_ if(SERVICES_TO_IMPORT && SERVICES_TO_IMPORT.length){ _%>
+<%_ for(let i=0;i < SERVICES_TO_IMPORT.length;i++){ 
+    if(SERVICES_TO_IMPORT[i] != DB_MODEL){ customRouteServices.push(`${SERVICES_TO_IMPORT[i]}Service`)_%>
+const <%-SERVICES_TO_IMPORT[i]-%>Service = require('../../../services/<%-PLATFORM%>/<%-SERVICES_TO_IMPORT[i]-%>Service');
+<%_ }else{ customRouteServices.push(`${SERVICES_TO_IMPORT[i]}Service1`)_%>
+const <%-SERVICES_TO_IMPORT[i]-%>Service1 = require('../../../services/<%-PLATFORM%>/<%-SERVICES_TO_IMPORT[i]-%>Service');
+<%_} } } _%>        
+<%_if(IS_AUTH){_%>
+const authService = require("../../../services/auth")({model:<%-DB_MODEL%>Model,<%-DB_MODEL%>Service})
+const <%-DB_MODEL%>Controller = make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC%>,authService<%_if(shouldPassCQ_Imports){_%>, ...entities, ...cqServices, ...modelServices<%_}_%><%_if(customRouteServices.length){_%>, <%-customRouteServices.join()%><%_}_%>})
+<%_}else{_%>
+const <%-DB_MODEL%>Controller = make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC%><%_if(shouldPassCQ_Imports){_%>, ...entities, ...cqServices, ...modelServices<%_}_%><%_if(customRouteServices.length){_%>, <%-customRouteServices.join()%><%_}_%>})
+<%_}_%>
+module.exports = <%-DB_MODEL%>Controller

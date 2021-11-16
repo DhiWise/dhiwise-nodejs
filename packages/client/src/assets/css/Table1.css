@@ -1,0 +1,14 @@
+.dhiTable_second  thead th{
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 9px 10px;
+}
+.dhiTable_second tbody tr{
+    box-shadow: 5px 0px 19px -5px var(--color-gray-100);
+    background-color: var(--color-gray-black);
+}
+.dhiTable_second td{
+    padding: 6px 10px;
+    font-size: 14px;
+}

@@ -1,0 +1,528 @@
+<%_if(FILE_UPLOAD){_%>
+<%_if(S3_UPLOAD){_%>
+const fs = require('fs');
+const path = require('path');
+const formidable = require('formidable');
+const AWS = require('aws-sdk');
+<%_if(S3_UPLOAD_PRIVATE){_%>
+const AmazonS3URI = require('amazon-s3-uri');
+<%_}_%> 
+<%_} else {_%>
+const fs = require('fs');
+const path = require('path');
+const formidable = require('formidable');
+const validUrl = require('valid-url');
+<%_}_%>
+<%_}_%>
+const message = require("../../../utils/messages");
+const responseCode = require("../../../utils/responseCode");
+<%_ if((UNIQ_REQUIRE_VALIDATION_MODELS && UNIQ_REQUIRE_VALIDATION_MODELS.length) || (UNIQ_TASK_MODELS && UNIQ_TASK_MODELS.length)){ %>
+function make<%-SERVICE_NAME_FC%>Controller({
+    service, 
+    <%_
+        let entities=UNIQ_REQUIRE_VALIDATION_MODELS
+        if(entities){
+        let entityFC=""
+        for(const entity of entities){ 
+            entityFC=entity.charAt(0).toUpperCase() + entity.slice(1);_%>
+    make<%-entityFC%>,
+    <%_} } 
+        let cqServices=UNIQ_TASK_MODELS
+        if(cqServices){
+        let cqServiceFC=""
+        for(const cqService of cqServices){ _%>
+    <%-cqService%>CqService,
+    <%_ } } _%>
+})
+<%_ }else{_%>
+function make<%-SERVICE_NAME_FC%>Controller({service})
+<%_}_%>
+{
+<%_ROUTES.forEach((v,i)=>{_%>
+    <%_if(typeof(v.descriptions)!=='undefined'){_%>
+    /* 
+    * <%-v.descriptions%>
+    */
+    <%_}_%>
+    const <%-v.functionName%> =async(data) =>{
+        try{
+            const <%-v.service%> = data
+            
+        <%_if(typeof(v.queryBuilder) !== "undefined" && v.queryBuilder.length > 0){_%>
+            const combinedOutput = {}
+            // let result = service.<%-v.functionName%>();
+            <%_ 
+            const elements = v.queryBuilder
+            for(let element of elements){ 
+                let elementModel_FC=""
+                if(element.queryMode !== 'codeBlock' && element.model){ 
+                    elementModel_FC=element.model.charAt(0).toUpperCase() + element.model.slice(1);
+                }
+            if(["findOneAndDelete","deleteMany"].includes(element.queryMode)){ _%>
+            let <%-element.outputVariable%>=await <%-element.model%>CqService.<%-element.queryMode%>(<%-JSON.stringify(element.filter)%>,<%-JSON.stringify(element.option)%>);
+            <%_if(typeof element.outputSelect !== "undefined" && element.outputSelect.length){ element.outputSelect.push("id") _%>
+            <%-element.outputVariable%> = (({<%_element.outputSelect.forEach((item,index)=>{_%><%-item%><%_if(element.outputSelect.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_element.outputSelect.forEach((item,index)=>{_%><%-item%><%_if(element.outputSelect.length-1 !== index){_%>,<%_}_%><%_})_%>}))(<%-element.outputVariable%>);
+            <%_}_%>
+            combinedOutput.<%-element.outputVariable%> = <%-element.outputVariable%>
+            <%_ } else if(["findOneAndUpdate","updateMany"].includes(element.queryMode)){ _%> 
+            let <%-element.outputVariable%>=await <%-element.model%>CqService.<%-element.queryMode%>(<%-JSON.stringify(element.filter)%>,
+                make<%-elementModel_FC%>(<%-JSON.stringify(element.data)%>,"update<%-elementModel_FC%>Validator"),
+                <%-JSON.stringify(element.option)%>);
+            <%_if(typeof element.outputSelect !== "undefined" && element.outputSelect.length){ element.outputSelect.push("id") _%>
+            <%-element.outputVariable%> = (({<%_element.outputSelect.forEach((item,index)=>{_%><%-item%><%_if(element.outputSelect.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_element.outputSelect.forEach((item,index)=>{_%><%-item%><%_if(element.outputSelect.length-1 !== index){_%>,<%_}_%><%_})_%>}))(<%-element.outputVariable%>);
+            <%_}_%>
+            combinedOutput.<%-element.outputVariable%> = <%-element.outputVariable%>
+            <%_ } else if(element.queryMode=="create"){ _%>                 
+            let <%-element.outputVariable%>=await <%-element.model%>CqService.<%-element.queryMode%>(
+                make<%-elementModel_FC%>(<%-JSON.stringify(element.data)%>,"insert<%-elementModel_FC%>Validator"),
+                <%-JSON.stringify(element.option)%>);
+            <%_if(typeof element.outputSelect !== "undefined" && element.outputSelect.length){ element.outputSelect.push("id") _%>
+            <%-element.outputVariable%> = (({<%_element.outputSelect.forEach((item,index)=>{_%><%-item%><%_if(element.outputSelect.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_element.outputSelect.forEach((item,index)=>{_%><%-item%><%_if(element.outputSelect.length-1 !== index){_%>,<%_}_%><%_})_%>}))(<%-element.outputVariable%>);
+            <%_}_%>
+            combinedOutput.<%-element.outputVariable%> = <%-element.outputVariable%>
+            <%_ } else if(element.queryMode === "codeBlock"){_%>
+                <%-element.code%>
+            <%_} else if(element.queryMode === "find"){_%>
+            const <%-element.queryVarName%> = {}
+            <%_if(element.filter){ _%>
+            <%-element.queryVarName%>.filter = <%-JSON.stringify(JSON.parse(element.filter))%>
+            <%_}_%>
+            <%_if(element.skip){ _%>
+            <%-element.queryVarName%>.skip = <%-JSON.stringify(element.skip)%>
+            <%_}_%>
+            <%_if(element.limit){ _%>
+            <%-element.queryVarName%>.limit = <%-JSON.stringify(element.limit)%>
+            <%_}_%>
+            <%_if(element.populate && element.populate.length>0){ _%>
+            <%-element.queryVarName%>.populate = <%-JSON.stringify(element.populate)%>
+            <%_}_%>
+            <%_if(element.sort){ _%>
+            <%-element.queryVarName%>.sort = <%-JSON.stringify(element.sort)%>
+            <%_}_%>
+            <%_if(element.select){ _%>
+            <%-element.queryVarName%>.select = <%-JSON.stringify(element.select)%>
+            <%_}_%>
+            
+            const <%-element.outputVariable%> = await <%-element.model%>CqService.<%-element.queryMode%>(<%-element.queryVarName%>)
+            combinedOutput.<%-element.outputVariable%> = <%-element.outputVariable%>
+            <%_}else if(element.queryMode === 'aggregate'){ _%>
+            combinedOutput.<%-element.outputVariable%> = await <%-element.model%>CqService.<%-element.queryMode%>(<%-JSON.stringify(element.pipes)%>)
+            <%_ }else if(element.queryMode.toLowerCase() === 'fileupload'){_%>
+            <%_if(S3_UPLOAD){_%>
+
+            let allowedFileTypes = <%=element.validationType%>;<%_var max_size = element.maxSize ? element.maxSize : 5%>
+            let maxFileSize = <%=max_size%>; //In Megabyte
+
+            // Setting up formidable options.
+            const form = new formidable.IncomingForm();
+            form.multiples = true;
+            form.maxFileSize = 300 * 1024 * 1024; //300 MB
+            form.maxFieldsSize = 100 * 1024 * 1024; //50 MB
+
+            const uploadFileRes = await new Promise(async (resolve, reject) => {
+            form.parse(req, async function (err, fields, files) { 
+
+                let filePaths = [];
+                let fileCount = 1;
+
+                let fileArr = [];
+                if (!files['file[]'] || files['file[]'].size == 0) {
+                resolve({
+                    'err': 'Please Select any one File',
+                    'status': false
+                });
+                }
+                if (!Array.isArray(files['file[]'])) {
+                fileArr.push(files['file[]']);
+                files['file[]'] = fileArr;
+                }
+
+                for (let file of files['file[]']) {
+                let response = await uploadFiles(file,fields,fileCount++,allowedFileTypes, maxFileSize);
+                if (response.status == false) {
+                    filePaths.push({
+                    'name': file.name,
+                    'err': response.message,
+                    'status': false
+                    });
+                } else {
+                    filePaths.push({
+                    'path': response.data,
+                    'status': true
+                    });
+                }
+                
+                }
+                resolve(filePaths);
+
+            });
+            });
+            <%_if(S3_UPLOAD_PRIVATE){_%>
+            let finalResponse = [];
+            if (Array.isArray(uploadFileRes) && uploadFileRes.length){
+                uploadFileRes = await new Promise(async (resolve, reject) => {
+                    for (let u of uploadFileRes){
+                    if (u.status && u.path) {
+                        u = await generatePreSignedURL(u.path);
+                        finalResponse.push(u);
+                    }
+                    }
+                    resolve(finalResponse);
+                });
+            }
+            <%_}_%>
+        <%_} else {_%>
+            let defaultDirectory = 'public/assets'
+            let allowedFileTypes = <%=element.validationType%>;<%_ var max_size = element.maxSize ? element.maxSize : 5 _%>
+            let maxFileSize = <%=max_size%>; //In Megabyte
+
+            // Create Directory if not exist.
+            await makeDirectory(defaultDirectory);
+
+            // Setting up formidable options.
+            const form = new formidable.IncomingForm();
+            form.multiples = true;
+            form.maxFileSize = 300 * 1024 * 1024; //300 MB
+            form.maxFieldsSize = 100 * 1024 * 1024; //50 MB
+
+            //Upload File one by one
+            const uploadFileRes = await new Promise(async (resolve, reject) => {
+
+            form.parse(req, async function (err, fields, files) {
+
+                let filePaths = [];
+                let fileCount = 1;
+
+                let fileArr = [];
+                if (!files['file[]'] || files['file[]'].size == 0) {
+                resolve({
+                    'err': 'Please Select any one File',
+                    'status': false
+                });
+                }
+                if (!Array.isArray(files['file[]'])) {
+                fileArr.push(files['file[]']);
+                files['file[]'] = fileArr;
+                }
+
+                for (let file of files['file[]']) {
+
+                let response = await uploadFiles(file, fields, fileCount++,allowedFileTypes, maxFileSize, defaultDirectory);
+
+                if (response.status == false) {
+                    filePaths.push({
+                    'name': file.name,
+                    'err': response.message,
+                    'status': false
+                    });
+                } else {
+                    let url = response.data;
+                    if (!validUrl.isUri(response.data)) {
+                    response.data = response.data.replace('/public', '');
+                    url = `${response.data}`;
+                    }
+                    filePaths.push({
+                    'path': url,
+                    'status': true
+                    });
+                }
+                }
+                resolve(filePaths);
+            });
+        });
+        <%_}_%>
+          combinedOutput.uploadFileRes = uploadFileRes;
+          <%_}_%>
+        <%_ } _%>
+        <%_ } _%>
+        <%_if(typeof(v.queryBuilder) !== "undefined" && v.queryBuilder.length > 0){_%>
+            if(combinedOutput){
+                return message.successResponse(
+                { "Content-Type": "application/json" },
+                responseCode.success,
+                combinedOutput);
+            }
+        <%_}else{_%>
+            let result = service.<%-v.functionName%>();
+            if(result){
+                return message.successResponse(
+                { "Content-Type": "application/json" },
+                responseCode.success,
+                result);
+            }
+        <%_}_%>
+            
+        }catch(error){
+            return message.failureResponse(
+                { "Content-Type": "application/json" },
+                responseCode.internalServerError,
+                error.message);
+        }
+    }
+<%_})_%>
+
+    return Object.freeze({
+        
+        <%_ROUTES.forEach((v,i)=>{_%>
+            <%- v.functionName %>,
+        <%_ })_%>          
+    })
+}
+
+<%_if(FILE_UPLOAD){_%>
+<%_if(S3_UPLOAD){_%>
+async function uploadFiles (file,fields,fileCount,allowedFileTypes, maxFileSize){
+
+  let extension = path.extname(file.name);
+  extension = extension.split('.').pop();
+
+  fileType = file.type;
+
+  if (allowedFileTypes.length) {
+    //Check allowed extension;
+    if (!allowedFileTypes.includes(extension)) {
+      return {
+        status: false,
+        message: 'Filetype not allowed.'
+      };
+    }
+  }
+
+  // Check File Size
+  const fileSize = ((file.size / 1024) / 1024);
+  if (maxFileSize < fileSize) {
+    return {
+      status: false,
+      message: `Allow file size upto ${maxFileSize} MB.`
+    };
+  }
+
+  let fileName = file.name;
+  //Create Requested Directory,if given in request parameter.
+  if (fields && fields.folderName) {
+    fileName = fields.folderName + '/' + fileName;
+  }
+  else if (fields && fields.fileName) {
+    fileName = fields.fileName + '-' + fileCount + path.extname(file.name);
+  }
+
+  const response = await new Promise(async (resolve, reject) => {
+    resolve(await uploadToS3(file,fileName));
+  });
+
+  return response;
+
+}
+
+async function uploadToS3 (file, fileName){
+  let S3Config = {
+    AWS_S3_ACCESS_KEY_ID: process.env.AWS_S3_ACCESS_KEY_ID,
+    AWS_S3_SECRET_ACCESS_KEY: process.env.AWS_S3_SECRET_ACCESS_KEY,
+    AWS_S3_REGION: process.env.AWS_S3_REGION,
+    AWS_S3_BUCKET_NAME: process.env.AWS_S3_BUCKET_NAME,
+  };
+
+  const s3 = new AWS.S3({
+    region: S3Config.AWS_S3_REGION,
+    accessKeyId: S3Config.AWS_S3_ACCESS_KEY_ID,
+    secretAccessKey: S3Config.AWS_S3_SECRET_ACCESS_KEY
+  });
+
+  let params = {
+    Bucket: S3Config.AWS_S3_BUCKET_NAME,
+    Body: fs.createReadStream(file.path),
+    Key: fileName,
+  };
+
+  const response = await new Promise(async (resolve, reject) => {
+    s3.putObject(params, function (err, data) {
+      if (err) {
+        resolve({
+          status: false,
+          message: err.message
+        });
+      } else {
+        resolve({
+          status: true,
+          data: 'https://' + process.env.AWS_S3_BUCKET_NAME + '.s3.' + S3Config.AWS_S3_REGION + '.amazonaws.com/' + fileName
+        });
+      }
+    });
+  });
+
+  return response;
+}
+<%_if(S3_UPLOAD_PRIVATE){_%>
+async function generatePreSignedURL (uri){
+  if (uri){
+    let S3Config = {
+      AWS_S3_ACCESS_KEY_ID: process.env.AWS_S3_ACCESS_KEY_ID,
+      AWS_S3_SECRET_ACCESS_KEY: process.env.AWS_S3_SECRET_ACCESS_KEY,
+      AWS_S3_REGION: process.env.AWS_S3_REGION,
+      AWS_S3_BUCKET_NAME: process.env.AWS_S3_BUCKET_NAME,
+    };
+
+    const s3 = new AWS.S3({
+      region: S3Config.AWS_S3_REGION,
+      accessKeyId: S3Config.AWS_S3_ACCESS_KEY_ID,
+      secretAccessKey: S3Config.AWS_S3_SECRET_ACCESS_KEY
+    });
+
+    const {
+      region, bucket, key 
+    } = AmazonS3URI(uri);
+
+    let options = {
+      Bucket: bucket,
+      Key: key,
+      Expires: 1 * 60 * 60, // 1 hour
+    };
+
+    let response = await new Promise(async (resolve,reject)=>{
+      await s3.getSignedUrl('getObject', options, (err, url) => {
+        if (err) {
+          resolve({
+            status: false,
+            err: err,
+          });
+        } else {
+          resolve({
+            status: true,
+            path: url,
+          });
+        }
+      });
+    });
+    return response;
+  }
+  else {
+    return {
+      status:false,
+      err:'Please send Url'
+    };
+  }
+}
+<%_}_%>
+<%_} else {_%>
+/**
+ * 
+ * Function used to create directory.
+ * 
+ * @param  {} dirPath
+ */
+const makeDirectory = async (directoryPath) => {
+
+  if (!fs.existsSync(directoryPath)) {
+    fs.promises.mkdir(directoryPath, { recursive: true }, (err) => {
+      if (err) {
+        return false;
+      };
+      return true;
+    });
+  }
+  return true;
+};
+
+/**
+ * 
+ * Function used to upload file
+ * 
+ * @param  {} files
+ * @param  {} fields
+ */
+async function uploadFiles (file, fields, fileCount,allowedFileTypes, maxFileSize, defaultDirectory) {
+
+  let tempPath = file.path;
+  let unlink;
+  let fileName = file.name;
+
+  let extension = path.extname(file.name);
+  extension = extension.split('.').pop();
+
+  fileType = file.type;
+
+  if (allowedFileTypes.length) {
+    //Check allowed extension;
+    if (!allowedFileTypes.includes(extension)) {
+      return {
+        status: false,
+        message: 'Filetype not allowed.'
+      };
+    }
+  }
+
+  // Check File Size
+  const fileSize = ((file.size / 1024) / 1024);
+  if (maxFileSize < fileSize) {
+    return {
+      status: false,
+      message: `Allow file size upto ${maxFileSize} MB.`
+    };
+  }
+
+  //Create New path
+  let newPath = defaultDirectory + '/' + new Date().getTime() + path.extname(file.name);
+
+  //Create Requested Directory,if given in request parameter.
+  if (fields && fields.folderName) {
+    let newDir = defaultDirectory + '/' + fields.folderName;
+    const createDir = await makeDirectory(newDir);
+    if (createDir) {
+      if (fields.fileName) {
+        newPath = newDir + '/' + fields.fileName + '-' + fileCount + path.extname(file.name);
+        fileName = fields.fileName;
+      }
+    }
+  }
+  else if (fields && fields.fileName) {
+    newPath = defaultDirectory + '/' + fields.fileName + '-' + fileCount + path.extname(file.name);
+    fileName = fields.fileName;
+  }
+  
+  const response = await new Promise(async (resolve, reject) => {
+    fs.readFile(tempPath, function (err, data) {
+      fs.writeFile(newPath, data, async function (err) {
+  
+        //Remove file from temp
+        unlink = await unlinkFile(tempPath);
+  
+        if (unlink.status == false) {
+          reject(unlink);
+        } else {
+          resolve({
+            status: true,
+            message: 'File upload successfully.',
+            data: '/' + newPath
+          });
+        }
+      });
+    });
+  });
+
+  return response;
+}
+
+/**
+ * 
+ * Function used to unlink file.
+ * 
+ * @param  {} path
+ */
+async function unlinkFile (path) {
+
+  fs.unlink(path, function (err) {
+    if (err) {
+      return {
+        status: false,
+        message: err.message
+      };
+    }
+  });
+
+  return { status: true };
+}
+<%_}_%>
+<%_}_%>
+
+module.exports= make<%-SERVICE_NAME_FC%>Controller
+

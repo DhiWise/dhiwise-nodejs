@@ -1,0 +1,35 @@
+/* notification */
+.react-toast-notifications__container {
+    z-index: 1000000 !important;
+}
+
+.react-toast-notifications__toast.react-toast-notifications__toast--error .react-toast-notifications__toast__icon-wrapper {
+    background-color: transparent;
+    color: var(--color-bg-deactive);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.react-toast-notifications__toast.react-toast-notifications__toast--error {
+    background: var(--color-bg-redlight);
+    border-left: 3px solid var(--color-bg-deactive);
+    color: var(--color-message);
+    box-shadow: none;
+    align-items: center;
+    border-radius: var(--border-radius);
+}
+
+.react-toast-notifications__toast.react-toast-notifications__toast--error .react-toast-notifications__toast__content {
+    line-height: normal;
+    min-height: max-content;
+    font-weight: 600;
+}
+
+.react-toast-notifications__toast__dismiss-button {
+    display: flex;
+}
+
+.react-toast-notifications__toast__dismiss-button svg {
+    fill: var(--color-message) !important;
+}

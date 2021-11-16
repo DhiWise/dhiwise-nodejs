@@ -1,0 +1,426 @@
+{
+    "id": "2",
+    "projectType": "MVC",
+    "config": {
+        "projectName": "ModelInsideController",
+        "path": "/home/salonisaraiya/Documents/NoPlatformMVC",
+        "databaseName": "test",
+        "port": "3000"
+    },
+    "authentication": {
+        "port": "3000",
+        "databaseName": "auth",
+        "noPlatform": [
+            "admin"
+        ],
+        "platform": ["admin"],
+        "types": [
+            "User"
+        ],
+        "isAuthentication": true,
+        "loginAccess": {
+            "User":["admin"]
+        },
+        "restrictNoOfDevice": true,
+        "noOfDevice": 3,
+        "authModule": "user",
+        "loginWith": {
+            "username": [
+                "username",
+                "password"
+            ],
+            "password": "password"
+        },
+        "loginRetryLimit": {},
+        "loginRateLimit": {},
+        "loginNextRetryTime": null,
+        "resetPassword": {
+            "link": {
+                "masterIds": [
+                    "60867d6bebfd00625f9c68b7"
+                ],
+                "sms": true,
+                "smsTemplateId": "60b9e30842048c0015d5ac5e",
+                "smsTemplate": "resetPassword"
+            },
+            "expireTime": 10
+        },
+        "isSocialMediaAuth": true,
+        "socialPlatform": [],
+        "externalServiceProviderData": [],
+        "directoryStructure":true
+    },
+    "models": {
+        "user": {
+            "username": {
+                "type": "String",
+                "lowercase": true,
+                "trim": true,
+                "required": true,
+                "minLength": 10,
+                "maxLength": 20
+            },
+            "age": {
+                "type": "Number",
+                "min": 10,
+                "max": 20,
+                "isAutoIncrement": true
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "emails": {
+                "type": "Array"
+            },
+            "address": {
+                "type": "JSON"
+            },
+            "dob": {
+                "type": "Date"
+            }
+        },
+        "address": {
+            "addressLine1": {
+                "type": "String"
+            },
+            "addressLine2": {
+                "type": "String"
+            },
+            "locality": {
+                "type": "String"
+            },
+            "pincode": {
+                "type": "String"
+            },
+            "city": {
+                "type": "String"
+            },
+            "state": {
+                "type": "String"
+            },
+            "country": {
+                "type": "String"
+            }
+        },
+        "master": {
+            "name": {
+                "type": "SingleLine",
+                "unique": true
+            },
+            "normalizeName": {
+                "type": "SingleLine"
+            },
+            "slug": {
+                "type": "SingleLine"
+            },
+            "code": {
+                "type": "SingleLine"
+            },
+            "group": {
+                "type": "SingleLine"
+            },
+            "description": {
+                "type": "MultiLine"
+            },
+            "isActive": {
+                "type": "Boolean"
+            },
+            "parentId": {
+                "type": "ObjectId"
+            },
+            "isDeleted": {
+                "type": "Boolean"
+            },
+            "parentName": {
+                "type": "String"
+            },
+            "createdTimestamp": {
+                "type": "Date"
+            },
+            "updatedTimestamp": {
+                "type": "Date"
+            }
+        },
+        "depreciationModel": {
+            "name": {
+                "type": "String"
+            },
+            "ageOfDepreciation": {
+                "type": "Number"
+            },
+            "ageOfConstantDepreciation": {
+                "type": "Number"
+            },
+            "initialDepreciationPer": {
+                "type": "Number"
+            },
+            "scrapValuePer": {
+                "type": "Number"
+            }
+        },
+        "property": {
+            "propertyName": {
+                "type": "SingleLine"
+            },
+            "propertyType": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "street": {
+                "type": "String"
+            },
+            "StreetNumber": {
+                "type": "String"
+            },
+            "floorNumber": {
+                "type": "String"
+            },
+            "facing": {
+                "type": "String"
+            },
+            "zip": {
+                "type": "String"
+            },
+            "city": {
+                "type": "String"
+            },
+            "landmark": {
+                "type": "String"
+            },
+            "buildingName": {
+                "type": "String"
+            },
+            "propertyNo": {
+                "type": "Number"
+            },
+            "dateOfPurchase": {
+                "type": "Date"
+            },
+            "amount": {
+                "type": "Number"
+            },
+            "propertySize": {
+                "type": "String"
+            },
+            "userId": {
+                "type": "ObjectId",
+                "ref": "user"
+            }
+        },
+        "propertyAttribute": {
+            "propertyId": {
+                "type": "ObjectId",
+                "ref": "property"
+            },
+            "propertyAttributeType": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "total": {
+                "type": "Number"
+            },
+            "createdTimestamp": {
+                "type": "Date"
+            },
+            "updatedTimestamp": {
+                "type": "Date"
+            }
+        },
+        "subPropertyAttribute": {
+            "propertyId": {
+                "type": "ObjectId",
+                "ref": "property"
+            },
+            "propertyAttributeId": {
+                "type": "ObjectId",
+                "ref": "propertyAttribute"
+            },
+            "attributeName": {
+                "type": "String"
+            },
+            "area": {
+                "type": "Number"
+            },
+            "createdTimestamp": {
+                "type": "Date"
+            },
+            "updatedTimestamp": {
+                "type": "Date"
+            }
+        },
+        "enhancement": {
+            "subPropertyAttributeId": {
+                "type": "ObjectId",
+                "ref": "subPropertyAttribute"
+            },
+            "enhancementTypeId": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "attributeName": {
+                "type": "String"
+            },
+            "nameOfItem": {
+                "type": "String"
+            },
+            "date": {
+                "type": "Date"
+            },
+            "theme": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "subject": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "depreciationModel": {
+                "type": "ObjectId",
+                "ref": "master"
+            },
+            "timeInvested": {
+                "type": "Number"
+            },
+            "pricePerHour": {
+                "type": "Number"
+            },
+            "totalPrice": {
+                "type": "Number"
+            },
+            "description": {
+                "type": "String"
+            },
+            "invoice": [
+                "String"
+            ],
+            "photos": [
+                "String"
+            ]
+        }
+    },
+    "modelConfig": {
+        "user": {
+            "admin": [
+                "C",
+                "R",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ]
+        },
+        "master": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ]
+        },
+        "depreciationModel": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ]
+        },
+        "property": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ]
+        },
+        "propertyAttribute": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ]
+        },
+        "subPropertyAttribute": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ]
+        },
+        "enhancement": {
+            "admin": [
+                "C",
+                "R",
+                "U",
+                "D",
+                "UP",
+                {
+                    "isAuth": true,
+                    "policy": []
+                }
+            ]
+        }
+    },
+    "envVariables": {
+        "environments": [
+            "QA",
+            "PRODUCTION",
+            "DEVELOPMENT"
+        ],
+        "customJson": [
+            {
+                "value": {
+                    "QA": "381bnbjh",
+                    "PRODUCTION": "232323mnnm",
+                    "DEVELOPMENT": "12345"
+                },
+                "key": "APPKEY",
+                "dataType": ""
+            }
+        ]
+    },
+    "fileUpload": {
+        "uploads": [
+            {
+                "platform": [
+                    "admin"
+                ],
+                "validationType": [],
+                "storage": "Local",
+                "authentication": true,
+                "maxSize": "10"
+            }
+        ]
+    },
+    "routes":{
+        "apis":[]
+    }
+
+}

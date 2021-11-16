@@ -1,0 +1,578 @@
+const express = require('express');
+const router = express.Router();
+<%_ if(RATE){_%>
+const rateLimit=require('express-rate-limit');
+<%_ } _%>
+const <%-DB_MODEL%>Controller = require("../../controller/<%-MODULE%>/<%-DB_MODEL%>");
+<%_ if(CONTROLLERS_TO_IMPORT && CONTROLLERS_TO_IMPORT.length){ _%>
+<%_ for(let i=0;i < CONTROLLERS_TO_IMPORT.length;i++){ 
+    if(CONTROLLERS_TO_IMPORT[i] != DB_MODEL){ _%>
+const <%-CONTROLLERS_TO_IMPORT[i]-%>Controller = require('../../controller/<%-MODULE%>/<%-CONTROLLERS_TO_IMPORT[i]-%>');
+<%_ } }_%>  
+<%_ } _%> 
+const adaptRequest = require("../../helpers/adaptRequest");
+const sendResponse = require("../../helpers/sendResponse");
+<%_ if(IS_AUTH){ _%>
+const auth = require("../../middleware/auth");
+<%_ } _%>
+<%_ if(CUSTOM_POLICY.length){ 
+    if(CUSTOM_POLICY.includes('auth')){ let arrayIndex = CUSTOM_POLICY.indexOf('auth'); delete CUSTOM_POLICY[arrayIndex]; CUSTOM_POLICY =  CUSTOM_POLICY.filter(Boolean);}
+_%>
+<%_ for(let i=0;i < CUSTOM_POLICY.length;i++){ _%>
+const <%-CUSTOM_POLICY[i]-%> = require("../../middleware/<%-CUSTOM_POLICY[i]-%>");
+<%_ } _%> <%_ } _%> 
+
+<%_ for(let i=0; i < SUPPORT_API.length; i++){ _%>
+<%_ if(SUPPORT_API[i].method=="create"){ _%><%_ let createRate = false _%>
+<%_ if(RATE){ _%><%_ let rateObj='' _%><%_ let rateTime='' _%>
+<%_ for(let [key,value] of Object.entries(RATE)){ _%>
+<%_ if(key ==='create'){ _%>
+<%_ rateObj = value.limit _%><%_ rateTime=value.time _%><%_ createRate = true _%>
+<%_ } _%><%_ } _%>
+<%_ if(createRate){ _%>
+const insertRateLimiter=rateLimit({
+    windowMs:<%-rateTime%>,
+    max:<%-rateObj%>,
+    message: "Too many accounts created from this IP, please try again after an hour"
+});
+<%_ } _%> <%_}_%>
+<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("create") ; _%>
+router.post('/<%-ROUTE_PREFIX%>/create',auth(...<%=returnRole.CREATE_API %>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(createRate){ _%>insertRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.add<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data: req.body, loggedInUser:req.user}).then((result)=>{
+        sendResponse(res, result);
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})
+<%_ }else{ _%>
+router.post('/<%-ROUTE_PREFIX%>/create',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(createRate){ _%>insertRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.add<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data:req.body}).then((result)=>{
+        sendResponse(res, result);
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})
+<%_ } _%><%_ } _%>
+<%_ if(SUPPORT_API[i].method=="createBulk") {_%>
+<%_ let cbRate = false _%>
+<%_ if(RATE){ _%>
+<%_ let rateObj='' _%><%_ let rateTime='' _%>
+<%_ for(let [key,value] of Object.entries(RATE)){ _%>
+<%_ if(key ==='createBulk'){ _%>
+<%_ rateObj = value.limit _%><%_ rateTime=value.time _%><%_ cbRate = true _%>
+<%_ } _%><%_ } _%>
+<%_ if(cbRate){ _%>
+const bulkInsertRateLimiter=rateLimit({
+    windowMs:<%-rateTime%>,
+    max:<%-rateObj%>,
+    message: "Too many accounts created from this IP, please try again after an hour"
+});
+<%_ } _%><%_ } _%>
+<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("createBulk") ; _%>
+router.post('/<%-ROUTE_PREFIX%>/addBulk',auth(...<%= returnRole.CREATE_BULK_API %>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(cbRate){ _%>bulkInsertRateLimiter,<%_ } _%>(req,res,next)=>{
+    <%-DB_MODEL%>Controller.bulkInsert<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({body: req.body,loggedInUser: req.user}).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})
+<%_ }else{ _%>
+router.post('/<%-ROUTE_PREFIX%>/addBulk',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(cbRate){ _%>bulkInsertRateLimiter,<%_ } _%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.bulkInsert<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({body: req.body}).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})
+<%_ } _%><%_ } _%>
+<%_ if(SUPPORT_API[i].method=="findAll"){ _%>
+<%_ let faRate = false _%>
+<%_ if(RATE){_%>
+<%_ let rateObj='' _%><%_ let rateTime='' _%>
+<%_ for(let [key,value] of Object.entries(RATE)){ _%>
+<%_ if(key ==='findAll'){ _%>
+<%_ rateObj = value.limit _%><%_ rateTime=value.time _%><%_ faRate = true _%>
+<%_ } _%><%_ } _%>
+<%_ if(faRate){ _%>
+const findAllRateLimiter=rateLimit({
+    windowMs:<%-rateTime%>,
+    max:<%-rateObj%>,
+    message: "Too many API calls from this IP, please try again after an hour"
+});
+<%_ } _%><%_ } _%>
+<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("findAll") ; _%>
+router.post('/<%-ROUTE_PREFIX%>/list',auth(...<%=returnRole.READ_ALL_API %>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(faRate){ _%>findAllRateLimiter,<%_ } _%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.findAll<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data: req.body, loggedInUser:req.user}).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error);
+    });
+})
+<%_ }else{ _%>
+router.post('/<%-ROUTE_PREFIX%>/list',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(faRate){_%>findAllRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.findAll<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data:req.body}).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error);
+    });
+})
+<%_ } _%><%_ } _%>
+<%_ if(SUPPORT_API[i].method=="findById"){ _%>
+<%_ let fbiRate = false _%>
+<%_ if(RATE){ _%>
+<%_ let rateObj='' _%>
+<%_ let rateTime='' _%>
+<%_ for(let [key,value] of Object.entries(RATE)){ _%>
+<%_ if(key ==='findById'){ _%>
+<%_ rateObj = value.limit _%><%_ rateTime=value.time _%><%_ fbiRate = true _%>
+<%_ } _%><%_ } _%>
+<%_ if(fbiRate){ _%>
+const findRateLimiter=rateLimit({
+    windowMs:<%-rateTime%>,
+    max:<%-rateObj%>,
+    message: "Too many API Calls from this IP, please try again after an hour"
+});
+<%_ } _%><%_ } _%>
+<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("findById") ; _%>
+router.get('/<%-ROUTE_PREFIX%>/:id',auth(...<%= returnRole.READ_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(fbiRate){ _%>findRateLimiter,<%_ } _%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.find<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>ByPk(req.pathParams.id).then((result)=>{
+        sendResponse(res,result)
+    })  
+    .catch((error) => {
+        sendResponse(res,error);
+    })
+});
+<%_ }else{ _%>
+router.get('/<%-ROUTE_PREFIX%>/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(fbiRate){ _%>findRateLimiter,<%_ } _%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>ById(req.pathParams.id).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error);
+    })
+});
+<%_ } _%><%_ } _%>
+<%_ if(SUPPORT_API[i].method=="count"){ _%>
+<%_ let countRate = false _%>
+<%_ if(RATE) {_%>
+<%_ let rateObj='' _%>
+<%_ let rateTime=''_%>
+<%_ for(let [key,value] of Object.entries(RATE)){ _%>
+<%_ if(key ==='count'){ _%>
+<%_ rateObj = value.limit _%><%_ rateTime=value.time _%><%_ countRate = true _%>
+<%_ } _%><%_ } _%>
+<%_ if(countRate){ _%>
+const countRateLimiter=rateLimit({
+    windowMs:<%-rateTime%>,
+    max:<%-rateObj%>,
+    message: "Too many API calls created from this IP, please try again after an hour"
+});
+<%_ } _%><%_ } _%>
+<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("count") ; _%>
+router.route('/<%-ROUTE_PREFIX%>/count').post(auth(...<%=returnRole.COUNT_API%>), <%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(countRate){ _%>countRateLimiter,<%_ } _%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.findAll<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({
+        data:{
+          query: { ...req.body },
+          isCountOnly:true 
+        } 
+      }).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error);
+    })
+});
+<%_ }else{ _%>
+router.route('/<%-ROUTE_PREFIX%>/count').post(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(countRate){ _%>countRateLimiter,<%_ } _%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.findAll<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data:{iCountOnly:true}}).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error);
+    })
+});
+<%_ } _%><%_ } _%>
+<%_if(SUPPORT_API[i].method=="update"){_%>
+<%_ let updateRate = false _%>
+<%_ if(RATE){_%>
+<%_let rateObj=''_%>
+<%_let rateTime=''_%>
+<%_for(let [key,value] of Object.entries(RATE)){_%>
+<%_if(key ==='update'){_%>
+<% rateObj = value.limit%><%rateTime=value.time%><%_updateRate = true_%>
+<%_}_%><%_}_%>
+<%_if(updateRate){_%>
+const updateRateLimiter=rateLimit({
+    windowMs:<%-rateTime%>,
+    max:<%-rateObj%>,
+    message: "Too many accounts updated from this IP, please try again after an hour"
+});
+<%_}_%><%_}_%>
+<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("update") ; _%>
+router.put('/<%-ROUTE_PREFIX%>/update/:id',auth(...<%=returnRole.UPDATE_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(updateRate){_%>updateRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.update<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.pathParams.id,req.body,req.user).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})   
+<%_ }else{ _%>
+router.put('/<%-ROUTE_PREFIX%>/update/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(updateRate){_%>updateRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.update<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.pathParams.id,req.body).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})  
+<%_}_%><%_}_%>
+<%_if(SUPPORT_API[i].method=="partialUpdate"){_%>
+<%_ let pupdateRate = false _%>
+<%_ if(RATE){_%>
+<%_let rateObj=''_%>
+<%_let rateTime=''_%>
+<%_for(let [key,value] of Object.entries(RATE)){_%>
+<%_if(key ==='partialUpdate'){_%>
+<% rateObj = value.limit%><%rateTime=value.time%><%_pupdateRate = true_%>
+<%_}_%><%_}_%>
+<%_if(pupdateRate){_%>
+const partialUpdateRateLimiter=rateLimit({
+    windowMs:<%-rateTime%>,
+    max:<%-rateObj%>,
+    message: "Too many accounts updated from this IP, please try again after an hour"
+});
+<%_}_%><%_}_%>
+<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("partialUpdate") ; _%>
+router.put('/<%-ROUTE_PREFIX%>/partial-update/:id',auth(...<%=returnRole.PARTIAL_UPDATE_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(pupdateRate){_%>partialUpdateRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.partialUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.pathParams.id,req.body,req.user).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})   
+<%_ }else{ _%>
+router.put('/<%-ROUTE_PREFIX%>/partial-update/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(pupdateRate){_%>partialUpdateRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.partialUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.pathParams.id,req.body).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})  
+<%_}_%><%_}_%>
+<%_if(SUPPORT_API[i].method=="bulkUpdate"){_%>
+<%_ let buRate = false _%>
+<%_ if(RATE){_%>
+<%_let rateObj=''_%>
+<%_let rateTime=''_%>
+<%_for(let [key,value] of Object.entries(RATE)){_%>
+<%_if(key ==='bulkUpdate'){_%>
+<% rateObj = value.limit%><%rateTime=value.time%><%_buRate = true_%>
+<%_}_%><%_}_%>
+<%_if(buRate){_%>
+const bulkUpdateRateLimiter=rateLimit({
+    windowMs:<%-rateTime%>,
+    max:<%-rateObj%>,
+    message: "Too many accounts updated from this IP, please try again after an hour"
+});
+<%_}_%><%_}_%>
+<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("bulkUpdate") ; _%>
+router.put('/<%-ROUTE_PREFIX%>/updateBulk',auth(...<%=returnRole.UPDATE_BULK_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(buRate){_%>bulkUpdateRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.bulkUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+}) 
+<%_ }else{ _%>
+router.put('/<%-ROUTE_PREFIX%>/updateBulk',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(buRate){_%>bulkUpdateRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.bulkUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})
+<%_}_%><%_}_%>
+<%_if(SUPPORT_API[i].method=="delete"){_%>
+<%_let deleteRate = false _%>
+<%_ if(RATE){_%>
+<%_let rateObj=''_%>
+<%_let rateTime=''_%>
+<%_for(let [key,value] of Object.entries(RATE)){_%>
+<%_if(key ==='delete'){_%>
+<% rateObj = value.limit%><%rateTime=value.time%><%_deleteRate = true_%>
+<%_}_%><%_}_%>
+<%_if(deleteRate){_%>
+const deleteRateLimiter=rateLimit({
+    windowMs:<%-rateTime%>,
+    max:<%-rateObj%>,
+    message: "Too many accounts deleted from this IP, please try again after an hour"
+});
+<%_}_%><%_}_%>
+<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("delete") ; _%>
+router.delete('/<%-ROUTE_PREFIX%>/delete/:id',auth(...<%=returnRole.DELETE_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(deleteRate){_%>deleteRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.delete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.pathParams.id,req.body,req.user).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})
+<%_ }else{ _%>
+router.delete('/<%-ROUTE_PREFIX%>/delete/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(deleteRate){_%>deleteRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.delete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({pk:req.pathParams.id,isWarning:req.body.isWarning}).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})
+<%_}_%><%_}_%>
+<%_if(SUPPORT_API[i].method=="deleteMany"){_%>
+<%_let deleteManyRate = false _%>
+<%_ if(RATE){_%>
+<%_let rateObj=''_%>
+<%_let rateTime=''_%>
+<%_for(let [key,value] of Object.entries(RATE)){_%>
+<%_if(key ==='deleteMany'){_%>
+<% rateObj = value.limit%><%rateTime=value.time%><%_deleteManyRate = true_%>
+<%_}_%><%_}_%>
+<%_if(deleteManyRate){_%>
+const deleteRateLimiter=rateLimit({
+    windowMs:<%-rateTime%>,
+    max:<%-rateObj%>,
+    message: "Too many accounts deleted from this IP, please try again after an hour"
+});
+<%_}_%><%_}_%>
+<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("deleteMany") ; _%>
+router.delete('/<%-ROUTE_PREFIX%>/deleteMany',auth(...<%=returnRole.DELETE_MANY_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(deleteManyRate){_%>deleteRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.deleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.user).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})
+<%_ }else{ _%>
+router.delete('/<%-ROUTE_PREFIX%>/deleteMany',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(deleteManyRate){_%>deleteRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.deleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})
+<%_}_%><%_}_%>
+<%_if(SUPPORT_API[i].method=="softDelete"){_%>
+<%_ let softRate = false _%>
+<%_ if(RATE){_%>
+<%_let rateObj=''_%>
+<%_let rateTime=''_%>
+<%_for(let [key,value] of Object.entries(RATE)){_%>
+<%_if(key ==='softDelete'){_%>
+<% rateObj = value.limit%><%rateTime=value.time%><%_softRate = true_%>
+<%_}_%><%_}_%>
+<%_if(softRate){_%>
+const sDeleteRateLimiter=rateLimit({
+    windowMs:<%-rateTime%>,
+    max:<%-rateObj%>,
+    message: "Too many accounts deleted from this IP, please try again after an hour"
+});
+<%_}_%><%_}_%>
+<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("softDelete") ; _%>
+router.put('/<%-ROUTE_PREFIX%>/softDelete/:id',auth(...<%=returnRole.SOFT_DELETE_API%>), <%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(softRate){_%>sDeleteRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.softDelete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({pk:req.pathParams.id,loggedInUser: req.user}).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})
+<%_ }else{ _%>
+router.put('/<%-ROUTE_PREFIX%>/softDelete/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(softRate){_%>sDeleteRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.softDelete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({pk:req.pathParams.id}).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})
+<%_}_%><%_}_%>
+<%_if(SUPPORT_API[i].method=="softDeleteMany"){_%>
+<%_ let softManyRate = false _%>
+<%_ if(RATE){_%>
+<%_let rateObj=''_%>
+<%_let rateTime=''_%>
+<%_for(let [key,value] of Object.entries(RATE)){_%>
+<%_if(key ==='softDeleteMany'){_%>
+<% rateObj = value.limit%><%rateTime=value.time%><%_softManyRate = true_%>
+<%_}_%><%_}_%>
+<%_if(softManyRate){_%>
+const softDeleteManyRateLimiter=rateLimit({
+    windowMs:<%-rateTime%>,
+    max:<%-rateObj%>,
+    message: "Too many accounts deleted from this IP, please try again after an hour"
+});
+<%_}_%><%_}_%>
+<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("softDeleteMany") ; _%>
+router.put('/<%-ROUTE_PREFIX%>/softDeleteMany',auth(...<%=returnRole.SOFT_DELETE_MANY_API%>), <%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(softManyRate){_%>softDeleteManyRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+        <%-DB_MODEL%>Controller.softDeleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body.ids,req.user).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})
+<%_ }else{ _%>
+router.put('/<%-ROUTE_PREFIX%>/softDeleteMany',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%_ if(softManyRate){_%>softDeleteManyRateLimiter,<%_}_%>(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.softDeleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body.ids).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})
+<%_}_%><%_}_%>
+<%_}_%>
+
+<%_ if(USER_MODEL){ _%>
+<%_ if(typeof IS_AUTH !== "undefined" && IS_AUTH){ let returnRole = makePolicyRoutes("changePassword"); let profile = makePolicyRoutes("updateProfile"); _%>
+router.route('/<%-ROUTE_PREFIX%>/change-password').put(auth(...<%=returnRole.CHANGE_PASSWORD%>),(req,res,next)=>{
+    req = adaptRequest(req);
+    let params = {...req.body,userId:req.user.id}
+    <%-DB_MODEL%>Controller.changePassword(params).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+});
+router.route('/<%-ROUTE_PREFIX%>/update-profile').put(auth(...<%=profile.UPDATE_PROFILE%>),(req,res,next)=>{
+    req = adaptRequest(req);
+    <%-DB_MODEL%>Controller.updateProfile(req.body,req.user.id).then((result)=>{
+        sendResponse(res,result)
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+});
+<%_ } _%>
+<%_ } _%>
+
+<%_if(CUSTOM_ROUTES && CUSTOM_ROUTES.length){_%>
+<%_ CUSTOM_ROUTES.forEach((v,i)=> {_%>
+router.route("<%-v.api%>").<%-v.method%>( <%_if(v.policies && v.policies.length){_%>
+<%_v.policies.forEach((policy)=>{_%>
+<%_if(policy==='auth'){_%>auth(...[]),
+<%_}else{_%>
+<%-policy%>,<%_}_%>
+<%_})_%>
+    <%_}_%>(req, res, next) => {
+    req = adaptRequest(req);
+    <%-v.controller%>Controller.<%- v.functionName %>(req.body).then((result)=>{
+        sendResponse(res, result);
+    })
+    .catch((error) => {
+        sendResponse(res,error)
+    });
+})
+<%_})_%>
+<%_}_%>
+<%_ function makePolicyRoutes(type){
+    try{
+        let returnRoles = {}
+        returnRoles.CREATE_API = [],returnRoles.CREATE_BULK_API = [],returnRoles.READ_ALL_API = [],
+        returnRoles.READ_API = [],returnRoles.COUNT_API = [],returnRoles.UPDATE_API = [],returnRoles.UPDATE_BULK_API = [],
+        returnRoles.PARTIAL_UPDATE_API = [],returnRoles.SOFT_DELETE_API = [],returnRoles.DELETE_API = [],
+        returnRoles.CHANGE_PASSWORD = [],returnRoles.UPDATE_PROFILE = [],returnRoles.DELETE_MANY_API=[], returnRoles.SOFT_DELETE_MANY_API=[];
+        if (IS_AUTH) {
+            for (var [i, v] of Object.entries(LOGIN_ACCESS_PLATFORM)) {
+                if (v.includes(MODULE)) {
+                    switch (type) {
+                        case 'create':
+                            returnRoles.CREATE_API.push(`createBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
+                            break;
+                        case 'createBulk':
+                            returnRoles.CREATE_BULK_API.push(`addBulkBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
+                            break;
+                        case 'findAll':
+                            returnRoles.READ_ALL_API.push(`getAllBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
+                            break;
+                        case 'findById':
+                            returnRoles.READ_API.push(`getBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
+                            break;
+                        case 'count':
+                            returnRoles.COUNT_API.push(`getCountBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
+                            break;
+                        case 'update': 
+                            returnRoles.UPDATE_API.push(`updateBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
+                            break;
+                        case 'bulkUpdate':
+                            returnRoles.UPDATE_BULK_API.push(`updateBulkBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
+                            break;
+                        case 'partialUpdate':
+                            returnRoles.PARTIAL_UPDATE_API.push(`partialUpdateBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`)
+                            break;
+                        case 'softDelete':
+                            returnRoles.SOFT_DELETE_API.push(`softDeleteBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`)
+                            break;
+                        case 'delete':
+                            returnRoles.DELETE_API.push(`deleteBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
+                            break;
+                        case 'changePassword':
+                            returnRoles.CHANGE_PASSWORD.push(`changePasswordBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
+                            break;
+                        case 'updateProfile':
+                            returnRoles.UPDATE_PROFILE.push(`updateProfileBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
+                            break;
+                        case 'deleteMany':
+                            returnRoles.DELETE_MANY_API.push(`deleteManyBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
+                            break;
+                        case 'softDeleteMany':
+                            returnRoles.SOFT_DELETE_MANY_API.push(`softDeleteManyBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+       return returnRoles;
+    }catch(error){
+        throw error;
+    }
+}_%>
+module.exports = router;

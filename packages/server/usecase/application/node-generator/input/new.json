@@ -1,0 +1,677 @@
+{
+	"config": {
+		"projectName": "PasswordCC",
+		"path": "/home/shubhamjasani/Documents/NewStructure",
+		"port": "4000",
+		"databaseName": "test",
+		"platform": [
+			"admin",
+			"device",
+			"desktop",
+			"client"
+		],
+		"types": [
+			"User",
+			"Admin"
+		],
+		"isAuthentication": true,
+		"loginAccess": {
+			"User": [
+				"admin",
+				"device",
+				"desktop"
+			],
+			"Admin": [
+				"admin",
+				"device",
+				"client",
+				"desktop"
+			]
+		}
+	},
+	"authentication": {
+		"platform": [
+			"admin",
+			"device",
+			"desktop",
+			"client"
+		],
+		"tokenExpireTime": "30000",
+		"types": [
+		  "Admin",
+		  "User",
+		  "Guest"
+		],
+		"loginAccess": {
+		  "Admin": [
+			"admin",
+			"device",
+			"desktop",
+			"client"
+		  ],
+		  "User": [
+			"device",
+			"desktop",
+			"client"
+		  ],
+		  "Guest": [
+			"device",
+			"desktop",
+			"client"
+		  ]
+		},
+		"isAuthentication": true,
+		"authModule": "user",
+		"twoFactorAuthentication": {
+		  "platform": {
+			"admin": false
+		  },
+		  "otpSendMedium": {
+			"masterIds": [
+			  "60867d62ebfd00625f9c68b6"
+			],
+			"email": true,
+			"emailTemplateId": "60b9e26542048c0015d5ac59",
+			"emailTemplate": "twoFactorLogin"
+		  }
+		},
+		"loginWith": {
+		 "username": ["username"], 
+		 "password": "pass"
+		},
+		"loginRateLimit": {
+		  "max": 5
+		},
+		"loginRetryLimit": {
+		  "max": 5,
+		  "key": "loginRetryLimit"
+		},
+		"resetPassword": {
+		  "link": {
+			"masterIds": [
+			  "60867d6bebfd00625f9c68b7"
+			],
+			"sms": true,
+			"smsTemplateId": "60b9e30842048c0015d5ac5e",
+			"smsTemplate": "resetPassword"
+		  },
+		  "expireTime": 10
+		},
+		"isSocialMediaAuth": true,
+		"socialPlatform": [
+		  {
+			"type": "GOOGLE",
+			"platform": [
+			  "client"
+			],
+			"credential": {},
+			"platforms": [
+			  "client"
+			]
+		  }
+		],
+		"restrictNoOfDevice": true,
+		"noOfDevice": 3
+	  },
+	"models": {
+		"user": {
+			"username": {
+				"type": "SingleLine"
+			},
+			"pass": {
+				"type": "SingleLine"
+			},
+			"email": {
+				"type": "String"
+			},
+			"name": {
+				"type": "String"
+			},
+            "mobiles":[{
+                "number":"Decimal"
+            }],
+			"properties": {
+				"type": "virtualRelation",
+				"ref": "property",
+				"foreignField": "userId",
+				"localField": "_id"
+			},
+			"subProperties": {
+				"type": "virtualRelation",
+				"ref": "subproperty",
+				"foreignField": "userId",
+				"localField": "_id"
+			}
+		},
+		"master": {
+			"name": {
+				"type": "String",
+				"unique": true
+			},
+			"normalizeName": {
+				"type": "SingleLine"
+			},
+			"slug": {
+				"type": "SingleLine"
+			},
+			"code": {
+				"type": "SingleLine"
+			},
+			"group": {
+				"type": "SingleLine"
+			},
+			"description": {
+				"type": "MultiLine"
+			},
+			"isActive": {
+				"type": "Boolean"
+			},
+			"parentId": {
+				"type": "ObjectId",
+				"ref": "master"
+			},
+			"isDeleted": {
+				"type": "Boolean"
+			},
+			"parentName": {
+				"type": "String"
+			},
+			"createdTimestamp": {
+				"type": "Date"
+			},
+			"updatedTimestamp": {
+				"type": "Date"
+			}
+		},
+		"depreciationModel": {
+			"name": {
+				"type": "String"
+			},
+			"ageOfDepreciation": {
+				"type": "Number"
+			},
+			"ageOfConstantDepreciation": {
+				"type": "Number"
+			},
+			"initialDepreciationPer": {
+				"type": "Number"
+			},
+			"scrapValuePer": {
+				"type": "Number"
+			}
+		},
+		"property": {
+			"propertyName": {
+				"type": "SingleLine"
+			},
+			"propetyType": {
+				"type": "ObjectId",
+				"ref": "master"
+			},
+			"street": {
+				"type": "String"
+			},
+			"StreetNumber": {
+				"type": "String"
+			},
+			"floorNumber": {
+				"type": "String"
+			},
+			"facing": {
+				"type": "String"
+			},
+			"zip": {
+				"type": "String"
+			},
+			"city": {
+				"type": "String"
+			},
+			"landmark": {
+				"type": "String"
+			},
+			"buildingName": {
+				"type": "String"
+			},
+			"propertyNo": {
+				"type": "Number"
+			},
+			"dateOfPurchase": {
+				"type": "Date"
+			},
+			"amount": {
+				"type": "Number"
+			},
+			"propertySize": {
+				"type": "String"
+			}
+		},
+		"propertyAttribute": {
+			"propertyId": {
+				"type": "ObjectId",
+				"ref": "property"
+			},
+			"propertyAttributeType": {
+				"type": "ObjectId",
+				"ref": "master"
+			},
+			"total": {
+				"type": "Number"
+			},
+			"createdTimestamp": {
+				"type": "Date"
+			},
+			"updatedTimestamp": {
+				"type": "Date"
+			}
+		},
+		"subPropertyAttribute": {
+			"propertyId": {
+				"type": "ObjectId",
+				"ref": "property"
+			},
+			"propertyAttributeId": {
+				"type": "ObjectId",
+				"ref": "propertyAttribute"
+			},
+			"attributeName": {
+				"type": "String"
+			},
+			"area": {
+				"type": "Number"
+			},
+			"createdTimestamp": {
+				"type": "Date"
+			},
+			"updatedTimestamp": {
+				"type": "Date"
+			}
+		},
+		"enhancement": {
+			"subPropertyAttributeId": {
+				"type": "ObjectId",
+				"ref": "subPropertyAttribute"
+			},
+			"enhancementTypeId": {
+				"type": "ObjectId",
+				"ref": "master"
+			},
+			"attributeName": {
+				"type": "String"
+			},
+			"nameOfItem": {
+				"type": "String"
+			},
+			"date": {
+				"type": "Date"
+			},
+			"theme": {
+				"type": "ObjectId",
+				"ref": "master"
+			},
+			"subject": {
+				"type": "ObjectId",
+				"ref": "master"
+			},
+			"depreciationModel": {
+				"type": "ObjectId",
+				"ref": "master"
+			},
+			"timeInvested": {
+				"type": "Number"
+			},
+			"pricePerHour": {
+				"type": "Number"
+			},
+			"totalPrice": {
+				"type": "Number"
+			},
+			"description": {
+				"type": "String"
+			},
+			"invoice": [
+				"String"
+			],
+			"photos": [
+				"String"
+			]
+		}
+	},
+	"modelConfig": {
+		"user": {
+			"admin": [
+				"C",
+				"R",
+				"U",
+				"D",
+				"HD",
+				"UP",
+				{
+					"isAuth": true
+				}
+			],
+			"device": [
+				"C",
+				"R",
+				"UP",
+				{
+					"isAuth": true
+				}
+			],
+			"client": [
+				"C",
+				"R",
+				{
+					"isAuth": true
+				}
+			],
+			"desktop": [
+				"C",
+				"R",
+				"UP",
+				{
+					"isAuth": true
+				}
+			]
+		},
+		"master": {
+			"admin": [
+				"C",
+				"R",
+				"U",
+				"D",
+				"UP",
+				"HD"
+			],
+			"device": [
+				"C",
+				"R",
+				"UP",
+				{
+					"isAuth": true
+				}
+			],
+			"client": [
+				"C",
+				"R",
+				{
+					"isAuth": true
+				}
+			],
+			"desktop": [
+				"C",
+				"R",
+				"UP",
+				{
+					"isAuth": true
+				}
+			]
+		},
+		"depreciationModel": {
+			"admin": [
+				"C",
+				"R",
+				"U",
+				"D",
+				"UP"
+			],
+			"device": [
+				"C",
+				"R",
+				"UP",
+				{
+					"isAuth": true
+				}
+			],
+			"client": [
+				"C",
+				"R",
+				{
+					"isAuth": true
+				}
+			],
+			"desktop": [
+				"C",
+				"R",
+				"UP",
+				{
+					"isAuth": true
+				}
+			]
+		},
+		"property": {
+			"admin": [
+				"C",
+				"R",
+				"U",
+				"D",
+				"HD",
+				"UP",
+				"BC",
+				{
+					"isAuth": true
+				}
+			],
+			"device": [
+				"C",
+				"R",
+				"UP",
+				{
+					"isAuth": true
+				}
+			],
+			"client": [
+				"C",
+				"R",
+				{
+					"isAuth": true
+				}
+			],
+			"desktop": [
+				"C",
+				"R",
+				"UP",
+				{
+					"isAuth": true
+				}
+			]
+		},
+		"propertyAttribute": {
+			"admin": [
+				"C",
+				"R",
+				"U",
+				"D",
+				"UP"
+			],
+			"device": [
+				"C",
+				"R",
+				"UP",
+				{
+					"isAuth": true
+				}
+			],
+			"client": [
+				"C",
+				"R",
+				{
+					"isAuth": true
+				}
+			],
+			"desktop": [
+				"C",
+				"R",
+				"UP",
+				{
+					"isAuth": true
+				}
+			]
+		},
+		"subPropertyAttribute": {
+			"admin": [
+				"C",
+				"R",
+				"U",
+				"D",
+				"UP"
+			],
+			"device": [
+				"C",
+				"R",
+				"UP",
+				{
+					"isAuth": true
+				}
+			],
+			"client": [
+				"C",
+				"R",
+				{
+					"isAuth": true
+				}
+			],
+			"desktop": [
+				"C",
+				"R",
+				"UP",
+				{
+					"isAuth": true
+				}
+			]
+		},
+		"enhancement": {
+			"admin": [
+				"C",
+				"R",
+				"U",
+				"D",
+				"UP"
+			],
+			"device": [
+				"C",
+				"R",
+				"UP",
+				{
+					"isAuth": true
+				}
+			],
+			"client": [
+				"C",
+				"R",
+				{
+					"isAuth": true
+				}
+			],
+			"desktop": [
+				"C",
+				"R",
+				"UP",
+				{
+					"isAuth": true
+				}
+			]
+		}
+	},
+	"newModelConfig": {
+		"user": {
+			"admin": {
+				"C": {
+					"policy": [],
+					"isAuth": true,
+					"attributes": [
+						"username",
+						"email"
+					]
+				},
+				"R": {
+					"policy": [],
+					"isAuth": true,
+					"attributes": [
+						"username",
+						"email"
+					]
+				},
+				"U": {
+					"policy": [],
+					"isAuth": true,
+					"attributes": [
+						"username",
+						"email"
+					]
+				}
+			}
+		}
+	},
+	"routes": {
+		"apis": []
+	},
+	"policy": {},
+	"cronJobs": {
+		"jobConfiguration": []
+	},
+	"constants": {},
+	"fileUpload": {
+		"uploads": [
+			{
+				"validationType": [],
+				"_id": "61015094e6d598001c1edb6a",
+				"storage": "local"
+			}
+		]
+	},
+	"packages": {
+		"dependencies": {
+			"exceljs": ""
+		}
+	},
+	"environmentVariables": null,
+    "envVariables": {
+        "environments": [
+          "QA",
+          "PRODUCTION",
+          "DEVELOPMENT"
+        ],
+        "customJson": [
+          {
+            "value": {
+              "DEVELOPMENT": "3000",
+			  "PRODUCTION":"6000",
+			  "QA":"7000"
+            },
+            "key": "PORT",
+            "dataType": ""
+          }
+        ]
+      },
+	"templatesData": {},
+	"hooks": {},
+	"rolePermission": {
+		"user": {
+			"C": [
+				"User",
+				"Admin"
+			],
+			"R": [
+				"User",
+				"Admin"
+			],
+			"U": [
+				"User",
+				"Admin"
+			],
+			"D": [
+				"User",
+				"Admin"
+			]
+		}
+	},
+	"socket": {
+		"selected": true
+	},
+	"authenticationConfig": {
+		"socialPlatform": []
+	},
+	"id": "PasswordField",
+	"applicationId": "61014ff8e6d598001c1eda867",
+	"projectType": "CC"
+}

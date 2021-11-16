@@ -1,0 +1,83 @@
+const JWT={
+    <%_ PLATFORM.forEach(function (plt,index) { _%>
+        <%- plt.toUpperCase() %>_SECRET:"myjwt<%- plt.toLowerCase() %>secret",
+    <%_ }); _%>    
+    EXPIRES_IN: <%-TOKEN_EXPIRE_TIME%>
+}
+
+const USER_ROLE ={
+    <%_ let index_role = 0; _%>
+    <%_ if( USER_ROLE.includes('admin') || USER_ROLE.includes('Admin')) {_%>
+        <%_ USER_ROLE = USER_ROLE.filter(e=>e!=='admin'&&e!=='Admin') _%>
+        Admin :<%= index_role+=1 %>,
+    <%_ } _%>    
+    <%_ USER_ROLE.forEach(function (role,index) { _%>
+        <%- role %>:<%- index_role+=1 %>,
+    <%_ }); _%>
+}
+
+const PLATFORM = {
+<%_ PLATFORM.forEach(function (plt,index) { _%>
+    <%- plt.toUpperCase() %>:<%- index+1 %>,
+<%_ }); _%>
+    
+}
+
+let LOGIN_ACCESS ={
+<% Object.keys(LOGIN_ACCESS).map(function (key,index) { -%>
+    [USER_ROLE.<%- key %>]:<%_ let Arr=[]; LOGIN_ACCESS[key].forEach(function(plt,index){ _%>
+    <%_Arr.push(`PLATFORM.${plt.toUpperCase()}`);_%>
+<%_ }) _%><%-JSON.stringify(Arr).toString().replace(/"/g, "");%>,           
+<% }); -%>
+}
+
+const DEFAULT_ROLE= 1
+
+const ROLE_RIGHTS={
+    <% for(var i = 0; i < AUTHORIZE_ROUTE_KEY.length; i++) { %>
+    [USER_ROLE.<%- AUTHORIZE_ROUTE_KEY[i] %>] : <%- JSON.stringify(AUTHORIZE_ROUTE_VALUE[i],null,2) %>,
+    <%}%>
+}
+<%_if(LOGIN_RETRY_LIMIT){_%>
+const MAX_LOGIN_RETRY_LIMIT = <%=LOGIN_RETRY_LIMIT.max%>;   
+const LOGIN_REACTIVE_TIME = <%=LOGIN_RETRY_LIMIT.reActiveTime%>;
+<%_}_%>    
+
+<%_if(RESET_PASSWORD){_%>
+const FORGOT_PASSWORD_WITH = <%-RESET_PASSWORD%>
+<%_}_%>
+
+<%_if(DEVICE_ALLOWED_REQUIRED){_%>
+const NO_OF_DEVICE_ALLOWED = <%-NO_OF_DEVICE%>
+<%_}_%>
+    
+<%_ let customRoutes=[]_%>
+<%_if(CUSTOM_ROUTES){_%>
+<%_ for(let platform in CUSTOM_ROUTES){ 
+    customRoutes.push(`${platform.toUpperCase()}_CUSTOM_ROUTES`)
+_%>
+const <%-platform.toUpperCase()%>_CUSTOM_ROUTES = <%=CUSTOM_ROUTES[platform]%>   
+<%_ } _%>
+<%_}_%>
+
+module.exports = {
+    JWT,
+    USER_ROLE,
+    DEFAULT_ROLE,
+    ROLE_RIGHTS,
+    PLATFORM,
+    <%_if(LOGIN_RETRY_LIMIT){_%>
+    MAX_LOGIN_RETRY_LIMIT,
+    LOGIN_REACTIVE_TIME,
+    <%_}_%>
+    <%_if(RESET_PASSWORD){_%>
+    FORGOT_PASSWORD_WITH,
+    <%_}_%>
+    LOGIN_ACCESS,
+    <%_if(DEVICE_ALLOWED_REQUIRED){_%>
+    NO_OF_DEVICE_ALLOWED,
+    <%_}_%>
+    <%_ if(CUSTOM_ROUTES){ _%>
+    <%-customRoutes.join()%>
+    <%_ } _%>
+}

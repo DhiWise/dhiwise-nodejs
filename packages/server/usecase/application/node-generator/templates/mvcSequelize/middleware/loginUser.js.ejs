@@ -1,0 +1,37 @@
+const jwt = require("jsonwebtoken");
+<%_ PLATFORM.forEach((v)=>{ _%>
+const <%-v.toLowerCase()%>Secret = require("../constants/authConstant").JWT.<%-v.toUpperCase()%>_SECRET;
+<%_ }) _%> 
+/*
+* policy : authentication policy to check, 
+*          whether user is authenticated or not
+*/
+const authenticateJWT = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        let url = req.originalUrl;
+        let secret = '';
+        <%_ var c = 0; PLATFORM.forEach((v)=>{ c++;  _%>
+            <%_ if(c===1){ _%>
+            if(url.includes(<%= v.toLowerCase() %>)){
+                secret = <%-v.toLowerCase()%>Secret;
+            }
+            <%_ }else{ _%>
+            else if(url.includes(<%= v.toLowerCase()%>)){
+                secret = <%-v.toLowerCase()%>Secret;
+            }
+            <%_ } _%> 
+        <%_  }) _%>
+        jwt.verify(token,secret, (err, user) => {
+            if (err) {
+                return res.unAuthorizedRequest(err);
+            }
+            req.user = user;
+            next();
+        });
+    } else {
+        return res.unAuthorizedRequest({});
+    }
+};
+module.exports = authenticateJWT
