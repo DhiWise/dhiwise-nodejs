@@ -95,7 +95,7 @@ const TechnologySetStep = () => {
           <ContainerBox className="py-0 text-center">
             <div className="full">
               <Heading className="hidden md:block" variant="h5">
-                Create node application
+                Create Node.js application
               </Heading>
             </div>
           </ContainerBox>
