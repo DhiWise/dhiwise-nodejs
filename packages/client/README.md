@@ -1,4 +1,4 @@
-# DhiWise Node Code Generator     
+# Client    
 
 This is a node code generator panel by using you can give input's and generate code.
 
