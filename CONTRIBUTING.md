@@ -1,6 +1,6 @@
 # Contributing
 
-We would ❤️ it if you contributed to the project and helped make it even better.
+We would appreciate it if you contributed to the project and helped make it even better.
 All kind of contributions are welcome, including features, issues, documentation, translation, guides, and more.
 
 ## Got a question?
@@ -27,13 +27,15 @@ If you want to help out with a code contribution, our project uses the following
 ### Server-side
 
 - [Node.JS](https://nodejs.org/)
-- [MongoDB](https://docs.mongodb.com/guides/)
-- [mongoose](https://mongoosejs.com/docs/documents.html)
-- [Jest](https://docs.nestjs.com/fundamentals/testing) (for testing)
 
 ### Client-side
 
 - [React](https://reactjs.org/docs/getting-started.html)
+
+### Testing
+
+- [Jest](https://docs.nestjs.com/fundamentals/testing) (for testing)
+
 
 ## <a name="submit-pr"></a> How do I make a contribution?
 
@@ -46,7 +48,7 @@ Fork the repository associated with the issue to your local GitHub organization.
 Clone the repository to your local machine:
 
 ```
-git clone https://github.com/amplication/amplication
+git clone https://github.com/DhiWise/nodejs-code-generator
 
 ```
 
@@ -76,7 +78,10 @@ Push the changes to the remote repository using:
 git push origin branch-name-here
 ```
 
-In GitHub, submit a pull request to the upstream repository. Title the pull request with a short description of the changes made and the issue or bug number associated with your change.
+### Branch Guidelines
+1. If you are fixing a bug, start the branch name with bug/bug-name
+2. If you are adding a feature, start the branch name with feature/feature-name
+3. Submit you branch to master by creating a PR.
 
 In the description of the pull request, explain the changes that you made, any issues you think exist with the pull request you made, and any questions you have for the maintainer.
 
@@ -107,22 +112,14 @@ List of types:
 - feat: A new feature
 - fix: A bug fix
 - docs: Changes to the documentation
-- style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
 - refactor: A code change that neither fixes a bug nor adds a feature
 - perf: A code change that improves performance
 - test: Adding missing or correcting existing tests
-- chore: Changes to the build process or auxiliary tools and libraries such as documentation generation
-
-List of packages:
-
-- server
-- client
-- data-service-gen
 
 ### Code of conduct
 
 Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
 
-[Code of Conduct](https://github.com/dhiwise/nodejs-code-generator/blob/master/code_of_conduct.md)
+[Code of Conduct](https://github.com/DhiWise/nodejs-code-generator/blob/master/CODE_OF_CONDUCT.md)
 
 Our Code of Conduct means that you are responsible for treating everyone on the project with respect and courtesy.
