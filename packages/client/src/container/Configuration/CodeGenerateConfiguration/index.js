@@ -222,7 +222,6 @@ export const CodeGenerateConfiguration = (props) => {
                       <Heading variant="h4">Authentication</Heading>
                       <Description className="mt-1">
                         Configure authentication module and customize security for your project.
-                        <a target="_blank" className="hover:underline text-primary-dark ml-1" href="https://help.dhiwise.com/configure-authentication" rel="noreferrer">Learn more</a>
                       </Description>
                     </div>
                     <div className="flex justify-end w-4/12 xxl:w-6/12">
@@ -394,7 +393,6 @@ export const CodeGenerateConfiguration = (props) => {
                       <Heading variant="h4">Social auth setting</Heading>
                       <Description className="mt-1">
                         Fill details of the respective platforms you want to enable social authetication for. All details will be stored in the .env file. You can further update the detail in the same file after downloading the code.
-                        <a target="_blank" className="hover:underline text-primary-dark ml-1" href="https://help.dhiwise.com/configure-authentication" rel="noreferrer">Learn more</a>
                       </Description>
                     </div>
                     <div className="flex justify-end w-3/12 xxl:w-6/12">
@@ -478,7 +476,6 @@ export const CodeGenerateConfiguration = (props) => {
                       <Heading variant="h4">Security setting</Heading>
                       <Description className="mt-1">
                         Manage number of API calls per minute to avoid undesired activity in your project.
-                        <a target="_blank" className="hover:underline text-primary-dark ml-1" href="https://help.dhiwise.com/configure-notification-security-and-upload-attachment" rel="noreferrer">Learn more</a>
                       </Description>
                     </div>
                     <div className="flex justify-end w-4/12 xxl:w-6/12">

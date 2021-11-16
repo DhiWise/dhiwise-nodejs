@@ -136,7 +136,6 @@ const Configuration = () => {
                   desc={(
                     <>
                       Select the platform for which you would like to build an application. Just write any name and press enter to add a custom platform.
-                      <a href="https://help.dhiwise.com/what-is-platform-and-how-it-helps-to-manage-code-in-a-better-way" className="text-primary-dark ml-1 hover:underline" target="_blank" rel="noreferrer">Learn more</a>
                     </>
                           )}
                   error={getError(errors, 'platform', 'Platform')}

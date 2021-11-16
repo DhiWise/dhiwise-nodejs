@@ -1,4 +1,4 @@
-# DhiWise Node Code Generator     
+# Node.js Code Generator     
 
 This is a node code generator panel by using you can give input's and generate code.
 

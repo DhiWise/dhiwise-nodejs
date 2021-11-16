@@ -26,10 +26,6 @@ export const UploadAttachmentSetting = (props) => {
           <Heading variant="h4">Upload attachment setting</Heading>
           <Description className="mt-1">
             Configure type of upload, type of file, and maximum size of the file you want to allow in your system.
-            <a target="_blank" className="hover:underline text-primary-dark ml-1" href="https://help.dhiwise.com/configure-notification-security-and-upload-attachment" rel="noreferrer">Learn more</a>
-            {/* Configure type of uploads(single upload/multi file upload), type of file, and maximum size of the file you want to allow in your system.
-            Content before single upload/multi file upload option got removed
-            */}
           </Description>
         </div>
         <div className="flex justify-end w-4/12 xxl:w-6/12">
