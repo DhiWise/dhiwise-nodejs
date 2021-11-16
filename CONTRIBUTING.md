@@ -7,18 +7,19 @@ All kind of contributions are welcome, including features, issues, documentation
 
 You can ask questions, consult with more experienced DhiWise users, and discuss DhiWise-related topics in the our [Discord channel](https://discord.gg/hTuNauNjyJ).
 
-## Found a bug?
+## Bugs
 
-If you find a bug in the source code, you can help us by [submitting an issue](https://github.com/dhiwise/nodejs-code-generator/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=) to our GitHub Repository. Even better, you can submit a Pull Request with a fix.
+If you find a bug in the source code, you can help us by [submitting an issue](https://github.com/DhiWise/nodejs-code-generator/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=) to our GitHub Repository. Even better, you can submit a Pull Request with a fix.
 
-## Missing a feature?
+## Feature Suggestion
 
-You can request a new feature by [submitting an issue](https://github.com/dhiwise/nodejs-code-generator/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=) to our GitHub Repository.
+You can request a new feature by [submitting an issue](https://github.com/DhiWise/nodejs-code-generator/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=) to our GitHub Repository.
 
 If you would like to implement a new feature, please submit an issue with a proposal for your work first, to be sure that we can use it. Please consider what kind of change it is:
 
 - For a Major Feature, first open an issue and outline your proposal so that it can be discussed. This will also allow us to better coordinate our efforts, prevent duplication of work, and help you craft the change so that it's successfully integrated in the project.
-- Small Features can be crafted and directly [submitted as a Pull Request](#submit-pr).
+
+- Small Features can be added directly [submitted as a Pull Request](#submit-pr).
 
 ## What do I need to know to help?
 
@@ -34,7 +35,7 @@ If you want to help out with a code contribution, our project uses the following
 
 ### Testing
 
-- [Jest](https://docs.nestjs.com/fundamentals/testing) (for testing)
+- [Jest](https://jestjs.io/) (for testing)
 
 
 ## <a name="submit-pr"></a> How do I make a contribution?
@@ -66,10 +67,10 @@ Once done, stage the changes that are ready to be committed:
 git add .
 ```
 
-Commit the changes with a short message. (See below for more details on how we structure our commit messages)
+Commit the changes with a short message. (UI for better commit messages).
 
 ```
-git commit -m "<type>(<package>): <subject>"
+npm run commit
 ```
 
 Push the changes to the remote repository using:
