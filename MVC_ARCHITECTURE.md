@@ -45,19 +45,19 @@
 			└── <model>Controller.js   - contains CRUD Operations
 ```
 
-6. middleware
+5. middleware
 - Middleware files for authentication, authorization and role-access.
 
-7. models
+6. models
 - Database models 
 
-8. postman
+7. postman
 - Postman collection of APIs (Import this JSON in Postman to run the APIs)
 
-9. public 
+8. public 
 - Assets used in application
 
-10. routes
+9. routes
 ```
 	├── routes
 		├── platform
@@ -68,7 +68,7 @@
 ```
 - index.js file, exports platform routes, imported into app.js to access all the routes.
 
-11. services
+10. services
 ```
 	├── services
 		├── jobs                     - cron jobs
@@ -76,7 +76,7 @@
 
 ```
 
-12. utils
+11. utils
 ```
 	├── utils
 		├── validations              - joi validations files for every model
@@ -87,6 +87,6 @@
 
 ```
 
-13. env files
+12. env files
 - You can add credentials, port, database-name etc as per your environment(Development/Production).
 - If you are running test environment then testcases will run using test database,and its configuration is there inside app.js
