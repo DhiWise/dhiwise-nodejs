@@ -11,7 +11,7 @@ Nodejs Code Generator accelerates your existing app development process and help
 
 * [Get started](#get-started)
 
-* [Folder Structure](#folder-structure)
+* [Supporeted Architectures](#supporeted-architectures)
 
 * [Features](#features-of-generated-code)
 
@@ -22,42 +22,36 @@ After Successful run, A user can configure different settings using UI, and buil
 1. To run 
   ```npm i && npm run start```
 2. With ```npm run start``` project will run on 3000 port.
-3. APIs will run on 3053 port in the backend
+3. Run http://localhost:3000 and you will see create application form. After creating an application you can configure modules and build the app to get the source code.
+<img src="https://development-dhvs.s3.ap-south-1.amazonaws.com/uploads/user-profile/open-source.gif" alt="create-application"/>
 4. After a Successful build, Generated code will resides inside the **packages/server/output** folder.
 
+## Supporeted architectures
 
-## Folder Structure
-```
-├── packages
-│   ├── client -- UI
-│   ├── server -- APIs cosumed from UI
-```
+This project provides two architectures to choose from, while creating an application.
+### <a href="https://github.com/DhiWise/nodejs-code-generator/blob/master/CLEAN_CODE.md">Clean Code</a>
+The main rule of clean architecture is that code dependencies can only move from the outer levels inward. Code on the inner layers can have no knowledge of functions on the outer layers.
 
-## Development
-Nodejs-code-generator is build using two packages, one is client and other is server. run ```npm i ``` to install all the dependencies from both the packages. 
+### <a href="https://github.com/DhiWise/nodejs-code-generator/blob/master/MVC_ARCHITECTURE.md">MVC - Model-View-Controller</a>
+The Model-View-Controller (MVC) is an architectural pattern that separates an application into three main logical components: the model, the view, and the controller. Each of these components are built to handle specific development aspects of an application.
 
-## <a href="https://github.com/DhiWise/nodejs-code-generator/blob/master/packages/client/README.md">Client</a>
-Client is the front end of the platform that provides you with an easy to use UI for building your next pro-code application. The client is based on React.
-
-## <a href="https://github.com/DhiWise/nodejs-code-generator/blob/master/packages/server/README.md">Server</a>
-Server packages holds the backend APIs that will process and store the user configuaration to build the procode nodejs application and generate the source code. server is build using technologies like nodejs, mongodb, mongoose and many more.
 
 ## Features of generated code
 1. User Authentication and Authorization (using Passport)
 2. Social Login APIs
 3. CRUD APIs with middleware and Attribute selection
 4. List API with pagination, populate and queries
-5. Upload attachment API with size and mime-type validation (local and s3)
+5. Upload attachment API with validation and storage options like (Local server or S3 public/private bucket)
 6. Role-Permission
 8. Hooks and Indexes
 9. Policy/middleware
-10. Request body validator (using joi)
-11. Standard error and response messages
+10. API request body validation (Using joi)
+11. API response with standard error and message pattern
 12. Test cases
 13. Postman collection and API documentation
 15. Constants
 17. Environment Variables for development, qa and production
-18. Custom Routes
+18. Custom API setup
 19. Multiple Platform selection and User type Configuration
 20. MVC and Clean-code Architecuture 
 
