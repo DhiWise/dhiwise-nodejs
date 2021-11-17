@@ -110,6 +110,7 @@
     "eslint-plugin-react": "^7.26.1",
     "eslint-plugin-react-hooks": "^4.2.0",
     "react-app-rewire-aliases": "^0.2.0",
-    "react-app-rewired": "^2.1.8"
+    "react-app-rewired": "^2.1.8",
+    "@babel/eslint-parser": "^7.15.8"
   }
 }
