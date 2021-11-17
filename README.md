@@ -59,11 +59,11 @@ The Model-View-Controller (MVC) is an architectural pattern that separates an ap
 1. MongoDB
 2. SQL Server
 3. MYSQL
-4. PosgreSQL
+4. PostgreSQL
 
 ## Contribution
 
-Have you found a bug :lady_beetle: ? <a href="https://github.com/DhiWise/nodejs-code-generator/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=">Report Here </a>
+Have you found a bug :lady_beetle: ? <a href="https://github.com/DhiWise/nodejs-code-generator/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=">Report here </a>
 or you have a nice feature 💡 to contribute ? Add it <a href="https://github.com/DhiWise/nodejs-code-generator/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=">here </a> 
 <br/>
 Our <a href="https://github.com/DhiWise/nodejs-code-generator/blob/master/CONTRIBUTING.md">Contribution guide </a> will help you how to contribute.
