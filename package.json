@@ -26,7 +26,20 @@
     "lerna": "^4.0.0",
     "commitizen": "^4.2.4",
     "conventional-github-releaser": "^3.1.2",
-    "cz-lerna-changelog": "^2.0.3"
+    "cz-lerna-changelog": "^2.0.3",
+    "@babel/plugin-proposal-class-properties": "^7.14.5",
+    "@babel/plugin-transform-react-jsx": "^7.14.9",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.22.2",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.26.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "react-app-rewire-aliases": "^0.2.0",
+    "react-app-rewired": "^2.1.8",
+    "@babel/eslint-parser": "^7.15.8",
+    "supertest": "^6.1.6"
   },
   "config": {
     "commitizen": {
