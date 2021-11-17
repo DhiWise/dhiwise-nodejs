@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@babel/eslint-parser": "^7.15.8",
     "@babel/parser": "^7.15.8",
     "@babel/traverse": "^7.15.4",
     "@dhiwise/icons": "^0.0.9",
