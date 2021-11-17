@@ -3,7 +3,7 @@
 
 # Nodejs Code Generator
 <p>
-Node Code Generator accelerates your existing app development process and helps you build web apps instantly with production ready source code. With this package you can create configurable nodejs applications.
+Nodejs Code Generator accelerates your existing app development process and helps you build web apps instantly with production ready source code. With this package you can create configurable nodejs applications.
 <br/>
 </p>
 
