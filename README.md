@@ -11,7 +11,7 @@ Nodejs Code Generator accelerates your existing app development process and help
 
 * [Get started](#get-started)
 
-* [Supporeted Architectures](#supporeted-architectures)
+* [Supported Architectures](#supported-architectures)
 
 * [Features](#features-of-generated-code)
 
@@ -26,7 +26,7 @@ After Successful run, A user can configure different settings using UI, and buil
 <img src="https://development-dhvs.s3.ap-south-1.amazonaws.com/uploads/user-profile/open-source.gif" alt="create-application"/>
 4. After a Successful build, Generated code will resides inside the **packages/server/output** folder.
 
-## Supporeted architectures
+## Supported architectures
 
 This project provides two architectures to choose from, while creating an application.
 ### <a href="https://github.com/DhiWise/nodejs-code-generator/blob/master/CLEAN_CODE.md">Clean Code</a>
@@ -39,7 +39,7 @@ The Model-View-Controller (MVC) is an architectural pattern that separates an ap
 ## Features of generated code
 1. User Authentication and Authorization (using Passport)
 2. Social Login APIs
-3. CRUD APIs with middleware and Attribute selection
+3. CRUD APIs with middleware and attributes selection
 4. List API with pagination, populate and queries
 5. Upload attachment API with validation and storage options like (Local server or S3 public/private bucket)
 6. Role-Permission
@@ -52,8 +52,8 @@ The Model-View-Controller (MVC) is an architectural pattern that separates an ap
 15. Constants
 17. Environment Variables for development, qa and production
 18. Custom API setup
-19. Multiple Platform selection and User type Configuration
-20. MVC and Clean-code Architecuture 
+19. Multiple Platform selection and User type configuration
+20. MVC and Clean-code architecture 
 
 ### Supported Databases
 1. MongoDB

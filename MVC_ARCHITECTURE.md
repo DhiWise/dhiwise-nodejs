@@ -89,4 +89,4 @@
 
 12. env files
 - You can add credentials, port, database-name etc as per your environment(Development/Production).
-- If you are running test environment then testcases will run using test database,and its configuration is there inside app.js
+- If you are running test environment then test cases will run using test database,and its configuration is there inside app.js
