@@ -1,0 +1,15 @@
+
+const find = async (model,{
+    filter = {}, attributes=[], order=[] 
+}) => {
+    const result = await model.findAll({
+      where: filter
+    },
+    {attributes: attributes},
+    {order: order})
+    return result;
+};
+
+module.exports = {
+    find,
+}

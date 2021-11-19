@@ -1,0 +1,360 @@
+@import "../tailwind.css";
+
+@font-face {
+    font-family: 'circular';
+    src: url("../../fonts/circular/CustomFont-Book.woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'circular';
+    src: url("../../fonts/circular/CustomFont-Medium.woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'circular';
+    src: url("../../fonts/circular/CustomFont-Bold.woff2");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'circular';
+    src: url("../../fonts/circular/CustomFont-Black.woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+body {
+    @apply min-h-screen tracking-normal;
+    font-family: "circular";
+    font-weight: 400;
+    /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", Ubuntu, Cantarell, "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; */
+    color: var(--color-text-primary);
+    background-color: var(--color-gray-black);
+}
+
+.display-webkit {
+    display: -webkit-box;
+}
+
+.react-tel-input {
+    font-family: inherit !important;
+}
+
+.spacing-dw1 {
+    padding: 0.10rem 0.5rem !important;
+}
+
+.shadows-dw {
+    box-shadow: rgba(0, 0, 0, 0.06) 0px 8px 16px 0px;
+}
+
+.shadows-dw1 {
+    box-shadow: rgba(0, 0, 0, 0.08) 4px -3px 13px 0px;
+}
+.shadow-keyboard{
+    box-shadow:0 -1px 0 var(--gray-200, #525252) inset;
+}
+
+/* Popup */
+.ReactModal__Body--open .dhiwise_body,
+.tox-dialog__disable-scroll .dhiwise_body,
+.ReactModal__Body--open .fullScreen .drawer {
+    filter: blur(5px);
+    transition: fillter 0.3s;
+}
+
+.min-h-64 {
+    min-height: 16rem;
+}
+.min-h-auto{
+    min-height:auto !important;
+}
+
+.border-b-1 {
+    border-bottom-width: 1px;
+}
+
+
+
+.colorChangeSvg .a {
+    fill: #fff;
+}
+
+.ReactModal__Body--open {
+    overflow: hidden;
+}
+
+
+.bg-transparent {
+    background-color: transparent !important;
+}
+
+.top-49 {
+    top: 49px;
+}
+
+/* toggle */
+.toggleBox:last-child {
+    border-right: none;
+}
+
+/* select */
+.spark-select svg {
+    fill: var(--color--black-svg) !important;
+}
+
+.bg-opacity-80 {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.ReactModalPortal .ReactModal__Overlay {
+    z-index: 999999 !important;
+    background: rgba(0, 0 ,0 ,0.73);
+}
+.ReactModalPortal .ReactModal__Overlay.backPopup{
+    z-index: 9999 !important;
+}
+
+.groupSelect {
+    margin: 0 -18px;
+}
+
+/* buildDropdown */
+.buildDropdown {
+    position: fixed !important;
+    /* bottom: 30px;
+    left: 50px !important;
+    right: auto !important; */
+    overflow: visible !important;
+}
+.position-div.menuBottom{
+    /* position: fixed !important; */
+    bottom: 30px;
+    left: 50px !important;
+    right: auto !important;
+    min-width: 200px !important;
+}
+/* accordin */
+[aria-expanded="false"] .uparrow {
+    display: none;
+}
+
+[aria-expanded="true"] .downarrow {
+    display: none;
+}
+
+/* header */
+.headerAccountDropdown {
+    padding: 0 !important;
+    min-width: 327px !important;
+}
+@media(max-width:767px){
+    .position-div.right.headerAccountDropdown{
+        min-width: 290px !important;
+        width:290px;
+        right: -10px !important;
+    }
+}
+.schemaDropdown{
+    min-width: 200px !important;
+}
+
+/* project  */
+.projectListDropdown{
+    min-width: 220px !important;
+}
+.projectAppGroup:hover .projectAppList,
+.projectGroup:hover .projectList{
+    display: flex;
+}
+.projectAppGroup:first-child{
+    border-top: none;
+}
+
+/* space */
+.-right-100 {
+    right: -100%;
+}
+
+
+.min-h-body {
+    min-height: calc(100vh - 48px);
+}
+
+.notifyMesseg .min-h-body {
+    min-height: calc(100vh - 84px);
+}
+
+/* drawer size */
+.drawerSize {
+    width: 690px;
+}
+
+.gadient {
+    background: linear-gradient(to top, black, transparent);
+}
+
+/* folder select */
+.codeFolderListDisable .rstm-tree-item{
+    cursor: not-allowed;
+}
+.rstm-tree-item--active {
+    background-color: var(--color-bg-primary);
+}
+
+.rstm-tree-item--active .defultSelect,
+.activeSelect {
+    display: none;
+}
+
+.rstm-tree-item--active .activeSelect,
+.defultSelect {
+    display: block;
+}
+
+.leftFolder .rstm-tree-item--active svg {
+    fill: #fff !important;
+}
+
+.leftFolder .rstm-tree-item .tagLabelBox {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+}
+.leftFolder .tagGroup {
+    width: 100%;
+}
+.rstm-tree-item {
+    width: 100%;
+    padding-top: .15rem;
+    padding-bottom: .15rem;
+    border: 1px solid transparent;
+    display: flex;
+}
+
+.rstm-tree-item--focused {
+    border: 1px solid var(--color-bg-primary) !important;
+}
+
+/* desciption doted */
+.descriptionDoted {
+    max-height: 48px;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.625;
+    overflow: hidden;
+    display: -webkit-box;
+}
+
+/* input autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+    border: 1px solid var(--color-gray-70);
+    -webkit-text-fill-color: var(--color-text-primary);
+    -webkit-box-shadow: 0 0 0px 1000px var(--color-gray-input) inset;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+
+.fillnone{
+    fill: none !important;
+}
+.word-break{
+    word-break: break-word;
+}
+.min-w-40{
+    min-width: 10rem;
+}
+.min-w-32{
+    min-width: 8rem;
+}
+/* Input */
+input::-webkit-calendar-picker-indicator {
+    display: none;
+}
+input{
+    caret-color: var(--color-text-primary);
+}
+.max-w-48{
+    max-width: 12rem;
+}
+.lifeCycleAction .lifeCycleActionList:first-child,
+.firstBorderNone .listClass:first-child{
+    border-top: none;
+}
+/* group hover */
+.groupBox:hover .groupItem{
+    display: block;
+}
+.imgHoverGroup:hover .imgHover{
+    display: block;
+}
+.imgHoverGroup:hover .imgDefault{
+    display: none;
+}
+.primaryShadow:focus{
+    box-shadow: 0 0 0 3px rgb(0 97 255 / 40%);
+}
+.dangerShadow:focus{
+    box-shadow: 0 0 0 3px rgba(var(--color-button-danger), 40%);
+}
+.ghostShadow:focus{
+    /* box-shadow: 0 0 0 3px rgba(var(--color-button-ghost), 40%); */
+    box-shadow: 0 0 0 3px rgba(var(--color-button-secondary), 40%);
+}
+.outlineShadow:focus{
+    box-shadow: 0 0 0 3px rgb(var(--color-button-outline), 40%);
+}
+.secondaryShadow:focus{
+    box-shadow: 0 0 0 3px rgba(var(--color-button-secondary), 40%);
+}
+.groupBox:hover .imgClass{
+    transform: scale(1.7);
+}
+.screenFilter .position-div{
+    min-width: 320px !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.z-100{
+    z-index: 100 !important;
+}
+@media(max-width:767px){
+    .memberDropdown{
+        min-width: 290px !important;
+        width: 290px;
+    }
+}
+
+.react-select__indicator{
+    padding: 6px !important; 
+}
+
+.shadows-box{
+    box-shadow: 0 0 20px 6px rgba(var(--color-black-100), 58%);
+}

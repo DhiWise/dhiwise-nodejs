@@ -1,0 +1,119 @@
+const mongoose = require('mongoose');
+function convertObjectToEnum (obj) {
+  const enumArr = [];
+  Object.values(obj).map((val) => enumArr.push(val));
+  return enumArr;
+};
+
+function randomNumber (length = 4) {
+  const numbers = '12345678901234567890';
+  let result = '';
+  for (let i = length; i > 0; i -= 1) {
+    result += numbers[Math.round(Math.random() * (numbers.length - 1))];
+  }
+  return result;
+};
+
+function replaceAll (string, search, replace) { return string.split(search).join(replace); };
+
+<%_if(IS_AUTH){ _%>
+function makeUniqueValidation (<%-MODEL%>Service) {
+const uniqueValidation = async (data) =>{
+    <%_if (LOGIN_WITH.length > 1) {_%>
+    let filter = {$or:[]};
+    <%_for(let i in LOGIN_WITH){_%>
+    if(data && data["<%-LOGIN_WITH[i]%>"]){
+        filter['$or'].push(
+        <%_for(let j in LOGIN_WITH){_%>
+        {"<%-LOGIN_WITH[j]%>":data["<%-LOGIN_WITH[i]%>"]},
+        <%_}_%>
+        )
+    }
+    <%_}_%>
+    <%_} else {_%>
+    let filter = {};
+    if(data && data["<%-LOGIN_WITH[0]%>"]){
+        filter = { "<%-LOGIN_WITH[0]%>": data["<%-LOGIN_WITH[0]%>"] }
+    }
+    <%_}_%>
+    let found = await <%-MODEL%>Service.getSingleDocumentByQuery(filter);
+    if(found){
+        return false;
+    }
+    return true;
+}
+return Object.freeze({ uniqueValidation });
+}
+<%_}_%>
+
+<%_if(IS_AUTH){_%>
+  const getDifferenceOfTwoDatesInTime = (currentDate,toDate) =>{
+    let hours = toDate.diff(currentDate,'hour');
+    currentDate =  currentDate.add(hours, 'hour');
+    let minutes = toDate.diff(currentDate,'minute');
+    currentDate =  currentDate.add(minutes, 'minute');
+    let seconds = toDate.diff(currentDate,'second');
+    currentDate =  currentDate.add(seconds, 'second');
+    if (hours){
+      return `${hours} hour, ${minutes} minute and ${seconds} second`; 
+    }
+    return `${minutes} minute and ${seconds} second`; 
+  };
+<%_}_%>
+<%_if(ROLE_PERMISSION){ _%>
+/*
+ * getRoleAccessData: return roleAccess of User
+ * @param userRoleService : user role db service
+ * @param routeRoleService : route role db service
+ * @param userId : id of user to find role data
+ */
+const getRoleAccessData = async (userRoleService,routeRoleService,userId) =>{
+  let userRole = await userRoleService.getAllDocuments({ userId: userId },{pagination:false});
+  let routeRole = await routeRoleService.getAllDocuments({ roleId: { $in: userRole.data ? userRole.data.map(u=>u.roleId) : [] } },{ populate:['roleId','routeId'],pagination:false });
+  let models = mongoose.modelNames();
+  let Roles = routeRole.data ? routeRole.data.map(rr => rr.roleId && rr.roleId.name).filter((value, index, self) => self.indexOf(value) === index) : [];
+  let roleAccess = {};
+  if (Roles.length){
+    Roles.map(role => {
+      roleAccess[role] = {};
+      models.forEach(model => {
+        if (routeRole.data && routeRole.data.length) {
+          routeRole.data.map(rr => {
+            if (rr.routeId && rr.routeId.uri.includes(model.toLowerCase()) && rr.roleId && rr.roleId.name === role) {
+              if (!roleAccess[role][model]) {
+                roleAccess[role][model] = [];
+              }
+              if (rr.routeId.uri.includes('create') && !roleAccess[role][model].includes('C')) {
+                roleAccess[role][model].push('C');
+              }
+              else if (rr.routeId.uri.includes('list') && !roleAccess[role][model].includes('R')) {
+                roleAccess[role][model].push('R');
+              }
+              else if (rr.routeId.uri.includes('update') && !roleAccess[role][model].includes('U')) {
+                roleAccess[role][model].push('U');
+              }
+              else if (rr.routeId.uri.includes('delete') && !roleAccess[role][model].includes('D')) {
+                roleAccess[role][model].push('D');
+              }
+            }
+          });
+        }
+      });
+    });
+  }
+  return roleAccess;
+};
+<%_}_%>
+
+module.exports = {
+  convertObjectToEnum,
+  randomNumber,
+  replaceAll,
+  <%_if(IS_AUTH){ _%>
+  makeUniqueValidation,
+  getDifferenceOfTwoDatesInTime,
+  <%_}_%>
+  <%_if(ROLE_PERMISSION){ _%>
+  getRoleAccessData,
+  <%_}_%>
+};

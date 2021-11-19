@@ -1,0 +1,88 @@
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const dotenv = require('dotenv');
+dotenv.config();
+global.__basedir = __dirname;
+const ejs = require("ejs");
+<%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
+const listEndpoints = require('express-list-endpoints')
+<%_}_%>
+<%_ if(typeof IS_AUTH!=="undefined" && IS_AUTH){ _%>
+const passport = require("passport");
+const seeder = require('./seeders');
+<%_ } _%>
+
+<%_ if(SHOULD_ADD_ROLE_PERMISSION || (typeof SEEDER !== "undefined" && SEEDER)) { _%>
+const models = require("./model");
+<%_ } _%>
+<% Object.keys(modules).sort().forEach(function (variable) { -%>
+let <%- variable %> = require('<%- modules[variable] %>');
+<% }); -%>
+<% Object.keys(localModules).sort().forEach(function (variable) { -%>
+const <%- variable %> = require('<%- localModules[variable] %>');
+<% }); -%>
+
+<%_ if(typeof PLATFORM !== "undefined" && PLATFORM){ _%>
+<%_ for(const platform of PLATFORM){ _%>
+const {<%-platform.toLowerCase()%>PassportStrategy} = require("./config/<%-platform%>PassportStrategy");
+<%_ } _%>
+<%_ } _%>
+
+const app = express();
+app.use(require('./utils/responseHandler'));
+const corsOptions = {
+    origin: process.env.ALLOW_ORIGIN,
+}
+app.use(cors(corsOptions));
+
+//template engine
+app.set('view engine', 'ejs'); 
+app.set('views', path.join(__dirname, 'views'));
+
+<% uses.forEach(function (use) { -%>
+app.use(<%- use %>);
+<% }); -%>
+<%_ if(typeof PLATFORM !== "undefined" && PLATFORM){ _%>
+<%_ for(const platform of PLATFORM){ _%>
+<%-platform.toLowerCase()%>PassportStrategy(passport);
+<%_ } _%>
+<%_ } _%>
+
+<% mounts.forEach(function (mount) { -%>
+app.use(<%= mount.path %>, <%- mount.code %>);
+<% }); -%>
+
+if (process.env.NODE_ENV !== 'test' ) {
+    <%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
+    models.sequelize.sync({alter:true}).then(()=>{
+        <%_ if(!NO_PLATFORM && typeof IS_ROUTE!=="undefined" && IS_ROUTE) { _%>
+        //all routes 
+        const routes =  require("./routes");
+        app.use(routes)
+        <%_ } _%>
+        const allRegisterRoutes = listEndpoints(app);
+        seeder(allRegisterRoutes).then(()=>{console.log("Seeding done.")});
+    })
+    <%_}else if(typeof SEEDER !== "undefined" && SEEDER){_%>
+    models.sequelize.sync({}).then(()=>{
+        <%_ if(!NO_PLATFORM && typeof IS_ROUTE!=="undefined" && IS_ROUTE) { _%>
+        //all routes 
+        const routes =  require("./routes");
+        app.use(routes)
+        <%_ } _%>
+        seeder().then(()=>{console.log("Seeding done.")});
+    });
+    <%_} else {_%>
+    <%_ if(!NO_PLATFORM && typeof IS_ROUTE!=="undefined" && IS_ROUTE) { _%>
+    //all routes 
+    const routes =  require("./routes");
+    app.use(routes)
+    <%_ } _%>
+    <%_}_%>
+    app.listen(process.env.PORT,()=>{
+        console.log(`your application is running on ${process.env.PORT}`)
+    });
+}else{
+    module.exports = app
+}

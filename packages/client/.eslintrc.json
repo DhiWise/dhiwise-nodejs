@@ -1,0 +1,112 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "plugin:react/recommended"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module",
+    "requireConfigFile": false,
+    "babelOptions": {
+      "presets": [
+        "@babel/preset-react",
+        [
+          "@babel/env",
+          {
+            "targets": {
+              "edge": "17",
+              "firefox": "60",
+              "chrome": "67",
+              "safari": "11.1"
+            },
+            "useBuiltIns": "usage",
+            "corejs": "3.6.4"
+          }
+        ]
+      ],
+      "plugins": [
+        "@babel/plugin-transform-react-jsx",
+        "@babel/plugin-proposal-class-properties"
+      ]
+    }
+  },
+  "plugins": [
+    "react"
+  ],
+  "rules": {
+    "max-len": "off",
+    "linebreak-style": "off",
+    "no-console": "off",
+    "react/prop-types": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "react/require-default-props": "off",
+    "react/button-has-type": "off",
+    "react/destructuring-assignment": [
+      "off",
+      {
+        "ignoreClassFields": true
+      }
+    ],
+    "no-bitwise": "off",
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowShortCircuit": true,
+        "allowTernary": true
+      }
+    ],
+    "no-underscore-dangle": "off",
+    "react/no-unescaped-entities": "off",
+    "jsx-a11y/label-has-associated-control": [
+      "error",
+      {
+        "required": {
+          "some": [
+            "nesting",
+            "id"
+          ]
+        }
+      }
+    ],
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
+      }
+    ],
+    "import/prefer-default-export": "off"
+  },
+  "parser": "@babel/eslint-parser",
+  "settings": {
+    "import/resolver": {
+      "alias": [
+        [
+          "@assets",
+          "./src/assets"
+        ],
+        [
+          "@constant",
+          "./src/constant"
+        ]
+      ],
+      "node": {
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx"
+        ]
+      }
+    }
+  }
+}

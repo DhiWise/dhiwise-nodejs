@@ -1,0 +1,105 @@
+const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
+const jwt = require("jsonwebtoken");
+const dayjs = require('dayjs');
+
+const <%-MODEL_FC%> = require('../model/<%-MODEL%>'); 
+const userTokens = require("../model/userTokens");
+const dbService = require('../utils/dbService');
+const { JWT,LOGIN_ACCESS,USER_ROLE,PLATFORM<%_if(RESTRICTION){_%>,NO_OF_DEVICE_ALLOWED<%_}_%>} = require("../constants/authConstant")
+
+module.exports = {
+  linkedInStrategy: passport => {
+    passport.use(new LinkedInStrategy({
+      clientID: process.env.LINKEDIN_CLIENTID,
+      clientSecret: process.env.LINKEDIN_CLIENTSECRET,
+      callbackURL: process.env.LINKEDIN_CALLBACKURL,
+      scope: ['r_emailaddress', 'r_liteprofile'],
+    }, async function (token, tokenSecret, profile, done) {
+      if(profile){
+        let userObj = {
+          <%_ if(KEYS !== undefined) { 
+            Object.keys(KEYS).forEach((k)=>{ _%>
+            <%_ if(k == "username") {_%> <%=KEYS[k]%>:profile.displayName, <%_ } _%>
+            <%_ if(k == "firstName") {_%> <%=KEYS[k]%>:profile.name.givenName, <%_ } _%>
+            <%_ if(k == "lastName") {_%> <%=KEYS[k]%>:profile.name.familyName, <%_ } _%>
+            <%_ if(k == "image") {_%> <%=KEYS[k]%>:profile.photos !== undefined ? profile.photos[0].value : '', <%_ } _%>
+          <%_ })} _%>
+          'sso_auth': { 'linkedinId': profile.id },
+          'email': profile.emails !== undefined ? profile.emails[0].value : '',
+          'password':'',
+          'role':USER_ROLE.User
+        }
+        let found = await dbService.getDocumentByQuery(<%-MODEL_FC%>,{ "email":userObj.email });
+        if(found){
+          const id = found.id;
+          await dbService.updateDocument(<%-MODEL_FC%>,id,userObj);
+        }
+        else{
+          await dbService.createDocument(<%-MODEL_FC%>,userObj)
+        }
+        let user = await dbService.getDocumentByQuery(<%-MODEL_FC%>,{ "sso_auth.linkedinId":profile.id });
+        return done(null, user);
+      }
+      return done(null,null);
+    }
+    ));
+  },
+  loginUser: async (email, platform) => {
+    try {
+      const user = await dbService.getDocumentByQuery(<%-MODEL_FC%>,{ email});
+      if (user && user.email) {
+        <%_if(RESTRICTION){_%>
+        const userToken = await dbService.countDocument(userTokens, { $and:[{ tokenExpiredTime: { $gt: dayjs().toISOString() }, },{ isTokenExpired: 0, },{ userId:user.id }] } );
+        if(userToken >= NO_OF_DEVICE_ALLOWED){
+            return {
+                flag: true,
+                data: "You've reached your device limit"
+            }
+        }
+        <%_}_%>
+        const { ...userData } = user.toJSON();
+        let token;
+        if (!user.role) {
+          return {flag:true, data:'You have no assigned any role'}
+        }
+        if(platform == undefined){
+          return {flag:true, data:'Please login through Platform'}
+        }
+        <%_for(let i=0; i<PLATFORMS.length; i++){_%>
+        <%_if(i===0){_%>
+        if(platform == '<%-PLATFORMS[i]%>'){
+            if(!LOGIN_ACCESS[user.role].includes(PLATFORM.<%-PLATFORMS[i].toUpperCase()%>)){
+                return {flag:true, data:'you are unable to access this platform'}
+            }
+            token = await generateToken(userData,JWT.<%-PLATFORMS[i].toUpperCase()%>_SECRET)
+        }
+        <%_}else{_%>
+        else if(platform == '<%-PLATFORMS[i]%>'){
+            if(!LOGIN_ACCESS[user.role].includes(PLATFORM.<%-PLATFORMS[i].toUpperCase()%>)){
+                return {flag:true, data:'you are unable to access this platform'}
+            }
+            token = await generateToken(userData,JWT.<%-PLATFORMS[i].toUpperCase()%>_SECRET)
+        }
+        <%_}_%>
+        <%_}_%>
+        let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
+        await dbService.createDocument(userTokens, { userId: user.id, token: token,tokenExpiredTime: expire });
+        const userToReturn = { ...userData, ...{ token } };
+        return {flag:false,data:userToReturn};
+      }
+      else {
+        return {flag:true,data:'Email not exists'}
+      }
+    } catch (error) {
+      throw new Error(error.message);
+    }
+
+  }
+
+}
+
+async function generateToken(user,secret){
+  return jwt.sign( {id:user.id,email:user.email,username: user.username || user.email}, secret, {
+      expiresIn: JWT.EXPIRES_IN
+  });
+}

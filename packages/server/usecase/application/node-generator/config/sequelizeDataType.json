@@ -1,0 +1,91 @@
+{
+    "ObjectId":"DataTypes.INTEGER",
+    "SingleLine":"DataTypes.STRING",
+    "MultiLine":"DataTypes.TEXT",
+    "Email":"DataTypes.STRING",
+    "URL":"DataTypes.STRING",
+    "TEXT": "DataTypes.STRING",
+    "CHAR": "DataTypes.CHAR",
+    "BIGINT": "DataTypes.BIGINT",
+    "FLOAT": "DataTypes.FLOAT",
+    "REAL": "DataTypes.REAL",
+    "DOUBLE": "DataTypes.DOUBLE",
+    "DECIMAL": "DataTypes.DECIMAL",
+    "String":{
+        "length":"DataTypes.STRING",
+        "singleLength":"DataTypes.CHAR",
+        "noLength":"DataTypes.TEXT"
+    },
+    "STRING":{
+        "length":"DataTypes.STRING",
+        "singleLength":"DataTypes.CHAR",
+        "noLength":"DataTypes.TEXT"
+    },
+    "Number":{
+        "noOption":"DataTypes.INTEGER",
+        "autoIncrement":["DataTypes.INTEGER","DataTypes.BIGINT"],
+        "minMax":"DataTypes.RANGE"
+    },
+    "INTEGER":{
+        "noOption":"DataTypes.INTEGER",
+        "autoIncrement":["DataTypes.INTEGER","DataTypes.BIGINT"],
+        "minMax":"DataTypes.RANGE"
+    },
+    "Boolean":"DataTypes.BOOLEAN",
+    "BOOLEAN":"DataTypes.BOOLEAN",
+    "Date":"DataTypes.DATE",
+    "Object":{
+        "postgresql":["DataTypes.HSTROE","DataTypes.JSON","DataTypes.JSONB"],
+        "mysql":"DataTypes.JSON",
+        "mssql":"DataTypes.TEXT"
+    },
+    "Map":{
+        "postgresql":["DataTypes.HSTROE","DataTypes.JSON","DataTypes.JSONB"],
+        "mysql":"DataTypes.JSON",
+        "mssql":"DataTypes.TEXT"
+    },
+    "JSON":{
+        "postgres":["DataTypes.HSTROE","DataTypes.JSON","DataTypes.JSONB"],
+        "mysql":"DataTypes.JSON",
+        "mssql":"DataTypes.TEXT"
+    },
+    "Array":{
+        "postgresql":"DataTypes.ARRAY",
+        "mysql":"DataTypes.JSON",
+        "mssql":"DataTypes.TEXT"
+    },
+    "Buffer":"DataTypes.BLOB",
+    "Decimal":["DataTypes.FLOAT","DataTypes.DOUBLE","DataTypes.DECIMAL"],
+    "Percentage":["DataTypes.FLOAT","DataTypes.DOUBLE","DataTypes.DECIMAL"],
+    "Currency":["DataTypes.FLOAT","DataTypes.DOUBLE","DataTypes.DECIMAL"],
+    "SequelizeTypes": ["STRING",
+        "TEXT",
+        "CHAR",
+        "BOOLEAN",
+        "INTEGER",
+        "BIGINT",
+        "FLOAT",
+        "REAL",
+        "DOUBLE",
+        "DECIMAL",
+        "DATE",
+        "DATEONLY",
+        "UUID",
+        "UUIDV4",
+        "BLOB",
+        "ENUM",
+        "JSONB",
+        "JSON",
+        "ARARY",
+        "GEOMETRY",
+        "GEOGRAPHY",
+        "RANGE",
+        "NOTE"],
+    "attribute":{
+        "match":"is",
+        "ref":"reference",
+        "required":"allowNull",
+        "default":"defaultValue",
+        "isAutoIncrement":"autoIncrement"
+    }
+}

@@ -1,0 +1,43 @@
+.popupCustom {
+    z-index: 100000000;
+}
+.popupCustom .Popover-body{
+    /* background-color: var(--color-bg-popover); */
+    background: var(--color-bg-white) !important;
+    border: 1px solid var(--color-gray-90);
+    border-radius: 0 0 5px 5px;
+    box-shadow: rgb(0 0 0 / 6%) 0px 8px 16px 0px !important;
+    padding: 20px;
+}
+
+.Popover-tip {
+    fill: var(--color-bg-white);
+}
+
+.popoverArrow:before {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #0061ff;
+    position: absolute;
+    bottom: -11px;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.popoverArrow-top {
+    /* content: ""; */
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #0061ff;
+    position: absolute;
+    bottom: -11px;
+    left: 0;
+    right: 0;
+    margin: auto;
+}

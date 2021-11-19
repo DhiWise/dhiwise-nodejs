@@ -1,0 +1,29 @@
+{
+    "model":{
+        "key":{
+            "type":["String","Number","Boolean","Array","JSON","Mixed","Date","Buffer","Map","ObjectId","Object","Point","Polygon"],
+            "ref":"string",
+            "index":"boolean",
+            "unique":"boolean",
+            "alias":"string",
+            "default":["String","Number","Boolean","Array","JSON","Mixed","Date","Buffer"],
+            "lowercase": "boolean",
+            "trim":"boolean",
+            "enum":"Array",
+            "required":"boolean",
+            "validate":"function",
+            "get":"function",
+            "set":"function",
+            "immutable":"boolean",
+            "sparse":"boolean",
+            "transform":"function",
+            "match":"Regex",
+            "minLength":"number",
+            "maxLength":"number",
+            "populate":"Object",
+            "min":["number","date"],
+            "max":["number","date"],
+            "of":"string"
+        }
+    }
+}

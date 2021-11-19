@@ -1,0 +1,49 @@
+
+
+/* scroll */
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+    background: transparent;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: var(--color-gray-20);
+    border-radius: 10px;
+}
+
+.contatinerBox {
+    max-width: 1300px;
+}
+
+.scrollbar-container.vertical,
+.scrollbar-container.horizontal {
+    background: transparent !important;
+    opacity: 1 !important;
+}
+
+.scrollarea .scrollbar-container.vertical .scrollbar,
+.scrollarea .scrollbar-container.horizontal .scrollbar {
+    background-color: var(--color-gray-0) !important;
+    opacity: 0.3;
+}
+
+.scrollbar-container.vertical .scrollbar,
+.scrollbar-container.vertical {
+    width: 4px !important;
+    margin-left: 0 !important;
+    border-radius: 10px;
+}
+
+.scrollbar-container.horizontal .scrollbar,
+.scrollbar-container.horizontal {
+    height: 4px !important;
+    margin-top: 0 !important;
+    border-radius: 10px;
+}

@@ -1,0 +1,388 @@
+<%_if(S3_UPLOAD){_%>
+const fs = require('fs');
+const path = require('path');
+const formidable = require('formidable');
+const AWS = require('aws-sdk');
+<%_if(S3_UPLOAD_PRIVATE){_%>
+const AmazonS3URI = require('amazon-s3-uri');
+<%_}_%>
+
+let allowedFileTypes = <%=VALIDATION_TYPES%>;<%_var max_size = MAX_SIZE ? MAX_SIZE : 5%>
+let maxFileSize = <%=max_size%>; //In Megabyte
+
+const upload = async (req,res) =>{
+  try {
+
+    // Setting up formidable options.
+    const form = new formidable.IncomingForm();
+    form.multiples = true;
+    form.maxFileSize = 300 * 1024 * 1024; //300 MB
+    form.maxFieldsSize = 100 * 1024 * 1024; //50 MB
+
+    const uploadFileRes = await new Promise(async (resolve, reject) => {
+      form.parse(req, async function (err, fields, files) { 
+
+        let filePaths = [];
+        let fileCount = 1;
+
+        let fileArr = [];
+        if (!files['file[]'] || files['file[]'].size == 0) {
+          resolve({
+            'err': 'Please Select any one File',
+            'status': false
+          });
+        }
+        if (!Array.isArray(files['file[]'])) {
+          fileArr.push(files['file[]']);
+          files['file[]'] = fileArr;
+        }
+
+        for (let file of files['file[]']) {
+          let response = await uploadFiles(file,fields,fileCount++);
+          if (response.status == false) {
+            filePaths.push({
+              'name': file.name,
+              'err': response.message,
+              'status': false
+            });
+          } else {
+            filePaths.push({
+              'path': response.data,
+              'status': true
+            });
+          }
+          
+        }
+        resolve(filePaths);
+
+      });
+    });
+    return res.ok(uploadFileRes);
+  } catch (error){
+    return res.failureResponse(error.message);
+  }
+};
+
+<%_if(S3_UPLOAD_PRIVATE){_%>
+const generatePreSignedURL = async (req, res) => {
+    try {
+        if (req.body && req.body.uri){
+          let uri = req.body.uri;
+            let S3Config = {
+                AWS_S3_ACCESS_KEY_ID: process.env.AWS_S3_ACCESS_KEY_ID,
+                AWS_S3_SECRET_ACCESS_KEY: process.env.AWS_S3_SECRET_ACCESS_KEY,
+                AWS_S3_REGION: process.env.AWS_S3_REGION,
+                AWS_S3_BUCKET_NAME: process.env.AWS_S3_BUCKET_NAME,
+            };
+
+            const s3 = new AWS.S3({
+                region: S3Config.AWS_S3_REGION,
+                accessKeyId: S3Config.AWS_S3_ACCESS_KEY_ID,
+                secretAccessKey: S3Config.AWS_S3_SECRET_ACCESS_KEY
+            });
+
+            const { region, bucket, key } = AmazonS3URI(uri);
+            let options = {
+                Bucket: bucket,
+                Key: key,
+                Expires: Number(process.env.AWS_URL_EXPIRATION) || 15 * 60 //in seconds,
+            };
+
+            await s3.getSignedUrl('getObject', options, (err, url) => {
+                if (err) {
+                    return res.invalidRequest({
+                        status: false,
+                        err: err,
+                    })
+                } else {
+                    return res.ok({
+                        status: true,
+                        path: url,
+                    })
+                }
+            });
+        }
+        else {
+            return res.badRequest({});
+        }
+    } catch (error) {
+        return res.failureResponse(error.message);
+    }
+}
+<%_}_%>
+
+async function uploadFiles (file,fields,fileCount){
+
+  let extension = path.extname(file.name);
+  extension = extension.split('.').pop();
+
+  fileType = file.type;
+
+  if (allowedFileTypes.length) {
+    //Check allowed extension;
+    if (!allowedFileTypes.includes(extension)) {
+      return {
+        status: false,
+        message: 'Filetype not allowed.'
+      };
+    }
+  }
+
+  // Check File Size
+  const fileSize = ((file.size / 1024) / 1024);
+  if (maxFileSize < fileSize) {
+    return {
+      status: false,
+      message: `Allow file size upto ${maxFileSize} MB.`
+    };
+  }
+
+  let fileName = file.name;
+  //Create Requested Directory,if given in request parameter.
+  if (fields && fields.folderName) {
+    fileName = fields.folderName + '/' + fileName;
+  }
+  else if (fields && fields.fileName) {
+    fileName = fields.fileName + '-' + fileCount + path.extname(file.name);
+  }
+
+  const response = await new Promise(async (resolve, reject) => {
+    resolve(await uploadToS3(file,fileName));
+  });
+
+  return response;
+
+}
+
+async function uploadToS3 (file, fileName){
+  let S3Config = {
+    AWS_S3_ACCESS_KEY_ID: process.env.AWS_S3_ACCESS_KEY_ID,
+    AWS_S3_SECRET_ACCESS_KEY: process.env.AWS_S3_SECRET_ACCESS_KEY,
+    AWS_S3_REGION: process.env.AWS_S3_REGION,
+    AWS_S3_BUCKET_NAME: process.env.AWS_S3_BUCKET_NAME,
+  };
+
+  const s3 = new AWS.S3({
+    region: S3Config.AWS_S3_REGION,
+    accessKeyId: S3Config.AWS_S3_ACCESS_KEY_ID,
+    secretAccessKey: S3Config.AWS_S3_SECRET_ACCESS_KEY
+  });
+
+  let params = {
+    Bucket: S3Config.AWS_S3_BUCKET_NAME,
+    Body: fs.createReadStream(file.path),
+    Key: fileName,
+  };
+
+  const response = await new Promise(async (resolve, reject) => {
+    s3.putObject(params, function (err, data) {
+      if (err) {
+        resolve({
+          status: false,
+          message: err.message
+        });
+      } else {
+        resolve({
+          status: true,
+          data: 'https://' + process.env.AWS_S3_BUCKET_NAME + '.s3.' + S3Config.AWS_S3_REGION + '.amazonaws.com/' + fileName
+        });
+      }
+    });
+  });
+
+  return response;
+}
+module.exports = { upload<%_if(S3_UPLOAD_PRIVATE){_%>,generatePreSignedURL<%_}_%> };
+
+<%_} else { _%>
+const fs = require('fs');
+const path = require('path');
+const formidable = require('formidable');
+const validUrl = require('valid-url');
+
+let defaultDirectory = 'public/assets';
+let allowedFileTypes = <%=VALIDATION_TYPES%>;<%_var max_size = MAX_SIZE ? MAX_SIZE : 5%>
+let maxFileSize = <%=max_size%>; //In Megabyte
+
+const upload = async (req, res) => {
+  try {
+    // Create Directory if not exist.
+    await makeDirectory(defaultDirectory);
+
+    // Setting up formidable options.
+    const form = new formidable.IncomingForm();
+    form.multiples = true;
+    form.maxFileSize = 300 * 1024 * 1024; //300 MB
+    form.maxFieldsSize = 100 * 1024 * 1024; //50 MB
+
+    //Upload File one by one
+    const uploadFileRes = await new Promise(async (resolve, reject) => {
+
+      form.parse(req, async function (err, fields, files) {
+
+        let filePaths = [];
+        let fileCount = 1;
+
+        let fileArr = [];
+        if (!files['file[]'] || files['file[]'].size == 0) {
+          resolve({
+            'err': 'Please Select any one File',
+            'status': false
+          });
+        }
+        if (!Array.isArray(files['file[]'])) {
+          fileArr.push(files['file[]']);
+          files['file[]'] = fileArr;
+        }
+
+        for (let file of files['file[]']) {
+
+          let response = await uploadFiles(file, fields, fileCount++);
+
+          if (response.status == false) {
+            filePaths.push({
+              'name': file.name,
+              'err': response.message,
+              'status': false
+            });
+          } else {
+            let url = response.data;
+            if (!validUrl.isUri(response.data)) {
+              response.data = response.data.replace('/public', '');
+              url = `${response.data}`;
+            }
+            filePaths.push({
+              'path': url,
+              'status': true
+            });
+          }
+        }
+        resolve(filePaths);
+      });
+    });
+    return res.ok(uploadFileRes);
+  } catch (error) {
+    return res.failureResponse(error.message);
+  }
+};
+
+/**
+ * 
+ * Function used to create directory.
+ * 
+ * @param  {} dirPath
+ */
+const makeDirectory = async (directoryPath) => {
+
+  if (!fs.existsSync(directoryPath)) {
+    fs.promises.mkdir(directoryPath, { recursive: true }, (err) => {
+      if (err) {
+        return false;
+      };
+      return true;
+    });
+  }
+  return true;
+};
+
+/**
+ * 
+ * Function used to upload file
+ * 
+ * @param  {} files
+ * @param  {} fields
+ */
+async function uploadFiles (file, fields, fileCount) {
+
+  let tempPath = file.path;
+  let unlink;
+  let fileName = file.name;
+
+  let extension = path.extname(file.name);
+  extension = extension.split('.').pop();
+
+  fileType = file.type;
+
+  if (allowedFileTypes.length) {
+    //Check allowed extension;
+    if (!allowedFileTypes.includes(extension)) {
+      return {
+        status: false,
+        message: 'Filetype not allowed.'
+      };
+    }
+  }
+
+  // Check File Size
+  const fileSize = ((file.size / 1024) / 1024);
+  if (maxFileSize < fileSize) {
+    return {
+      status: false,
+      message: `Allow file size upto ${maxFileSize} MB.`
+    };
+  }
+
+  //Create New path
+  let newPath = defaultDirectory + '/' + new Date().getTime() + path.extname(file.name);
+
+  //Create Requested Directory,if given in request parameter.
+  if (fields && fields.folderName) {
+    let newDir = defaultDirectory + '/' + fields.folderName;
+    const createDir = await makeDirectory(newDir);
+    if (createDir) {
+      if (fields.fileName) {
+        newPath = newDir + '/' + fields.fileName + '-' + fileCount + path.extname(file.name);
+        fileName = fields.fileName;
+      }
+    }
+  }
+  else if (fields && fields.fileName) {
+    newPath = defaultDirectory + '/' + fields.fileName + '-' + fileCount + path.extname(file.name);
+    fileName = fields.fileName;
+  }
+  
+  const response = await new Promise(async (resolve, reject) => {
+    fs.readFile(tempPath, function (err, data) {
+      fs.writeFile(newPath, data, async function (err) {
+  
+        //Remove file from temp
+        unlink = await unlinkFile(tempPath);
+  
+        if (unlink.status == false) {
+          reject(unlink);
+        } else {
+          resolve({
+            status: true,
+            message: 'File upload successfully.',
+            data: '/' + newPath
+          });
+        }
+      });
+    });
+  });
+
+  return response;
+}
+
+/**
+ * 
+ * Function used to unlink file.
+ * 
+ * @param  {} path
+ */
+async function unlinkFile (path) {
+
+  fs.unlink(path, function (err) {
+    if (err) {
+      return {
+        status: false,
+        message: err.message
+      };
+    }
+  });
+
+  return { status: true };
+}
+
+module.exports = { upload };
+<%_}_%>

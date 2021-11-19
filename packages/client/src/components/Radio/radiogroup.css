@@ -1,0 +1,224 @@
+.spark-radio-group {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  /* margin: 0; */
+  padding: 0;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  font-variant: tabular-nums;
+  line-height: 1.5;
+  list-style: none;
+  -webkit-font-feature-settings: "tnum", "tnum";
+  font-feature-settings: "tnum", "tnum";
+  /* display: inline-block; */
+}
+.spark-radio,
+.spark-radio-wrapper {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  font-variant: tabular-nums;
+  line-height: 1.5;
+  list-style: none;
+  -webkit-font-feature-settings: "tnum", "tnum";
+  font-feature-settings: "tnum", "tnum";
+  position: relative;
+  /* display: inline-block; */
+  white-space: nowrap;
+  cursor: pointer;
+}
+.spark-radio-wrapper-disabled{
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+/* .spark-radio-wrapper {
+  margin: 0 8px 0 0;
+} */
+.spark-radio {
+  margin: 0;
+  display: inline-flex;
+  vertical-align: sub;
+  outline: none;
+}
+form input[type="checkbox"],
+form input[type="radio"] {
+  width: 14px;
+  height: 14px;
+  line-height: normal;
+}
+.spark-radio-input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  cursor: pointer;
+  opacity: 0;
+}
+.spark-radio-checked .spark-radio-inner {
+  background-color: var(--color-bg-primary) !important;
+  border: 1px solid var(--color-bg-primary);
+}
+.spark-radio-inner {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 20px;
+  height: 20px;
+  background-color:var(--color-gray-input);
+  border: 1px solid var(--color-gray-70);
+  /* border: 1px solid #d9d9d9; */
+  border-radius: 100px;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+.spark-radio-input:focus ~ .spark-radio-inner{
+  box-shadow: 0 0 0 3px rgb(0 97 255 / 40%);
+  /* background: var(--color-gray-70); */
+}
+.spark-radio-checked:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--color-bg-primary);
+  border-radius: 50%;
+  visibility: hidden;
+  -webkit-animation: antRadioEffect 0.36s ease-in-out;
+  animation: antRadioEffect 0.36s ease-in-out;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  content: "";
+}
+span.spark-radio + * {
+  padding-right: 8px;
+  padding-left: 8px;
+}
+.spark-radio-checked .spark-radio-inner:after {
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  opacity: 1;
+  -webkit-transition: all 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+  transition: all 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+}
+.spark-radio-inner:after {
+  background-color: #fff !important;
+}
+.spark-radio-inner:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  display: block;
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-bg-primary);
+  border-top: 0;
+  border-left: 0;
+  border-radius: 10px;
+  transform: scale(0);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+  content: " ";
+}
+.vertical-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.spark-radio-disabled .spark-radio-inner {
+  background-color: #f5f5f5;
+  border-color: #d9d9d9 !important;
+  cursor: not-allowed;
+}
+.spark-radio-disabled input{
+  width: 100%;
+  height: 100%;
+  cursor: not-allowed;
+}
+/* .spark-radio-disabled + span {
+  color: rgba(0, 0, 0, 0.25);
+  cursor: not-allowed;
+} */
+.spark-radio-header-label {
+  color: #000;
+  font-size: 14px;
+  display: block;
+  width: 100%;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.spark-input-radio-text {
+  color: #ee3b3b;
+  font-size: 16px;
+}
+
+
+
+/* new */
+.radioBoxWrap{
+  display: block;
+  position: relative;
+  padding-left: 25px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 20px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.radioBoxWrap input {
+  position: absolute;
+  opacity: 0;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  height: 16px;
+  width: 16px;
+  cursor: pointer;
+}
+
+.radioChecker {
+  position: absolute;
+  top: -5px;
+  left: 0;
+  height: 16px;
+  width: 16px;
+  background-color: var(--color-gray-90);
+  border-radius: 50%;
+}
+
+.radioBoxWrap:hover input ~ .radioChecker {
+  background-color: #ccc;
+}
+
+.radioBoxWrap input:checked ~ .radioChecker {
+  background-color: var(--color-bg-primary);
+}
+
+.radioChecker:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.radioBoxWrap input:checked ~ .radioChecker:after {
+  display: block;
+}
+.radioBoxWrap .radioChecker:after {
+ 	top: 5px;
+	left:5px;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: white;
+}

@@ -1,0 +1,391 @@
+const <%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%> = require("../model/<%-MODEL%>")
+const dbService = require("../utils/dbService");
+const userTokens = require("../model/userTokens");
+const { JWT,LOGIN_ACCESS,
+    PLATFORM<%_if(LOGIN_RETRY_LIMIT){_%>,MAX_LOGIN_RETRY_LIMIT,LOGIN_REACTIVE_TIME<%_}_%>
+    <%_if(RESET_PASSWORD){_%>,FORGOT_PASSWORD_WITH<%_}_%>
+    <%_if(MAX_DEVICE_ALLOWED){_%>,NO_OF_DEVICE_ALLOWED<%_}_%>} = require("../constants/authConstant");
+const jwt = require("jsonwebtoken");
+const common = require("../utils/common");
+const dayjs = require("dayjs");
+const bcrypt = require("bcrypt");
+const emailService = require("./email/emailService");
+const sendSMS = require("./sms/smsService");
+<%_if(FORGOT_WITH_LINK){_%>
+const uuid = require("uuid").v4;
+<%_}_%>
+<%_if(RESET_PASSWORD_NOTIFICATION_TYPE==='SMS'){_%>
+const ejs = require("ejs");
+<%_}_%>
+
+async function generateToken(user,secret){
+    return jwt.sign( {id:user.id,'<%-LOGIN_WITH[0]%>':user.<%-LOGIN_WITH[0]%>}, secret, {
+        expiresIn: JWT.EXPIRES_IN * 60
+    });
+}   
+let auth =  module.exports = {}
+    auth.loginUser=async(username,password,url<%_if(ROLE_PERMISSION){_%>,roleAccess<%_}_%>) => {
+            try {
+                <%_ if(LOGIN_WITH.length>1){ _%>
+                let where = <%-MULTIPLE_LOGIN%>
+                <%_ }else{_%>
+                let where ={'<%-LOGIN_WITH[0]%>':username}
+                <%_}_%>                  
+                let user = await dbService.getDocumentByQuery(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,where);
+                if (user) {
+                    <%_if(MAX_DEVICE_ALLOWED){_%>
+                        const userToken = await dbService.countDocument(userTokens, { $and:[{ tokenExpiredTime: { $gt: dayjs().toISOString() }, },{ isTokenExpired: 0, },{ userId:user.id }] } );
+                        if(userToken >= NO_OF_DEVICE_ALLOWED){
+                            return {
+                                flag: true,
+                                data: "You've reached your device limit"
+                            }
+                        }
+                    <%_}_%>
+                    <%_if(LOGIN_RETRY_LIMIT){_%>
+                    if(user.<%-LOGIN_RETRY_LIMIT.key%> >= MAX_LOGIN_RETRY_LIMIT){
+                        let now = dayjs();
+                        if (user.loginReactiveTime){
+                            let limitTime = dayjs(user.loginReactiveTime);
+                            if (limitTime > now){
+                              let expireTime = dayjs().add(LOGIN_REACTIVE_TIME,'minute');
+                              if (!(limitTime > expireTime)){
+                                return {
+                                  flag:true,
+                                  data:`you have exceed the number of limit.you can login after ${common.getDifferenceOfTwoDatesInTime(now,limitTime)}.`
+                                }; 
+                              }   
+                              await dbService.updateDocument(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,user.id,{
+                                loginReactiveTime:expireTime.toISOString(),
+                                <%-LOGIN_RETRY_LIMIT.key%>:user.<%-LOGIN_RETRY_LIMIT.key%> + 1  
+                              });
+                              return {
+                                flag:true,
+                                data:`you have exceed the number of limit.you can login after ${common.getDifferenceOfTwoDatesInTime(now,expireTime)}.`
+                              }; 
+                            }else {
+                                user = await dbService.findOneAndUpdateDocument(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,{ _id:user.id },{
+                                  loginReactiveTime:'',
+                                  <%-LOGIN_RETRY_LIMIT.key%>:0
+                                },{ new:true });
+                              }
+                          } else {
+                            // send error
+                            let expireTime = dayjs().add(LOGIN_REACTIVE_TIME,'minute');
+                            await dbService.updateDocument(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,user.id,{
+                              loginReactiveTime:expireTime.toISOString(),
+                              <%-LOGIN_RETRY_LIMIT.key%>:user.<%-LOGIN_RETRY_LIMIT.key%> + 1 
+                            });
+                            return {
+                              flag:true,
+                              data:`you have exceed the number of limit.you can login after ${common.getDifferenceOfTwoDatesInTime(now,expireTime)}.`
+                            }; 
+                          } 
+                    }
+                    <%_}_%>
+                    const isPasswordMatched = await user.isPasswordMatch(password);
+                    if (isPasswordMatched) {
+                        const {password,...userData}=user.toJSON()
+                        let token;
+                        if(!user.role){
+                            return {flag:true, data:'You have not assigned any role'}
+                        }
+                        <%_for(let i=0; i<PLATFORMS.length; i++){_%>
+                            <%_if(i===0){_%>
+                            if(url.includes('<%-PLATFORMS[i].toLowerCase()%>')){
+                                if(!LOGIN_ACCESS[user.role].includes(PLATFORM.<%-PLATFORMS[i].toUpperCase()%>)){
+                                    return {flag:true, data:'you are unable to access this platform'}
+                                }
+                                token = await generateToken(userData,JWT.<%-PLATFORMS[i].toUpperCase()%>_SECRET)
+                            }
+                            <%_}else{_%>
+                            else if(url.includes('<%-PLATFORMS[i].toLowerCase()%>')){
+                                if(!LOGIN_ACCESS[user.role].includes(PLATFORM.<%-PLATFORMS[i].toUpperCase()%>)){
+                                    return {flag:true, data:'you are unable to access this platform'}
+                                }
+                                token = await generateToken(userData,JWT.<%-PLATFORMS[i].toUpperCase()%>_SECRET)
+                            }
+                            <%_}_%>
+                        <%_}_%>                          
+                        <%_if(LOGIN_RETRY_LIMIT){_%>
+                        if(user.<%-LOGIN_RETRY_LIMIT.key%>){
+                            await dbService.updateDocument(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,user.id,{<%-LOGIN_RETRY_LIMIT.key%>:0,loginReactiveTime:''});
+                        }
+                        <%_}_%>
+                        let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
+                        await dbService.createDocument(userTokens, { userId: user.id, token: token,tokenExpiredTime: expire });
+                        let userToReturn = { ...userData, ...{ token } };
+                        <%_if(ROLE_PERMISSION){_%>
+                            let roleAccessData = {};
+                            if (roleAccess){
+                            roleAccessData = await common.getRoleAccessData(user.id);
+                            userToReturn = {
+                                ...userToReturn,
+                                roleAccess: roleAccessData
+                            };
+                            }
+                        <%_}_%>
+                        return {flag:false,data:userToReturn}
+                    } else {
+                        <%_if(LOGIN_RETRY_LIMIT){_%>
+                        await dbService.updateDocument(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,user.id,{<%-LOGIN_RETRY_LIMIT.key%>:user.<%-LOGIN_RETRY_LIMIT.key%>+1});
+                        <%_}_%>
+                        return {flag:true,data:'Incorrect Password'}
+                    }
+                } else {
+                    return {flag:true,data:'User not exists'}
+                }
+            } catch (error) {
+                throw new Error(error.message)
+            }
+    },
+    auth.changePassword=async(params)=>{
+        try {
+            let password = params.newPassword;
+            let oldPassword = params.oldPassword;
+            let where = {_id:params.userId};
+            let user = await dbService.getDocumentByQuery(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,where);
+            if (user && user.id) {
+                let isPasswordMatch = await user.isPasswordMatch(oldPassword);
+                if(!isPasswordMatch){
+                    return {
+                        flag:true,
+                        data:'Incorrect old password'
+                    }
+                }
+                password = await bcrypt.hash(password, 8);
+                let updatedUser = dbService.updateDocument(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,user.id,{<%-PASSWORD%>:password});
+                if (updatedUser) {
+                    return {flag:false,data:'Password changed successfully'};                
+                }
+                return {flag:true,data:'password can not changed due to some error.please try again'}
+            }
+            return {flag:true,data:'User not found'}
+        } catch (error) {
+            throw new Error(error.message)
+        }
+    },
+    auth.sendResetPasswordNotification=async (user) => {
+        let resultOfEmail=false;
+        let resultOfSMS=false;
+        try {
+            <%_if(FORGOT_WITH_LINK){_%>
+            let token = uuid();
+            let expires = dayjs();
+            expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRETIME, "minute").toISOString();
+            await dbService.updateDocument(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,user.id,
+                { resetPasswordLink: { code: token, expireTime: expires } });
+            if(FORGOT_PASSWORD_WITH.LINK.email){
+                <%_if(RESET_PASSWORD_TEMPLATE_NAME && RESET_PASSWORD_NOTIFICATION_TYPE==='EMAIL'){_%> 
+                    let updatedUser= await dbService.getDocumentByQuery(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,{_id:user.id});
+                <%_}_%>
+                <%_if(typeof RESET_PASSWORD_TEMPLATE_ATTRIBUTE === "object" && Object.keys(RESET_PASSWORD_TEMPLATE_ATTRIBUTE).length > 0 && RESET_PASSWORD_NOTIFICATION_TYPE==='EMAIL'){_%>
+                let mailObj = {
+                    subject: "Reset Password",
+                    to: user.<%-EMAIL_FIELD%>,
+                    template: "/views/<%-RESET_PASSWORD_TEMPLATE_NAME%>",
+                    data:{
+                        <%_for(let i in RESET_PASSWORD_TEMPLATE_ATTRIBUTE){_%>
+                        <%-i%>:updatedUser.<%-RESET_PASSWORD_TEMPLATE_ATTRIBUTE[i].replace(/.*?\./, "");%>,
+                        <%_}_%>
+                    }
+                };
+                <%_}else if(!RESET_PASSWORD_TEMPLATE_ATTRIBUTE && RESET_PASSWORD_TEMPLATE_NAME && RESET_PASSWORD_NOTIFICATION_TYPE==='EMAIL'){_%>
+                let mailObj = { 
+                    subject: "Reset Password",
+                    to: user.<%-EMAIL_FIELD%>,
+                    template: "/views/<%-RESET_PASSWORD_TEMPLATE_NAME%>",
+                    data:updatedUser
+                };
+                <%_}else{_%>
+                let viewType = "/reset-password/";
+                let msg = "Click on the link below to reset your password.";
+                let mailObj = {
+                    subject: "Reset Password",
+                    to: user.<%-EMAIL_FIELD%>,
+                    template: "/views/resetPassword",
+                    data: {
+                        link: `http://localhost:${process.env.PORT}` + viewType + token,
+                        linkText: "Reset Password",
+                        message:msg
+                    }
+                };
+                <%_}_%>
+                try {
+                    await emailService.sendMail(mailObj);
+                    resultOfEmail = true;
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+            if(FORGOT_PASSWORD_WITH.LINK.sms){
+                <%_if(RESET_PASSWORD_NOTIFICATION_TYPE==='SMS' && RESET_PASSWORD_TEMPLATE_NAME){_%>
+                let updatedUser= await dbService.getDocumentByQuery(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,{_id:user.id}); 
+                let renderData = {
+                    <%_if(typeof RESET_PASSWORD_TEMPLATE_ATTRIBUTE === "object" && Object.keys(RESET_PASSWORD_TEMPLATE_ATTRIBUTE).length > 0){_%>
+                    <%_for(let i in RESET_PASSWORD_TEMPLATE_ATTRIBUTE){_%>
+                    <%-i%>:updatedUser.<%-RESET_PASSWORD_TEMPLATE_ATTRIBUTE[i].replace(/.*?\./, "");%>,
+                    <%_}_%>
+                    <%_}else{_%>
+                    ...updatedUser
+                    <%_}_%>
+                }
+                const msg = await ejs.renderFile(`${__basedir}/views/<%-RESET_PASSWORD_TEMPLATE_NAME%>/html.ejs`, renderData);
+                let smsObj = {
+                    to:updatedUser.mobileNo,
+                    message:msg
+                }
+                try {
+                    await sendSMS(smsObj);
+                    resultOfSMS = true;
+                } catch (error) {
+                    console.log(error);
+                }
+                <%_}else{_%>
+                let viewType = "/reset-password/";
+                let msg = `Click on the link to reset your password.
+                http://localhost:${process.env.PORT}${viewType + token}`;
+                let smsObj = {
+                    to:user.mobileNo,
+                    message:msg
+                }
+                try {
+                    await sendSMS(smsObj);
+                    resultOfSMS = true;
+                } catch (error) {
+                    console.log(error);
+                }
+                <%_}_%>
+            }
+            <%_}_%>
+            <%_if(FORGOT_WITH_OTP){_%>
+            let otp = common.randomNumber();
+            let expires = dayjs();
+            expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRETIME, "minute").toISOString();
+            await dbService.updateDocument(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,user.id,{ resetPasswordLink: { code: otp, expireTime: expires } });
+            if(FORGOT_PASSWORD_WITH.OTP.email){
+                <%_if(RESET_PASSWORD_TEMPLATE_NAME && RESET_PASSWORD_NOTIFICATION_TYPE==='EMAIL'){_%> 
+                let updatedUser= await dbService.getDocumentByQuery(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,{_id:user.id});
+                <%_}_%>
+                <%_if(typeof RESET_PASSWORD_TEMPLATE_ATTRIBUTE === "object" && Object.keys(RESET_PASSWORD_TEMPLATE_ATTRIBUTE).length > 0 && RESET_PASSWORD_NOTIFICATION_TYPE==='EMAIL'){_%>
+                let mailObj = {
+                    subject: 'Your OTP',
+                    to: user.<%-EMAIL_FIELD%>,
+                    template: '/views/<%- RESET_PASSWORD_TEMPLATE_NAME _%>',    
+                    data:{
+                        <%_for(let i in RESET_PASSWORD_TEMPLATE_ATTRIBUTE){_%>
+                        <%-i%>:updatedUser.<%-RESET_PASSWORD_TEMPLATE_ATTRIBUTE[i].replace(/.*?\./, "");%>,
+                        <%_}_%>
+                    }
+                }
+                <%_}else if(!RESET_PASSWORD_TEMPLATE_ATTRIBUTE && RESET_PASSWORD_TEMPLATE_NAME && RESET_PASSWORD_NOTIFICATION_TYPE==='EMAIL'){_%>
+                let mailObj = {
+                    subject: 'Your OTP',
+                    to: user.<%-EMAIL_FIELD%>,
+                    template:'/views/<%-RESET_PASSWORD_TEMPLATE_NAME%>',
+                    data:updatedUser
+                }
+                <%_}else{_%>
+                let message = `OTP code for Reset password`;
+                let otpMsg = `${message}: ${otp}`;
+                let mailObj = {
+                    subject: 'Your OTP',
+                    to: user.<%-EMAIL_FIELD%>,
+                    template:'/views/resetPassword',
+                    data: {
+                        isWidth: true,
+                        name: "username",
+                        email: user.<%-EMAIL_FIELD%> || '-',
+                        message: otpMsg,
+                        otp: otp
+                    }
+                };
+                <%_}_%>
+                try {
+                    await emailService.sendMail(mailObj);
+                    resultOfEmail = true;
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+            if(FORGOT_PASSWORD_WITH.OTP.sms){
+                <%_if(RESET_PASSWORD_NOTIFICATION_TYPE==='SMS' && RESET_PASSWORD_TEMPLATE_NAME){_%> 
+                let updatedUser= await dbService.getDocumentByQuery(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,{_id:user.id}); 
+                let renderData = {
+                    <%_if(typeof RESET_PASSWORD_TEMPLATE_ATTRIBUTE === "object" && Object.keys(RESET_PASSWORD_TEMPLATE_ATTRIBUTE).length > 0){_%>
+                    <%_for(let i in RESET_PASSWORD_TEMPLATE_ATTRIBUTE){_%>
+                    <%-i%>:updatedUser.<%-RESET_PASSWORD_TEMPLATE_ATTRIBUTE[i].replace(/.*?\./, "");%>,
+                    <%_}_%>
+                    <%_}else{_%>
+                    ...updatedUser
+                    <%_}_%>
+                }
+                const msg = await ejs.renderFile(`${__basedir}/views/<%-RESET_PASSWORD_TEMPLATE_NAME%>/html.ejs`, renderData);
+                let smsObj = {
+                    to:updatedUser.mobileNo,
+                    message:msg
+                }
+                try {
+                    await sendSMS(smsObj);
+                    resultOfSMS = true;
+                } catch (error) {
+                    console.log(error);
+                }
+                <%_}else{_%>
+                let message = `OTP code for Reset password`;
+                let otpMsg = `${message}: ${otp}`;
+                let smsObj = {
+                    message: otpMsg,
+                    to: user.mobileNo,
+                };
+                try {
+                    await sendSMS(smsObj);
+                    resultOfSMS = true;
+                } catch (error) {
+                    console.log(error);
+                }
+                <%_}_%>
+            }
+            <%_}_%>
+            return {resultOfEmail,resultOfSMS};
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+    auth.resetPassword=async (user, newPassword) => {
+        try {
+            let where = { _id: user.id };  
+            const dbUser = await dbService.getDocumentByQuery(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,where);
+            if (!dbUser) {
+                return {
+                    flag: true,
+                    data: "User not found",
+                };
+            }
+            newPassword = await bcrypt.hash(newPassword, 8);
+            await dbService.updateDocument(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>, user.id, {
+                <%-PASSWORD%>: newPassword,
+                resetPasswordLink: null,
+                <%_if(LOGIN_RETRY_LIMIT){_%>
+                <%-LOGIN_RETRY_LIMIT.key%>:0
+                <%_}_%>
+            });
+            let mailObj = {
+                subject: 'Reset Password',
+                to: user.<%-EMAIL_FIELD%>,
+                template: '/views/successfullyResetPassword',
+                data: {
+                    isWidth: true,
+                    email: user.<%-EMAIL_FIELD%> || '-',
+                    message: "Password Successfully Reset"
+                }
+            };
+            await emailService.sendMail(mailObj);
+            return {
+                flag: false,
+                data: "Password reset successfully",
+            };
+        } catch (error) {
+            throw new Error(error.message)
+        }
+    }

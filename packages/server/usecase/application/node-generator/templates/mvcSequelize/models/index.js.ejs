@@ -1,0 +1,43 @@
+const dbConnection=require("../config/dbConnection")
+const db={};
+db.sequelize = dbConnection;
+
+<%_ Object.keys(RELATIONSHIPS).map(d => { _%>
+db.<%- d %> = require('./<%- d %>')
+<%_ }); _%>
+
+<%_ Object.keys(RELATIONSHIPS).map(d => {
+if(Array.isArray(RELATIONSHIPS[d])){
+    RELATIONSHIPS[d].length ? RELATIONSHIPS[d].forEach(m => { 
+_%>
+<%_if(m.relType === 'HAS_ONE') {_%>
+db.<%- m.model %>.belongsTo(db.<%- d %>, { foreignKey: "<%- m.refId %>", as: "_<%- m.refId %>", targetKey: "<%- m.refAttribute %>" });
+db.<%- d %>.hasOne(db.<%- m.model %>, { foreignKey: "<%- m.refId %>", sourceKey: "<%- m.refAttribute %>" });
+<%_}else if(m.relType === 'HAS_MANY'){_%>
+db.<%- m.model %>.belongsTo(db.<%- d %>, { foreignKey: "<%- m.refId %>", as: "_<%- m.refId %>", targetKey: "<%- m.refAttribute %>" });
+db.<%- d %>.hasMany(db.<%- m.model %>, { foreignKey: "<%- m.refId %>", sourceKey: "<%- m.refAttribute %>" });
+<%_}else{_%>
+db.<%- m.model %>.belongsTo(db.<%- d %>, { foreignKey: "<%- m.refId %>", as: "_<%- m.refId %>", targetKey: "<%- m.refAttribute %>" });
+db.<%- d %>.hasMany(db.<%- m.model %>, { foreignKey: "<%- m.refId %>", sourceKey: "<%- m.refAttribute %>" });
+<%_}_%>
+<%_ 
+    }) : [] 
+}});
+_%>
+<%_
+if(VIRTUAL_RELATION!==undefined){
+(Object.keys(VIRTUAL_RELATION)).forEach(model => {
+    if(Array.isArray(VIRTUAL_RELATION[model])){
+        const vrs = VIRTUAL_RELATION[model];
+        vrs.forEach((vr) => {
+          const data = `db.${model}.hasMany(db.${vr.ref}, { foreignKey: "${vr.foreignField}" })`;
+          _%>
+          <%-data%>
+          <%_
+        });
+    }
+})
+}
+_%>
+
+module.exports = db;

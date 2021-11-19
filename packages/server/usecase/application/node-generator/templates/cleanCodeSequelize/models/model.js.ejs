@@ -1,0 +1,119 @@
+const { DataTypes } = require('sequelize');
+<%_if(USER){ _%> 
+const bcrypt = require('bcrypt');
+<%_}_%> 
+<%_if(MODEL_ENUM){_%>
+<%_let a=[]_%>    
+<%_for(let i in MODEL_ENUM){_%>
+<%_if(MODEL_ENUM[i].enumFile){_%>
+<%_if(!a.includes(MODEL_ENUM[i].enumFile)){_%>
+<%_a.push(MODEL_ENUM[i].enumFile)_%>
+const <%-MODEL_ENUM[i].enumFile%>Enum=require("../constants/<%-MODEL_ENUM[i].enumFile%>")
+<%_}_%>        
+<%_}_%>
+<%_}_%>
+<%_}_%>
+<%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
+<%_if(FLAG){_%>    
+const dayjs = require('dayjs');
+<%_}_%>
+<%_}_%>        
+const sequelizePaginate = require('sequelize-paginate');
+const sequelizeTransforms = require('sequelize-transforms');
+const { convertObjectToEnum } = require('../utils/common');
+function makeModel (sequelize){
+    <%_ var model = DB_SCHEMA _%>
+    <%_ var modelArr = Object.keys(model)_%>
+    const <%-DB_MODEL_FC%> = sequelize.define("<%-DB_MODEL%>",{
+    <%_ for(let v in model){ _%>
+    <%_if(MODEL_ENUM && MODEL_ENUM[v]){_%>
+        <%model[v].values=`convertObjectToEnum(${MODEL_ENUM[v].enumFile}Enum`%>
+        <%model[v].values+=`.${MODEL_ENUM[v].values})`%>
+        <%_if(MODEL_ENUM[v].defaultValue){_%>
+        <%_ if( Array.isArray(MODEL_ENUM[v].defaultValue)){ _%>
+            <% model[v].defaultValue=`${MODEL_ENUM[v].enumFile}Enum` %>
+            <% model[v].defaultValue+=`.${MODEL_ENUM[v].values}` %>
+            <% model[v].defaultValue+=`[${MODEL_ENUM[v].defaultValue[0]}]` %>       
+        <% }else { %>
+                <% model[v].defaultValue=`${MODEL_ENUM[v].enumFile}Enum` %>
+                <% model[v].defaultValue+=`.${MODEL_ENUM[v].values}` %>
+                <% model[v].defaultValue+=`.${MODEL_ENUM[v].defaultValue}` %>
+        <% } %>
+     <%_}_%>
+    <%_}_%>  
+    <%_ let jsonStr = JSON.stringify(model[v]);
+            var finalStr = new String();
+            finalStr = jsonStr.toString().replace(/"/g, "");
+            finalStr = finalStr.replace(/@@/g, '"').replace('`${',"").replace('}`',"");
+        _%>
+    <%_ if(modelArr[modelArr.length-1]!==v){ _%>
+        <%-v%>:<%-finalStr%>,
+    <%_}else{_%>
+        <%-v%>:<%-finalStr%>
+    <%_ } _%><%_ } _%>}
+    <%_ if(typeof HOOKS !== "undefined") { _%>
+    ,{hooks:{
+    <%_ for(let [key,value] of Object.entries(HOOKS)){_%>
+        <%-key%>: [
+        <%_for(let i=0;i<value.length;i++){_%>
+        async function(<%-DB_MODEL%>,options){
+            <%-value[i].code%>
+        },
+        <%_}_%> 
+        ],
+    <%_}_%> 
+    } 
+    <%_ } _%>
+<%_ if(typeof INDEX !== "undefined" && INDEX.length !== 0) { _%>
+    ,indexes:  <%- JSON.stringify(INDEX) %>
+<%_ } _%>
+    }
+    );
+    <%_if(typeof USER!== undefined && USER){ _%>
+    <%-DB_MODEL_FC%>.prototype.isPasswordMatch = async function (password) {
+            const user = this;
+            return bcrypt.compare(password, user.<%-PASSWORD%>);
+        }
+     <%_ } _%>
+    <%-DB_MODEL_FC%>.prototype.toJSON = function () {
+        var values = Object.assign({}, this.get());
+        <%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
+        <%_for(index of CONCAT_HOOK){_%>
+        <%_for(formateIndex in index){_%>
+        <%_if(typeof (index[formateIndex])==='object'){_%>
+        if(values.<%-formateIndex%>){
+            values.<%-formateIndex%>=<%=index[formateIndex].true%>;
+        }else{
+            values.<%-formateIndex%>=<%=index[formateIndex].false%>;
+        }
+        <%_}else{_%>    
+        <%_if(index[formateIndex].includes('concat')){_%>
+        if(values.<%-STRING_ATT[0]%> && values.<%-STRING_ATT[1]%>){
+            values.<%-formateIndex%>=<%-index[formateIndex]%>;
+        }  
+        <%STRING_ATT.shift()%>
+        <%STRING_ATT.shift()%>        
+        <%_}else{_%>
+        values.<%-formateIndex%>=<%-index[formateIndex]%>;
+        <%_}_%>        
+        <%_}_%>
+        <%_}_%>   
+        <%_}_%>   
+        <%_}_%>            
+        <%_if(IS_PRIVATE_ATTR !== null && IS_PRIVATE_ATTR === true) {_%>
+            <%_if(PRIVATE_ATTRS !== null && PRIVATE_ATTRS) {_%>
+                <%_Object.keys(PRIVATE_ATTRS).map((t) => {_%>            
+                    <%_if(PRIVATE_ATTRS[t]) {_%>            
+                        delete values.<%-t%>
+                    <%_}_%>        
+                <%_});_%>        
+            <%_}_%>    
+        <%_}_%>
+    
+        return values;
+    }
+    sequelizeTransforms(<%-DB_MODEL_FC%>);
+    sequelizePaginate.paginate(<%-DB_MODEL_FC%>);
+    return <%-DB_MODEL_FC%>;
+}
+module.exports = makeModel;

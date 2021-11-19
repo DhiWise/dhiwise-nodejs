@@ -1,0 +1,218 @@
+.select-tree{
+
+}
+.select-tree .dropdown,
+.select-tree .dropdown-trigger{
+    width: 100%;
+}
+.select-tree.react-dropdown-tree-select .dropdown{
+    display: block;
+}
+.select-tree.react-dropdown-tree-select .dropdown .dropdown-trigger{
+    @apply rounded border-gray-70 bg-gray-input border-1 flex items-center focus:border-primary-dark focus:outline-none;
+    padding: 4.7px 4px;
+    overflow: hidden;
+    width: 100%;
+}
+.select-tree.react-dropdown-tree-select.smallBox .dropdown .dropdown-trigger{
+    padding: 2px 4px;
+}
+.small .select-tree.react-dropdown-tree-select .dropdown .dropdown-trigger{
+    padding: 0 4px;
+}
+.small .tag-item{
+    margin: 2.5px 4px;
+}
+.small .select-tree.react-dropdown-tree-select .dropdown .dropdown-trigger .tag-item input{
+    font-size: 12px;
+}
+.medium .select-tree.react-dropdown-tree-select .dropdown .dropdown-trigger{
+    padding: 1.5px 4px;
+}
+.medium .select-tree.react-dropdown-tree-select .dropdown .dropdown-trigger .tag-item input{
+    font-size: 12px;
+}
+.select-tree.react-dropdown-tree-select .dropdown .dropdown-trigger .tag-item input{
+    @apply bg-transparent border-none placeholder-primary text-sm focus:border-primary-dark;
+}
+.select-tree.react-dropdown-tree-select .dropdown .dropdown-content{
+    @apply w-full bg-white border-1 border-gray-200 rounded-bl rounded-br;
+    /* bg-gray-selectDropdown */
+    z-index: 10;
+    padding: 0;
+}
+.select-tree.react-dropdown-tree-select .dropdown .dropdown-content .no-matches{
+    width: 100%;
+    text-align: center;
+    display: block;
+    padding: 10px;
+    opacity: 0.5;
+}
+.select-tree .tag{
+    padding-right: 1rem;
+}
+.select-tree .tag-list{
+    @apply w-full flex items-center;
+    padding-right: 35px;
+}
+.select-tree .tag-item{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.select-tree .tag-item:last-child{
+    display: none;
+}
+.select-tree .tag-item:first-child{
+    display: block;
+}
+.select-tree .dropdown-content ul li{
+    /* @apply p-1; */
+    /* padding: 0.45rem 10px !important; */
+    padding-top: 0;
+    padding-bottom: 0;
+    border-bottom: 1px solid var(--color-gray-90);
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.select-tree .dropdown-content ul li label{
+    display: flex;
+    align-items: center;
+    padding: 0.45rem 10px !important;
+    flex-grow: 1;
+}
+.select-tree .dropdown-content ul li .radioBoxWrap{
+    padding-left: 0;
+    margin: 0;
+    margin-right: 5px;
+    width: 14px;
+    height: 14px;
+}
+.select-tree .dropdown-content ul li .radioBoxWrap .spark-radio-inner{
+    width: 14px;
+    height: 14px;
+}
+.select-tree .dropdown-content ul li .checkBoxWrap {
+    position: relative;
+}
+.select-tree .dropdown-content ul li .checkBoxWrap input{
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+}
+.select-tree .dropdown-content ul li .radioBoxWrap input:checked ~ .spark-radio-inner{
+    background-color: var(--color-bg-primary);
+    border:1px solid var(--color-bg-primary);
+}
+.select-tree .dropdown-content ul li .radioBoxWrap input:checked ~ .spark-radio-inner:after{
+    opacity: 1;
+    transform: scale(0.7);
+}
+.select-tree .dropdown-content ul li.focused .radioBoxWrap input:checked ~ .spark-radio-inner{
+    border:1px solid #fff;
+}
+.select-tree .dropdown-content ul li .checkBoxWrap input:checked ~ .spark-checkbox-inner{
+    background-color: var(--color-bg-primary);
+    border:1px solid var(--color-bg-primary);
+}
+.select-tree .dropdown-content ul li .checkBoxWrap input:checked ~ .spark-checkbox-inner:after{
+    opacity: 1;
+    border: 1px solid #fff;
+    border-top: 0;
+    border-left: 0;
+    transform: rotate(
+45deg
+ ) scale(1) translate(-50%,-50%);
+    transition: all .2s cubic-bezier(.12,.4,.29,1.46);
+    left: 3px;
+    width: 0.20rem;
+    height: 0.4rem;
+}
+.select-tree .dropdown-content ul li.focused input:checked ~ .spark-checkbox-inner{
+    border:1px solid #fff;
+}
+.select-tree .dropdown-content ul li .checkBoxWrap .spark-checkbox-inner{
+    width: 14px;
+    height: 14px;
+}
+.select-tree .dropdown-content ul li i{
+    @apply text-primary-text mr-3 focus:outline-none;
+    flex-shrink: 0;
+    padding: 0.45rem 0 0.45rem 10px!important;
+    margin-right: 0;
+}
+.select-tree .dropdown-content ul li label .node-label{
+    @apply text-primary-text text-sm capitalize font-normal;
+}
+.select-tree .dropdown-content ul li label input{
+    @apply mr-1;
+}
+.select-tree .dropdown-content ul li.leaf[aria-level="1"] i{
+    display: none
+}
+.select-tree .node.focused{
+    @apply bg-primary-dark;
+}
+.select-tree .node.focused i,
+.select-tree .node.focused label .node-label{
+    @apply text-defaultWhite;
+}
+.select-tree .tag{
+    @apply bg-gray-200 text-primary-text text-xs px-2 py-0 capitalize flex items-center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+    position: relative;
+}
+.select-tree .tag-remove{
+    @apply text-primary-text ml-1;
+    position: absolute;
+    right: 6px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+.select-tree.react-dropdown-tree-select .dropdown .dropdown-trigger.arrow.top:after,
+.dropdown .dropdown-trigger.arrow.bottom:after{
+    @apply absolute right-4 text-primary-text text-xxs;
+    color:var( --color-gray-white) !important;
+}
+.select-tree.react-dropdown-tree-select  .infinite-scroll-component {
+    max-height: 160px;
+}
+.tag-list .tag-item:first-child{
+    display: block !important;
+}
+.tag-list .tag-item:last-child{
+    display: none;
+    width: 100%;
+}
+.tag-list .tag-item:last-child input{
+    width: 100%;
+}
+/* Select tree hide item */
+.selectValue .tag-list .tag-item{
+    display: none !important;
+}
+.selectValue .tag-list .tag-item:last-child{
+    display: block !important;
+}
+.SelectTreeDisable .disabled {
+    opacity: 0.5;
+    cursor: no-drop;
+}
+
+/* dark */
+.darkSelect.select-tree.react-dropdown-tree-select .dropdown .dropdown-trigger{
+    background-color: var(--color-gray-inputSub);
+    border: 1px solid var(--color-gray-300);
+}
+.darkSelect.select-tree.react-dropdown-tree-select .dropdown .dropdown-trigger:focus{
+    border-color: var(--color-bg-primary);
+}
+.darkSelect.select-tree.react-dropdown-tree-select .dropdown .dropdown-content{
+    background-color: var(--color-gray-inputSub);
+}

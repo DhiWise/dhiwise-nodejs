@@ -1,0 +1,26 @@
+const express = require("express");
+const router = express.Router()
+<%_if(typeof(SERVICE_NAME) !== 'undefined' && typeof(PLATFORM) !== 'undefined'){ _%>
+const <%- SERVICE_NAME%>Controller = require("../../controller/<%-PLATFORM%>/<%-SERVICE_NAME%>Controller");    
+<%_}_%>
+<%_
+if(typeof(CONTROLLER_IMPORTS) !== 'undefined' ){
+Object.keys(CONTROLLER_IMPORTS).forEach(function(key) { _%>
+const <%-key%> = require("<%-CONTROLLER_IMPORTS[key]%>")
+<%_ }); } _%>    
+<%_
+if(POLICIES && POLICIES.length){
+ POLICIES.forEach((policy)=>{_%>
+const <%-policy%> = require("../../middleware/<%-policy%>")
+<%_}) }_%>
+<%_ ROUTES.forEach((v,i)=> {_%>
+router.route("<%-v.api%>").<%-v.method%>(<%_if(v.policies && v.policies.length){_%>
+<%_v.policies.forEach((policy)=>{_%>
+<%_if(policy==='auth'){_%>auth(...[]),
+<%_}else{_%>
+<%-policy%>,<%_}_%>
+<%_})_%>
+<%_}_%><%_if(typeof(v.controllerFileName)!=='undefined'){_%><%-v.controllerFileName%><%_}else{_%><%-v.controller%>Controller<%_}_%>.<%-v.functionName%>)
+<%_})_%>
+    
+module.exports = router;

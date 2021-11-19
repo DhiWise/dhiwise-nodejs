@@ -1,0 +1,15 @@
+const express =  require("express")
+const router =  express.Router()
+<%_ if(IS_AUTH){ _%>
+router.use("/<%-PLATFORM_NAME.toLowerCase()%>/auth",require("./auth"));
+<%_ } _%>
+<%_ for(let i in PLATFORM){ _%>
+router.use(require("./<%-i%>Routes"));
+<%_}_%>  
+<%_if(typeof ROUTES!=="undefined"){_%>
+<%_ ROUTES.forEach((v,i)=>{ _%>
+router.use("/",require("./<%-v.controller%>Routes"));
+<%_})_%>
+<%_}_%>
+
+module.exports = router;

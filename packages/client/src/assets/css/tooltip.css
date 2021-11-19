@@ -1,0 +1,23 @@
+.__react_component_tooltip {
+    background-color: var(--color-bg-black) !important;
+    color: var(--color-bg-light) !important;
+    font-weight: 600;
+    z-index: 10000 !important;
+    font-size: 14px !important;
+}
+
+.__react_component_tooltip.place-right:after {
+    border-right-color: var(--color-bg-black) !important;
+}
+
+.__react_component_tooltip.place-left:after {
+    border-left-color: var(--color-bg-black) !important;
+}
+
+.__react_component_tooltip.place-bottom:after {
+    border-bottom-color: var(--color-bg-black) !important;
+}
+
+.__react_component_tooltip.place-top:after {
+    border-top-color: var(--color-bg-black) !important;
+}

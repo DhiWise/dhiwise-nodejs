@@ -1,0 +1,68 @@
+var express = require('express');
+var router = express.Router();
+const fileUploadController = require("../../controller/<%-PLATFORM%>/fileUpload/fileUploadController");
+const sendResponse = require("../../helpers/sendResponse")
+<%_ if(IS_AUTH){ _%>
+const auth = require("../../middleware/auth");
+<%_ } _%>
+
+<%_ if(IS_AUTH){ _%>
+<%_ if(PLATFORM === 'common'){ _%>
+router.post("/upload",auth,(req,res)=>{
+    fileUploadController.upload(req).then(result=>{
+        sendResponse(res, result)
+    }).catch(error=>{
+        sendResponse(res, error)
+    })
+});
+<%_ } else { _%>
+router.post("/<%-PLATFORM_PREFIX%>/upload",auth(...<%=FILE_UPLOAD%>),(req,res)=>{
+    fileUploadController.upload(req).then(result=>{
+        sendResponse(res, result)
+    }).catch(error=>{
+        sendResponse(res, error)
+    })
+});
+<%_ } _%>
+<%_ }else{ _%>
+router.post("/<%-PLATFORM_PREFIX%>/upload",(req,res)=>{
+    fileUploadController.upload(req).then(result=>{
+        sendResponse(res, result)
+    }).catch(error=>{
+        sendResponse(res, error)
+    })
+});
+<%_ } _%>
+
+<%_ if(S3_UPLOAD_PRIVATE){_%>
+<%_ if(IS_AUTH){ _%>
+<%_ if(PLATFORM === 'common'){ _%>
+router.post("/generate-pre-signed-url",auth,(req,res)=>{
+    fileUploadController.generatePreSignedURL(req).then(result=>{
+        sendResponse(res, result)
+    }).catch(error=>{
+        sendResponse(res, error)
+    })
+});
+<%_ } else { _%>
+router.post("/<%-PLATFORM_PREFIX%>/generate-pre-signed-url",auth(...<%=FILE_UPLOAD%>),(req,res)=>{
+    fileUploadController.generatePreSignedURL(req).then(result=>{
+        sendResponse(res, result)
+    }).catch(error=>{
+        sendResponse(res, error)
+    })
+});
+<%_ } _%>
+<%_ }else{ _%>
+router.post("/<%-PLATFORM_PREFIX%>/generate-pre-signed-url",(req,res)=>{
+    fileUploadController.generatePreSignedURL(req).then(result=>{
+        sendResponse(res, result)
+    }).catch(error=>{
+        sendResponse(res, error)
+    })
+});
+<%_ } _%>
+<%_ } _%>
+
+module.exports = router;
+

@@ -1,0 +1,44 @@
+.themeLogo .c,
+.themeLogo .st2 {
+    fill: var(--color--black-svg);
+}
+
+.themeLogo .a,
+.themeLogo .st0 {
+    fill: var(--color--secondry-svg);
+}
+
+.themeLogo .b,
+.themeLogo .st1 {
+    fill: var(--color--theme-svg);
+}
+
+.themeSmallLogo .cls-1,
+.themeSmallLogo .cls-4 {
+    fill: none;
+}
+
+.themeSmallLogo .cls-2 {
+    clip-path: url(#clip-path);
+}
+
+.themeSmallLogo .cls-3 {
+    opacity: 0.5;
+}
+
+.themeSmallLogo .cls-4 {
+    stroke: #e0e0e0;
+    stroke-miterlimit: 10;
+}
+
+.themeSmallLogo .cls-5 {
+    fill: var(--color--secondry-svg);
+}
+
+.themeSmallLogo .cls-6 {
+    fill: var(--color--theme-svg);
+}
+
+.themeWhiteLogo .cls-1 {
+    fill: var(--color--black-svg);
+}

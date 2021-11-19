@@ -1,0 +1,51 @@
+const express =  require("express");
+const routes  =  express.Router();
+<%_if(SOCIAL_PLATFORMS.length){ _%>
+const session = require('express-session');
+<%_}_%>
+const auth = require('../../middleware/auth');
+const authController =  require("../../controller/<%-PLATFORM%>/authController")
+<%_if(typeof LOGIN_RATE_LIMIT === "object" && LOGIN_RATE_LIMIT !== null){ var rate=true;_%>    
+const rateLimit = require("express-rate-limit");
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: <%=LOGIN_RATE_LIMIT.max_%>, // limit each IP to 100 requests per windowMs
+    message:{message:"Too many times try to login from this IP, please try again after 15 minutes"}
+});
+<%_}_%>
+routes.route("/register").post(authController.register);
+routes.post("/login",<%_if(rate){_%>limiter,<%_}_%>authController.login);
+routes.route("/forgot-password").post(authController.forgotPassword);
+routes.route("/validate-otp").post(authController.validateResetPasswordOtp);
+routes.route("/reset-password").put(authController.resetPassword);
+<%_if(SOCIAL_PLATFORMS.length) { 
+    SOCIAL_PLATFORMS.forEach(s=>{ _%>
+routes.get("/login/<%-s.toLowerCase()%>",(req,res)=>{
+    req.session.platform = <%=PLATFORM%>
+    res.redirect(`http://localhost:${process.env.PORT}/auth/<%-s.toLowerCase()%>`);
+})       
+<%_})_%>
+<%_}_%>
+<%_ returnRole = makePolicyRoutes('logout')_%>
+routes.route('/logout').post(auth(...<%=returnRole.LOGOUT_API%>), authController.logout); 
+
+<%_ function makePolicyRoutes(type){
+    try{
+        let returnRoles = {}
+        returnRoles.LOGOUT_API = []
+            for (var [i, v] of Object.entries(LOGIN_ACCESS_PLATFORM)) {
+                switch (type) {
+                    case 'logout':
+                        returnRoles.LOGOUT_API.push(`logoutBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
+                        break;
+                    default:
+                        break;
+                }
+            }
+       return returnRoles;
+    }catch(error){
+        throw error;
+    }
+}_%>
+
+module.exports = routes;
