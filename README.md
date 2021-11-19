@@ -17,8 +17,6 @@ Most importantly, the Node.js code generator gives developers total code ownersh
 
 * [Features](#features-of-generated-code)
 
-<br/>
-
 ## Get started 
 After a successful run, a user can configure different settings using UI, and build an app to generate the code.
 1. To run 
@@ -56,12 +54,11 @@ The Model-View-Controller (MVC) is an architectural pattern that separates an ap
 18. Custom API setup
 19. Multiple Platform selection and User type configuration
 20. MVC and Clean-code architecture 
-
-### Supported Databases
-1. MongoDB
-2. SQL Server
-3. MYSQL
-4. PostgreSQL
+21. Supported Databases <br>
+    a. MongoDB<br>
+    b. SQL Server<br>
+    c. MYSQL<br>
+    d. PostgreSQL
 
 ## Contribution
 
