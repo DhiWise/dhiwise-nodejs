@@ -13,8 +13,6 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v2
       - name: installing eslint 
-        run: npm install eslint -g && npm install eslint-plugin-react --save-dev
-      - name: installing dev dependencies 
-        run: npm install --only=dev
+        run: npm run install
       - name: Fixing Files
         run: eslint . --ext .js --fix
