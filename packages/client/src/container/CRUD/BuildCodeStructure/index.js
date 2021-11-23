@@ -37,6 +37,7 @@ export const BuildCodeStructure = ({ openBuildRef }) => {
         <div className="grid grid-cols-2 gap-5">
           {BuildOptions.map((options) => (
             <CardView
+              key={options.id}
               onClick={() => {
                 buildProject(options.id);
               }}

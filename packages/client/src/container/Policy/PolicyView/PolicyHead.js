@@ -100,3 +100,4 @@ export const PolicyHead = React.memo(({
     />
   );
 });
+PolicyHead.displayName='PolicyHead'

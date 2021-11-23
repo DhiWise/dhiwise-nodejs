@@ -131,3 +131,4 @@ export const EditableCell = React.memo(({
     default: return null;
   }
 });
+EditableCell.displayName='EditableCell'

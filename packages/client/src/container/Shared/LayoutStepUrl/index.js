@@ -37,6 +37,7 @@ const LayoutStepUrl = ({
                   {stepSidebarData[moduleName].map((d) => (
 
                     <BigToggleLayout
+                      key={d.title}
                       linkSet={d.linkSet}
                       link={d.link}
                       title={d.title}

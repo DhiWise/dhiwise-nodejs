@@ -74,7 +74,7 @@ const ArrayOfValue = ({
         <Popover
           isOpen={isMore}
           body={[
-            <div className="flex items-center cursor-pointer flex-wrap">
+            <div key={id} className="flex items-center cursor-pointer flex-wrap">
               {multiValue.slice(2)?.map?.((v) => (
                 <div key={v} className="border-gray-100 bg-gray-200 border-1 rounded-3 text-xs text-primary-text w-max-w flex items-center my-1 py-0.5 mx-0.5">
                   <span className="px-2 truncate block">{v}</span>

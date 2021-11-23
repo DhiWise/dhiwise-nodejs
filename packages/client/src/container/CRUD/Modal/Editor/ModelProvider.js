@@ -35,4 +35,5 @@ function useModel() {
   }
   return context;
 }
+ModelProvider.displayName='ModelProvider'
 export { ModelProvider, useModel };

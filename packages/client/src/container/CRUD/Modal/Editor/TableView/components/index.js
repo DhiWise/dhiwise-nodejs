@@ -6,7 +6,7 @@ import {
   Select, Datepicker, Input,
 } from '../../../../../../components';
 
-export const LocalFields = React.memo(({
+export const LocalFields =({
   localField, localRef, onInputChange, rowObj, onKeyDown, id, disabled,
 }) => {
   const {
@@ -62,9 +62,9 @@ export const LocalFields = React.memo(({
       />
     </>
   );
-});
+};
 
-export const InnerType = React.memo(({
+export const InnerType = ({
   innerDataType, TYPE_OPTIONS, onInputChange, onKeyDown, id, disabled,
 }) => {
   const {
@@ -108,9 +108,9 @@ export const InnerType = React.memo(({
       />
     </>
   );
-});
+};
 
-export const DateTime = React.memo(({
+export const DateTime =({
   defaultValue, onInputChange, onKeyDown, id, disabled, showTimeSelect,
 }) => {
   const { control, setValue } = useForm({
@@ -153,9 +153,9 @@ export const DateTime = React.memo(({
       />
     </>
   );
-});
+};
 
-export const NumberType = React.memo(({
+export const NumberType = ({
   onInputChange, onKeyDown, id, disabled, defaultValue, type, TABLE_TYPES,
 }) => {
   const { control, setValue } = useForm({
@@ -200,4 +200,4 @@ export const NumberType = React.memo(({
       />
     </>
   );
-});
+};

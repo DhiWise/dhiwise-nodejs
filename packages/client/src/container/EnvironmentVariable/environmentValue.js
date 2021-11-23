@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import last from 'lodash/last';
@@ -446,4 +445,5 @@ const EnvironmentValue = React.forwardRef(({
     </>
   );
 });
+EnvironmentValue.displayName='EnvironmentValue'
 export { EnvironmentValue };

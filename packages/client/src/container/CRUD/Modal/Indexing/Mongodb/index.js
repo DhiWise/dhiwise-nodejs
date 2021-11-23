@@ -51,12 +51,13 @@ const Row = React.memo(({
             </span>
           </div>
         </td>
-        {row.cells.map((cell) => <td {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
+        {row.cells.map((cell) => <td key={cell.row.key}  {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
       </tr>
       { row?.original?.isExpanded && renderRowSubComponent({ row, rowProps, visibleColumns })}
     </>
   );
 });
+Row.displayName='Row'
 
 const Table = React.memo(({
   // eslint-disable-next-line no-unused-vars
@@ -120,7 +121,7 @@ const Table = React.memo(({
     </DndProvider>
   );
 });
-
+Table.displayName='Table'
 export const MongoIndexing = React.memo(() => {
   const {
     modelIndexList, dispatch, handleAddRow, handleAutoFocus,
@@ -202,3 +203,4 @@ export const MongoIndexing = React.memo(() => {
     </>
   );
 });
+MongoIndexing.displayName='MongoIndexing'

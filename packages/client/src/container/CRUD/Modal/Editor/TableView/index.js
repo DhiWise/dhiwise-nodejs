@@ -92,7 +92,7 @@ const getSize = (index, items, TABLE_TYPES, dbType) => {
   return size; // single row
 };
 
-const Row = React.memo(({
+const Row =({
   index, style, data,
 }) => {
   const { items, itemStatusMap, ...otherProps } = data;
@@ -110,9 +110,9 @@ const Row = React.memo(({
       {...otherProps}
     />
   );
-});
+};
 
-const SortableList = SortableContainer(React.memo((props) => {
+const SortableList = SortableContainer((props) => {
   const { TABLE_TYPES } = useEditor();
   const { items, listRef, ...otherProps } = props;
   const [itemStatusMap, setItemMap] = useState({});
@@ -173,9 +173,9 @@ const SortableList = SortableContainer(React.memo((props) => {
       </AutoSizer>
     </div>
   );
-}));
+});
 
-const TableView = React.memo(() => {
+const TableView =() => {
   const {
     tableJson, setTableJson,
     tableToCodeViewParser, listRef, dbType, TABLE_TYPES, currentApplicationCode,
@@ -361,5 +361,5 @@ const TableView = React.memo(() => {
             }
     </div>
   );
-});
+};
 export default TableView;

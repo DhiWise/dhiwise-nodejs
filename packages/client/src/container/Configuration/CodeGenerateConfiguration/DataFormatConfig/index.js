@@ -88,6 +88,7 @@ export const DataFormatConfig = ({
                 {
               watch('responseFormatter')?.map((itemFormat) => (
                 <DataFormatItem
+                  key={itemFormat.title}
                   handleShow={() => {
                     detailRef.current = itemFormat;
                     openPopUp();

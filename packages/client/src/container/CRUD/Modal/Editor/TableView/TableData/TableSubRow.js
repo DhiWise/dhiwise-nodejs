@@ -24,7 +24,7 @@ import { modelAttrRegex } from '../../../../../../utils/regex';
 import { useEditor } from '../../EditorProvider';
 import { ORM_TYPE } from '../../../../../../constant/Project/applicationStep';
 
-const AllCheckBox = React.memo(({
+const AllCheckBox =({
   cname, onInputChange, watch, control, disable, onKeyDownHandle, id,
 }) => (
   <>
@@ -56,7 +56,7 @@ const AllCheckBox = React.memo(({
       )}
     />
   </>
-));
+);
 
 const TableSubRow = React.memo((props) => {
   const {
@@ -735,3 +735,4 @@ const TableSubRow = React.memo((props) => {
   );
 });
 export default TableSubRow;
+TableSubRow.displayName='TableSubRow'

@@ -10,7 +10,6 @@ import { DeleteIcon } from '../IconBox/DeleteIcon';
 import { Checkbox } from '../Checkbox';
 import { useBoolean } from '../hooks';
 import { ConfirmationAlert } from '../ConfirmAlert';
-// eslint-disable-next-line import/no-cycle
 import { TYPE_OPTIONS } from '../../constant/envVariable';
 import { nodeKeyRegex } from '../../utils/regex';
 import { APPLICATION_CODE } from '../../constant/Project/applicationStep';

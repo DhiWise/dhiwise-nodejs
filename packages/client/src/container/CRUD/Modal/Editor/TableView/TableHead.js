@@ -5,7 +5,7 @@ import { TableViewCss } from '../../../../../assets/css/tableViewCss';
 import { IconBox } from '../../../../../components';
 import { DB_TYPE } from '../../../../../constant/model';
 
-export const TableHead = React.memo(({
+export const TableHead = ({
   onAddRow, dbType,
   // onUpdateJson, tableJson
 }) => (
@@ -86,4 +86,4 @@ export const TableHead = React.memo(({
 
     </tr>
   </div>
-));
+);

@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/mouse-events-have-key-events */
 import React from 'react';
 import Popover from 'react-popover';
 import { Icons } from '@dhiwise/icons';
@@ -35,7 +34,7 @@ export const EnvironmentHead = React.memo(({
                 <Popover
                   place="below"
                   body={[
-                    <Description className="w-96 text-left">{headTooltip}</Description>,
+                    <Description key={title} className="w-96 text-left">{headTooltip}</Description>,
                   ]}
                   className="popupCustom"
                   isOpen={isOtherProOpen}
@@ -88,3 +87,4 @@ export const EnvironmentHead = React.memo(({
     </>
   );
 });
+EnvironmentHead.displayName='EnvironmentHead'

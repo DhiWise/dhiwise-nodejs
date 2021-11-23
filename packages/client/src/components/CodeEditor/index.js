@@ -145,3 +145,5 @@ export const CodeEditor = React.memo(({
     </div>
   );
 });
+
+CodeEditor.displayName='CodeEditor'

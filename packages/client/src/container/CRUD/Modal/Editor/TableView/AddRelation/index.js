@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 import React, { useState } from 'react';
 import Popover from 'react-popover';
 import { Icons } from '@dhiwise/icons';
@@ -120,7 +119,7 @@ export const AddRelation = React.memo(({
     <>
       <Popover
         body={[
-          <div id="model-relation" className={`grid grid-cols-1 gap-5 w-56 ${(isVirtual || isSql) && 'grid-cols-2  w-96'}`}>
+          <div key={id} id="model-relation" className={`grid grid-cols-1 gap-5 w-56 ${(isVirtual || isSql) && 'grid-cols-2  w-96'}`}>
             <Select
               isClearable={false}
               WrapClassName="w-full"
@@ -241,3 +240,4 @@ export const AddRelation = React.memo(({
     </>
   );
 });
+AddRelation.displayName='AddRelation'

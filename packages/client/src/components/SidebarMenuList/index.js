@@ -44,6 +44,7 @@ export const SidebarMenuList = React.memo(({
           {subTitle && <div className="px-3 py-2">{subTitle}</div>}
           {subMenuList?.map((d) => (
             <Link
+              key={d?._id || d.title}
               className={`${title && 'mx-3'} block`}
               to={d.link}
               onClick={onClick}
@@ -115,3 +116,4 @@ SidebarMenuList.propTypes = {
   /** * used to pass Initial selected Id */
   initialSelectedId: PropTypes.string,
 };
+SidebarMenuList.displayName='SidebarMenuList'

@@ -1,5 +1,4 @@
 /* eslint-disable no-nested-ternary */
-/* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -36,7 +35,7 @@ import { ORM_TYPE } from '../../../../../../constant/Project/applicationStep';
 
 const TableSubRow = React.lazy(() => new Promise((resolve) => resolve(import('./TableSubRow'))));
 
-const SortableItem = SortableElement(React.memo(({ subRow, rowIndex, ...otherProps }) => (
+const SortableItem = SortableElement(({ subRow, rowIndex, ...otherProps }) => (
   <RowSuspense>
     <div className="relative mb-2" id={subRow.key}>
       <TableSubRow
@@ -46,9 +45,8 @@ const SortableItem = SortableElement(React.memo(({ subRow, rowIndex, ...otherPro
       />
     </div>
   </RowSuspense>
-)));
-
-const SortableList = SortableContainer(React.memo(({ items, ...otherProps }) => (
+));
+const SortableList = SortableContainer(({ items, ...otherProps }) => (
   <div>
     {
       items?.map((rs, index) => (
@@ -56,9 +54,9 @@ const SortableList = SortableContainer(React.memo(({ items, ...otherProps }) => 
       ))
     }
   </div>
-)));
+));
 
-const AllCheckBox = React.memo(({
+const AllCheckBox = ({
   cname, onInputChange, watch, control, disable, onKeyDownHandle, id,
 }) => (
   <>
@@ -90,7 +88,7 @@ const AllCheckBox = React.memo(({
       )}
     />
   </>
-));
+);
 
 const TableRow = React.memo((props) => {
   const {
@@ -1088,3 +1086,4 @@ const TableRow = React.memo((props) => {
   );
 });
 export default TableRow;
+TableRow.displayName='TableRow'
