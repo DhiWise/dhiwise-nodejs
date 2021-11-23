@@ -20,16 +20,21 @@ const upload = async (req,res) =>{
     form.maxFieldsSize = 100 * 1024 * 1024; //50 MB
 
     const uploadFileRes = await new Promise(async (resolve, reject) => {
-      form.parse(req, async function (err, fields, files) { 
+      form.parse(req, async function (err, fields, files) {
+        
+        if (err) {
+          reject(err);
+        }
 
-        let filePaths = [];
+        let uploadSuccess = [];
+        let uploadFailed = [];
         let fileCount = 1;
 
         let fileArr = [];
         if (!files['file[]'] || files['file[]'].size == 0) {
-          resolve({
-            'err': 'Please Select any one File',
-            'status': false
+          reject({
+            'message': 'Select at least one file to upload.',
+            'name': 'validationError'
           });
         }
         if (!Array.isArray(files['file[]'])) {
@@ -40,26 +45,46 @@ const upload = async (req,res) =>{
         for (let file of files['file[]']) {
           let response = await uploadFiles(file,fields,fileCount++);
           if (response.status == false) {
-            filePaths.push({
+            uploadFailed.push({
               'name': file.name,
-              'err': response.message,
+              'error': response.message,
               'status': false
             });
           } else {
-            filePaths.push({
+            uploadSuccess.push({
+              'name': file.name,
               'path': response.data,
               'status': true
             });
           }
-          
         }
-        resolve(filePaths);
 
+        resolve({
+          uploadSuccess,
+          uploadFailed
+        });
       });
     });
-    return res.ok(uploadFileRes);
+    
+    if (uploadFileRes.uploadSuccess.length > 0) {
+      let message = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
+      return res.ok({
+        message: message,
+        data: uploadFileRes
+      });
+    } else {
+      let message = 'Failed to upload files.';
+      return res.invalidRequest({
+        message: message,
+        data: uploadFileRes
+      });
+    }
   } catch (error){
-    return res.failureResponse(error.message);
+    if (error.name && error.name == 'validationError') {
+      return res.validationError({ message: error.message });
+    } else {
+      return res.failureResponse();
+    }
   }
 };
 
@@ -81,32 +106,32 @@ const generatePreSignedURL = async (req, res) => {
                 secretAccessKey: S3Config.AWS_S3_SECRET_ACCESS_KEY
             });
 
-            const { region, bucket, key } = AmazonS3URI(uri);
-            let options = {
+            try {
+              const {
+                region, bucket, key
+              } = AmazonS3URI(uri);
+
+              let options = {
                 Bucket: bucket,
                 Key: key,
                 Expires: Number(process.env.AWS_URL_EXPIRATION) || 15 * 60 //in seconds,
-            };
+              };
 
-            await s3.getSignedUrl('getObject', options, (err, url) => {
+              await s3.getSignedUrl('getObject', options, (err, url) => {
                 if (err) {
-                    return res.invalidRequest({
-                        status: false,
-                        err: err,
-                    })
+                    return res.invalidRequest({message: err});
                 } else {
-                    return res.ok({
-                        status: true,
-                        path: url,
-                    })
+                    return res.ok({data: url });
                 }
-            });
-        }
-        else {
-            return res.badRequest({});
+              });
+            } catch (err) {
+              return res.invalidRequest({ message: `${uri} is not a valid S3 uri` });
+            }
+        }else {
+            return res.badRequest();
         }
     } catch (error) {
-        return res.failureResponse(error.message);
+        return res.failureResponse();
     }
 }
 <%_}_%>
@@ -220,14 +245,19 @@ const upload = async (req, res) => {
 
       form.parse(req, async function (err, fields, files) {
 
-        let filePaths = [];
+        if (err) {
+          reject(err);
+        }
+
+        let uploadSuccess = [];
+        let uploadFailed = [];
         let fileCount = 1;
 
         let fileArr = [];
         if (!files['file[]'] || files['file[]'].size == 0) {
-          resolve({
-            'err': 'Please Select any one File',
-            'status': false
+          reject({
+            'message': 'Select at least one file to upload.',
+            'name': 'validationError'
           });
         }
         if (!Array.isArray(files['file[]'])) {
@@ -240,9 +270,9 @@ const upload = async (req, res) => {
           let response = await uploadFiles(file, fields, fileCount++);
 
           if (response.status == false) {
-            filePaths.push({
+            uploadFailed.push({
               'name': file.name,
-              'err': response.message,
+              'error': response.message,
               'status': false
             });
           } else {
@@ -251,18 +281,39 @@ const upload = async (req, res) => {
               response.data = response.data.replace('/public', '');
               url = `${response.data}`;
             }
-            filePaths.push({
+            uploadSuccess.push({
+              'name': file.name,
               'path': url,
               'status': true
             });
           }
         }
-        resolve(filePaths);
+        resolve({
+          uploadSuccess,
+          uploadFailed
+        });
       });
     });
-    return res.ok(uploadFileRes);
+    
+    if (uploadFileRes.uploadSuccess.length > 0) {
+      let message = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
+      return res.ok({
+        message: message,
+        data: uploadFileRes
+      });
+    } else {
+      let message = 'Failed to upload files.';
+      return res.invalidRequest({
+        message: message,
+        data: uploadFileRes
+      });
+    }
   } catch (error) {
-    return res.failureResponse(error.message);
+    if (error.name && error.name == 'validationError') {
+      return res.validationError({ message: error.message });
+    } else {
+      return res.failureResponse();
+    }
   }
 };
 

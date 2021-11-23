@@ -7,21 +7,13 @@ const adaptRequest = require("../../helpers/adaptRequest");
 const sendResponse = require("../../helpers/sendResponse");
 const authController = require("../../controller/<%-PLATFORM%>/authentication");
 const auth = require('../../middleware/auth');
-<%_if(typeof LOGIN_RATE_LIMIT === "object" && LOGIN_RATE_LIMIT !== null){ var rate=true;_%>
-const rateLimit = require("express-rate-limit");
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: <%=LOGIN_RATE_LIMIT.max%>, // limit each IP to 100 requests per windowMs
-  message:{message:"Too many times try to login from this IP, please try again after 15 minutes"}
-});
-<%_}_%>
 router.post("/register",(req,res,next)=>{
   req = adaptRequest(req);
   authController.register({data:req.body}).then((result)=>{
     sendResponse(res,result);
   })
 });
-router.post('/login',<%_if(rate){_%>limiter,<%_}_%>(req,res,next)=>{
+router.post('/login',(req,res,next)=>{
 req = adaptRequest(req);
 authController.authentication(req).then((result) => {
 sendResponse(res,result)

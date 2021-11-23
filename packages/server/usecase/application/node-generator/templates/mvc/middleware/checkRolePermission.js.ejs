@@ -31,17 +31,16 @@ const checkRolePermission = async (req, res, next) => {
         if (allowedRoute && allowedRoute.length) {
           next();
         } else {
-          return res.unAuthorizedRequest('You are not having permission to access this route!');
+          return res.unAuthorizedRequest({message:'You are not having permission to access this route!'});
         }
       } else {
         next();
       }
     } else {
-      // return res.unAuthorizedRequest('You are not having permission to access this route!');
       next();
     }
   } else {
-    return res.unAuthorizedRequest('Authorization token required!');
+    return res.unAuthorizedRequest({message:'Authorization token required!'});
   }
   return undefined;
 };

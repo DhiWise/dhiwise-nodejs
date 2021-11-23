@@ -15,7 +15,7 @@ const validUrl = require('valid-url');
 <%_}_%>
 <%_}_%>
 const message = require("../../../utils/messages");
-const responseCode = require("../../../utils/responseCode");
+
 <%_var customRouteServices=[]
 if(SERVICES_TO_IMPORT && SERVICES_TO_IMPORT.length){
     for(let i=0;i < SERVICES_TO_IMPORT.length;i++){ 
@@ -61,24 +61,12 @@ function make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC
             <%_SUPPORT_API[i].fields.push("id")_%>
             created<%-DB_MODEL_FC%> = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(created<%-DB_MODEL_FC%>);
             <%_}_%>
-            return message.successResponse(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                created<%-DB_MODEL_FC%>
-            );
+            return message.successResponse({data: created<%-DB_MODEL_FC%> });
         }catch(error){
             if(error.name === "ValidationError"){
-                return message.inValidParam(
-                    { "Content-Type": "application/json" },
-                    responseCode.validationError,
-                    error.message
-                )
+                return message.inValidParam({message : error.message});
             }
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+            return message.failureResponse();
         }
     }
 <%_ } _%>
@@ -92,24 +80,12 @@ function make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC
             <%_ } _%>
             const <%-DB_MODEL%>Entities=data.map((item)=>make<%-DB_MODEL_FC%>(item,"insert<%-DB_MODEL_FC%>Validator"))
             const results = await <%-DB_MODEL%>Service.bulkInsert(<%-DB_MODEL%>Entities)
-            return message.successResponse(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                results
-            );
+            return message.successResponse({data:results});
         }catch(error){
             if(error.name === "ValidationError"){
-                return message.inValidParam(
-                    { "Content-Type": "application/json" },
-                    responseCode.validationError,
-                    error.message
-                )
+                return message.inValidParam({message : error.message});
             }
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+            return message.failureResponse();
         }
     }
 <%_ } _%>
@@ -135,11 +111,7 @@ function make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC
                         }
                     }
                 } else{
-                    return message.badRequest(
-                        { "Content-Type": "application/json" },
-                        responseCode.badRequest,
-                        {}
-                    )
+                    return message.badRequest()
                 }
                 <%_}else{_%>
                 let query = {_id:id}
@@ -161,38 +133,18 @@ function make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC
                 updated<%-DB_MODEL_FC%> = await <%-DB_MODEL%>Service.getSingleDocumentById(id,select);
                 <%_}_%>
                 if(updated<%-DB_MODEL_FC%>){
-                    return message.successResponse(
-                        { "Content-Type": "application/json" },
-                        responseCode.success,
-                        updated<%-DB_MODEL_FC%>
-                    );
+                    return message.successResponse({data:updated<%-DB_MODEL_FC%>});
                 } else {
-                    return message.recordNotFound(
-                        { "Content-Type": "application/json" },
-                        responseCode.success,
-                        {}
-                    );
+                    return message.recordNotFound();
                 }
             }
-            return message.badRequest(
-                { "Content-Type": "application/json" },
-                responseCode.badRequest,
-                {}
-            );
+            return message.badRequest();
         }
         catch(error){
             if(error.name === "ValidationError"){
-                return message.inValidParam(
-                    { "Content-Type": "application/json" },
-                    responseCode.validationError,
-                    error.message
-                )
+                return message.inValidParam({message : error.message});
             }
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+            return message.failureResponse();
         }
     }
 <%_ } _%>
@@ -221,7 +173,6 @@ function make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC
                 _%>
                 <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
                     let query = {};
-                    
                     if (loggedInUser){
                         query = {
                             "_id": {
@@ -231,46 +182,24 @@ function make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC
                         ...data.filter
                         }
                     } else{
-                        return message.badRequest(
-                            { "Content-Type": "application/json" },
-                            responseStatusCode.badRequest,
-                            err
-                        )
+                        return message.badRequest();
                     }
                     <%_}else{_%>
                     let query = data.filter;
                     <%_}_%> 
                     const updated<%-DB_MODEL_FC%>s = await <%-DB_MODEL%>Service.bulkUpdate(query,filterData);       
                     if(updated<%-DB_MODEL_FC%>s){
-                        return message.successResponse(
-                            { "Content-Type": "application/json" },
-                            responseCode.success,
-                            updated<%-DB_MODEL_FC%>s
-                        );
+                        return message.successResponse({data:updated<%-DB_MODEL_FC%>s});
                     }else{
-                        return message.recordNotFound(
-                             { "Content-Type": "application/json" },
-                            responseCode.success,
-                            {}
-                        )
+                        return message.recordNotFound();
                     }
             }
-            return message.badRequest(
-                { "Content-Type": "application/json" },
-                responseCode.badRequest,
-                {}
-            );
+            return message.badRequest();
         }catch(error){
             if(error.name === "ValidationError"){
-                return message.inValidParam(
-                { "Content-Type": "application/json" },
-                responseCode.validationError,
-                error.message);
+                return message.inValidParam({message :error.message});
             }
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message);
+            return message.failureResponse();
         }
     }
 <%_ } _%>
@@ -294,11 +223,7 @@ function make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC
                     Object.assign(query._id, { $in: [data.query._id] })
                 }
             }else{
-                return message.badRequest(
-                    { "Content-Type": "application/json" },
-                    responseCode.badRequest,
-                    {}
-                )
+                return message.badRequest()
             }
             <%_}_%>
             <%_         
@@ -313,16 +238,8 @@ function make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC
                 }
             _%>
             if(data.isCountOnly){
-                  result = await <%-DB_MODEL%>Service.countDocument(query);
-                  if (result) {
-                    result = { totalRecords: result };  
-                  }else{
-                    return message.recordNotFound(
-                        { "Content-Type": "application/json" },
-                        responseCode.success,
-                        {}
-                      );
-                  }
+                result = await <%-DB_MODEL%>Service.countDocument(query);
+                return message.successResponse({data: result});  
             }else{ 
                 if (data.options !== undefined) {
                     options = { ...data.options };
@@ -348,32 +265,16 @@ function make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC
                 result = await <%-DB_MODEL%>Service.getAllDocuments(query,options);
             }
             if(result.data){
-                return message.successResponse(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    result
-                );
+                return message.successResponse({data: result});
             }else{
-                return message.recordNotFound(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    {}
-                );
+                return message.recordNotFound();
             }
         }
         catch(error){
             if(error.name==="ValidationError"){
-          return message.inValidParam(
-            { "Content-Type": "application/json" },
-              responseCode.validationError,
-              error.message
-          );
-        }
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+                return message.inValidParam({message :error.message});
+            }   
+            return message.failureResponse();
         }
     }
 <%_ } _%>
@@ -404,18 +305,10 @@ const partialUpdate<%-DB_MODEL_FC%> = async (data,id<%_if(SUPPORT_API[i].isLogin
                 updated<%-DB_MODEL_FC%> = await <%-DB_MODEL%>Service.getSingleDocumentById(id,select);
                 <%_}_%>
                 if(updated<%-DB_MODEL_FC%>){
-                    return message.successResponse(
-                        { "Content-Type": "application/json" },
-                        responseCode.success,
-                        updated<%-DB_MODEL_FC%>
-                    );
+                    return message.successResponse({data: updated<%-DB_MODEL_FC%>});
                 }
                 else {
-                    return message.badRequest(
-                        { "Content-Type": "application/json" },
-                        responseCode.badRequest,
-                        {}
-                    );
+                    return message.badRequest();
                 }
             }
             <%_}else{_%>
@@ -426,42 +319,22 @@ const partialUpdate<%-DB_MODEL_FC%> = async (data,id<%_if(SUPPORT_API[i].isLogin
             updated<%-DB_MODEL_FC%> = await <%-DB_MODEL%>Service.getSingleDocumentById(id,select);
             <%_}_%>
             if(updated<%-DB_MODEL_FC%>){
-                return message.successResponse(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    updated<%-DB_MODEL_FC%>
-                );
+                return message.successResponse({data : updated<%-DB_MODEL_FC%>});
             }
             else {
-                return message.recordNotFound(
-                    { "Content-Type": "application/json" },
-                    responseCode.recordNotFound,
-                    {}
-                );
+                return message.badRequest();
             }
             <%_}_%>
         }
         else{
-            return message.badRequest(
-                { "Content-Type": "application/json" },
-                responseCode.badRequest,
-                {}
-            );
+            return message.badRequest();
         }
     }
     catch(error){
         if(error.name === "ValidationError"){
-            return message.inValidParam(
-                { "Content-Type": "application/json" },
-                responseCode.validationError,
-                error.message
-            )
+            return message.inValidParam({message :error.message});
         }
-        return message.failureResponse(
-            { "Content-Type": "application/json" },
-            responseCode.internalServerError,
-            error.message
-        );
+        return message.failureResponse();
     }
 }
 <%_ } _%>
@@ -500,37 +373,17 @@ const partialUpdate<%-DB_MODEL_FC%> = async (data,id<%_if(SUPPORT_API[i].isLogin
                     _%>
                 result = await result.populate(<%-JSON.stringify(populate)%>).execPopulate();
                 <%_}_%>
-                return message.successResponse(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    result
-                );
+                return message.successResponse({data: result});
                 }
-                return message.recordNotFound(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    {}
-                );
+                return message.recordNotFound();
             }
-            return message.badRequest(
-                    { "Content-Type": "application/json" },
-                    responseCode.badRequest,
-                    {}
-                );
+            return message.badRequest();
         }
         catch(error){
             if(error.name==="ValidationError"){
-                return message.inValidParam(
-                    { "Content-Type": "application/json" },
-                    responseCode.validationError,
-                    error.message
-                );
+                return message.inValidParam({message :error.message});
             }
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+            return message.failureResponse();
         }
     }
 <%_ } _%> 
@@ -553,34 +406,13 @@ const partialUpdate<%-DB_MODEL_FC%> = async (data,id<%_if(SUPPORT_API[i].isLogin
                 }
                 _%>
             let result = await <%-DB_MODEL%>Service.countDocument(where);
-            if(result){
-                return message.successResponse(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    result
-                );
-            }
-            else {
-                return message.recordNotFound(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                {}
-            );
-            }
+            return message.successResponse({data: result});
         }
         catch(error){
             if(error.name==="ValidationError"){
-                return message.inValidParam(
-                    { "Content-Type": "application/json" },
-                    responseCode.validationError,
-                    error.message
-                );
+                return message.inValidParam({message :error.message});
             }
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+            return message.failureResponse(); 
         }
     }
 <%_ } _%>
@@ -600,11 +432,7 @@ const partialUpdate<%-DB_MODEL_FC%> = async (data,id<%_if(SUPPORT_API[i].isLogin
                     }
                 }
             }else{
-                return message.badRequest(
-                    { "Content-Type": "application/json" },
-                    responseCode.badRequest,
-                    {}
-                );
+                return message.badRequest();
             }
             <%_}else{_%>
             let query = {_id:id}
@@ -622,40 +450,20 @@ const partialUpdate<%-DB_MODEL_FC%> = async (data,id<%_if(SUPPORT_API[i].isLogin
                 }
                 _%>
                 let all = await deleteDependentService.count<%-DB_MODEL_FC%>(query)
-                return message.successResponse(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    all
-                );
+                return message.successResponse({data:all});
             } else {
                 let result = await deleteDependentService.delete<%-DB_MODEL_FC%>(query)
                 if(result){
-                    return message.successResponse(
-                        { "Content-Type": "application/json" },
-                        responseCode.success,
-                        result
-                    ); 
+                    return message.successResponse({data:result}); 
                 }
             }
-            return message.badRequest(
-                    { "Content-Type": "application/json" },
-                    responseCode.badRequest,
-                    {}
-                );
+            return message.badRequest();
         }
         catch(error){
-            if(error.name === "ValidationError"){
-                return message.inValidParam(
-                    { "Content-Type": "application/json" },
-                    responseCode.validationError,
-                    error.message
-                )
+             if(error.name==="ValidationError"){
+                return message.inValidParam({message :error.message});
             }
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+            return message.failureResponse();
         }
     }
 <%_ } else { _%>
@@ -671,11 +479,7 @@ const partialUpdate<%-DB_MODEL_FC%> = async (data,id<%_if(SUPPORT_API[i].isLogin
                         }
                     }
                 }else{
-                    return message.badRequest(
-                        { "Content-Type": "application/json" },
-                        responseCode.badRequest,
-                        {}
-                    )
+                    return message.badRequest();
                 }
                 <%_}else{_%>
                 let query = {_id:id}
@@ -692,30 +496,14 @@ const partialUpdate<%-DB_MODEL_FC%> = async (data,id<%_if(SUPPORT_API[i].isLogin
                 }
                 _%>
                 let deleted<%-DB_MODEL_FC%> = await <%-DB_MODEL%>Service.findOneAndDeleteDocument(query);
-                return message.successResponse(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    deleted<%-DB_MODEL_FC%>
-                );
+                return message.successResponse({data: deleted<%-DB_MODEL_FC%>});
             }
-            return message.badRequest(
-                    { "Content-Type": "application/json" },
-                    responseCode.badRequest,
-                    {}
-                );
+            return message.badRequest();
         }catch(error){
             if(error.name==="ValidationError"){
-          return message.inValidParam(
-            { "Content-Type": "application/json" },
-              responseCode.validationError,
-              error.message
-          );
-        }
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+                return message.inValidParam({message :error.message});
+            }
+            return message.failureResponse();
         }
     }
 <%_ } _%>  
@@ -747,31 +535,15 @@ const deleteMany<%-DB_MODEL_FC%> =async(data<%_if(SUPPORT_API[i].isLogin){_%>, l
             }else {
                 result = await deleteDependentService.delete<%-DB_MODEL_FC%>(query)
             }
-            return message.successResponse(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    result
-                );
+            return message.successResponse({data:result});
         }
-        return message.badRequest(
-                { "Content-Type": "application/json" },
-                responseCode.badRequest,
-                {}
-            );
+        return message.badRequest();
     }
     catch(error){
-        if(error.name==="ValidationError"){
-          return message.inValidParam(
-            { "Content-Type": "application/json" },
-              responseCode.validationError,
-              error.message
-          );
+        if(error.name === "ValidationError"){
+            return message.inValidParam({message :error.message});
         }
-        return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+        return message.failureResponse();
     }
 }
 <%_ } else { _%>
@@ -793,31 +565,15 @@ const deleteMany<%-DB_MODEL_FC%> =async(data<%_if(SUPPORT_API[i].isLogin){_%>, l
             let query = {"_id":{"$in":ids}}
             <%_}_%>
             let result = await <%-DB_MODEL%>Service.deleteMany(query);
-            return message.successResponse(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                result
-            );
+            return message.successResponse({data:result});
         }
-        return message.badRequest(
-                { "Content-Type": "application/json" },
-                responseCode.badRequest,
-                {}
-            );
+        return message.badRequest();
     }
     catch(error){
-        if(error.name==="ValidationError"){
-          return message.inValidParam(
-            { "Content-Type": "application/json" },
-              responseCode.validationError,
-              error.message
-          );
+        if(error.name === "ValidationError"){
+            return message.inValidParam({message :error.message});
         }
-        return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+        return message.failureResponse();
     }
 }
 <%_ } _%>
@@ -838,11 +594,7 @@ const deleteMany<%-DB_MODEL_FC%> =async(data<%_if(SUPPORT_API[i].isLogin){_%>, l
                     }
                 }
             }else{
-                return message.badRequest(
-                    { "Content-Type": "application/json" },
-                    responseCode.badRequest,
-                    {}
-                )
+                return message.badRequest();
             }
             <%_}else{_%>
             let query = {_id:id}
@@ -859,24 +611,12 @@ const deleteMany<%-DB_MODEL_FC%> =async(data<%_if(SUPPORT_API[i].isLogin){_%>, l
             }
             _%>
             let result = await deleteDependentService.softDelete<%-DB_MODEL_FC%>(query<%_if(SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>);
-            return message.successResponse(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                result
-            );
+            return message.successResponse({data:result});
         }catch(error){
-            if(error.name==="ValidationError"){
-          return message.inValidParam(
-            { "Content-Type": "application/json" },
-              responseCode.validationError,
-              error.message
-          );
-        }
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+            if(error.name === "ValidationError"){
+                return message.inValidParam({message:error.message});
+            }
+            return message.failureResponse();
         }
     }
     <%_ } else { _%>
@@ -914,30 +654,14 @@ const deleteMany<%-DB_MODEL_FC%> =async(data<%_if(SUPPORT_API[i].isLogin){_%>, l
                     }
                 _%>
                 let updated<%-DB_MODEL_FC%> = await <%-DB_MODEL%>Service.softDeleteByQuery(query<%_if(SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>);
-                return message.successResponse(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    updated<%-DB_MODEL_FC%>
-                );
+                return message.successResponse({data:updated<%-DB_MODEL_FC%>});
             }
-            return message.badRequest(
-                    { "Content-Type": "application/json" },
-                    responseCode.badRequest,
-                    {}
-                );
+            return message.badRequest();
         }catch(error){
-            if(error.name==="ValidationError"){
-          return message.inValidParam(
-            { "Content-Type": "application/json" },
-              responseCode.validationError,
-              error.message
-          );
-        }
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+            if(error.name === "ValidationError"){
+                return message.inValidParam({message:error.message});
+            }
+            return message.failureResponse();
         }
     }
 <%_ } _%>
@@ -947,7 +671,7 @@ const deleteMany<%-DB_MODEL_FC%> =async(data<%_if(SUPPORT_API[i].isLogin){_%>, l
 <%_ if(DELETE_DEPENDENT_MODEL){ _%>
 const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if((typeof USER_MODEL !== 'undefined' && USER_MODEL && SUPPORT_API[i].isAuth) || SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>) => {
     try{
-        if(ids){
+        if(!ids || !Array.isArray(ids) || ids.length < 1){
             const deleteDependentService=require("../../../utils/deleteDependent")
             <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
             let query = {}
@@ -963,36 +687,20 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if((typeof USER_MODEL !== 'u
             let query = {_id:{$in:ids}}
             <%_}_%>
             let result = await deleteDependentService.softDelete<%-DB_MODEL_FC%>(query<%_if(SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>);
-            return message.successResponse(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                result
-            );
+            return message.successResponse({data:result});
         }
-        return message.badRequest(
-                { "Content-Type": "application/json" },
-                responseCode.badRequest,
-                {}
-            );
+        return message.badRequest();
     }catch(error){
-        if(error.name==="ValidationError"){
-          return message.inValidParam(
-            { "Content-Type": "application/json" },
-              responseCode.validationError,
-              error.message
-          );
+        if(error.name === "ValidationError"){
+            return message.inValidParam({message:error.message});
         }
-        return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+        return message.failureResponse();
     }
 }
 <%_ } else { _%>
 const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if((typeof USER_MODEL !== 'undefined' && USER_MODEL && SUPPORT_API[i].isAuth) || SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>) => {
     try{
-        if(ids){
+        if(!ids || !Array.isArray(ids) || ids.length < 1){
             <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
             let query = {}
             if (loggedInUser){
@@ -1007,30 +715,14 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if((typeof USER_MODEL !== 'u
             let query = {_id:{$in:ids}}
             <%_}_%>
             let data = await <%-DB_MODEL%>Service.bulkUpdate(query, { isDeleted: true<%_if(SUPPORT_API[i].isLogin){_%>, updatedBy:loggedInUser.id<%_}_%> });
-            return message.successResponse(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                data
-            );
+            return message.successResponse({data:result});
         }
-        return message.badRequest(
-                { "Content-Type": "application/json" },
-                responseCode.badRequest,
-                {}
-            );
+        return message.badRequest();
     }catch(error){
-        if(error.name==="ValidationError"){
-          return message.inValidParam(
-            { "Content-Type": "application/json" },
-              responseCode.validationError,
-              error.message
-          );
+        if(error.name === "ValidationError"){
+            return message.inValidParam({message:error.message});
         }
-        return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+        return message.failureResponse();
     }
 }
 <%_ } _%>
@@ -1048,39 +740,18 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if((typeof USER_MODEL !== 'u
     const changePassword = async (params) => {
         try {
             if (!params.newPassword || !params.userId || !params.oldPassword) {
-                return message.inValidParam(
-                    { "Content-Type": "application/json" },
-                    responseCode.validationError,
-                    'Please Provide userId and new Password and Old password'
-                )
+                return message.inValidParam({message:'Please Provide userId and new Password and Old password'});
             }
             let result = await authService.changePassword(params);
             if (result.flag) {
-                return message.invalidRequest(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    result.data
-                )
+                return message.invalidRequest({message :result.data});
             }
-            return message.requestValidated(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                result.data
-            );
-            
+            return message.requestValidated({message :result.data});
         } catch (error) {
             if(error.name==="ValidationError"){
-          return message.inValidParam(
-            { "Content-Type": "application/json" },
-              responseCode.validationError,
-              error.message
-          );
-        }
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+                return message.inValidParam({message :error.message});
+            }
+            return message.failureResponse();
         }
     }  
     const updateProfile = async(data,id) =>{
@@ -1093,31 +764,15 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if((typeof USER_MODEL !== 'u
             const user = make<%-DB_MODEL_FC%>(data,"update<%-DB_MODEL_FC%>Validator");
             const filterData = removeEmpty(user);
             let updated<%-DB_MODEL_FC%> = await <%-DB_MODEL%>Service.findOneAndUpdateDocument({_id:id},filterData,{new:true});
-            return message.successResponse(
-              { "Content-Type": "application/json" },
-              responseCode.success,
-              updated<%-DB_MODEL_FC%>
-            );
+            return message.successResponse({data:updated<%-DB_MODEL_FC%>});
           }
-          return message.badRequest(
-            { "Content-Type": "application/json" },
-            responseCode.badRequest,
-            {}
-          );
+          return message.badRequest();
         }
         catch(error){
           if(error.name === "ValidationError"){
-            return message.inValidParam(
-              { "Content-Type": "application/json" },
-              responseCode.validationError,
-              error.message
-            );
+            return message.inValidParam({message :error.message});
           }
-          return message.failureResponse(
-            { "Content-Type": "application/json" },
-            responseCode.internalServerError,
-            error.message
-          );
+          return message.failureResponse();
         }
     };
 
@@ -1134,6 +789,7 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if((typeof USER_MODEL !== 'u
     const <%-v.functionName%> =async(data) =>{
         try{
             const <%-v.service%> = data
+            
         <%_if(typeof(v.queryBuilder) !== "undefined" && v.queryBuilder.length > 0){_%>
             const combinedOutput = {}
             let result = <%_if(v.service==DB_MODEL){_%><%-v.service%>Service1<%_}else{_%><%-v.service%>Service<%_}_%>.<%-v.functionName%>();
@@ -1208,15 +864,20 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if((typeof USER_MODEL !== 'u
             const uploadFileRes = await new Promise(async (resolve, reject) => {
             form.parse(req, async function (err, fields, files) { 
 
-                let filePaths = [];
+                if (err) {
+                  reject(err);
+                }
+
+                let uploadSuccess = [];
+                let uploadFailed = [];
                 let fileCount = 1;
 
                 let fileArr = [];
                 if (!files['file[]'] || files['file[]'].size == 0) {
-                resolve({
-                    'err': 'Please Select any one File',
-                    'status': false
-                });
+                    reject({
+                        'message': 'Select at least one file to upload.',
+                        'name': 'validationError'
+                    });
                 }
                 if (!Array.isArray(files['file[]'])) {
                 fileArr.push(files['file[]']);
@@ -1226,34 +887,41 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if((typeof USER_MODEL !== 'u
                 for (let file of files['file[]']) {
                 let response = await uploadFiles(file,fields,fileCount++,allowedFileTypes, maxFileSize);
                 if (response.status == false) {
-                    filePaths.push({
+                    uploadFailed.push({
                     'name': file.name,
-                    'err': response.message,
+                    'error': response.message,
                     'status': false
                     });
                 } else {
-                    filePaths.push({
+                    uploadSuccess.push({
+                    'name': file.name,
                     'path': response.data,
                     'status': true
                     });
                 }
                 }
-                resolve(filePaths);
+                resolve({
+                  uploadSuccess,
+                  uploadFailed
+                });
 
             });
             });
             <%_if(S3_UPLOAD_PRIVATE){_%>
             let finalResponse = [];
-            if (Array.isArray(uploadFileRes) && uploadFileRes.length){
-                uploadFileRes = await new Promise(async (resolve, reject) => {
-                    for (let u of uploadFileRes){
-                    if (u.status && u.path) {
-                        u = await generatePreSignedURL(u.path);
-                        finalResponse.push(u);
+            if (Array.isArray(uploadFileRes.uploadSuccess) && uploadFileRes.uploadSuccess.length) {
+              uploadFileRes.uploadSuccess = await new Promise(async (resolve, reject) => {
+                for (let u of uploadFileRes.uploadSuccess) {
+                  if (u.status && u.path) {
+                    let presignedUrl = await generatePreSignedURL(u.path);
+                    if (presignedUrl && presignedUrl.status) {
+                      u.path = presignedUrl.path;
                     }
-                    }
-                    resolve(finalResponse);
-                });
+                    finalResponse.push(u);
+                  }
+                }
+                resolve(finalResponse);
+              });
             }
             <%_}_%>
         <%_} else {_%>
@@ -1275,15 +943,20 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if((typeof USER_MODEL !== 'u
 
             form.parse(req, async function (err, fields, files) {
 
-                let filePaths = [];
+                if (err) {
+                  reject(err);
+                }
+
+                let uploadSuccess = [];
+                let uploadFailed = [];
                 let fileCount = 1;
 
                 let fileArr = [];
                 if (!files['file[]'] || files['file[]'].size == 0) {
-                resolve({
-                    'err': 'Please Select any one File',
-                    'status': false
-                });
+                    reject({
+                        'message': 'Select at least one file to upload.',
+                        'name': 'validationError'
+                    });
                 }
                 if (!Array.isArray(files['file[]'])) {
                 fileArr.push(files['file[]']);
@@ -1295,9 +968,9 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if((typeof USER_MODEL !== 'u
                 let response = await uploadFiles(file, fields, fileCount++,allowedFileTypes, maxFileSize, defaultDirectory);
 
                 if (response.status == false) {
-                    filePaths.push({
+                    uploadFailed.push({
                     'name': file.name,
-                    'err': response.message,
+                    'error': response.message,
                     'status': false
                     });
                 } else {
@@ -1306,49 +979,54 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if((typeof USER_MODEL !== 'u
                     response.data = response.data.replace('/public', '');
                     url = `${response.data}`;
                     }
-                    filePaths.push({
+                    uploadSuccess.push({
+                    'name': file.name,
                     'path': url,
                     'status': true
                     });
                 }
                 }
-                resolve(filePaths);
+                resolve({
+                  uploadSuccess,
+                  uploadFailed
+                });
                 });
             });
             <%_}_%>
-            combinedOutput.uploadFileRes = uploadFileRes;
+            let fileUploadResponseObj = {};
+            if (uploadFileRes.uploadSuccess.length > 0) {
+            let message = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
+            fileUploadResponseObj = {
+                message: message,
+                data: uploadFileRes
+            };
+            } else {
+            let message = 'Failed to upload files.';
+            fileUploadResponseObj = {
+                message: message,
+                data: uploadFileRes
+            };
+            }
+            combinedOutput.uploadFileRes = fileUploadResponseObj;
             <%_}_%>
         <%_ } _%>
         <%_ } _%>
         <%_if(typeof(v.queryBuilder) !== "undefined" && v.queryBuilder.length > 0){_%>
             if(combinedOutput){
-                return message.successResponse(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                combinedOutput);
+                return message.successResponse({data:combinedOutput});
             }
         <%_}else{_%>
             let result = <%_if(v.service==DB_MODEL){_%><%-v.service%>Service1<%_}else{_%><%-v.service%>Service<%_}_%>.<%-v.functionName%>();
             if(result){
-                return message.successResponse(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                result);
+                return message.successResponse({data:result});
             }
         <%_}_%>
             
         }catch(error){
             if(error.name==="ValidationError"){
-          return message.inValidParam(
-            { "Content-Type": "application/json" },
-              responseCode.validationError,
-              error.message
-          );
+          return message.inValidParam({message : error.message});
         }
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message);
+            return message.failureResponse();
         }
     }
 <%_})_%>

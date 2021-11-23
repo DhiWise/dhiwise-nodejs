@@ -5,16 +5,8 @@ const session = require('express-session');
 <%_}_%>
 const authController =  require("../../controller/<%-PLATFORM%>/authController");
 const auth = require('../../middleware/auth');
-<%_if(typeof LOGIN_RATE_LIMIT === "object" && LOGIN_RATE_LIMIT !== null){ var rate=true;_%>    
-const rateLimit = require("express-rate-limit");
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: <%=LOGIN_RATE_LIMIT.max_%>, // limit each IP to 100 requests per windowMs
-    message:{message:"Too many times try to login from this IP, please try again after 15 minutes"}
-});
-<%_}_%>
 routes.route("/register").post(authController.register);
-routes.post("/login",<%_if(rate){_%>limiter,<%_}_%>authController.login);
+routes.post("/login",authController.login);
 routes.route("/forgot-password").post(authController.forgotPassword);
 routes.route("/validate-otp").post(authController.validateResetPasswordOtp);
 routes.route("/reset-password").put(authController.resetPassword);

@@ -20,19 +20,19 @@ module.exports = {
      */
     register : async(req, res) => {
         try {
-            let isValid = validation.validateParamsWithJoi(
+            let validateRequest = validation.validateParamsWithJoi(
                 req.body,
                 <%-USER_MODEL %>SchemaKey.schemaKeys
             );
-            if (isValid.error) {
-               return res.inValidParam(isValid.error);
+            if (!validateRequest.isValid) {
+               return res.inValidParam({message :  `Invalid values in parameters, ${validateRequest.message}`});
             } 
             const data = new <%-USER_MODEL.charAt(0).toUpperCase() + USER_MODEL.slice(1);%>({
                 ...req.body
             });
             let unique = await uniqueValidation(<%-USER_MODEL.charAt(0).toUpperCase() + USER_MODEL.slice(1);%>,req.body);   
             if (!unique){ 
-                return res.inValidParam('User Registration Failed, Duplicate Data found');
+                return res.inValidParam({message:'User Registration Failed, Duplicate Data found'});
             } 
             const result = await dbService.createDocument(<%-USER_MODEL.charAt(0).toUpperCase() + USER_MODEL.slice(1);%>,data);
             <%_if(NOTIFICATION_TYPE==="SMS"){_%>
@@ -71,15 +71,15 @@ module.exports = {
             };
             await emailService.sendEmail(mailObj);
             <%_}_%>
-            return res.ok(result);
+            return res.ok({data:result});
         } catch (error) {
             if(error.name === "ValidationError"){
-                return res.validationError(error.message);
+                return res.validationError({message:error.message});
             }
             if(error.code && error.code == 11000){
-                return res.isDuplicate(error.message);
+                return res.isDuplicate({message:error.message});
             }
-            return res.failureResponse(error.message);
+            return res.failureResponse();
         }  
     },
     /*
@@ -98,19 +98,19 @@ module.exports = {
             if (isUser) {
                 let {resultOfEmail,resultOfSMS} = await authService.sendResetPasswordNotification(isUser);
                 if(resultOfEmail && resultOfSMS){
-                    return res.requestValidated("otp successfully send.");
+                    return res.requestValidated({message:"otp successfully send."});
                 }else if(resultOfEmail && !resultOfSMS) {
-                    return res.requestValidated("otp successfully send to your email.");
+                    return res.requestValidated({message:"otp successfully send to your email."});
                 } else if (!resultOfEmail && resultOfSMS) { 
-                    return res.requestValidated("otp successfully send to your mobile number.");
+                    return res.requestValidated({message:"otp successfully send to your mobile number."});
                 }else{
-                    return res.failureResponse("otp can not be sent due to some issue try again later");
+                    return res.failureResponse({message:"otp can not be sent due to some issue try again later"});
                 }
             } else {
-                return res.recordNotFound({});
+                return res.recordNotFound();
             }
         } catch (error) {
-            return res.failureResponse(error);
+            return res.failureResponse();
         }
     },
     /*
@@ -125,16 +125,16 @@ module.exports = {
             }
             let isUser = await dbService.getDocumentByQuery(<%-USER_MODEL.charAt(0).toUpperCase() + USER_MODEL.slice(1);%>, { 'resetPasswordLink.code': params.otp });
             if (!isUser || !isUser.resetPasswordLink.expireTime) {
-                return res.invalidRequest("Invalid OTP");
+                return res.invalidRequest({message:"Invalid OTP"});
             }
             // link expire
             if (dayjs(new Date()).isAfter(dayjs(isUser.resetPasswordLink.expireTime))) {
-                return res.invalidRequest("Your reset password link is expired or invalid");
+                return res.invalidRequest({message:"Your reset password link is expired or invalid"});
             }
             await dbService.updateDocument(<%-USER_MODEL.charAt(0).toUpperCase() + USER_MODEL.slice(1);%>, isUser.id, { resetPasswordLink: {} })
-            return res.requestValidated('Otp verified');
+            return res.requestValidated({message:'Otp verified'});
         } catch (error) {
-            return res.failureResponse(error.message);
+            return res.failureResponse();
         }
     },
     /*
@@ -151,19 +151,19 @@ module.exports = {
             let isUser = await dbService.getDocumentByQuery(<%-USER_MODEL.charAt(0).toUpperCase() + USER_MODEL.slice(1);%>, { 'resetPasswordLink.code': params.code });
             if (isUser && isUser.resetPasswordLink.expireTime) {
                 if (dayjs(new Date()).isAfter(dayjs(isUser.resetPasswordLink.expireTime))) {// link expire
-                    return res.invalidRequest("Your reset password link is expired or invalid");
+                    return res.invalidRequest({message:"Your reset password link is expired or invalid"});
                 }
             } else {
                 // invalid code
-                return res.invalidRequest("Invalid Code");
+                return res.invalidRequest({message:"Invalid Code"});
             }
             let response = await authService.resetPassword(isUser, params.newPassword);
             if(response && !response.flag){
-                return res.requestValidated(response.data);
+                return res.requestValidated({message:response.data});
             }
-            return res.invalidRequest(response.data);
+            return res.invalidRequest({message:response.data});
         } catch (error) {
-            return res.failureResponse(error.message);
+            return res.failureResponse();
         }
     },
     /*
@@ -185,14 +185,14 @@ module.exports = {
                 let result = await authService.loginUser(username,password,url); 
                 <%_}_%>
                 if(!result.flag){
-                    return res.loginSuccess(result.data);
+                    return res.loginSuccess({data:result.data});
                 }
-                return res.loginFailed(result.data);
+                return res.loginFailed({message:result.data});
             }else{
                 return res.insufficientParameters();
             }
         } catch (error) {
-            return res.failureResponse(error.message);
+            return res.failureResponse();
         }
     },
     /*
@@ -207,11 +207,11 @@ module.exports = {
                   isTokenExpired: true
               }
               await dbService.updateDocument(userTokens,userToken.id, updatedDocument);
-              return res.requestValidated('Logged Out Successfully');
+              return res.requestValidated({message:'Logged Out Successfully'});
             }
-            return res.badRequest({});
+            return res.badRequest();
           } catch (error) {
-            return res.failureResponse(error.message);
+            return res.failureResponse();
           }
     },
 }

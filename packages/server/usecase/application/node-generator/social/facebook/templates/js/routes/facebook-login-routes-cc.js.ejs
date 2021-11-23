@@ -6,7 +6,6 @@ const passport = require('passport');
 const { facebookStrategy,loginUser } = require('../services/facebook-login-service');
 const message = require("../utils/messages");
 const responseCode = require("../utils/responseCode");
-const sendResponse = require("../helpers/sendResponse");
 
 //facebook
 facebookStrategy(passport);
@@ -28,11 +27,7 @@ passport.deserializeUser(function (user, cb) {
 });
 
 router.get('<%-ERROR_URL%>', (req, res) => {
-    let result = message.loginFailed(
-                    { "Content-Type": "application/json" },
-                    responseCode.unAuthorizedRequest,
-                    'Login Failed'
-                );
+    let result = message.loginFailed({data:'Login failed'});
     sendResponse(res,result);
 })
 
@@ -45,29 +40,17 @@ router.get("<%-CALLBACK_URL%>",
     function(req,res){
         loginUser(req.user.email,req.session.platform).then(user=>{
             if(user.flag){
-                let result = message.loginSuccess(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    user.data
-                );
+                let result = message.loginSuccess({data:user.data});
                 sendResponse(res,result);
             }
             else{
-                let result = message.loginFailed(
-                    { "Content-Type": "application/json" },
-                    responseCode.unAuthorizedRequest,
-                    user.data
-                );
+                let result = message.loginFailed({data:user.data});
                 sendResponse(res,result);
             }
             
         })
         .catch(error=>{
-            let result = message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+            let result = message.failureResponse();
             sendResponse(res,result);
         })
     }

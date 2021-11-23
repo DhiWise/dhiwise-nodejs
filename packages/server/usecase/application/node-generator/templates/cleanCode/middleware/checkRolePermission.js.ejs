@@ -34,23 +34,12 @@ const checkRolePermission = async (req, res, next) => {
         if (allowedRoute && allowedRoute.length) {
           next();
         } else {
-          sendResponse(res, message.unAuthorizedRequest(
-            { 'Content-Type': 'application/json' },
-            responseCode.unAuthorizedRequest,
-            'You are not having permission to access this route!',
-          ));
+          sendResponse(res,message.unAuthorizedRequest());
         }
       } else {
         next();
       }
     } else {
-      /*
-       * sendResponse(res, message.unAuthorizedRequest(
-       *   { 'Content-Type': 'application/json' },
-       *   responseCode.unAuthorizedRequest,
-       *   'You are not having permission to access this route!',
-       * ));
-       */
       next();
     }
   } else {

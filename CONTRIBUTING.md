@@ -1,7 +1,6 @@
 # Contributing
 
-We would appreciate it if you contributed to the project and helped make it even better.
-All kind of contributions are welcome, including features, issues, documentation, translation, guides, and more.
+We will appreciate developers' contribution to improve node.js code generator, to make it even better. Therefore, any contributions related to features, issues, documentation, translation, guides, and more are all welcomed.
 
 ## Got a question?
 

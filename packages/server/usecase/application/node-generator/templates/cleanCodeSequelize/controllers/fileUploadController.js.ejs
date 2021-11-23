@@ -9,7 +9,6 @@ const AmazonS3URI = require('amazon-s3-uri');
 <%_}_%>
 
 const message = require("../../../utils/messages")
-const responseCode = require("../../../utils/responseCode")
 
 let allowedFileTypes = <%=VALIDATION_TYPES%>;<%_var max_size = MAX_SIZE ? MAX_SIZE : 5%>
 let maxFileSize = <%=max_size%>; //In Megabyte
@@ -26,14 +25,19 @@ const upload = async (req) =>{
     const uploadFileRes = await new Promise(async (resolve, reject) => {
       form.parse(req, async function (err, fields, files) { 
 
-        let filePaths = [];
+        if (err) {
+          reject(err);
+        }
+
+        let uploadSuccess = [];
+        let uploadFailed = [];
         let fileCount = 1;
 
         let fileArr = [];
         if (!files['file[]'] || files['file[]'].size == 0) {
-          resolve({
-            'err': 'Please Select any one File',
-            'status': false
+          reject({
+            'message': 'Select at least one file to upload.',
+            'name': 'validationError'
           });
         }
         if (!Array.isArray(files['file[]'])) {
@@ -44,36 +48,46 @@ const upload = async (req) =>{
         for (let file of files['file[]']) {
           let response = await uploadFiles(file,fields,fileCount++);
           if (response.status == false) {
-            filePaths.push({
+            uploadFailed.push({
               'name': file.name,
-              'err': response.message,
+              'error': response.message,
               'status': false
             });
           } else {
-            filePaths.push({
+            uploadSuccess.push({
+              'name': file.name,
               'path': response.data,
               'status': true
             });
           }
-          
         }
-        resolve(filePaths);
-
+        resolve({
+          uploadSuccess,
+          uploadFailed
+        });
       });
     });
 
-    return message.successResponse(
-            { "Content-Type": "application/json" },
-            responseCode.success,
-            uploadFileRes
-        );
+    if (uploadFileRes.uploadSuccess.length > 0) {
+      let responseMessage = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
+      return message.successResponse({
+        message: responseMessage,
+        data: uploadFileRes
+      });
+    } else {
+      let responseMessage = 'Failed to upload files.';
+      return message.invalidRequest({
+        message: message,
+        data: uploadFileRes
+      });
+    }
 
   } catch (error){
-    return message.failureResponse(
-            { "Content-Type": "application/json" },
-            responseCode.internalServerError,
-            error.message
-        );
+     if (error.name && error.name == 'validationError') {
+      return message.validationError({ message: error.message });
+    } else {
+      return message.failureResponse();
+    }
   }
 };
 
@@ -95,58 +109,47 @@ const generatePreSignedURL = async (req) => {
         secretAccessKey: S3Config.AWS_S3_SECRET_ACCESS_KEY
       });
 
-      const {
-        region, bucket, key 
-      } = AmazonS3URI(uri);
-      let options = {
-        Bucket: bucket,
-        Key: key,
-        Expires: Number(process.env.AWS_URL_EXPIRATION) || 15 * 60 //in seconds,
-      };
+      try {
+        const {
+          region, bucket, key
+        } = AmazonS3URI(uri);
 
-      const result = await new Promise(async (resolve,reject)=>{
-        s3.getSignedUrl('getObject', options, (err, url) => {
-          if (err) {
-            resolve({
-              status: false,
-              err: err,
-            })
-          } else {
-            resolve({
-              status: true,
-              path: url,
-            })
-          }
+        let options = {
+          Bucket: bucket,
+          Key: key,
+          Expires: Number(process.env.AWS_URL_EXPIRATION) || 15 * 60 //in seconds,
+        };
+
+        const result = await new Promise(async (resolve,reject)=>{
+          s3.getSignedUrl('getObject', options, (err, url) => {
+            if (err) {
+              resolve({
+                status: false,
+                err: err,
+              })
+            } else {
+              resolve({
+                status: true,
+                path: url,
+              })
+            }
+          });
         });
-      });
-      if(result.status){
-        return message.successResponse(
-          { 'Content-Type': 'application/json' },
-          responseCode.success,
-          result.path
-        );
-      } else {
-        return message.invalidRequest(
-          { "Content-Type": "application/json" },
-          responseCode.success,
-          result.err
-        );
+
+        if(result.status){
+          return message.successResponse({data:result.path});
+        } else {
+          return message.invalidRequest({message :result.err});
+        }
+
+      } catch (err) {
+        return message.invalidRequest({ message: `${uri} is not a valid S3 uri` });
       }
+    }else {
+      return message.badRequest();
     }
-    else {
-      return message.badRequest(
-        { "Content-Type": "application/json" },
-        responseCode.badRequest,
-        {}
-      );
-    }
-  }
-  catch(error){
-    return message.failureResponse(
-      { 'Content-Type': 'application/json' },
-      responseCode.internalServerError,
-      error.message
-    );
+  } catch(error){
+    return message.failureResponse();
   }
 }
 <%_}_%>
@@ -241,9 +244,9 @@ const formidable = require('formidable');
 const validUrl = require('valid-url');
 
 const message = require("../../../utils/messages")
-const responseCode = require("../../../utils/responseCode")
 
-let defaultDirectory = 'public/assets';
+
+let defaultDirectory = 'public/assets'
 let allowedFileTypes = <%=VALIDATION_TYPES%>;<%_var max_size = MAX_SIZE ? MAX_SIZE : 5%>
 let maxFileSize = <%=max_size%>; //In Megabyte
 
@@ -263,14 +266,19 @@ const upload = async (req) => {
 
       form.parse(req, async function (err, fields, files) {
 
-        let filePaths = [];
+        if (err) {
+          reject(err);
+        }
+
+        let uploadSuccess = [];
+        let uploadFailed = [];
         let fileCount = 1;
 
         let fileArr = [];
         if (!files['file[]'] || files['file[]'].size == 0) {
-          resolve({
-            'err': 'Please Select any one File',
-            'status': false
+          reject({
+            'message': 'Select at least one file to upload.',
+            'name': 'validationError'
           });
         }
         if (!Array.isArray(files['file[]'])) {
@@ -283,9 +291,9 @@ const upload = async (req) => {
           let response = await uploadFiles(file, fields, fileCount++);
 
           if (response.status == false) {
-            filePaths.push({
+            uploadFailed.push({
               'name': file.name,
-              'err': response.message,
+              'error': response.message,
               'status': false
             });
           } else {
@@ -294,28 +302,40 @@ const upload = async (req) => {
               response.data = response.data.replace('/public', '');
               url = `${response.data}`;
             }
-            filePaths.push({
+            uploadSuccess.push({
+              'name': file.name,
               'path': url,
               'status': true
             });
           }
         }
-        resolve(filePaths);
+        resolve({
+          uploadSuccess,
+          uploadFailed
+        });
       });
     });
 
-    return message.successResponse(
-            { "Content-Type": "application/json" },
-            responseCode.success,
-            uploadFileRes
-        );
+    if (uploadFileRes.uploadSuccess.length > 0) {
+      let responseMessage = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
+      return message.successResponse({
+        message: responseMessage,
+        data: uploadFileRes
+      });
+    } else {
+      let responseMessage = 'Failed to upload files.';
+      return message.invalidRequest({
+        message: message,
+        data: uploadFileRes
+      });
+    }
 
   } catch (error) {
-    return message.failureResponse(
-            { "Content-Type": "application/json" },
-            responseCode.internalServerError,
-            error.message
-        );
+    if (error.name && error.name == 'validationError') {
+      return message.validationError({ message: error.message });
+    } else {
+      return message.failureResponse();
+    }
   }
 };
 

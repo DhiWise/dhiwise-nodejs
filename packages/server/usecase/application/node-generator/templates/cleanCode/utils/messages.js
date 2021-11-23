@@ -1,114 +1,123 @@
-// eslint-disable-next-line no-multi-assign
-const messages = module.exports = {};
-messages.successResponse = (headers, statusCode, data) => ({
-  headers,
-  statusCode,
-  data: {
-    status: 'SUCCESS',
-    message: 'Your request is successfully executed',
-    data,
-  },
-});
-messages.failureResponse = (headers, statusCode) => ({
-  headers,
-  statusCode,
-  data: {
-    status: 'FAILURE',
-    message: 'Internal Server Error',
-    data: {},
-  },
-});
-messages.badRequest = (headers, statusCode) => ({
-  headers,
-  statusCode,
-  data: {
-    status: 'BAD_REQUEST',
-    message: 'The request cannot be fulfilled due to bad syntax',
-    data: {},
-  },
-});
+const responseCode = require('./responseCode');
 
-messages.isDuplicate = (headers, statusCode) => ({
-  headers,
-  statusCode,
-  data: {
-    status: 'VALIDATION_ERROR',
-    message: 'Data duplication Found',
-    data: {},
-  },
-});
-messages.recordNotFound = (headers, statusCode) => ({
-  headers,
-  statusCode,
-  data: {
-    status: 'RECORD_NOT_FOUND',
-    message: 'Record not found with specified criteria.',
-    data: {},
-  },
-});
-messages.insufficientParameters = (headers, statusCode) => ({
-  headers,
-  statusCode,
-  data: {
-    status: 'BAD_REQUEST',
-    message: 'Insufficient parameters',
-    data: {},
-  },
-});
+module.exports = {
+  successResponse: (data = {}) => ({
+    headers: data.headers || { 'Content-Type': 'application/json' },
+    statusCode: data.statusCode || responseCode.success,
+    data: {
+      status: 'SUCCESS',
+      message: data.message || 'Your request is successfully executed',
+      data: data.data && Object.keys(data.data).length ? data.data : null,
+    },
+  }),
 
-messages.inValidParam = (headers, statusCode, error) => ({
-  headers,
-  statusCode,
-  data: {
-    status: 'VALIDATION_ERROR',
-    message: error,
-    data: {},
-  },
-});
+  failureResponse: (data = {}) => ({
+    headers: data.headers || { 'Content-Type': 'application/json' },
+    statusCode: data.statusCode || responseCode.internalServerError,
+    data: {
+      status: 'FAILURE',
+      message: data.message || 'Internal server error.',
+      data: data.data && Object.keys(data.data).length ? data.data : null,
+    },
+  }),
 
-messages.unAuthorizedRequest = (headers, statusCode) => ({
-  headers,
-  statusCode,
-  data: {
-    status: 'UNAUTHORIZED',
-    message: 'You are not authorized to access the request',
-    data: {},
-  },
-});
+  badRequest: (data = {}) => ({
+    headers: data.headers || { 'Content-Type': 'application/json' },
+    statusCode: data.statusCode || responseCode.badRequest,
+    data: {
+      status: 'BAD_REQUEST',
+      message: data.message || 'The request cannot be fulfilled due to bad syntax.',
+      data: data.data && Object.keys(data.data).length ? data.data : null,
+    },
+  }),
 
-messages.loginSuccess = (headers, statusCode, data) => ({
-  headers,
-  statusCode,
-  data: {
-    status: 'SUCCESS',
-    message: 'Login Successful',
-    data,
-  },
-});
-messages.loginFailed = (headers, statusCode, error) => ({
-  headers,
-  statusCode,
-  data: {
-    status: 'BAD_REQUEST',
-    message: `Login Failed, ${error}`,
-    data: {},
-  },
-});
-messages.invalidRequest = (headers, statusCode, data) => ({
-  headers,
-  statusCode,
-  data: {
-    status: 'FAILURE',
-    message: data,
-    data: {},
-  },
-});
-messages.requestValidated = (headers, statusCode, data) => ({
-  headers,
-  statusCode,
-  data: {
-    status: 'SUCCESS',
-    message: data,
-    data: {},
-  },
-});
+  isDuplicate: (data = {}) => ({
+    headers: data.headers || { 'Content-Type': 'application/json' },
+    statusCode: data.statusCode || responseCode.validationError,
+    data: {
+      status: 'VALIDATION_ERROR',
+      message: data.message || 'Data duplication found.',
+      data: data.data && Object.keys(data.data).length ? data.data : null,
+    },
+  }),
+
+  recordNotFound: (data = {}) => ({
+    headers: data.headers || { 'Content-Type': 'application/json' },
+    statusCode: data.statusCode || responseCode.success,
+    data: {
+      status: 'RECORD_NOT_FOUND',
+      message: data.message || 'Record not found with specified criteria.',
+      data: data.data && Object.keys(data.data).length ? data.data : null,
+    },
+  }),
+
+  insufficientParameters: (data = {}) => ({
+    headers: data.headers || { 'Content-Type': 'application/json' },
+    statusCode: data.statusCode || responseCode.badRequest,
+    data: {
+      status: 'BAD_REQUEST',
+      message: data.message || 'Insufficient parameters.',
+      data: data.data && Object.keys(data.data).length ? data.data : null,
+    },
+  }),
+
+  inValidParam: (data = {}) => ({
+    headers: data.headers || { 'Content-Type': 'application/json' },
+    statusCode: data.statusCode || responseCode.validationError,
+    data: {
+      status: 'VALIDATION_ERROR',
+      message: data.message || `Invalid Data, Validation Failed.`,
+      data: data.data && Object.keys(data.data).length ? data.data : null,
+    },
+  }),
+
+  unAuthorizedRequest: (data = {}) => ({
+    headers: data.headers || { 'Content-Type': 'application/json' },
+    statusCode: data.statusCode || responseCode.unAuthorizedRequest,
+    data: {
+      status: 'UNAUTHORIZED',
+      message: data.message || 'You are not authorized to access the request',
+      data: data.data && Object.keys(data.data).length ? data.data : null,
+    },
+  }),
+
+  loginSuccess: (data = {}) => ({
+    headers: data.headers || { 'Content-Type': 'application/json' },
+    statusCode: data.statusCode || responseCode.success,
+    data: {
+      status: 'SUCCESS',
+      message: data.message || 'Login Successful',
+      data: data.data && Object.keys(data.data).length ? data.data : null,
+    },
+  }),
+
+  loginFailed: (data = {}) => ({
+    headers: data.headers || { 'Content-Type': 'application/json' },
+    statusCode: data.statusCode || responseCode.badRequest,
+    data: {
+      status: 'BAD_REQUEST',
+      message: data.message || `Login Failed.`,
+      data: data.data && Object.keys(data.data).length ? data.data : null,
+    },
+  }),
+
+  invalidRequest: (data = {}) => ({
+    headers: data.headers || { 'Content-Type': 'application/json' },
+    statusCode: data.statusCode || responseCode.success,
+    data: {
+      status: 'FAILURE',
+      message: data.message || 'Invalid Data, Validation Failed.',
+      data: data.data && Object.keys(data.data).length ? data.data : null,
+    },
+  }),
+
+  requestValidated: (data = {}) => ({
+    headers: data.headers || { 'Content-Type': 'application/json' },
+    statusCode: data.statusCode || responseCode.success,
+    data: {
+      status: 'SUCCESS',
+      message: data.message || 'Your request is successfully executed',
+      data: data.data && Object.keys(data.data).length ? data.data : null,
+    },
+  }),
+};
