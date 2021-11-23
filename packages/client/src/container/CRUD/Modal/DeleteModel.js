@@ -114,3 +114,4 @@ const DeleteModel = React.memo(({ currentId, className, isDeleteWhiteIcon }) => 
 });
 
 export default DeleteModel;
+DeleteModel.displayName='DeleteModel'

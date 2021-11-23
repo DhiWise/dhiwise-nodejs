@@ -588,4 +588,5 @@ function useEditor() {
   }
   return context;
 }
+EditorProvider.displayName='EditorProvider'
 export { EditorProvider, useEditor };

@@ -35,14 +35,14 @@ import { RedirectUrl } from '../../../../constant/Nodecrud';
 export const NoModelData = 'Create at least one model. You can\'t proceed further as further steps are dependent on the models.';
 const jsonLint = require('jsonlint');
 
-const ErrorNotify = React.memo(() => (
+const ErrorNotify = () => (
   <div className="p-2">
     <MessageNotify size="small" messageType="alert" isAlert>
       This model will be not included in generated code. Please resolve
       error first
     </MessageNotify>
   </div>
-));
+);
 
 const Editor = React.memo(({ currentId, saveRef, loaderRef }) => {
   const {
@@ -735,4 +735,5 @@ const Editor = React.memo(({ currentId, saveRef, loaderRef }) => {
     </>
   );
 });
+Editor.displayName='Editor'
 export default Editor;

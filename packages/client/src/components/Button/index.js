@@ -63,6 +63,7 @@ export const Button = React.forwardRef(({
   );
 });
 
+Button.displayName='Button'
 Button.propTypes = {
   /**
    * What background color to use

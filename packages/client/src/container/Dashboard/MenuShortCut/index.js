@@ -93,7 +93,7 @@ export const MenuShortCut = () => (
     <Heading variant="h4">Core features</Heading>
     <div className="grid grid-cols-3 xxl:grid-cols-4 gap-5 mt-5">
       {NodeDashboard.map((dashboard) => (
-        <MenuShortCutItem {...dashboard} />
+        <MenuShortCutItem key={dashboard.title} {...dashboard} />
       ))}
     </div>
 

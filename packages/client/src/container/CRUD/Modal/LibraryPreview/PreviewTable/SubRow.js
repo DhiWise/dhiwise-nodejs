@@ -31,7 +31,7 @@ function Table({
           return (
             <>
               <tr {...row.getRowProps()} className="relative">
-                {row.cells.map((cell) => <td {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
+                {row.cells.map((cell) => <td key={cell.row.key} {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
               </tr>
             </>
           );

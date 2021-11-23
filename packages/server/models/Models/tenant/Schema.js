@@ -14,10 +14,8 @@ const schema = new mongoose.Schema({
   description: { type: 'string' },
   schemaJson: { type: mongoose.Schema.Types.Mixed },
   hooks: [{
-    type: { type: 'string', // pre-post
-    },
-    operation: { type: 'string', // save,validate,init etc
-    },
+    type: { type: 'string' },
+    operation: { type: 'string' },
     code: { type: mongoose.Schema.Types.Mixed },
   }],
 

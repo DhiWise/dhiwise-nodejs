@@ -71,11 +71,7 @@ const explorePublicPaginate = (projectRepo, applicationRepo) => async (param) =>
     }
     applications = applications.data.list;
 
-    const generatedIds = _.compact(_.uniq(applications.map((i) => {
-      if (i.generatedId) {
-        return i.generatedId;
-      }
-    })));
+    const generatedIds = _.compact(_.uniq(applications.map((i) => i.generatedId)));
 
     // get generate setting
     const generateFilter = {

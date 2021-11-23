@@ -23,10 +23,8 @@ const validationErrorMessage = (error) => {
 };
 
 const validateSchema = (schema, params) => {
-  // eslint-disable-next-line prefer-const
-  let {
-    value, error,
-  } = schema.validate(params);
+  let { error } = schema.validate(params);
+  const { value } = schema.validate(params);
   if (error) {
     error = validationErrorMessage(error);
   }

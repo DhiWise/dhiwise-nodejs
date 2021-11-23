@@ -64,8 +64,7 @@ const schema = new mongoose.Schema({
   },
   port: { type: 'Number' },
 
-  projectType: { type: 'string', // mvc || cc
-  },
+  projectType: { type: 'string' },
 
   inProcessStatus: {
     type: mongoose.Schema.Types.Mixed,
@@ -93,8 +92,7 @@ const schema = new mongoose.Schema({
     default: false,
   },
   inActiveReason: { type: String },
-  imageScale: { type: 'number', // for image width maintance
-  },
+  imageScale: { type: 'number' },
   isDefaultPublic: {
     type: 'boolean',
     default: false,

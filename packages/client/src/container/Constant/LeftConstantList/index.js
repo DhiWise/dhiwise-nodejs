@@ -25,3 +25,4 @@ export const LeftConstantList = React.memo(({
     </SidebarList>
   );
 });
+LeftConstantList.displayName='LeftConstantList'

@@ -26,3 +26,4 @@ export const HookList = React.memo(({
     </div>
   </>
 ));
+HookList.displayName='HookList'
