@@ -8,10 +8,8 @@ const schema = new mongoose.Schema({
     ref: MODULE.APPLICATION.MODEL_NAME,
   },
   platform: { type: 'string' },
-  operation: { type: 'string', // CRUD
-  },
-  operationMode: { type: 'string', // pre, post
-  },
+  operation: { type: 'string' },
+  operationMode: { type: 'string' },
 
   referenceId: { type: mongoose.Schema.Types.ObjectId },
 

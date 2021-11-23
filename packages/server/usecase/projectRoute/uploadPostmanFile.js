@@ -143,10 +143,10 @@ const useCase = (projectRouteRepo, applicationRepo) => async (req) => {
     if (postmanFileData.code !== OK.code) {
       return postmanFileData;
     }
-    // eslint-disable-next-line prefer-const
-    let {
-      params, fileData,
-    } = postmanFileData.data;
+
+    let { params } = postmanFileData.data;
+
+    const { fileData } = postmanFileData.data;
 
     // Validate Request
     const {

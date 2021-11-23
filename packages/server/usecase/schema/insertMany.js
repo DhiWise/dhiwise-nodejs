@@ -125,10 +125,9 @@ const useCase = (schemaRepo, applicationRepo) => async (req) => {
     if (getBodyAndFilesData.code !== OK.code) {
       return getBodyAndFilesData;
     }
-    // eslint-disable-next-line prefer-const
-    let {
-      params, fileData,
-    } = _.cloneDeep(getBodyAndFilesData.data);
+    let { params } = _.cloneDeep(getBodyAndFilesData.data);
+
+    const { fileData } = _.cloneDeep(getBodyAndFilesData.data);
 
     const {
       value, error,

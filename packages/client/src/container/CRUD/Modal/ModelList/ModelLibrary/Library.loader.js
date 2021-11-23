@@ -5,8 +5,9 @@ const MyLoader = ({ rows }) => (
   <>
     {Array(rows || 5)
       .fill('')
-      .map(() => (
+      .map((d) => (
         <ContentLoader
+        key={d}
           speed={2}
           className="mt-5"
           width="100%"

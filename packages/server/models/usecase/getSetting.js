@@ -11,7 +11,7 @@ const getSettingByKey = async (key) => {
   return setting?.[key] || '';
 };
 
-const getFrontSiteVersionTag = async () => await getSettingByKey('frontSiteVersionTag');
+const getFrontSiteVersionTag = async () => { await getSettingByKey('frontSiteVersionTag'); };
 
 module.exports = {
   getSetting,

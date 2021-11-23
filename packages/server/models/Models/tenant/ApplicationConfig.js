@@ -62,8 +62,7 @@ const schema = new mongoose.Schema({
    */
   loginRateLimit: { type: mongoose.Schema.Types.Mixed },
 
-  loginNextRetryTime: { type: 'number', // in min
-  },
+  loginNextRetryTime: { type: 'number' },
 
   /*
    *  "otp":{
@@ -98,8 +97,7 @@ const schema = new mongoose.Schema({
     credential: { type: mongoose.Schema.Types.Mixed },
   }],
 
-  tokenExpiryTime: { type: 'number', // in min
-  },
+  tokenExpiryTime: { type: 'number' },
 
   restrictNoOfDevice: { type: 'boolean' },
 
