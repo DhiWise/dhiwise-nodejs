@@ -70,4 +70,5 @@ const DeleteIndex = React.memo(({ deleteObj, mainRow }) => {
     </>
   );
 });
+DeleteIndex.displayName='DeleteIndex'
 export { DeleteIndex };

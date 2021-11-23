@@ -135,3 +135,4 @@ export const AddConstant = React.memo(({ addModalRef }) => {
     </Popup>
   );
 });
+AddConstant.displayName='AddConstant'

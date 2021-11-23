@@ -87,13 +87,13 @@ export default function Modal(props) {
     // to maintain remove toggle from sidebar when crud in url
     !window.location.pathname.includes('crud') && encryptStorage.remove('sidebarToggle');
   }, []);
-  const EditorWrap = React.memo(() => (
+  const EditorWrap =() => (
     <Editor
       saveRef={saveRef}
       loaderRef={loaderRef}
       currentId={currentId}
     />
-  ));
+  );
 
   return (
     <div className="flex flex-col h-screen">

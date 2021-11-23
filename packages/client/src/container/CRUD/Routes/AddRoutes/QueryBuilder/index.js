@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 import React from 'react';
 import { QueryBuilderList } from './QueryBuilderList';
 import { QueryBuilderDetail } from './QueryBuilderDetail';

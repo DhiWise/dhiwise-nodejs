@@ -80,3 +80,4 @@ export const ConstantHead = React.memo(({ updateRef, isDisable }) => {
     />
   );
 });
+ConstantHead.displayName='ConstantHead'

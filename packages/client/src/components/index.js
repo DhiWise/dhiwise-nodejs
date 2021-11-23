@@ -1,4 +1,3 @@
-/* eslint-disable import/no-cycle */
 import { Checkbox } from './Checkbox';
 import { RadioGroup, Radio } from './Radio/RadioGroup';
 import { Input } from './Input';

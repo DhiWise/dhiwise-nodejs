@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable import/no-cycle */
 import React from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash/debounce';

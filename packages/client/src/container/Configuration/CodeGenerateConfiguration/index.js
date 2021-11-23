@@ -207,7 +207,7 @@ export const CodeGenerateConfiguration = (props) => {
                   >
                     {
                       APPLICATION_CONFIG_TABS[currentApplicationCode]?.map((tab) => (
-                        <Tab className={`${TabCSs.tabVerTitle}`}>
+                        <Tab key={tab} className={`${TabCSs.tabVerTitle}`}>
                           <span className={TabCSs.tabverTitleName}>{tab}</span>
                         </Tab>
                       ))
@@ -403,7 +403,7 @@ export const CodeGenerateConfiguration = (props) => {
                     {!isLoading && (
                     <div className="">
                       { socialMastersList?.map((socialMaster) => (
-                        <div className="py-5 border-b border-gray-200">
+                        <div key={socialMaster?._id} className="py-5 border-b border-gray-200">
                           <div className="flex items-center">
                             <Controller
                               control={control}

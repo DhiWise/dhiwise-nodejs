@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable jsx-a11y/no-redundant-roles */
 import PropTypes from 'prop-types';
 import React, { forwardRef, useState } from 'react';
 import { classNames } from '../utils';

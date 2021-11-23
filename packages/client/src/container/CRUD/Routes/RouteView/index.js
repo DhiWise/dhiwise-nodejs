@@ -202,7 +202,7 @@ export const RoutesView = React.forwardRef(({
     )
   );
 });
-
+RoutesView.displayName='RoutesView'
 const SingleRoute = React.memo(({ route, editRoute, onDelete }) => {
   const currentApplicationCode = useSelector((state) => state.projects.currentApplicationCode);
   const [isDelete, setIsDelete] = React.useState(false);
@@ -273,3 +273,4 @@ const SingleRoute = React.memo(({ route, editRoute, onDelete }) => {
     </>
   );
 });
+SingleRoute.displayName='SingleRoute'

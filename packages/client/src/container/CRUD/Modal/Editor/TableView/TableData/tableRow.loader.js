@@ -1,13 +1,14 @@
 import React from 'react';
 import ContentLoader from 'react-content-loader';
 
-const MyLoader = React.memo(({ rows }) => (
+const MyLoader = ({ rows }) => (
   <>
     {Array(rows || 1)
       .fill('')
-      .map(() => (
+      .map((d) => (
         <ContentLoader
           speed={2}
+          key={d}
           width="100%"
           height="50px"
           viewBox="0 0 100% 50px"
@@ -36,6 +37,6 @@ const MyLoader = React.memo(({ rows }) => (
         </ContentLoader>
       ))}
   </>
-));
+);
 
 export default MyLoader;

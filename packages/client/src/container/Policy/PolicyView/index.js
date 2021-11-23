@@ -106,3 +106,4 @@ export const PolicyView = React.memo(() => {
     </div>
   );
 });
+PolicyView.displayName='PolicyView'

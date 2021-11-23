@@ -106,6 +106,8 @@ export const SelectTree = React.memo(({
     </div>
   );
 });
+SelectTree.displayName='SelectTree'
+
 // expanded
 const DropDownComponent = React.memo(({ // icon,
   customIconClick, onKeyDown, changeRef, customDataJson, data, className, mode, placeholder, noDataMessage = '', clearData = false, disabled = false, id,
@@ -158,3 +160,4 @@ const DropDownComponent = React.memo(({ // icon,
     />
   );
 });
+DropDownComponent.displayName='DropDownComponent'

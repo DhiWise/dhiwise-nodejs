@@ -54,14 +54,14 @@ const Row = React.memo(({
             )}
           </div>
         </td>
-        {row.cells.map((cell) => <td {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
+        {row.cells.map((cell) => <td key={cell.row.key} {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
       </tr>
       {row?.original?.indexType && row?.original?.indexType !== SQL_INDEX.TYPE.UNIQUE
       && row?.original?.isExpanded && renderRowSubComponent({ row, rowProps, visibleColumns })}
     </>
   );
 });
-
+Row.displayName='Row'
 const Table = React.memo(({
   // eslint-disable-next-line no-unused-vars
   columns, data, renderRowSubComponent, onInputChange, moveRow, onAddRow, onExpand,
@@ -124,7 +124,7 @@ const Table = React.memo(({
     </DndProvider>
   );
 });
-
+Table.displayName='Table'
 export const SQLIndexing = React.memo(() => {
   const {
     modelIndexList, dispatch, handleAddRow, handleAutoFocus,
@@ -224,3 +224,4 @@ export const SQLIndexing = React.memo(() => {
     </>
   );
 });
+SQLIndexing.displayName='SQLIndexing'

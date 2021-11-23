@@ -81,3 +81,4 @@ export const RoleAccessHead = React.memo(({
     />
   );
 });
+RoleAccessHead.displayName='RoleAccessHead'
