@@ -23,7 +23,7 @@ const deleteMany = (schemaDetailRepo) => async (filter, isHardDelete = false) =>
       data: response,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

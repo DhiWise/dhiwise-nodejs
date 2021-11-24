@@ -394,7 +394,7 @@ const useCase = (schemaRepo, applicationRepo) => async (req) => {
     };
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.log('error', err);
+    // console.log('error', err);
     return { ...SERVER_ERROR };
     // return { ...SERVER_ERROR, data: err.toString() };
   }

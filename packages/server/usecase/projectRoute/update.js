@@ -275,7 +275,7 @@ const update = (projectRouteRepo, applicationRepo) => async (id, params) => {
       data: response,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

@@ -121,7 +121,6 @@ const useCase = (applicationRepo, schemaRepo, generatorRepo, projectRepo) => asy
     if (project.tempGeneratedId) {
       const tempFilter = { id: project.tempGeneratedId };
       tempGenerated = await generatorRepo.getById(tempFilter);
-      console.log('tempGenerated====================>', tempGenerated);
       if (!tempGenerated) {
         return {
           ...BAD_REQUEST,
@@ -165,7 +164,7 @@ const useCase = (applicationRepo, schemaRepo, generatorRepo, projectRepo) => asy
       },
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

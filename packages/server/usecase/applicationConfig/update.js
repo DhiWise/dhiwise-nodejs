@@ -250,7 +250,7 @@ const update = (applicationConfig, applicationRepo) => async (id, params) => {
       data: updateDataObj,
     };
   } catch (err) {
-    console.log('err: ', err);
+    // console.log('err: ', err);
     return SERVER_ERROR;
   }
 };

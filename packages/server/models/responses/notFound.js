@@ -14,6 +14,5 @@ module.exports = ok = async (res, body) => {
     data: _.get(data, 'data', {}),
     memUsage,
   };
-  console.log('hereeeeee');
   return res.status(MESSAGE.NOT_FOUND.status).send(body);
 };

@@ -285,7 +285,7 @@ const update = (schemaRepo, applicationRepo) => async (id, params) => {
       data: updatedSchema,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

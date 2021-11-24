@@ -42,7 +42,7 @@ const paginate = (schemaRepo) => async (param) => {
       data: response,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return { ...SERVER_ERROR };
     // return { ...SERVER_ERROR, data: err.toString() };
   }

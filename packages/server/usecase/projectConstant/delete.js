@@ -19,7 +19,7 @@ const deleteById = (projectConstantRepo, applicationRepo) => async (params) => {
     }, params.isHardDelete);
     return response;
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

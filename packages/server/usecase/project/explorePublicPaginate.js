@@ -101,7 +101,7 @@ const explorePublicPaginate = (projectRepo, applicationRepo) => async (param) =>
       data: response,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return MESSAGE.SERVER_ERROR;
   }
 };

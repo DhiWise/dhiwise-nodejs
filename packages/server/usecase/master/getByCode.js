@@ -117,7 +117,7 @@ const getByCode = (masterRepo) => async (params) => {
       data: response,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return {
       data: err,
       code: message.SERVER_ERROR.code,

@@ -62,7 +62,7 @@ const update = (projectRepo) => async (id, params) => {
       data: _.pick(updateResponse, ['name', 'description']),
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

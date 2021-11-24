@@ -31,7 +31,7 @@ const deleteMany = (projectRepo) => async (filter, isHardDelete = false) => {
     }
     return PROJECT_DELETED;
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return MESSAGE.SERVER_ERROR;
   }
 };

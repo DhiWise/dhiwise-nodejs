@@ -15,7 +15,7 @@ const dataTypeSuggestions = (dataTypeSuggestionsRepo) => async () => {
       data: dataTypes,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

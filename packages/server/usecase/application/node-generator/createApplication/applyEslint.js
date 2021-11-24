@@ -13,7 +13,7 @@ function executeEslintFix (dir) {
     const command = `cd "${dir}" && eslint . --ext .js --fix`;
     execSync(command);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 }
 module.exports = {

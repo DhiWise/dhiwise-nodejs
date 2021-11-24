@@ -18,11 +18,11 @@ const path = require('path');
   const db = mongoose.connection;
 
   db.once('open', () => {
-    console.log('Connection Successful');
+    // console.log('Connection Successful');
   });
 
   db.on('error', () => {
-    console.log('Error in mongodb connection');
+    // console.log('Error in mongodb connection');
   });
 })();
 module.exports = mongoose;

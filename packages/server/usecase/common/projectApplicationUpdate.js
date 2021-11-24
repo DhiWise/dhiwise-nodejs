@@ -32,7 +32,7 @@ const projectApplicationUpdate = async ({
 
     return MESSAGE.OK;
   } catch (err) {
-    console.log('err', err);
+    // console.log('err', err);
     return MESSAGE.SERVER_ERROR;
   }
 };

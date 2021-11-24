@@ -31,7 +31,7 @@ const useCase = (applicationConfigRepo) => async (params) => {
       data: created,
     };
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return SERVER_ERROR;
   }
 };

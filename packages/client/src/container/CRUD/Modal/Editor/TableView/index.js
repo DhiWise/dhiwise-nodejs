@@ -68,7 +68,6 @@ const SortableItem = SortableElement(({
 ) : null));
 
 const getSize = (index, items, TABLE_TYPES, dbType) => {
-  // TODO: calculate dynamic height for sub-attribute
   const isMongoDb = dbType === DB_TYPE.MONGODB;
   const r = items?.[index];
   let size = 48;

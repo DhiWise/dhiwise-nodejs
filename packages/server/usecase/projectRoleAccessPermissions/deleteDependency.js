@@ -38,7 +38,7 @@ const deleteMany = (projectRoleAccessPermissionsRepo) => async (filter, isHardDe
       data: response,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

@@ -32,7 +32,7 @@ const useCase = (projectRouteRepo) => async (params) => {
     };
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

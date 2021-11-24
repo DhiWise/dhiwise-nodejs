@@ -87,7 +87,7 @@ const generateNodeCode = async (
         nextProcess = false;
         await applicationRepo.update(applicationId, { 'inProcessStatus.build_app': FAILED });
         await generatorRepo.update(generatedId, { 'inProcessStatus.build_app': FAILED });
-        console.log(e);
+        // console.log(e);
       }
       if (nextProcess) {
         const updateApplication = {
@@ -580,7 +580,7 @@ const generate = (applicationRepo, schemaRepo, generatorRepo) => async (params) 
     }
     return SERVER_ERROR;
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

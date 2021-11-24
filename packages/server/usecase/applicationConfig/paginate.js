@@ -82,7 +82,7 @@ const paginate = (applicationConfigRepo) => async (param) => {
     };
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

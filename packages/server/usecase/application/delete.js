@@ -14,7 +14,7 @@ const deleteById = (applicationRepo) => async (params) => {
     const response = await (deleteUseCase(applicationRepo))({ find: { _id: params.id } }, params.isHardDelete);
     return response;
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

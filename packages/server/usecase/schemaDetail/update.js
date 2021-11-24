@@ -31,7 +31,7 @@ const update = (schemaDetailRepo) => async (id, params) => {
       data: updateResponse,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return { ...SERVER_ERROR };
     // return { ...SERVER_ERROR, data: err.toString() };
   }

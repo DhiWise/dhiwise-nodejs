@@ -21,7 +21,7 @@ export const isRegExp = (string) => {
             }
         `)();
   } catch (e) {
-    console.log('false', e);
+    // console.log('false', e);
     return false;
   }
 };

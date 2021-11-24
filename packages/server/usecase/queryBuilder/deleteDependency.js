@@ -26,7 +26,7 @@ const deleteMany = (queryBuilderRepo) => async (filter, isHardDelete = false) =>
       data: null,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

@@ -14,7 +14,7 @@ const deleteById = (projectRepo) => async (params) => {
     const response = await (deleteProjectUseCase(projectRepo))({ find: { _id: params.id } }, params.isHardDelete);
     return response;
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

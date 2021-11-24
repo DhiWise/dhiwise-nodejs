@@ -39,7 +39,7 @@ const searchSchema = (applicationRepo) => async (params) => {
         const $ = cheerio.load(html);
         const statsTable = $('.definition-table > tbody > tr');
         const schemaData = [];
-        statsTable.each(function () {
+        statsTable.each(() => {
           const group = $(this).find('tr.supertype > th > a').text();
           const attribute = $(this).find('tr > th.prop-nam > code > a').text();
           const dataType = $(this).find('tr > td.prop-ect > a').text();
@@ -109,7 +109,7 @@ const searchSchema = (applicationRepo) => async (params) => {
       data: schemaJsonData,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

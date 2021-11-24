@@ -41,7 +41,7 @@ async function main (inputFilepath) {
       jsonData,
     });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     throw new Error(err);
   }
 }

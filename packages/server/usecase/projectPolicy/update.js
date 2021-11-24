@@ -138,8 +138,7 @@ async function udpdatePolicyNameInSchemaDetailsAndRoutes ({
 
     return OK;
   } catch (err) {
-    console.log('err: ', err);
-
+    // console.log('err: ', err);
     return SERVER_ERROR;
   }
 }
@@ -272,7 +271,7 @@ const update = (projectPolicyRepo, applicationRepo) => async (id, params) => {
       data: updateResponse,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };
