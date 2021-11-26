@@ -17,6 +17,8 @@ Most importantly, the Node.js code generator gives developers total code ownersh
 
 * [Features](#features-of-generated-code)
 
+* [Documentation](#documentation)
+
 ## Get started 
 After a successful run, a user can configure different settings using UI, and build an app to generate the code.
 1. To run 
@@ -59,6 +61,10 @@ The Model-View-Controller (MVC) is an architectural pattern that separates an ap
     b. SQL Server<br>
     c. MYSQL<br>
     d. PostgreSQL
+
+## Documentation
+
+Here's the Documentation of <a href="https://docs.dhiwise.com/knowledgehub/generated-node.js-apis">How you can use generated APIs</a>
 
 ## Contribution
 
