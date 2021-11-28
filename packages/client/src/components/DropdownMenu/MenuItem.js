@@ -1,12 +1,12 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import DefaultCss from './Css';
 import { DropdownCss } from './dropdown';
 
 const MenuItem = (props) => {
-  const [linkStyle, setLinkStyle] = React.useState(DefaultCss.pointer);
+  const [linkStyle, setLinkStyle] = useState(DefaultCss.pointer);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Need to check disabled also, otherwise
     // this might override the disabled useState hook
     if (props.linkStyle && !props.disabled) {
@@ -14,7 +14,7 @@ const MenuItem = (props) => {
     }
   }, [props.linkStyle]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (props.disabled) {
       setLinkStyle(DefaultCss.disabledItem);
     }
@@ -31,9 +31,11 @@ const MenuItem = (props) => {
   if (props.type) {
     if (props.type.toLowerCase() === 'separator') {
       const css = getSeparatorCss();
-      return (<hr style={css.separator} />);
+      return <hr style={css.separator} />;
     }
-    throw new Error("The value for prop 'type' is not supported for MenuItem. The only supported type is 'separator'.");
+    throw new Error(
+      "The value for prop 'type' is not supported for MenuItem. The only supported type is 'separator'."
+    );
   } else if (props.location) {
     return (
       <div className={`${props.className} ${DropdownCss.dropdownitemWrap}`}>
@@ -49,9 +51,13 @@ const MenuItem = (props) => {
       </div>
     );
   } else {
-    const selectedClass = props.selected ? 'bg-primary-dark text-defaultWhite' : '';
+    const selectedClass = props.selected
+      ? 'bg-primary-dark text-defaultWhite'
+      : '';
     return (
-      <div className={` ${selectedClass} ${props.className} ${DropdownCss.dropdownitemWrap}`}>
+      <div
+        className={` ${selectedClass} ${props.className} ${DropdownCss.dropdownitemWrap}`}
+      >
         <div
           onClick={props.onClick}
           style={linkStyle}
@@ -59,7 +65,14 @@ const MenuItem = (props) => {
         >
           {props.text}
         </div>
-        {!!props.icon && <div onClick={props.iconClick} className="w-4 h-4 ml-2 cursor-pointer">{props.icon}</div>}
+        {!!props.icon && (
+          <div
+            onClick={props.iconClick}
+            className="w-4 h-4 ml-2 cursor-pointer"
+          >
+            {props.icon}
+          </div>
+        )}
       </div>
     );
   }
@@ -75,7 +88,6 @@ MenuItem.propTypes = {
   // Navigation Location
   location: PropTypes.string,
   onClick: PropTypes.func,
-
 };
 
 export default MenuItem;

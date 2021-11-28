@@ -1,21 +1,31 @@
-import * as React from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useImperativeHandle,
+  useRef,
+  forwardRef,
+  cloneElement,
+} from 'react';
 import useOnClickOutside from 'use-onclickoutside';
-// import { useOutsideClick } from '../../hooks';
+
 import { useBoolean } from '../hooks';
 import DefaultCss from './Css';
 
-const DropdownMenu = React.forwardRef((props, ref) => {
+const DropdownMenu = forwardRef((props, ref) => {
   const [open, , setFalse, setToggle] = useBoolean(false);
 
-  const clickRef = React.useRef();
+  const clickRef = useRef();
 
   useOnClickOutside(clickRef, setFalse);
 
-  React.useEffect(() => { if (open) setToggle(); }, [props.closeOnSelect]);
+  useEffect(() => {
+    if (open) setToggle();
+  }, [props.closeOnSelect]);
 
-  React.useImperativeHandle(ref, () => ({ hideDropDown: setFalse }));
+  useImperativeHandle(ref, () => ({ hideDropDown: setFalse }));
 
-  const getCss = React.useCallback(() => {
+  const getCss = useCallback(() => {
     const propsCss = { ...props.css };
     const css = { ...DefaultCss };
 
@@ -28,19 +38,22 @@ const DropdownMenu = React.forwardRef((props, ref) => {
     return css;
   }, [props.css]);
 
-  const menuStyles = React.useMemo(() => {
+  const menuStyles = useMemo(() => {
     const css = getCss();
     const menuStyle = JSON.parse(JSON.stringify(css.menuContent)); // Clone the current style
     const position = props.position === undefined ? 'right' : props.position;
     const supportedPositions = ['left', 'center', 'right'];
 
     if (supportedPositions.indexOf(position.toLowerCase()) === -1) {
-      throw new Error("The value for 'position' prop is not supported for DropdownMenu. Try 'left', 'center' or 'right'.");
+      throw new Error(
+        "The value for 'position' prop is not supported for DropdownMenu. Try 'left', 'center' or 'right'."
+      );
     }
 
     if (position) {
       let baseWidth = parseInt(
-        DefaultCss.menuContent.minWidth.replace('px', ''), 10,
+        DefaultCss.menuContent.minWidth.replace('px', ''),
+        10
       );
       let offset = 0;
       baseWidth -= 40;
@@ -61,13 +74,20 @@ const DropdownMenu = React.forwardRef((props, ref) => {
   }, [open, props.position]);
 
   return (
-    <div ref={clickRef} style={DefaultCss.menu} className={`${props.dropdownMenu} inline-block`}>
-      {React.cloneElement(props.placeholder(), { onClick: setToggle })}
-      <div className={`position-div ${props.position} ${props.wrapClass}`} style={{ ...menuStyles, ...props.style }}>
+    <div
+      ref={clickRef}
+      style={DefaultCss.menu}
+      className={`${props.dropdownMenu} inline-block`}
+    >
+      {cloneElement(props.placeholder(), { onClick: setToggle })}
+      <div
+        className={`position-div ${props.position} ${props.wrapClass}`}
+        style={{ ...menuStyles, ...props.style }}
+      >
         {open && props.children}
       </div>
     </div>
   );
 });
-DropdownMenu.displayName='DropdownMenu'
+DropdownMenu.displayName = 'DropdownMenu';
 export default DropdownMenu;
