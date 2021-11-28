@@ -1,14 +1,25 @@
 import React from 'react';
-import { Icons } from '@dhiwise/icons';
 import DatePicker from 'react-datepicker';
 import PropTypes from 'prop-types';
-import { datepickerCss } from './datepickerCss';
+import { Icons } from '@dhiwise/icons';
+
 import { Description } from '../Description';
+import { datepickerCss } from './datepickerCss';
+
 import 'react-datepicker/dist/react-datepicker.css';
 import './datepicker.css';
 
 export const Datepicker = ({
-  label, desc, placeholder, labelClassName, error, size = 'normal', onChange, WrapClassName, dateTimeFormat = 'MM-dd-yyyy hh:mm:ss a', ...otherProps
+  label,
+  desc,
+  placeholder,
+  labelClassName,
+  error,
+  size,
+  onChange,
+  WrapClassName,
+  dateTimeFormat,
+  ...otherProps
 }) => {
   // eslint-disable-next-line no-unused-vars
   // const [startDate, setStartDate] = useState(otherProps.value ? new Date(otherProps.value) : new Date());
@@ -24,11 +35,13 @@ export const Datepicker = ({
   return (
     <div className={`${datepickerCss.datepickerWrap} ${WrapClassName}`}>
       {!!label && (
-      <div className={labelClassName}>
-        {
-          !!label && <label className={`${datepickerCss.datepickerLabel}`}>{label}</label>
-        }
-      </div>
+        <div className={labelClassName}>
+          {!!label && (
+            <label className={`${datepickerCss.datepickerLabel}`}>
+              {label}
+            </label>
+          )}
+        </div>
       )}
       <div className={datepickerCss.datepickerWrapClass}>
         <DatePicker
@@ -47,14 +60,17 @@ export const Datepicker = ({
           {...otherProps}
         />
         <div
-          className="max-w-min h-4 absolute right-3 cursor-pointer flex top-0 bottom-0 m-auto opacity-50"
+          className="absolute top-0 bottom-0 flex h-4 m-auto opacity-50 cursor-pointer max-w-min right-3"
           onClick={() => handleClickDatepickerIcon()}
         >
-          <span className="w-4 block"><Icons.Calender /></span>
+          <span className="block w-4">
+            <Icons.Calender />
+          </span>
         </div>
       </div>
-      {!!desc
-        && <Description className={datepickerCss.desc}>{desc}</Description>}
+      {!!desc && (
+        <Description className={datepickerCss.desc}>{desc}</Description>
+      )}
       {!!error && <span className={datepickerCss.errorClass}>{error}</span>}
     </div>
   );
@@ -62,4 +78,9 @@ export const Datepicker = ({
 
 Datepicker.propTypes = {
   size: PropTypes.oneOf(['normal', 'small', 'medium']),
+};
+
+Datepicker.defaultProps = {
+  size: 'normal',
+  dateTimeFormat: 'MM-dd-yyyy hh:mm:ss a',
 };

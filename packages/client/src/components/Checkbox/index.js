@@ -1,9 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable no-unused-vars */
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useState, useEffect } from 'react';
 import propTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
-import { classNames, useCombinedRefs } from '../utils';
+
+import { classNames } from '../utils';
+
 import './checkbox.css';
 
 /**
@@ -13,32 +15,32 @@ export const Checkbox = forwardRef(
   (
     {
       checked,
-      disabled = false,
-      className = '',
+      disabled,
+      className,
       WrapclassName,
       wrapClass,
-      onChange = () => { },
-      type = 'checkbox',
-      style = {},
-      prefixCls = 'spark-checkbox',
-      prefixWrapperCls = 'spark-checkbox-wrapper',
-      wrapperClassname = '',
-      wrapperStyle = {},
-      defaultChecked = false,
+      onChange,
+      type,
+      style,
+      prefixCls,
+      prefixWrapperCls,
+      wrapperClassname,
+      wrapperStyle,
+      defaultChecked,
       children,
       label,
       labelClass,
       name,
       onKeyDown,
-      id = '',
+      id,
       tooltip,
       ...otherProps
     },
-    forwardedRef,
+    forwardedRef
   ) => {
     const [value, setValue] = useState(defaultChecked || checked || false);
 
-    React.useEffect(() => {
+    useEffect(() => {
       setValue(checked);
       // if (onChange) {
       //   onChange(checked);
@@ -68,9 +70,9 @@ export const Checkbox = forwardRef(
         >
           <div data-tip data-for={tooltip} className="inline-block">
             {!!tooltip && (
-            <ReactTooltip id={tooltip} type="dark">
-              {tooltip}
-            </ReactTooltip>
+              <ReactTooltip id={tooltip} type="dark">
+                {tooltip}
+              </ReactTooltip>
             )}
             <span className={checkboxClass} style={style}>
               <input
@@ -87,11 +89,17 @@ export const Checkbox = forwardRef(
               <span className={`${prefixCls}-inner`} />
             </span>
           </div>
-          {(!!children || !!label) && <span className={`text-primary-text text-sm checkboxLabel ${labelClass}`}>{children || label}</span>}
+          {(!!children || !!label) && (
+            <span
+              className={`text-primary-text text-sm checkboxLabel ${labelClass}`}
+            >
+              {children || label}
+            </span>
+          )}
         </label>
       </div>
     );
-  },
+  }
 );
 Checkbox.displayName = 'Checkbox';
 Checkbox.propTypes = {
@@ -106,4 +114,15 @@ Checkbox.propTypes = {
 
 Checkbox.defaultProps = {
   checked: true,
+  disabled: false,
+  className: '',
+  type: 'checkbox',
+  onChange: () => {},
+  style: {},
+  prefixCls: 'spark-checkbox',
+  prefixWrapperCls: 'spark-checkbox-wrapper',
+  wrapperClassname: '',
+  wrapperStyle: {},
+  defaultChecked: false,
+  id: '',
 };
