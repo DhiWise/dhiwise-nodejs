@@ -8,87 +8,93 @@ import { Description } from '../Description';
 /**
  * Primary UI component for Input
  */
-export const StringInput = forwardRef(({
-  wrapperClass = '',
-  className,
-  // inputWrapperClass = 'spark-input-wrapper',
-  label = '',
-  placeholder = '',
-  type = 'text',
-  disabled = false,
-  error = '',
-  onChange = () => { },
-  value = '',
-  minLength,
-  desc,
-  dark,
-  size = 'normal',
-  inputClassName = [],
-  customRegex,
-  ...restProps
-}, ref) => {
-  const [internalValue, setInternalValue] = React.useState(value);
+export const StringInput = forwardRef(
+  (
+    {
+      wrapperClass,
+      className,
+      label,
+      placeholder,
+      type,
+      disabled,
+      error,
+      value,
+      minLength,
+      desc,
+      dark,
+      size,
+      inputClassName,
+      customRegex,
+      onChange,
+      ...restProps
+    },
+    ref
+  ) => {
+    const [internalValue, setInternalValue] = React.useState(value);
 
-  const wrapperClasses = [InputCss.inputwrapper];
-  const disableClass = disabled ? `${InputCss.inputdisabled}` : '';
-  const inputClasses = [InputCss.inputBlock, disableClass];
-  if (error) {
-    wrapperClasses.push('spark-error-wrapper');
-  }
-  if (wrapperClass) {
-    wrapperClasses.push(wrapperClass);
-  }
-  if (inputClassName) {
-    inputClasses.push(inputClassName);
-  }
-
-  useEffect(() => {
-    setInternalValue(value);
-  }, [value]);
-
-  useEffect(() => {
-    onChange && onChange(internalValue);
-  }, [internalValue]);
-
-  const handleChange = (e) => {
-    const newValue = e.target.value;
-    if (customRegex) {
-      if (!newValue || customRegex.test(newValue)) setInternalValue(newValue);
-    } else if (!newValue || (regex.string.test(newValue) && newValue[0].match(regex.firstSpace))) {
-      setInternalValue(newValue);
+    const wrapperClasses = [InputCss.inputwrapper];
+    const disableClass = disabled ? `${InputCss.inputdisabled}` : '';
+    const inputClasses = [InputCss.inputBlock, disableClass];
+    if (error) {
+      wrapperClasses.push('spark-error-wrapper');
     }
-  };
-  const sizeCss = `${InputCss[[`input${size}`]]}`;
+    if (wrapperClass) {
+      wrapperClasses.push(wrapperClass);
+    }
+    if (inputClassName) {
+      inputClasses.push(inputClassName);
+    }
 
-  return (
-    <div className={wrapperClasses.join(' ')}>
-      {!!(label || desc) && (
-      <div className={!desc && 'mb-2'}>
-        {
-        !!label && <label className={InputCss.inputLabel}>{label}</label>
+    useEffect(() => {
+      setInternalValue(value);
+    }, [value]);
+
+    useEffect(() => {
+      onChange && onChange(internalValue);
+    }, [internalValue]);
+
+    const handleChange = (e) => {
+      const newValue = e.target.value;
+      if (customRegex) {
+        if (!newValue || customRegex.test(newValue)) setInternalValue(newValue);
+      } else if (
+        !newValue ||
+        (regex.string.test(newValue) && newValue[0].match(regex.firstSpace))
+      ) {
+        setInternalValue(newValue);
       }
+    };
+    const sizeCss = `${InputCss[[`input${size}`]]}`;
+
+    return (
+      <div className={wrapperClasses.join(' ')}>
+        {!!(label || desc) && (
+          <div className={!desc && 'mb-2'}>
+            {!!label && <label className={InputCss.inputLabel}>{label}</label>}
+          </div>
+        )}
+        <div className={`${className} ${InputCss.inputWrapperClass}`}>
+          <input
+            onChange={handleChange}
+            type={type}
+            ref={ref}
+            className={`${InputCss.inputBlock} ${sizeCss} ${
+              dark && InputCss.darkInput
+            } ${disableClass} inputBlock`}
+            disabled={disabled}
+            placeholder={placeholder}
+            value={internalValue}
+            minLength={minLength}
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...restProps}
+          />
+        </div>
+        {!!desc && <Description className={InputCss.desc}>{desc}</Description>}
+        {!!error && <span className={InputCss.errorClass}>{error}</span>}
       </div>
-      )}
-      <div className={`${className} ${InputCss.inputWrapperClass}`}>
-        <input
-          onChange={handleChange}
-          type={type}
-          ref={ref}
-          className={`${InputCss.inputBlock} ${sizeCss} ${dark && InputCss.darkInput} ${disableClass} inputBlock`}
-          disabled={disabled}
-          placeholder={placeholder}
-          value={internalValue}
-          minLength={minLength}
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...restProps}
-        />
-      </div>
-      {!!desc
-        && <Description className={InputCss.desc}>{desc}</Description>}
-      {!!error && <span className={InputCss.errorClass}>{error}</span>}
-    </div>
-  );
-});
+    );
+  }
+);
 StringInput.displayName = 'StringInput';
 StringInput.propTypes = {
   /**
@@ -119,7 +125,14 @@ StringInput.propTypes = {
 };
 
 StringInput.defaultProps = {
+  wrapperClass: '',
   label: '',
-  error: '',
+  placeholder: '',
+  type: 'text',
   disabled: false,
+  error: '',
+  value: '',
+  size: 'normal',
+  inputClassName: [],
+  onChange: () => {},
 };
