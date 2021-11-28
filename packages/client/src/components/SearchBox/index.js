@@ -3,22 +3,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash/debounce';
 import { Icons } from '@dhiwise/icons';
+
 import { RecentSearch } from './RecentSearch';
 import { SearchBoxCss } from './searchBoxCss';
 
 export const SearchBox = ({
   children,
-  className = '',
+  className,
   size,
   placeholder,
   isRecentsearch,
   isSearch,
   header,
   onSearch,
-  value = '',
-  searchOnEnter = false,
-  serachOnIconClick = false,
-  // backgroundColor,
+  value,
+  searchOnEnter,
+  serachOnIconClick,
   ...props
 }) => {
   const [internalValue, setInternalValue] = React.useState(value);
@@ -58,15 +58,28 @@ export const SearchBox = ({
       {isRecentsearch && <RecentSearch />}
       <input
         {...props}
-        className={`${header && SearchBoxCss.HeaderSearchCss} truncate ${SearchBoxCss.InputBox} ${isRecentsearch ? 'pl-8' : 'pl-3'}`}
+        className={`${header && SearchBoxCss.HeaderSearchCss} truncate ${
+          SearchBoxCss.InputBox
+        } ${isRecentsearch ? 'pl-8' : 'pl-3'}`}
         placeholder={placeholder}
         onChange={handleChange}
         value={internalValue}
         onKeyPress={handleKeyPress}
       />
-      {!internalValue
-        ? <div className={SearchBoxCss.IconBox} onClick={() => serachOnIconClick && searchOnEnter && onSearch(internalValue)}><Icons.Search /></div>
-        : <div className={SearchBoxCss.IconBox} onClick={() => onClear()}><Icons.Close /></div>}
+      {!internalValue ? (
+        <div
+          className={SearchBoxCss.IconBox}
+          onClick={() =>
+            serachOnIconClick && searchOnEnter && onSearch(internalValue)
+          }
+        >
+          <Icons.Search />
+        </div>
+      ) : (
+        <div className={SearchBoxCss.IconBox} onClick={() => onClear()}>
+          <Icons.Close />
+        </div>
+      )}
     </div>
   );
 };
@@ -99,6 +112,9 @@ SearchBox.propTypes = {
 };
 
 SearchBox.defaultProps = {
-  // backgroundColor: null,
+  className: '',
+  value: '',
+  searchOnEnter: false,
+  serachOnIconClick: false,
   onClick: undefined,
 };

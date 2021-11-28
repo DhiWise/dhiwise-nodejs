@@ -1,22 +1,27 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import PropTypes from 'prop-types';
-import React, { forwardRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useState,
+  useEffect,
+  Children,
+  cloneElement,
+} from 'react';
 import { classNames } from '../utils';
 import { radioCss } from './radioCss';
 import './radiogroup.css';
 
 export const Radio = forwardRef((props, ref) => {
   const {
-    children = '',
-    value = '',
-    isParentDisabled = false,
-    disabled = false,
-    // labelClass = 'spark-radio-label',
-    checked = false,
-    name = '',
-    prefixCls = 'spark-radio',
-    wrapperClass = 'spark-radio-wrapper',
-    className = '',
+    children,
+    value,
+    isParentDisabled,
+    disabled,
+    checked,
+    name,
+    prefixCls,
+    wrapperClass,
+    className,
     ...restProps
   } = props;
   const wrapperClasses = classNames(wrapperClass, className, {
@@ -27,7 +32,6 @@ export const Radio = forwardRef((props, ref) => {
   const radioClass = classNames(prefixCls, {
     [`${prefixCls}-checked`]: checked,
     [`${prefixCls}-disabled`]: disabled || isParentDisabled,
-
   });
 
   return (
@@ -53,28 +57,39 @@ export const Radio = forwardRef((props, ref) => {
 });
 
 Radio.displayName = 'Radio';
+Radio.defaultProps = {
+  children: '',
+  value: '',
+  isParentDisabled: false,
+  disabled: false,
+  checked: false,
+  name: '',
+  prefixCls: 'spark-radio',
+  wrapperClass: 'spark-radio-wrapper',
+  className: '',
+};
 
 export const RadioGroup = ({
-  direction = 'horizontal',
-  onChange = () => { },
-  prefixCls = 'spark-radio',
-  wrapperClassname = '',
-  wrapperStyle = {},
+  direction,
+  prefixCls,
+  wrapperClassname,
+  wrapperStyle,
   selectedValue,
   children,
   name,
-  label = '',
-  error = '',
+  label,
+  error,
   className,
-  errorClass = 'spark-input-radio-text',
+  errorClass,
   /**
    * disabled on Radiogroup component disables all children
    */
-  disabled = false,
+  disabled,
+  onChange,
 }) => {
   const [value, setValue] = useState(selectedValue || '');
 
-  React.useEffect(() => {
+  useEffect(() => {
     setValue(selectedValue);
   }, [selectedValue]);
 
@@ -88,13 +103,14 @@ export const RadioGroup = ({
     onChange && onChange(val, event);
   };
 
-  const childrens = React.Children.map(children, (child) => {
+  const childrens = Children.map(children, (child) => {
     if (child.type === Radio) {
-      return React.cloneElement(child, {
+      return cloneElement(child, {
         name,
         checked: child.props.value === value,
         isParentDisabled: disabled,
-        onChange: (e) => handleChange(e, child.props.value, child.props.disabled),
+        onChange: (e) =>
+          handleChange(e, child.props.value, child.props.disabled),
         direction,
         disabled: child.props.disabled,
       });
@@ -104,23 +120,21 @@ export const RadioGroup = ({
 
   return (
     <div className={`${wrapperClass} ${className}`} style={wrapperStyle}>
-      {
-        !!label && <label className={radioCss.radioLabel}>{label}</label>
-      }
+      {!!label && <label className={radioCss.radioLabel}>{label}</label>}
       {childrens}
 
-      {!!error && <div><span className={errorClass}>{error}</span></div>}
-
+      {!!error && (
+        <div>
+          <span className={errorClass}>{error}</span>
+        </div>
+      )}
     </div>
   );
 };
 
 RadioGroup.propTypes = {
   name: PropTypes.string,
-  direction: PropTypes.oneOf([
-    'vertical',
-    'horizontal',
-  ]),
+  direction: PropTypes.oneOf(['vertical', 'horizontal']),
   children: PropTypes.node.isRequired,
   selectedValue: PropTypes.oneOfType([
     PropTypes.string,
@@ -131,4 +145,16 @@ RadioGroup.propTypes = {
    * disabled on Radiogroup component disables all children
    */
   disabled: PropTypes.bool,
+};
+
+RadioGroup.defaultProps = {
+  direction: 'horizontal',
+  prefixCls: 'spark-radio',
+  wrapperClassname: '',
+  wrapperStyle: {},
+  label: '',
+  error: '',
+  errorClass: 'spark-input-radio-text',
+  disabled: false,
+  onChange: () => {},
 };

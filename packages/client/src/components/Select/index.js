@@ -1,12 +1,18 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/jsx-props-no-multi-spaces */
-import React from 'react';
+import React, { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import SelectBox from 'react-select';
 import { sortOptions } from '../utils';
 import {
-  SelectCss, LightSelect, DarkSelect, simlpeSelectCss, SmallDarkSelectCss, SmallSelectCss, MediumSelectCss,
+  SelectCss,
+  LightSelect,
+  DarkSelect,
+  simlpeSelectCss,
+  SmallDarkSelectCss,
+  SmallSelectCss,
+  MediumSelectCss,
 } from './selectCss';
 import { Description } from '../Description';
 
@@ -19,124 +25,160 @@ const formatGroupLabel = (data) => (
     <span className="font-bold text-primary-text">{data.options.length}</span>
   </div>
 );
-const Select = React.forwardRef(({
-  label = '',
-  wrapperClass = '',
-  className = '',
-  options = [],
-  value = [],
-  placeholder = 'Select',
-  WrapClassName = '',
-  disabled = false,
-  sortKey = '',
-  isSearchable = true,
-  noOptionsMessage = 'No options found',
-  error = '',
-  wrapperStyle = {},
-  isClearable = true,
-  isMulti = false,
-  onChange = null,
-  valueKey = 'id',
-  labelKey = 'name',
-  isLabel,
-  isDec,
-  desc,
-  simpleSelect,
-  dark = false,
-  sizeSmall,
-  sizeMedium,
-  groupOptions,
-  defaultValue,
-  LeftLabel,
-  labelClassName,
-  htmlDesc,
-  components,
-  ...restProps
-}, ref) => {
-  const isFirstTime = React.useRef(true);
-  const [selectOptions, setSelectOptions] = React.useState(sortKey ? sortOptions(options, sortKey) : options);
+const Select = React.forwardRef(
+  (
+    {
+      label,
+      wrapperClass,
+      className,
+      options,
+      value,
+      placeholder,
+      WrapClassName,
+      disabled,
+      sortKey,
+      isSearchable,
+      noOptionsMessage,
+      error,
+      wrapperStyle,
+      isClearable,
+      isMulti,
+      onChange,
+      valueKey,
+      labelKey,
+      isLabel,
+      isDec,
+      desc,
+      simpleSelect,
+      dark,
+      sizeSmall,
+      sizeMedium,
+      groupOptions,
+      defaultValue,
+      LeftLabel,
+      labelClassName,
+      htmlDesc,
+      components,
+      ...restProps
+    },
+    ref
+  ) => {
+    const isFirstTime = React.useRef(true);
+    const [selectOptions, setSelectOptions] = React.useState(
+      sortKey ? sortOptions(options, sortKey) : options
+    );
 
-  React.useEffect(() => {
-    setSelectOptions(sortKey ? sortOptions(options, sortKey) : options);
-  }, [options]);
+    React.useEffect(() => {
+      setSelectOptions(sortKey ? sortOptions(options, sortKey) : options);
+    }, [options]);
 
-  const getValue = React.useCallback(() => {
-    const defaultChecked = options?.filter((option) => !!option.default);
-    if ([undefined, null].includes(value) || (Array.isArray(value) && value.length === 0)) {
-      if (isFirstTime.current) {
-        isFirstTime.current = false;
-        return defaultChecked;
+    const getValue = React.useCallback(() => {
+      const defaultChecked = options?.filter((option) => !!option.default);
+      if (
+        [undefined, null].includes(value) ||
+        (Array.isArray(value) && value.length === 0)
+      ) {
+        if (isFirstTime.current) {
+          isFirstTime.current = false;
+          return defaultChecked;
+        }
+      } else {
+        if (isMulti) {
+          return options?.filter(
+            (option) => value && value.includes(option[valueKey])
+          );
+        }
+        // eslint-disable-next-line eqeqeq
+        return options.find((option) => option[valueKey] == value);
       }
-    } else {
+      return null;
+    }, [options, value]);
+
+    const handleChange = (data) => {
+      if (!onChange) return;
       if (isMulti) {
-        return options?.filter((option) => value && value.includes(option[valueKey]));
+        onChange(data?.map((d) => d[valueKey]) || null);
+      } else {
+        onChange(
+          [undefined, null].includes(data?.[valueKey]) ? null : data?.[valueKey]
+        );
       }
-      // eslint-disable-next-line eqeqeq
-      return options.find((option) => option[valueKey] == value);
-    }
-    return null;
-  }, [options, value]);
+    };
 
-  const handleChange = (data) => {
-    if (!onChange) return;
-    if (isMulti) {
-      onChange(data?.map((d) => d[valueKey]) || null);
-    } else {
-      onChange([undefined, null].includes(data?.[valueKey]) ? null : data?.[valueKey]);
+    let groupClass = 'spark-select';
+    if (wrapperClass) {
+      groupClass += ` ${wrapperClass}`;
     }
-  };
-
-  let groupClass = 'spark-select';
-  if (wrapperClass) {
-    groupClass += ` ${wrapperClass}`;
-  }
-  if (error) {
-    groupClass += ' spark-select-error';
-  }
-  return (
-    <div className={`${groupClass} ${disabled && 'cursor-not-allowed'} ${WrapClassName}`} style={{ ...wrapperStyle }}>
-      {!!(label || desc)
-        && (
+    if (error) {
+      groupClass += ' spark-select-error';
+    }
+    return (
+      <div
+        className={`${groupClass} ${
+          disabled && 'cursor-not-allowed'
+        } ${WrapClassName}`}
+        style={{ ...wrapperStyle }}
+      >
+        {!!(label || desc) && (
           <div className={`${LeftLabel}`}>
-            {!!label && <label className={`${SelectCss.selectlabel} ${labelClassName}`}>{label}</label>}
+            {!!label && (
+              <label className={`${SelectCss.selectlabel} ${labelClassName}`}>
+                {label}
+              </label>
+            )}
           </div>
         )}
-      <SelectBox
-        ref={ref}
-        className={className}
-        classNamePrefix="react-select"
-        placeholder={placeholder}
-        options={groupOptions || selectOptions}
-        formatGroupLabel={formatGroupLabel}
-        isSearchable={isSearchable}
-        isDisabled={!!disabled}
-        noOptionsMessage={() => noOptionsMessage}
-        // classNamePrefix={classNamePrefix}
-        isClearable={isClearable}
-        isMulti={isMulti}
-        closeMenuOnSelect={!isMulti}
-        onChange={handleChange}
-        value={getValue()}
-        getOptionLabel={(data) => data[labelKey]}
-        getOptionValue={(data) => data[valueKey]}
-        isOptionDisabled={(option) => option.isdisabled}
-        styles={(dark ? { ...DarkSelect, ...SelectCss, ...sizeSmall && SmallDarkSelectCss }
-          : simpleSelect ? { ...simlpeSelectCss, ...SelectCss }
-            : sizeMedium ? { ...MediumSelectCss, ...SelectCss } : {
-              ...LightSelect, ...SelectCss, ...sizeSmall && SmallSelectCss,
-            })}
-        defaultValue={defaultValue}
-        components={components}
-        {...restProps}
-
-      />
-      {!!desc && <Description className={SelectCss.desc}>{desc}</Description>}
-      {!!htmlDesc
-          && <Description className={SelectCss.desc}><div dir="ltr" dangerouslySetInnerHTML={{ __html: htmlDesc }} /></Description> }
-      {!!error && <span className={SelectCss.erorrClass}>{error}</span>}
-    </div>
-  );
-});
+        <SelectBox
+          ref={ref}
+          className={className}
+          classNamePrefix="react-select"
+          placeholder={placeholder}
+          options={groupOptions || selectOptions}
+          formatGroupLabel={formatGroupLabel}
+          isSearchable={isSearchable}
+          isDisabled={!!disabled}
+          noOptionsMessage={() => noOptionsMessage}
+          // classNamePrefix={classNamePrefix}
+          isClearable={isClearable}
+          isMulti={isMulti}
+          closeMenuOnSelect={!isMulti}
+          onChange={handleChange}
+          value={getValue()}
+          getOptionLabel={(data) => data[labelKey]}
+          getOptionValue={(data) => data[valueKey]}
+          isOptionDisabled={(option) => option.isdisabled}
+          styles={
+            dark
+              ? {
+                  ...DarkSelect,
+                  ...SelectCss,
+                  ...(sizeSmall && SmallDarkSelectCss),
+                }
+              : simpleSelect
+              ? { ...simlpeSelectCss, ...SelectCss }
+              : sizeMedium
+              ? { ...MediumSelectCss, ...SelectCss }
+              : {
+                  ...LightSelect,
+                  ...SelectCss,
+                  ...(sizeSmall && SmallSelectCss),
+                }
+          }
+          defaultValue={defaultValue}
+          components={components}
+          {...restProps}
+        />
+        {!!desc && <Description className={SelectCss.desc}>{desc}</Description>}
+        {!!htmlDesc && (
+          <Description className={SelectCss.desc}>
+            <div dir="ltr" dangerouslySetInnerHTML={{ __html: htmlDesc }} />
+          </Description>
+        )}
+        {!!error && <span className={SelectCss.erorrClass}>{error}</span>}
+      </div>
+    );
+  }
+);
 
 Select.displayName = 'Select';
 
@@ -166,7 +208,7 @@ Select.propTypes = {
         PropTypes.number,
         PropTypes.bool,
       ]),
-    }),
+    })
   ),
   /**
    * Can seelcted option be cleared?
@@ -208,4 +250,26 @@ Select.propTypes = {
    * class to apply select component
    */
   className: PropTypes.string,
+};
+
+Select.defaultProps = {
+  label: '',
+  wrapperClass: '',
+  className: '',
+  options: [],
+  value: [],
+  placeholder: 'Select',
+  WrapClassName: '',
+  disabled: false,
+  sortKey: '',
+  isSearchable: true,
+  noOptionsMessage: 'No options found',
+  error: '',
+  wrapperStyle: {},
+  isClearable: true,
+  isMulti: false,
+  onChange: null,
+  valueKey: 'id',
+  labelKey: 'name',
+  dark: false,
 };
