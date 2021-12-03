@@ -52,6 +52,7 @@ const Configuration = () => {
   };
   React.useEffect(() => {
     getPlatformData();
+    hideFetchLoading();
     return () => {
     // REMOVE
     // to maintain remove toggle from sidebar when crud in url

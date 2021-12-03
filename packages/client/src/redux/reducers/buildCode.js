@@ -15,8 +15,10 @@ const buildCode = createSlice({
   name: 'buildCode',
   initialState,
   reducers: {
-    setBuildArchitecture: (state, { payload }) => {
-      state.buildArchitecture = payload;
+    setBuildCodeState: (state, { payload }) => {
+      state.buildArchitecture = payload.buildArchitecture ?? state.buildArchitecture;
+      state.vsCodePopup = payload.vsCodePopup ?? state.vsCodePopup;
+      state.generatedId = payload.generatedId ?? state.generatedId;
     },
     resetBuildState: (state) => {
       Object.assign(state, initialState);
@@ -47,6 +49,6 @@ const buildCode = createSlice({
 
 const { reducer, actions } = buildCode;
 export const {
-  setBuildArchitecture, resetBuildState,
+  setBuildCodeState, resetBuildState,
 } = actions;
 export default reducer;

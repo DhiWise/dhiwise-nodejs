@@ -194,7 +194,7 @@ const Permission = React.forwardRef(({ ...props }, ref) => {
     </>
   );
 });
-Permission.displayName='Permission'
+Permission.displayName = 'Permission';
 export default Permission;
 Permission.propTypes = {
   /**

@@ -25,4 +25,4 @@ export const LeftPolicyList = React.memo(({
     </SidebarList>
   );
 });
-LeftPolicyList.displayName='LeftPolicyList'
+LeftPolicyList.displayName = 'LeftPolicyList';

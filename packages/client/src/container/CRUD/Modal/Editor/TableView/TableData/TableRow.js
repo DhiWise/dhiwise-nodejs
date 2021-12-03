@@ -1086,4 +1086,4 @@ const TableRow = React.memo((props) => {
   );
 });
 export default TableRow;
-TableRow.displayName='TableRow'
+TableRow.displayName = 'TableRow';

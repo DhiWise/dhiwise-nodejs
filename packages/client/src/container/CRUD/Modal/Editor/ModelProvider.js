@@ -35,5 +35,5 @@ function useModel() {
   }
   return context;
 }
-ModelProvider.displayName='ModelProvider'
+ModelProvider.displayName = 'ModelProvider';
 export { ModelProvider, useModel };

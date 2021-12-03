@@ -91,7 +91,7 @@ const getSize = (index, items, TABLE_TYPES, dbType) => {
   return size; // single row
 };
 
-const Row =({
+const Row = ({
   index, style, data,
 }) => {
   const { items, itemStatusMap, ...otherProps } = data;
@@ -174,7 +174,7 @@ const SortableList = SortableContainer((props) => {
   );
 });
 
-const TableView =() => {
+const TableView = () => {
   const {
     tableJson, setTableJson,
     tableToCodeViewParser, listRef, dbType, TABLE_TYPES, currentApplicationCode,

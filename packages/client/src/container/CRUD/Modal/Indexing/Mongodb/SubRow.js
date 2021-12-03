@@ -43,12 +43,12 @@ const Row = React.memo(({
             <DeleteIndex deleteObj={row} mainRow={mainRow} />
           </div>
         </td>
-        {row.cells.map((cell) => <td key={cell.row.key}  {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
+        {row.cells.map((cell) => <td key={cell.row.key} {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
       </tr>
     </>
   );
 });
-Row.displayName='Row'
+Row.displayName = 'Row';
 const Table = React.memo(({
   columns, data, onInputChange, moveRow, onAddRow, mainRow, maxAllowedSubRows,
 }) => {
@@ -129,7 +129,7 @@ const Table = React.memo(({
     </DndProvider>
   );
 });
-Table.displayName='Table'
+Table.displayName = 'Table';
 export function SubRows({
   //   row,data
   row, rowProps,

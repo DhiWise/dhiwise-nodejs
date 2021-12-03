@@ -131,4 +131,4 @@ export const ConstantView = React.memo(() => {
     </div>
   );
 });
-ConstantView.displayName='ConstantView'
+ConstantView.displayName = 'ConstantView';

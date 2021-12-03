@@ -51,4 +51,4 @@ export const SidebarList = React.memo(({
     </ProSidebar>
   </BoxLayout>
 ));
-SidebarList.displayName='SidebarList'
+SidebarList.displayName = 'SidebarList';

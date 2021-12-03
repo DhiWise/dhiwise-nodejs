@@ -146,4 +146,4 @@ export const CodeEditor = React.memo(({
   );
 });
 
-CodeEditor.displayName='CodeEditor'
+CodeEditor.displayName = 'CodeEditor';

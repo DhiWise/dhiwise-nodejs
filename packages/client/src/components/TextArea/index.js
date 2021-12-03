@@ -35,4 +35,4 @@ TextArea.propTypes = {
   className: PropTypes.string,
   placeholder: PropTypes.string,
 };
-TextArea.displayName='TextArea'
+TextArea.displayName = 'TextArea';

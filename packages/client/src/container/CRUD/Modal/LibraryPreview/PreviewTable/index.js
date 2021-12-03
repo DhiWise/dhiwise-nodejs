@@ -159,7 +159,7 @@ const Table = ({
   return (
     <table {...getTableProps()} className="">
       <thead>
-        {headerGroups.map((headerGroup,index) => (
+        {headerGroups.map((headerGroup, index) => (
           <tr key={index} {...headerGroup.getHeaderGroupProps()} className="relative">
             {headerGroup.headers.map((column) => (
               <th key={column.id} {...column.getHeaderProps()}>{column.render('Header')}</th>

@@ -240,4 +240,4 @@ export const Enum = React.memo(({
     </>
   );
 });
-Enum.displayName='Enum'
+Enum.displayName = 'Enum';

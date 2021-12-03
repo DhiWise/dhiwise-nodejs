@@ -37,7 +37,7 @@ export const ValueItem = React.memo(({
     />
   </td>
 ));
-ValueItem.displayName='ValueItem'
+ValueItem.displayName = 'ValueItem';
 export const KeyValue = React.memo(({
   envObj, environments, onChange, onSelect, onDelete, errors, isLastObj, applicationCode, lengthOfData, rowIndex,
 }) => {
@@ -170,4 +170,4 @@ export const KeyValue = React.memo(({
     </>
   );
 });
-KeyValue.displayName='KeyValue'
+KeyValue.displayName = 'KeyValue';

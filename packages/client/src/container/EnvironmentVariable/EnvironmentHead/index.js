@@ -87,4 +87,4 @@ export const EnvironmentHead = React.memo(({
     </>
   );
 });
-EnvironmentHead.displayName='EnvironmentHead'
+EnvironmentHead.displayName = 'EnvironmentHead';

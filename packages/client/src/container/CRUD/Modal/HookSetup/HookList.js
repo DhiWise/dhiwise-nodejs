@@ -59,4 +59,4 @@ export const HookList = React.memo(({
     </>
   );
 });
-HookList.displayName='HookList'
+HookList.displayName = 'HookList';

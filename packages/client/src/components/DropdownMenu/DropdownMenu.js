@@ -69,5 +69,5 @@ const DropdownMenu = React.forwardRef((props, ref) => {
     </div>
   );
 });
-DropdownMenu.displayName='DropdownMenu'
+DropdownMenu.displayName = 'DropdownMenu';
 export default DropdownMenu;

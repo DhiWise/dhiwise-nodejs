@@ -83,7 +83,7 @@ const Row = ({
           )}
         </div>
       </td>
-      {row.cells.map((cell,index) => <td key={index} style={['attribute', 'type'].includes(cell.column.id) ? { minWidth: '208px', maxWidth: '208px', width: '208px' } : {}} className="sm:text-left" {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
+      {row.cells.map((cell, index) => <td key={index} style={['attribute', 'type'].includes(cell.column.id) ? { minWidth: '208px', maxWidth: '208px', width: '208px' } : {}} className="sm:text-left" {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
     </tr>
     {
     row.original.isExpanded
@@ -128,7 +128,7 @@ function Table({
 
     <table {...getTableProps()} className="w-full">
       <thead>
-        {headerGroups.map((headerGroup,index) => (
+        {headerGroups.map((headerGroup, index) => (
           <tr key={index} {...headerGroup.getHeaderGroupProps()}>
             <th key="col-icon" style={{ minWidth: '80px', maxHeight: '80px', width: '80px' }}>
               {!isDisable && (

@@ -5,7 +5,7 @@ import {
 } from '../../../components';
 import { useBoolean } from '../../../components/hooks';
 import { BUILD_ARCHITECTURE_CODE } from '../../../constant/buildProcessConstant';
-import { setBuildArchitecture } from '../../../redux/reducers/buildCode';
+import { setBuildCodeState } from '../../../redux/reducers/buildCode';
 import { codeGenerator } from '../../../redux/thunks/buildCode';
 import { BuildVSCodePopup } from '../../Shared/BuildApp/BuildAppDropdown';
 
@@ -25,7 +25,8 @@ export const BuildCodeStructure = ({ openBuildRef }) => {
 
   const dispatch = useDispatch();
   const buildProject = (type) => {
-    dispatch(setBuildArchitecture(type));
+    dispatch(setBuildCodeState({ buildArchitecture: type }));
+
     dispatch(codeGenerator({ applicationId, projectType: type }));
 
     handelClose();

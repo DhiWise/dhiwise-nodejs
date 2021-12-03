@@ -87,7 +87,7 @@ export default function Modal(props) {
     // to maintain remove toggle from sidebar when crud in url
     !window.location.pathname.includes('crud') && encryptStorage.remove('sidebarToggle');
   }, []);
-  const EditorWrap =() => (
+  const EditorWrap = () => (
     <Editor
       saveRef={saveRef}
       loaderRef={loaderRef}

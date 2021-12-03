@@ -61,7 +61,7 @@ const Row = React.memo(({
     </>
   );
 });
-Row.displayName='Row'
+Row.displayName = 'Row';
 const Table = React.memo(({
   // eslint-disable-next-line no-unused-vars
   columns, data, renderRowSubComponent, onInputChange, moveRow, onAddRow, onExpand,
@@ -124,7 +124,7 @@ const Table = React.memo(({
     </DndProvider>
   );
 });
-Table.displayName='Table'
+Table.displayName = 'Table';
 export const SQLIndexing = React.memo(() => {
   const {
     modelIndexList, dispatch, handleAddRow, handleAutoFocus,
@@ -224,4 +224,4 @@ export const SQLIndexing = React.memo(() => {
     </>
   );
 });
-SQLIndexing.displayName='SQLIndexing'
+SQLIndexing.displayName = 'SQLIndexing';

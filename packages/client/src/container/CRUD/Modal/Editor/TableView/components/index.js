@@ -6,7 +6,7 @@ import {
   Select, Datepicker, Input,
 } from '../../../../../../components';
 
-export const LocalFields =({
+export const LocalFields = ({
   localField, localRef, onInputChange, rowObj, onKeyDown, id, disabled,
 }) => {
   const {
@@ -110,7 +110,7 @@ export const InnerType = ({
   );
 };
 
-export const DateTime =({
+export const DateTime = ({
   defaultValue, onInputChange, onKeyDown, id, disabled, showTimeSelect,
 }) => {
   const { control, setValue } = useForm({

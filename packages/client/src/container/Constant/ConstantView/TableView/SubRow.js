@@ -80,7 +80,7 @@ function Table({
                   </div>
                   )}
                 </td>
-                {row.cells.map((cell,index) => <td key={index} className="text-left" {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
+                {row.cells.map((cell, index) => <td key={index} className="text-left" {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
               </tr>
 
             </>
