@@ -495,7 +495,6 @@ const delete<%-DB_MODEL_FC%> =async(req, res) => {
 <%_} else {_%>
 const delete<%-DB_MODEL_FC%> =async(req, res) => {
     try {
-        let query={id:req.params.id};
         <%_
             nestedCalls={}
             if(SUPPORT_API[i].IS_NESTED_CALL){  
@@ -507,7 +506,7 @@ const delete<%-DB_MODEL_FC%> =async(req, res) => {
                 }
             }
         _%>  
-        const result = await dbService.deleteOne(<%-DB_MODEL_FC%>, query);
+        const result = await dbService.deleteByPk(<%-DB_MODEL_FC%>,req.params.id);
         if(result){
             return res.ok({data:result});
         }

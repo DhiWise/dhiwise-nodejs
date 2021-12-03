@@ -36,6 +36,8 @@ const uniqueValidation = async (data) =>{
         filter = { "<%-LOGIN_WITH[0]%>": data["<%-LOGIN_WITH[0]%>"] }
     }
     <%_}_%>
+    filter.isActive = true;
+    filter.isDeleted = false;
     let found = await <%-MODEL%>Service.getSingleDocumentByQuery(filter);
     if(found){
         return false;

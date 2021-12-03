@@ -7,6 +7,7 @@ const path = require('path');
     instance: {
       dbName: 'nodejs-code-generator',
       dbPath: path.join(__dirname, 'database'),
+      storageEngine: 'wiredTiger',
     },
   });
   mongoose.connect(mongoServer.getUri(), {

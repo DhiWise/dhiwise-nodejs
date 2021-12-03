@@ -66,7 +66,7 @@ async function generatePlatformRoutes (platform, makeRouteObj, customRoutes) {
     });
     indexRoutes.locals.PLATFORM_NAME = platformName;
     indexRoutes.locals.ADMIN = platformName === 'admin';
-    indexRoutes.locals.IS_AUTH = makeRouteObj.auth.isAuth && makeRouteObj.auth?.loginPlatform ? makeRouteObj.auth.loginPlatform.includes(platformName) : true;
+    indexRoutes.locals.IS_AUTH = makeRouteObj.auth.isAuth && makeRouteObj.auth?.loginPlatform ? makeRouteObj.auth.loginPlatform.includes(platformName) : false;
     platformIndexRoutes[platformName] = indexRoutes;
   });
   return platformIndexRoutes;

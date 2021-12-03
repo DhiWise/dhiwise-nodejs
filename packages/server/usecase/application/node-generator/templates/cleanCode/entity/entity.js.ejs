@@ -12,7 +12,7 @@ function buildMake<%-ENTITY_NAME_FC-%>({insert<%-ENTITY_NAME_FC-%>Validator,upda
                  break; 
         }
         if(isValid.error){
-            throw new Error({
+            throw ({
                 name:"ValidationError",
                 message:`Invalid data in <%-ENTITY_NAME_FC-%> entity. ${isValid.error}`
             })

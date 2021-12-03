@@ -271,7 +271,7 @@ function make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC
             deleted<%-DB_MODEL_FC%> = await deleteDependentService.delete<%-DB_MODEL_FC%>(query);
           }
         <%_}else{ _%>
-          deleted<%-DB_MODEL_FC%> = await <%-DB_MODEL%>Service.deleteByPk(pk,options);  
+          deleted<%-DB_MODEL_FC%> = await <%-DB_MODEL%>Service.deleteByPk(pk);  
       <%_ }_%>
         return message.successResponse({data:deleted<%-DB_MODEL_FC%>});
       } catch (error) {

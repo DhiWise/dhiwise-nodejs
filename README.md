@@ -4,9 +4,10 @@
 # Node.js Code Generator
 <p>
 Node.js code generator is a developer-centric platform to build backend CRUD APIs along with other essential features to boost developers' productivity time by twofold!
+
 Developers just need to add their schema data to reduce their work related to models into a few simple configurations. Developers can also configure platforms , routes, role access, authentication & more for their application.
+
 Most importantly, the Node.js code generator gives developers total code ownership. The code it generates is bug-free and easily customizable
-<br/>
 </p>
 
 ## Table of contents
@@ -35,7 +36,6 @@ The main rule of clean architecture is that code dependencies can only move from
 ### <a href="https://github.com/DhiWise/nodejs-code-generator/blob/master/MVC_ARCHITECTURE.md">MVC - Model-View-Controller</a>
 The Model-View-Controller (MVC) is an architectural pattern that separates an application into three main logical components: the model, the view, and the controller. Each of these components are built to handle specific development aspects of an application.
 
-
 ## Features of generated code
 1. User Authentication and Authorization (using Passport)
 2. Social Login APIs
@@ -61,12 +61,10 @@ The Model-View-Controller (MVC) is an architectural pattern that separates an ap
     d. PostgreSQL
 
 ## Contribution
-
 Have you found a bug? :lady_beetle: <a href="https://github.com/DhiWise/nodejs-code-generator/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=">Please report it here</a>
 or have a nice feature 💡 to contribute? Add it <a href="https://github.com/DhiWise/nodejs-code-generator/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title="> here </a> 
 <br/>
 Our <a href="https://github.com/DhiWise/nodejs-code-generator/blob/master/CONTRIBUTING.md">Contribution guide </a> will help you how to contribute.
 
 ## Support
-If you have problems or questions go to our Discord channel, we will then try to help you as quick as possible:
-https://discord.gg/hTuNauNjyJ
+If you have problems or questions go to our Discord channel, we will then try to help you as quickly as possible: https://discord.gg/hTuNauNjyJ

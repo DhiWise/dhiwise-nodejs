@@ -117,6 +117,14 @@ class CommonQueryRepository extends MongoAtlasRepository {
     }
     return result;
   }
+
+  async getAll (filter) {
+    const result = await super.getAll(filter);
+    if (result?.error) {
+      throw new Error(result.error);
+    }
+    return result;
+  }
 }
 
 module.exports = CommonQueryRepository;

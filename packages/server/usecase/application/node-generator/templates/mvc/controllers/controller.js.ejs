@@ -177,7 +177,7 @@ const bulkUpdate<%-DB_MODEL_FC%>=async(req,res)=>{
     try {
         let filter={};
         let data;
-        if(req.body && typeof req.body.filter === 'object' && req.body.filter !== null{
+        if(req.body && typeof req.body.filter === 'object' && req.body.filter !== null){
             filter = req.body.filter
         }
         if(req.body && typeof req.body.data === 'object' && req.body.data !== null){

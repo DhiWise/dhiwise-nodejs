@@ -79,6 +79,6 @@ if (process.env.NODE_ENV === 'test') {
 } else {
   // listen for requests
   app.listen(PORT, HOST, () => {
-    // console.log(`Server is listening on port ${HOST}:${PORT}`);
+    console.log(`Server is listening on port ${HOST}:${PORT}`);
   });
 }

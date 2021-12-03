@@ -20,6 +20,7 @@ const upsertUseCase = require('../../../usecase/application/upsert')(application
 const viewUseCase = require('../../../usecase/application/view')(applicationRepo, projectRepo);
 // eslint-disable-next-line max-len
 const openCodeUseCase = require('../../../usecase/application/openCode')();
+const getLastApplicationUseCase = require('../../../usecase/application/getLastApplication')(applicationRepo);
 const application = require('./application');
 
 const create = application.create({ createUseCase });
@@ -32,6 +33,7 @@ const destroy = application.destroy({ deleteUseCase });
 const upsert = application.upsert({ upsertUseCase });
 const view = application.view({ viewUseCase });
 const openCode = application.openCode({ openCodeUseCase });
+const getLastApplication = application.getLastApplication({ getLastApplicationUseCase });
 
 module.exports = {
   create,
@@ -44,4 +46,5 @@ module.exports = {
   view,
   get,
   openCode,
+  getLastApplication,
 };
