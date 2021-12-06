@@ -45,6 +45,7 @@
     "jsx-a11y/label-has-associated-control": "off",
     "max-len": "off",
     "linebreak-style": "off",
+    "global-require": "off",
     "no-console": "off",
     "react/prop-types": "off",
     "jsx-a11y/click-events-have-key-events": "off",
