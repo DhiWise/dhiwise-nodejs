@@ -96,7 +96,7 @@ function Table({
   return (
     <table {...getTableProps()}>
       <thead className="z-1">
-        {headerGroups.map((headerGroup,index) => (
+        {headerGroups.map((headerGroup, index) => (
           <tr key={index} {...headerGroup.getHeaderGroupProps()} className="relative">
             {headerGroup.headers.map((column) => (
               <th key={column.id} {...column.getHeaderProps()}>{column.render('Header')}</th>

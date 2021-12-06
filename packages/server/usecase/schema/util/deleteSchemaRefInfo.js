@@ -77,7 +77,7 @@ const deleteSchemaRefInfo = async ({
       data: { schemaErrors },
     };
   } catch (err) {
-    console.log('err: ', err);
+    // console.log('err: ', err);
     return {
       ...SERVER_ERROR,
       data: err.toString(),

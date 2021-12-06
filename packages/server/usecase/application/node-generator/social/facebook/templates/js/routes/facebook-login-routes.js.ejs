@@ -27,7 +27,7 @@ passport.deserializeUser(function (user, cb) {
 });
 
 router.get('<%-ERROR_URL%>', (req, res) => {
-  return res.loginFailed('Login Failed');
+  return res.loginFailed();
 });
 
 router.get('/auth/facebook', passport.authenticate('facebook', { scope: ['profile'] }));
@@ -37,12 +37,12 @@ router.get('<%-CALLBACK_URL%>',
   function (req,res){
     loginUser(req.user.email,req.session.platform).then(result=>{
       if (result.flag){
-        return res.loginFailed(result.data);
+        return res.loginFailed({message:result.data});
       }
-      return res.loginSuccess(result.data);
+      return res.loginSuccess({message:result.data});
     })
       .catch(error=>{
-        return res.failureResponse(error);
+        return res.failureResponse();
       });
   }
 );

@@ -336,7 +336,7 @@ const EditorProvider = React.memo(({
       }
       handleAddRow(tempArray, isAutoFocus);
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   }, [code, activeTab, customSetting, modelList, dbType]);
 
@@ -588,5 +588,5 @@ function useEditor() {
   }
   return context;
 }
-EditorProvider.displayName='EditorProvider'
+EditorProvider.displayName = 'EditorProvider';
 export { EditorProvider, useEditor };

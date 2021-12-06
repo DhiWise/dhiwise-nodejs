@@ -48,7 +48,7 @@ const useCase = (projectRepo) => async (params) => {
       data: _.pick(created, ['_id']),
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

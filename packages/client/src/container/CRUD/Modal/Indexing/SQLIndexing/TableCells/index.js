@@ -28,7 +28,7 @@ export const NameCell = React.memo(({
     />
   </div>
 ));
-NameCell.displayName='NameCell'
+NameCell.displayName = 'NameCell';
 // Index Type
 // const TYPE_OPT = getTypeOptions(SQL_INDEX.TYPE) || [];
 export const TypeCell = React.memo(({
@@ -56,7 +56,7 @@ export const TypeCell = React.memo(({
     </div>
   );
 });
-TypeCell.displayName='TypeCell'
+TypeCell.displayName = 'TypeCell';
 // Model Attribute
 export const MultiAttrCell = React.memo(({
   value, onChange, onKeyDown, ...otherProps
@@ -91,7 +91,7 @@ export const MultiAttrCell = React.memo(({
     </>
   );
 });
-MultiAttrCell.displayName='MultiAttrCell'
+MultiAttrCell.displayName = 'MultiAttrCell';
 // Model Attribute
 export const SingleAttrCell = React.memo(({
   value, onChange, onKeyDown, ...otherProps
@@ -128,7 +128,7 @@ export const SingleAttrCell = React.memo(({
     </div>
   );
 });
-SingleAttrCell.displayName='SingleAttrCell'
+SingleAttrCell.displayName = 'SingleAttrCell';
 // Order Type
 export const OrderTypeCell = React.memo(({
   onKeyDown, id, ...otherProps
@@ -155,7 +155,7 @@ export const OrderTypeCell = React.memo(({
     </div>
   );
 });
-OrderTypeCell.displayName='OrderTypeCell'
+OrderTypeCell.displayName = 'OrderTypeCell';
 // Length
 export const LengthCell = React.memo(({
   onKeyDown, ...otherProps
@@ -174,7 +174,7 @@ export const LengthCell = React.memo(({
 
   </div>
 ));
-LengthCell.displayName='LengthCell'
+LengthCell.displayName = 'LengthCell';
 // Value
 export const ValueCell = React.memo(({
   onKeyDown, ...otherProps
@@ -190,7 +190,7 @@ export const ValueCell = React.memo(({
 
   </div>
 ));
-ValueCell.displayName='ValueCell'
+ValueCell.displayName = 'ValueCell';
 // Collate
 export const CollateCell = React.memo(({
   onKeyDown, id, ...otherProps
@@ -211,7 +211,7 @@ export const CollateCell = React.memo(({
     </div>
   );
 });
-CollateCell.displayName='CollateCell'
+CollateCell.displayName = 'CollateCell';
 // Assignment Operator (>,<)
 export const AssignmentOperatorCell = React.memo(({
   defaultValue, onInputChange, onKeyDown, id, ...otherProps
@@ -241,7 +241,7 @@ export const AssignmentOperatorCell = React.memo(({
     </div>
   );
 });
-AssignmentOperatorCell.displayName='AssignmentOperatorCell'
+AssignmentOperatorCell.displayName = 'AssignmentOperatorCell';
 // Operator (>,<)
 export const OperatorCell = React.memo(({
   onKeyDown, ...otherProps
@@ -267,7 +267,7 @@ export const OperatorCell = React.memo(({
     </div>
   );
 });
-OperatorCell.displayName='OperatorCell'
+OperatorCell.displayName = 'OperatorCell';
 // *******MONGO DB******
 
 // TTL
@@ -288,7 +288,7 @@ export const TTLCell = React.memo(({
     />
   </>
 ));
-TTLCell.displayName='TTLCell'
+TTLCell.displayName = 'TTLCell';
 // TTL Input in seconds
 export const InputTTLCell = React.memo(({
   onChange, value, onKeyDown, ...otherProps
@@ -305,7 +305,7 @@ export const InputTTLCell = React.memo(({
     />
   </>
 ));
-InputTTLCell.displayName='InputTTLCell'
+InputTTLCell.displayName = 'InputTTLCell';
 
 // Unique index
 export const UniqueCell = React.memo(({
@@ -326,7 +326,7 @@ export const UniqueCell = React.memo(({
     </div>
   </>
 ));
-UniqueCell.displayName='UniqueCell'
+UniqueCell.displayName = 'UniqueCell';
 // Index Type
 export const MongoIndexTypeCell = React.memo(({
   onKeyDown, id, ...otherProps
@@ -355,4 +355,4 @@ export const MongoIndexTypeCell = React.memo(({
     </div>
   );
 });
-MongoIndexTypeCell.displayName='MongoIndexTypeCell'
+MongoIndexTypeCell.displayName = 'MongoIndexTypeCell';

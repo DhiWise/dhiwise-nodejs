@@ -49,4 +49,4 @@ export const HookEditor = React.memo(({
     </>
   );
 });
-HookEditor.displayName='HookEditor'
+HookEditor.displayName = 'HookEditor';

@@ -240,4 +240,4 @@ export const AddRelation = React.memo(({
     </>
   );
 });
-AddRelation.displayName='AddRelation'
+AddRelation.displayName = 'AddRelation';

@@ -1,13 +1,12 @@
 import React from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Icons } from '@dhiwise/icons';
-import { useHistory } from 'react-router';
 import Lottie from 'react-lottie';
 import {
   Button, DropdownMenu, Select, MenuBox, ConfirmationAlert,
 } from '../../../../components';
 import { BUILD_ARCHITECTURE_CODE } from '../../../../constant/buildProcessConstant';
-import { resetBuildState, setBuildArchitecture } from '../../../../redux/reducers/buildCode';
+import { setBuildCodeState } from '../../../../redux/reducers/buildCode';
 import { codeGenerator } from '../../../../redux/thunks/buildCode';
 import { useBoolean } from '../../../../components/hooks';
 import { apiClient, API_URLS } from '../../../../api';
@@ -38,26 +37,24 @@ export const BuildVSCodePopup = () => {
 
   const { addErrorToast } = useToastNotifications();
   const dispatch = useDispatch();
-  const history = useHistory();
   const [vsCodeLoader, setVsCodeLoader, hideVsCodeLoader] = useBoolean(false);
   const openInVsCode = () => {
     setVsCodeLoader();
     apiClient(API_URLS.application.openVsCode, { generatedId, name: applicationName }).then(() => {
       hideVsCodeLoader();
+      dispatch(setBuildCodeState({ vsCodePopup: !isOpenVsCode }));
     }).catch((e) => {
       addErrorToast(e);
       hideVsCodeLoader();
+      dispatch(setBuildCodeState({ vsCodePopup: !isOpenVsCode }));
     });
-    dispatch(resetBuildState());
-    history.push('/');
   };
   return (
     <ConfirmationAlert
       okText={false}
       isOpen={isOpenVsCode}
       closeModal={() => {
-        dispatch(resetBuildState());
-        history.push('/');
+        dispatch(setBuildCodeState({ vsCodePopup: !isOpenVsCode }));
       }}
       titleVariant="h4"
       size="w-6/12 xxl:w-4/12"
@@ -108,16 +105,18 @@ const options = [
 ];
 
 export const BuildAppDropdown = () => {
-  const { isBuildLoading, buildArchitecture } = useSelector(({ buildCode }) => ({
+  const { isBuildLoading, buildArchitecture, generatedId } = useSelector(({ buildCode }) => ({
     isBuildLoading: buildCode.isBuildLoading,
     buildArchitecture: buildCode.buildArchitecture,
+    generatedId: buildCode.generatedId,
+
   }), shallowEqual);
   const [architectureValue, setArchitectureValue] = React.useState(buildArchitecture);
   const dispatch = useDispatch();
 
   const onChange = (val) => {
     setArchitectureValue(val);
-    dispatch(setBuildArchitecture(val));
+    dispatch(setBuildCodeState({ buildArchitecture: val }));
   };
   const applicationId = useSelector((state) => state.projects.currentApplicationId);
 
@@ -155,7 +154,7 @@ export const BuildAppDropdown = () => {
       >
         <div className="mb-3">
           <Select
-            disabled={isBuildLoading}
+            disabled={!!generatedId || isBuildLoading}
             label="Code architecture"
             options={options}
             value={architectureValue}

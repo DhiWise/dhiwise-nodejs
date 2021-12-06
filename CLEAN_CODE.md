@@ -1,6 +1,6 @@
 # NodeJS,Express Project in Clean-Code Architecture with Mongoose/Sequelize
 
-**supported version of nodejs-15.13.0**,
+**supported version of nodejs > 12**,
 **supported version of mongoose-4.0**,
 **supported version of sequelize-6.6.5**
 

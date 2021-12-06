@@ -33,7 +33,7 @@ const paginate = (applicationRepo) => async ({
       data: response,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return MESSAGE.SERVER_ERROR;
   }
 };

@@ -93,4 +93,4 @@ export const AddPolicy = React.memo(({ addModalRef }) => {
     </Popup>
   );
 });
-AddPolicy.displayName='AddPolicy'
+AddPolicy.displayName = 'AddPolicy';

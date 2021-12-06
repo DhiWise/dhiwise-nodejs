@@ -9,11 +9,6 @@ package-lock.json
 yarn.lock
 /.vscode
 
-# testing
-/coverage
-/src/assets/css/main.css
-
-
 # production
 /build
 

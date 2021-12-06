@@ -173,7 +173,7 @@ function main (jsonData) {
       generateSocialLoginForCCSequelize(jsonData);
       break;
     default:
-      console.log('Invalid Project Type');
+      // console.log('Invalid Project Type');
       break;
     }
   } catch (err) {

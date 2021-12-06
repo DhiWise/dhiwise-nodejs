@@ -40,17 +40,6 @@ const transformControllerDetailsWithQueryBuilder = (routes) => {
     isQueryBuilderAvailable,
   };
 };
-async function addRateLimit (model, platformName, RateLimitObj) {
-  let rateLimit = false;
-  if (!isEmpty(RateLimitObj) && !isEmpty(RateLimitObj[platformName]) && !isEmpty(RateLimitObj[platformName][model])) {
-    forEach(RateLimitObj[platformName][model], (value, key) => {
-      if (APIS.includes(key) && value.selected) {
-        rateLimit = RateLimitObj[platformName][model];
-      }
-    });
-  }
-  return rateLimit;
-}
 
 async function generatePlatformRoutes (platform, makeRouteObj, customRoutes) {
   const platformIndexRoutes = {};
@@ -77,18 +66,16 @@ async function generatePlatformRoutes (platform, makeRouteObj, customRoutes) {
     });
     indexRoutes.locals.PLATFORM_NAME = platformName;
     indexRoutes.locals.ADMIN = platformName === 'admin';
-    indexRoutes.locals.IS_AUTH = makeRouteObj.auth.isAuth && makeRouteObj.auth?.loginPlatform ? makeRouteObj.auth.loginPlatform.includes(platformName) : true;
+    indexRoutes.locals.IS_AUTH = makeRouteObj.auth.isAuth && makeRouteObj.auth?.loginPlatform ? makeRouteObj.auth.loginPlatform.includes(platformName) : false;
     platformIndexRoutes[platformName] = indexRoutes;
   });
   return platformIndexRoutes;
 }
 async function generateRoutes (platform, platformName, makeRouteObj, customRoutesOfPlatform, rolePermissionForPlatform) {
   const returnRoutes = {};
-  let isRateLimit = false;
   for (const [model, element] of Object.entries(platform)) {
     if (!isEmpty(element)) {
       const routes = writeOperations.loadTemplate(`${makeRouteObj.routeFilePath}/modelRoutes.js`);
-      routes.locals.RATE = false;
       routes.locals.DB_MODEL = model;
       routes.locals.USER_MODEL = makeRouteObj.auth.userModel === model;
       routes.locals.MODULE = platformName;
@@ -102,13 +89,6 @@ async function generateRoutes (platform, platformName, makeRouteObj, customRoute
       }
 
       let customPolicyList = [];
-      if (makeRouteObj.jsonData.rateLimit) {
-        isRateLimit = await addRateLimit(model, platformName, makeRouteObj.jsonData.rateLimit);
-      }
-      // rate limit
-      if (isRateLimit) {
-        routes.locals.RATE = isRateLimit;
-      }
       if (!isEmpty(rolePermissionForPlatform)) {
         routes.locals.SHOULD_IMPORT_RP_MIDDLEWARE = true;
       } else {
@@ -168,7 +148,6 @@ async function generateRoutes (platform, platformName, makeRouteObj, customRoute
       const customRoutesOfModel = groupBy(customRoutesOfPlatform, 'model')[model];
       if (customRoutesOfModel) {
         const routes = writeOperations.loadTemplate(`${makeRouteObj.routeFilePath}/modelRoutes.js`);
-        routes.locals.RATE = false;
         routes.locals.DB_MODEL = model;
         routes.locals.USER_MODEL = false;
         routes.locals.MODULE = platformName;

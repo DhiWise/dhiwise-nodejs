@@ -80,7 +80,7 @@ const deleteMany = (projectRouteRepo, applicationRepo) => async (filter, isHardD
       data: null,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

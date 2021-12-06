@@ -1,11 +1,11 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-param-reassign */
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 import {
-  createNewApplication,
+  createNewApplication, redirectApplication,
 } from '../../../api/project';
 import {
   ContainerBox, Heading,
@@ -20,7 +20,7 @@ import { selectCurrentApplication } from '../../../redux/reducers/projects';
 import Layout from '../Layout';
 import { ApplicationStep } from './applicationForm';
 import { Input } from '../../../components/Input';
-import { resetBuildState } from '../../../redux/reducers/buildCode';
+import { resetBuildState, setBuildCodeState } from '../../../redux/reducers/buildCode';
 
 const TechnologySetStep = () => {
   const history = useHistory();
@@ -28,13 +28,25 @@ const TechnologySetStep = () => {
   const { projectId, appId } = useQueryParams(['projectId', 'appId']);
   const { addErrorToast, addSuccessToast } = useToastNotifications();
   const [loading, setLoading, hideLoading] = useBoolean(false);
+  const location = useLocation();
+  const applicationId = useSelector(({ projects }) => (projects.currentApplicationId));
 
   const {
     control, errors, handleSubmit, watch, register, setValue, setError,
   } = useForm({ mode: 'onChange' });
   React.useEffect(() => {
     dispatch(resetBuildState());
+    if (!location.state?.isNewApp) {
+      redirectApplication(applicationId).then((response) => {
+        dispatch(setBuildCodeState({
+          buildArchitecture: response.data.projectType,
+          generatedId: response.data.generatedId,
+        }));
+        history.push('/node/dashboard');
+      });
+    }
   }, []);
+
   const createApp = (data) => {
     const values = data;
     // eslint-disable-next-line no-nested-ternary

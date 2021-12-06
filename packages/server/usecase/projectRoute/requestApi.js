@@ -41,7 +41,7 @@ const requestApi = () => async ({ params }) => {
     };
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.log('error', err);
+    // console.log('error', err);
 
     let message = 'Could not get any response. Ensure that the backend is working properly.';
     if (err?.code === 'ENOTFOUND') {

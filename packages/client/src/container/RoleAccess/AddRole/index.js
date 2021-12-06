@@ -102,4 +102,4 @@ export const AddRole = React.forwardRef(({ addModalRef }) => {
     </Popup>
   );
 });
-AddRole.displayName='AddRole'
+AddRole.displayName = 'AddRole';

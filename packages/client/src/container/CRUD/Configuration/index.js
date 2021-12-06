@@ -49,18 +49,10 @@ const Configuration = () => {
   }, []);
   const getPlatformData = () => {
     setFetchLoading();
-    // FIXME:If api fetch than loader set
-    // getApplication(applicationId).then(() => {
-    //   // TODO:store value config input
-    hideFetchLoading();
-    // setValue('types');
-    // setValue('platform');
-    // setValue('loginAccess[Admin]', configInput?.loginAccess?.Admin);
-    // setValue('loginAccess[User]', configInput?.loginAccess?.User);
-    // });
   };
   React.useEffect(() => {
     getPlatformData();
+    hideFetchLoading();
     return () => {
     // REMOVE
     // to maintain remove toggle from sidebar when crud in url
@@ -72,13 +64,10 @@ const Configuration = () => {
     setLoading();
 
     editApplication(applicationId, {
-      // FIXME: If remove name
       name: applicationList.find((app) => app._id === applicationId)?.name,
       configInput: {
         ...(configInput && configInput),
         ...getValues(),
-        // ...((getValues('loginAccess[Admin]') || getValues('loginAccess[User]'))
-        //  && { loginAccess: { User: getValues('loginAccess[User]')?.filter((admin) => getValues('platform').includes(admin)), Admin: getValues('loginAccess[Admin]')?.filter((admin) => getValues('platform').includes(admin)) } }),
       },
     }).then((res) => {
       addSuccessToast(res.message);

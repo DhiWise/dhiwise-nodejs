@@ -46,7 +46,7 @@ const useCase = (masterRepo) => async (params) => {
       code: message.OK.code,
     };
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return {
       data: err,
       code: message.SERVER_ERROR.code,

@@ -34,31 +34,15 @@ async function getPostmanCollectionsForLogin(platformStr, userModel, loginWith, 
         boolKeys = [];
         dateKeys = [];
     }
-
-    let data = {};
-    const objectId = fakeData.getObjectId();
-    if (loginWith === 'email') {
-        data = {
-            email: 'Missow@gmail.com',
-            password: 'Your Password',
-        };
-    } else if (loginWith === 'mobileNo') {
-        data = {
-            mobileNo: '32435656563',
-            password: 'Your Password',
-        };
-    } else if (loginWith === 'username') {
-        data = {
-            username: 'Your username',
-            password: 'Your Password',
-        };
-    } else {
-        data = {};
-    }
-    const changePass = {
-        oldPassword: 'YourOldPassword',
-        newPassword: 'YourNewPassword',
+    let data = {
+        username: 'username',
+        password: 'password',
     };
+    const changePass = {
+        oldPassword: 'OldPassword',
+        newPassword: 'NewPassword',
+    };
+    const objectId = fakeData.getObjectId();
     const platformObj = {
         name: 'login',
         desc: `${platformStr} Login`,
@@ -75,9 +59,6 @@ async function getPostmanCollectionsForLogin(platformStr, userModel, loginWith, 
     let resObject = _.cloneDeep(fakeModel[userModel]);
     if (!('id' in resObject)) {
         Object.assign(resObject, { id: objectId });
-    }
-    if (!('_id' in resObject)) {
-        Object.assign(resObject, { _id: objectId });
     }
     if (!('loginRetryLimit' in resObject)) {
         Object.assign(resObject, { loginRetryLimit: 0 });
@@ -134,9 +115,6 @@ async function getPostmanCollectionsForLogin(platformStr, userModel, loginWith, 
     resObject = _.cloneDeep(fakeModel[userModel]);
     if (!('id' in resObject)) {
         Object.assign(resObject, { id: objectId });
-    }
-    if (!('_id' in resObject)) {
-        Object.assign(resObject, { _id: objectId });
     }
     if (!('loginRetryLimit' in resObject)) {
         Object.assign(resObject, { loginRetryLimit: 0 });
@@ -289,16 +267,14 @@ async function getPostmanCollectionsForLogin(platformStr, userModel, loginWith, 
     if (!('id' in resObject)) {
         Object.assign(resObject, { id: objectId });
     }
-    if (!('_id' in resObject)) {
-        Object.assign(resObject, { _id: objectId });
-    }
     if (!('loginTry' in resObject)) {
         Object.assign(resObject, { loginTry: 0 });
     }
     const changePasswordResponse = {
         "status": "SUCCESS",
         "message": "Password changed successfully",
-        "data": {}
+        "data": null
+
     };
     const responseForChangePassword = {};
     responseForChangePassword.name = `Change Password in ${platformStr}_response`;
@@ -513,9 +489,6 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 if (!('id' in createBody)) {
                     Object.assign(createBody, { id: id });
                 }
-                if (!('_id' in createBody)) {
-                    Object.assign(createBody, { _id: id });
-                }
                 Object.assign(createBody,
                     {
                         createdAt: fakerStatic.date.future(),
@@ -586,9 +559,6 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 const id = fakeData.getObjectId();
                 if (!('id' in createBody)) {
                     Object.assign(createBody, { id: id });
-                }
-                if (!('_id' in createBody)) {
-                    Object.assign(createBody, { _id: id });
                 }
                 Object.assign(createBody,
                     {
@@ -670,9 +640,6 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 }
                 if (Object.keys(modelPrivateAttribute).length) {
                     responseDataForFindAll = await removePrivateAttibutesFromResponse(responseDataForFindAll, modelPrivateAttribute)
-                }
-                if (!('_id' in responseDataForFindAll)) {
-                    Object.assign(responseDataForFindAll, { _id: id });
                 }
                 const projectionFields = currentPostmanCollectionDetails[api];
                 let selectedFields = [];
@@ -779,9 +746,6 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 if (!('id' in responseForGet)) {
                     Object.assign(responseForGet, { id: id_ });
                 }
-                if (!('_id' in responseForGet)) {
-                    Object.assign(responseForGet, { _id: id_ });
-                }
                 Object.assign(responseForGet,
                     {
                         createdAt: fakerStatic.date.future(),
@@ -849,9 +813,6 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 let bodyRawData = dataForUpdate;
                 if (!('id' in dataForUpdate)) {
                     Object.assign(dataForUpdate, { id: id1 });
-                }
-                if (!('_id' in dataForUpdate)) {
-                    Object.assign(dataForUpdate, { _id: id1 });
                 }
                 Object.assign(dataForUpdate,
                     {
@@ -925,12 +886,8 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 responseObject._postman_previewlanguage = 'json';
                 const id = fakeData.getObjectId();
                 let bodyRawData = _.cloneDeep(data[key]);
-
                 if (!('id' in bodyRawData)) {
                     Object.assign(bodyRawData, { id: id });
-                }
-                if (!('_id' in bodyRawData)) {
-                    Object.assign(bodyRawData, { _id: id });
                 }
                 Object.assign(bodyRawData,
                     {
@@ -1001,9 +958,6 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 let bodyRawData = _.cloneDeep(data[key]);
                 if (!('id' in bodyRawData)) {
                     Object.assign(bodyRawData, { id: id1 });
-                }
-                if (!('_id' in bodyRawData)) {
-                    Object.assign(bodyRawData, { _id: id1 });
                 }
                 Object.assign(bodyRawData,
                     {
@@ -1252,9 +1206,6 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
         let bodyRawData = _.cloneDeep(data[key]);
         if (!('id' in bodyRawData)) {
             Object.assign(bodyRawData, { id: id1 });
-        }
-        if (!('_id' in bodyRawData)) {
-            Object.assign(bodyRawData, { _id: id1 });
         }
         Object.assign(bodyRawData,
             {

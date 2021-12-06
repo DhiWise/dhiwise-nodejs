@@ -48,7 +48,7 @@ const RemoveModelDetails = (projectRoleAccessPermissionsRepo) => async (params) 
     return OK;
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

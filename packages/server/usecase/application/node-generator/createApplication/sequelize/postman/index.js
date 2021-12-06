@@ -33,29 +33,13 @@ async function getPostmanCollectionsForLogin(platformStr, userModel, loginWith, 
         boolKeys = [];
         dateKeys = [];
     }
-
-    let data = {};
-    if (loginWith === 'email') {
-        data = {
-            email: 'Missow@gmail.com',
-            password: 'YourPassword',
-        };
-    } else if (loginWith === 'mobileNo') {
-        data = {
-            mobileNo: '32435656563',
-            password: 'YourPassword',
-        };
-    } else if (loginWith === 'username') {
-        data = {
-            username: 'Your username',
-            password: 'YourPassword',
-        };
-    } else {
-        data = {};
-    }
+    let data = {
+        username: 'username',
+        password: 'password',
+    };
     const changePass = {
-        oldPassword: 'YourOldPassword',
-        newPassword: 'YourNewPassword',
+        oldPassword: 'OldPassword',
+        newPassword: 'NewPassword',
     };
     const platformObj = {
         name: 'login',
@@ -275,7 +259,7 @@ async function getPostmanCollectionsForLogin(platformStr, userModel, loginWith, 
     const changePasswordResponse = {
         "status": "SUCCESS",
         "message": "Password changed successfully",
-        "data": {}
+        "data": null
     };
     const responseForChangePassword = {};
     responseForChangePassword.name = `Change Password in ${platformStr}_response`;
@@ -1132,7 +1116,7 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 let softDeleteManyResponse = {
                     "status": "SUCCESS",
                     "message": "Your request is successfully executed",
-                    "data": {}
+                    "data": null
                 };
                 let responseJsonData = {
                     "status": "SUCCESS",
@@ -1203,12 +1187,12 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
             bodyRawData = await removePrivateAttibutesFromResponse(bodyRawData, modelPrivateAttribute)
         }
 
-        const responseJsonData = `{
+        const responseJsonData = {
             "status": "SUCCESS",
             "message": "Your request is successfully executed",
-            "data": ${JSON.stringify([bodyRawData])}
-        }`;
-        responseObject.body = responseJsonData;
+            "data": JSON.stringify([bodyRawData])
+        };
+        responseObject.body = JSON.stringify(responseJsonData.data,undefined,2);
         responseObject.header = [];
         responseObject.cookie = [];
         requestObj.response = [responseObject];

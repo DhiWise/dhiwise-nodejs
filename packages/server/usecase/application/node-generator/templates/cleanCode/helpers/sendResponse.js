@@ -1,4 +1,2 @@
-const sendResponse = function (response, result) {
-  return response.set(result.headers).status(result.statusCode).send(result.data);
-};
+const sendResponse = (response, result) => response.set(result.headers).status(result.statusCode).send(result.data);
 module.exports = sendResponse;

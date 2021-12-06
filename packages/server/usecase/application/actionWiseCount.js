@@ -25,7 +25,7 @@ const actionWiseCount = ({ deviceActionRepo }) => async (id) => {
       data,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

@@ -51,6 +51,11 @@ const openCode = ({ openCodeUseCase }) => async (req, res) => {
   return res.setResponse(response);
 };
 
+const getLastApplication = ({ getLastApplicationUseCase }) => async (req, res) => {
+  const response = await getLastApplicationUseCase(req.body);
+  return res.setResponse(response);
+};
+
 module.exports = {
   create,
   paginate,
@@ -62,4 +67,5 @@ module.exports = {
   view,
   get,
   openCode,
+  getLastApplication,
 };

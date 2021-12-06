@@ -20,4 +20,4 @@ export const RoleList = React.memo(({ handleShow }) => {
     </SidebarList>
   );
 });
-RoleList.displayName='RoleList'
+RoleList.displayName = 'RoleList';

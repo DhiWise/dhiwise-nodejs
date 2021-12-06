@@ -259,7 +259,6 @@ module.exports = {
         offset: 0,
         page: 1,
         limit: 10,
-        customLabels: {},
         pagination: true,
         useEstimatedCount: false,
         useCustomCountFn: false,

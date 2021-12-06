@@ -32,7 +32,8 @@ test('should create a new application and generate a project with default settin
     .post('/web/v1/application/generate')
     .send({
       applicationId: createdApp.body.data._id,
-      projectType: 'CC',
+      projectType: 'MVC',
     });
+  expect(generatedApp.statusCode).toBe(200);
   expect(generatedApp.body.status).toBe(200);
 });

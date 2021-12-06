@@ -3,24 +3,14 @@ const joi = require('joi');
 exports.validateParamsWithJoi = (body, schemaKeys) => {
   const schema = joi.object(schemaKeys);
 
-  try {
-    const {
-      error, value,
-    } = schema.validate(body, { abortEarly: false });
+  const { error } = schema.validate(body, { abortEarly: false });
 
-    if (error && error.details) {
-      const data = {
-        error: true,
-        details: error.details,
-      };
-      return data;
-    }
-    return value;
-  } catch (err) {
-    const data = {
-      error: true,
-      details: err,
+  if (error && error.details) {
+    const message = error.details.map((el) => el.message).join('\n');
+    return {
+      isValid: false,
+      message,
     };
-    return data;
   }
+  return { isValid: true };
 };

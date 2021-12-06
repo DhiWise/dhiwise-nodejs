@@ -60,11 +60,7 @@ let url =req.originalUrl;
                 })
                 .then(() => next())
                 .catch((err) => {
-                    sendResponse(res,message.unAuthorizedRequest(
-                        { "Content-Type": "application/json" },
-                        responseCode.unAuthorizedRequest,
-                        err
-                    ))
+                    sendResponse(res,message.unAuthorizedRequest());
                  });
             }
         <%_ }else{ _%>
@@ -82,12 +78,8 @@ let url =req.originalUrl;
                 })
                 .then(() => next())
                 .catch((err) => {
-                    sendResponse(res,message.unAuthorizedRequest(
-                    { "Content-Type": "application/json" },
-                    responseCode.unAuthorizedRequest,
-                    err
-                ))
-                 });
+                    sendResponse(res,message.unAuthorizedRequest());    
+                });
             }
         <%_ } _%> 
     <%  }) %>

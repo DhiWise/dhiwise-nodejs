@@ -133,7 +133,7 @@ async function authenticationSetup (platformStrategy, {
   }
   const or = [];
   const {
-    userModel, userLoginWith, userLoginRateLimit, noOfDeviceAllowed, registerAuth, loginAccessPlatform, emailField, mobileField,
+    userModel, userLoginWith, noOfDeviceAllowed, registerAuth, loginAccessPlatform, emailField, mobileField,
   } = auth;
   userLoginWith.username.forEach((item) => {
     const query = {};
@@ -196,7 +196,6 @@ async function authenticationSetup (platformStrategy, {
   authController.locals.PATH = authControllerPath;
   const authRoutes = writeOperations.loadTemplate(`${routePath}/auth.js`);
   authRoutes.locals.PLATFORM = platformStrategy;
-  authRoutes.locals.LOGIN_RATE_LIMIT = userLoginRateLimit;
   authRoutes.locals.SOCIAL_PLATFORMS = socialPlatforms;
   authRoutes.locals.LOGIN_ACCESS_PLATFORM = loginAccessPlatform;
   authRoutes.locals.MODULE = platformStrategy;

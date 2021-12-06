@@ -61,6 +61,8 @@ const uniqueValidation = async (Model,data) =>{
         filter = { "<%-LOGIN_WITH[0]%>": data["<%-LOGIN_WITH[0]%>"] }
     }
     <%_}_%>
+    filter.isActive = true;
+    filter.isDeleted = false;
     let found = await dbService.getDocumentByQuery(Model,filter);
     if(found){
         return false;

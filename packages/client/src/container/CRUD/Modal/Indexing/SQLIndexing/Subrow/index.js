@@ -47,7 +47,7 @@ const Row = React.memo(({
     </>
   );
 });
-Row.displayName='Row'
+Row.displayName = 'Row';
 const Table = React.memo(({
   columns, data, onInputChange, moveRow, onAddRow, mainRow,
 }) => {
@@ -119,7 +119,7 @@ const Table = React.memo(({
     </DndProvider>
   );
 });
-Table.displayName='Table'
+Table.displayName = 'Table';
 export function SubRows({
   //   row,data
   row, rowProps,

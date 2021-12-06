@@ -200,4 +200,4 @@ export const RoleAccessList = React.memo(() => {
     </>
   );
 });
-RoleAccessList.displayName='RoleAccessList'
+RoleAccessList.displayName = 'RoleAccessList';

@@ -239,7 +239,7 @@ async function updateSchemaDetailsAndRoutes ({
     }
     return OK;
   } catch (err) {
-    console.log('err: ', err);
+    // console.log('err: ', err);
     return SERVER_ERROR;
   }
 }
@@ -314,7 +314,7 @@ async function updatePlatformInApplicationConfig ({ updatedApp }) {
     }
     return OK;
   } catch (err) {
-    console.log('err: ', err);
+    // console.log('err: ', err);
     return SERVER_ERROR;
   }
 }
@@ -445,7 +445,7 @@ const update = (applicationRepo, schemaRepo) => async (id, params) => {
       data: _.pick(updateResponse, applicationUpdateFields),
     };
   } catch (err) {
-    console.log('err', err);
+    // console.log('err', err);
     return MESSAGE.SERVER_ERROR;
   }
 };

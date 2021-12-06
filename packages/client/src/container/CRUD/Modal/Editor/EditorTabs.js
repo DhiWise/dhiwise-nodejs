@@ -81,4 +81,4 @@ export const EditorTabs = React.memo(React.forwardRef(({
     </>
   );
 }));
-EditorTabs.displayName='EditorTabs'
+EditorTabs.displayName = 'EditorTabs';

@@ -108,4 +108,4 @@ export const NestedQueryBuilder = () => {
     </>
   );
 };
-NestedQueryBuilderLogic.displayName='NestedQueryBuilderLogic'
+NestedQueryBuilderLogic.displayName = 'NestedQueryBuilderLogic';

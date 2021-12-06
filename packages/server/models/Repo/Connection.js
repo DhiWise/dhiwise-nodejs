@@ -662,6 +662,12 @@ class MongoAtlasRepository {
     return result;
   }
 
+  async getAll (filter) {
+    const result = await this.model.find({})
+      .sort(filter);
+    return result;
+  }
+
   /**
    *
    * Function used to get count.

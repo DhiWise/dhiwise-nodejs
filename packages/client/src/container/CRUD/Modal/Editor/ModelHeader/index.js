@@ -13,7 +13,7 @@ import {
 import { useToastNotifications } from '../../../../hooks';
 import { nodeKeyRegex } from '../../../../../utils/regex';
 
-  const ModelHeader= React.memo(({
+const ModelHeader = React.memo(({
   currentId, currentModel = {}, updateRef,
 }) => {
   const dispatch = useDispatch();
@@ -75,5 +75,5 @@ import { nodeKeyRegex } from '../../../../../utils/regex';
     />
   );
 });
-ModelHeader.displayName='ModelHeader'
-export default ModelHeader
+ModelHeader.displayName = 'ModelHeader';
+export default ModelHeader;

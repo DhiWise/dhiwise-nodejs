@@ -39,7 +39,7 @@ MasterSchema.virtual('subMaster', {
   foreignField: 'parentId',
 });
 
-MasterSchema.pre('save', function (next) {
+MasterSchema.pre('save', (next) => {
   // 'this' refers to the current document about to be saved
   const user = this;
   // create slug using code
@@ -57,7 +57,7 @@ MasterSchema.pre(
   },
   (next) => {
     const user = this._update;
-    console.log('user.$set.code');
+    // console.log('user.$set.code');
     if (user.$set.code) {
       const slug = user.$set.code.toLowerCase();
       user.$set.slug = slug;

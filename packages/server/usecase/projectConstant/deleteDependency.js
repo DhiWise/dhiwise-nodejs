@@ -34,7 +34,7 @@ const deleteMany = (projectConstantRepo, applicationRepo) => async (filter, isHa
       data: null,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

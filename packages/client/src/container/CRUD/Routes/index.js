@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import * as React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { isEmpty } from 'lodash';
 import { useHistory } from 'react-router';
@@ -21,25 +21,30 @@ import { LAYOUT_STEP_MODULE_NAME, RedirectUrl } from '../../../constant/Nodecrud
 import { BuildCodeStructure } from '../BuildCodeStructure';
 import { getModelRoutes } from '../../../api/routes';
 import { useToastNotifications } from '../../hooks';
+import { codeGenerator } from '../../../redux/thunks/buildCode';
 
 const RouteFooter = () => {
   // to hide footer in add popup
-  const applicationId = useSelector((state) => state.projects.currentApplicationId);
-  const currentApplicationCode = useSelector((state) => state.projects.currentApplicationCode);
-  const modelList = useSelector((state) => state.models.modelList);
-
+  const {
+    isBuildLoading, buildArchitecture, generatedId, applicationId, currentApplicationCode, modelList,
+  } = useSelector(({ models, buildCode, projects }) => ({
+    buildArchitecture: buildCode.buildArchitecture,
+    generatedId: buildCode.generatedId,
+    applicationId: projects.currentApplicationId,
+    currentApplicationCode: projects.currentApplicationCode,
+    modelList: models.modelList,
+    isBuildLoading: buildCode.isBuildLoading,
+  }), shallowEqual);
   const history = useHistory();
   const openBuildRef = React.useRef();
   const { addModal } = useAddToggle();
   const { routeList } = useRoute();
-  const isBuildLoading = useSelector(({ buildCode }) => (
-    buildCode.isBuildLoading
-  ));
+
   // to disable Create build button
   const [hasRoutes, setHasRoutes, unsetHasRoutes] = useBoolean(true);
 
   const { addErrorToast } = useToastNotifications();
-
+  const dispatch = useDispatch();
   React.useEffect(() => {
     if (isEmpty(modelList)) {
       getModelRoutes({ applicationId, find: { modelId: null } }).then((routesRes) => {
@@ -56,7 +61,8 @@ const RouteFooter = () => {
           history.push(RedirectUrl[currentApplicationCode].route.previousUrl);
         }}
         nextClick={() => {
-          openBuildRef.current?.handelOpen();
+          generatedId ? dispatch(codeGenerator({ applicationId, projectType: buildArchitecture }))
+            : openBuildRef.current?.handelOpen();
         }}
         Back="Previous"
         Next="Create Build"

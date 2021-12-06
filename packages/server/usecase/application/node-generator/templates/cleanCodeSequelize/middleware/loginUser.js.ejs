@@ -24,21 +24,13 @@ const authenticateJWT = (req, res, next) => {
         <%_  }) _%>
         jwt.verify(token,secret, (err, user) => {
             if (err) {
-                sendResponse(res,  message.unAuthorizedRequest(
-                    { "Content-Type": "application/json" },
-                    responseCode.unAuthorizedRequest,
-                    err
-                ))
+                sendResponse(res,message.unAuthorizedRequest())
             }
             req.user = user;
             next();
         });
     } else {
-        sendResponse(res,  message.unAuthorizedRequest(
-            { "Content-Type": "application/json" },
-            responseCode.unAuthorizedRequest,
-            {}
-        ))
+        sendResponse(res,message.unAuthorizedRequest())
     }
 };
 module.exports = authenticateJWT

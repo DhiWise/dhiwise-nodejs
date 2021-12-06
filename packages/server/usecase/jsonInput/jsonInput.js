@@ -124,7 +124,7 @@ async function updateApplicationDetails (params) {
       data: updatedApp.toObject(),
     };
   } catch (err) {
-    console.log('err: ', err);
+    // console.log('err: ', err);
     return {
       ...SERVER_ERROR,
       data: err.toString(),
@@ -259,7 +259,7 @@ async function updateApplicationConfig ({
 
     return OK;
   } catch (err) {
-    console.log('err: ', err);
+    // console.log('err: ', err);
     return {
       ...SERVER_ERROR,
       data: err.toString(),
@@ -441,7 +441,7 @@ const jsonInput = () => async (params) => {
       data: { errors: errorResponse },
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

@@ -18,7 +18,7 @@ const NoError = React.memo(() => (
     </div>
   </div>
 ));
-NoError.displayName='NoError'
+NoError.displayName = 'NoError';
 
 export const ErrorList = React.memo(({
   isError, isWarring, error, attribute,
@@ -62,7 +62,7 @@ export const ErrorList = React.memo(({
     </div>
   );
 });
-ErrorList.displayName='ErrorList'
+ErrorList.displayName = 'ErrorList';
 export const Error = React.memo(({
   isOpen,
   handleCancel,
@@ -148,4 +148,4 @@ export const Error = React.memo(({
     {/* </ReactDrawer> */}
   </div>
 ));
-Error.displayName='Error'
+Error.displayName = 'Error';

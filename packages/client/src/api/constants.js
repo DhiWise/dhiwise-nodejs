@@ -14,6 +14,8 @@ export const API_URLS = {
     generate: `${projectServiceUrl}/${version}/application/generate`,
     edit: `${projectServiceUrl}/${version}/application`,
     openVsCode: `${projectServiceUrl}/${version}/application/open-generated-code`,
+    lastAppRedirect: `${projectServiceUrl}/${version}/application/last-application`,
+    destroy: `${projectServiceUrl}/${version}/application/destroy`,
   },
   schema: {
     create: `${projectServiceUrl}/${version}/schema/create`,

@@ -66,9 +66,9 @@ try {
         combinedOutput.<%-element.outputVariable%> = <%-element.outputVariable%>
         <%_ }
         else if(["findOneAndUpdate","updateMany"].includes(element.queryMode)){ _%>
-        isValid = validation.validateParamsWithJoi(<%-JSON.stringify(element.data)%>,<%-element.model%>SchemaKey.schemaKeys);
-        if (isValid.error) {
-            throw new Error(isValid.details)
+        validateRequest = validation.validateParamsWithJoi(<%-JSON.stringify(element.data)%>,<%-element.model%>SchemaKey.schemaKeys);
+        if (!validateRequest.isValid) {
+          return res.inValidParam({message :  `Invalid values in parameters, ${validateRequest.message}`});
         } 
         let <%-element.outputVariable%>=await customQueryService.<%-element.queryMode%>(<%-element.model%>,<%-JSON.stringify(element.filter)%>,<%-JSON.stringify(element.data)%>,<%-JSON.stringify(element.option)%>);
         <%_if(typeof element.outputSelect !== "undefined" && element.outputSelect.length){ element.outputSelect.push("id") _%>
@@ -79,9 +79,9 @@ try {
         }        
         else if(element.queryMode=="create"){ _%>            
         
-        isValid = validation.validateParamsWithJoi(<%-JSON.stringify(element.data)%>,<%-element.model%>SchemaKey.schemaKeys);
-        if (isValid.error) {
-            throw new Error(isValid.details)
+        validateRequest = validation.validateParamsWithJoi(<%-JSON.stringify(element.data)%>,<%-element.model%>SchemaKey.schemaKeys);
+        if (!validateRequest.isValid) {
+            return res.inValidParam({message :  `Invalid values in parameters, ${validateRequest.message}`});
         } 
         let <%-element.outputVariable%>=await customQueryService.<%-element.queryMode%>(<%-element.model%>,<%-JSON.stringify(element.data)%>,<%-JSON.stringify(element.option)%>);
          <%_if(typeof element.outputSelect !== "undefined" && element.outputSelect.length){ element.outputSelect.push("id") _%>
@@ -245,16 +245,16 @@ try {
     <%_}_%>
     <%_if(typeof(v.queryBuilder) !== "undefined" && v.queryBuilder.length > 0){_%>
         if(combinedOutput){
-            return res.ok(combinedOutput);
+            return res.ok({data:combinedOutput});
         }
     <%_}else{_%>
         let result =  <%-v.service%>Service.<%-v.functionName%>();
         if(result){
-            return res.ok(result);
+            return res.ok({data:result});
         }
     <%_}_%>
     } catch (error) {
-        return res.failureResponse(error.message);
+        return res.failureResponse();
     }
 }    
 <%_ })_%>

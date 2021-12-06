@@ -60,7 +60,7 @@ let url =req.originalUrl;
         })
         .then(() => next())
         .catch((err) => {
-            return res.unAuthorizedRequest(err);
+            return res.unAuthorizedRequest();
         });
     }
     <%_ }else{ _%>
@@ -78,7 +78,7 @@ let url =req.originalUrl;
         })
         .then(() => next())
         .catch((err) => {
-            return res.unAuthorizedRequest(err);
+            return res.unAuthorizedRequest();
         });
     }
     <%_ } _%> 

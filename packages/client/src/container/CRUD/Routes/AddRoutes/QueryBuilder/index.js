@@ -1,10 +1,10 @@
 import React from 'react';
+import { isEmpty } from 'lodash';
 import { QueryBuilderList } from './QueryBuilderList';
 import { QueryBuilderDetail } from './QueryBuilderDetail';
 import './queryBuilder.css';
 import { BoxLayout, NoData } from '../../../../../components';
 import { ResponseProvider, useQueryResponse } from './ResponseProvider';
-import { isEmpty } from 'lodash';
 import { AddResponse } from './AddResponse';
 
 const QueryBuilderTab = () => {

@@ -49,7 +49,7 @@ const deleteMany = (applicationRepo) => async (filter, isHardDelete = false) => 
     }
     return APPLICATION_DELETED;
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

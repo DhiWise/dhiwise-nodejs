@@ -735,5 +735,5 @@ const Editor = React.memo(({ currentId, saveRef, loaderRef }) => {
     </>
   );
 });
-Editor.displayName='Editor'
+Editor.displayName = 'Editor';
 export default Editor;

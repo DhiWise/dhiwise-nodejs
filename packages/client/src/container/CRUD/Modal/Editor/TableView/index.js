@@ -68,7 +68,6 @@ const SortableItem = SortableElement(({
 ) : null));
 
 const getSize = (index, items, TABLE_TYPES, dbType) => {
-  // TODO: calculate dynamic height for sub-attribute
   const isMongoDb = dbType === DB_TYPE.MONGODB;
   const r = items?.[index];
   let size = 48;
@@ -92,7 +91,7 @@ const getSize = (index, items, TABLE_TYPES, dbType) => {
   return size; // single row
 };
 
-const Row =({
+const Row = ({
   index, style, data,
 }) => {
   const { items, itemStatusMap, ...otherProps } = data;
@@ -175,7 +174,7 @@ const SortableList = SortableContainer((props) => {
   );
 });
 
-const TableView =() => {
+const TableView = () => {
   const {
     tableJson, setTableJson,
     tableToCodeViewParser, listRef, dbType, TABLE_TYPES, currentApplicationCode,

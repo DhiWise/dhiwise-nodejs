@@ -1,7 +1,6 @@
 const dayjs = require("dayjs");
 
 const message = require("../../../utils/messages");
-const responseCode = require("../../../utils/responseCode");  
 
 function makeAuthController({authService,makeUniqueValidation,<%-USER_MODEL%>Service,userTokenService,make<%-USER_MODEL.charAt(0).toUpperCase() + USER_MODEL.slice(1);%><%_if(NOTIFICATION_TYPE==="EMAIL"){_%>,sendEmail<%_}else if(NOTIFICATION_TYPE==="SMS"){_%>,sendSMS<%_}_%>}){
     const register = async ({ data }) => {
@@ -10,11 +9,7 @@ function makeAuthController({authService,makeUniqueValidation,<%-USER_MODEL%>Ser
             const user = make<%-USER_MODEL.charAt(0).toUpperCase() + USER_MODEL.slice(1);%>(originalData, "insert<%-USER_MODEL.charAt(0).toUpperCase() + USER_MODEL.slice(1);%>Validator");
             let unique = await makeUniqueValidation.uniqueValidation(user);
             if (!unique){
-                return message.inValidParam(
-                    { 'Content-Type': 'application/json' },
-                    responseCode.validationError,
-                    'User Registration Failed, Duplicate data found'
-                );
+                return message.inValidParam({message:'User Registration Failed, Duplicate data found'});
             }
             const result = await <%-USER_MODEL%>Service.createDocument(user);
             <%_if(NOTIFICATION_TYPE==="SMS"){_%>
@@ -53,165 +48,83 @@ function makeAuthController({authService,makeUniqueValidation,<%-USER_MODEL%>Ser
             };
             await sendEmail(mailObj);
             <%_}_%>
-            return message.successResponse(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                result
-            );
+            return message.successResponse({data :result});
         }
         catch (error) {
             if(error.name==="ValidationError"){
-          return message.inValidParam(
-            { "Content-Type": "application/json" },
-              responseCode.validationError,
-              error.message
-          );
-        }
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+                return message.inValidParam({message : error.message} );
+            }
+            return message.failureResponse();
         }
     }
+
     const forgotPassword = async (params) => {
         try {
             if (!params.email) {
-                return message.insufficientParameters(
-                    { "Content-Type": "application/json" },
-                    responseCode.validationError
-                )
+                return message.insufficientParameters()
             }
             let where = { <%-EMAIL_FIELD%>: params.email };
             params.email = params.email.toString().toLowerCase();
-            let user = await <%-USER_MODEL%>Service.getSingleDocumentByQuery(where)
+            let user = await <%-USER_MODEL%>Service.getSingleDocumentByQuery(where);
             if (user) {
                 let { resultOfEmail, resultOfSMS } = await authService.sendResetPasswordNotification(user);
                 if (resultOfEmail && resultOfSMS) {
-                    return message.requestValidated(
-                        { "Content-Type": "application/json" },
-                        responseCode.success,
-                        "otp successfully send."
-                    );
-    
+                    return message.requestValidated({message :"otp successfully send."});
                 } else if (resultOfEmail && !resultOfSMS) {
-                    return message.requestValidated(
-                        { "Content-Type": "application/json" },
-                        responseCode.success,
-                        "otp successfully send to your email."
-                    );
-    
+                    return message.requestValidated({message : "otp successfully send to your email."});
                 } else if (!resultOfEmail && resultOfSMS) {
-                    return message.requestValidated(
-                        { "Content-Type": "application/json" },
-                        responseCode.success,
-                        "otp successfully send to your mobile number."
-                    );
+                    return message.requestValidated({message : "otp successfully send to your mobile number."});
                 } else {
-                    return message.invalidRequest(
-                        { "Content-Type": "application/json" },
-                        responseCode.success,
-                        "otp can not be sent due to some issue try again later"
-                    );
+                    return message.invalidRequest({message :"otp can not be sent due to some issue try again later"});
                 }
             } else {
-                return message.recordNotFound(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    {}
-                )
+                return message.recordNotFound()
             }
         } catch (error) {
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+            return message.failureResponse();
         }
     }
     
     const validateResetPasswordOtp = async (params) => {
         try {
             if (!params || !params.otp) {
-                return message.insufficientParameters(
-                    { "Content-Type": "application/json" },
-                    responseCode.validationError,
-                )
+                return message.insufficientParameters()
             }
             let user = await <%-USER_MODEL%>Service.getSingleDocumentByQuery({ 'resetPasswordLink.code': params.otp });
             if (!user || !user.resetPasswordLink.expireTime) {
-                return message.invalidRequest(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    "Invalid OTP"
-                );
+                return message.invalidRequest({message : "Invalid OTP"});
             }
             // link expire
             if (dayjs(new Date()).isAfter(dayjs(user.resetPasswordLink.expireTime))) {
-                return message.invalidRequest(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    "Your reset password link is expired."
-                );
+                return message.invalidRequest({message:"Your reset password link is expired."});
             }
-            return message.requestValidated(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                'OTP Validated'
-            );
+            return message.requestValidated({message :'OTP Validated'});
         } catch (error) {
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+            return message.failureResponse();
         }
     }
     
     const resetPassword = async (params) => {
         try {
             if (!params.code || !params.newPassword) {
-                return message.insufficientParameters(
-                    { "Content-Type": "application/json" },
-                    responseCode.validationError,
-                )
+                return message.insufficientParameters();
             }
             let user = await <%-USER_MODEL%>Service.getSingleDocumentByQuery({ 'resetPasswordLink.code': params.code });
             if (user && user.resetPasswordLink.expireTime) {
                 if (dayjs(new Date()).isAfter(dayjs(user.resetPasswordLink.expireTime))) {// link expire
-                    return message.invalidRequest(
-                        { "Content-Type": "application/json" },
-                        responseCode.success,
-                        "Your reset password link is expired."
-                    );
+                    return message.invalidRequest({message:"Your reset password link is expired."});
                 }
             } else {
                 // invalid code
-                return message.invalidRequest(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    "Invalid Code"
-                );
+                return message.invalidRequest({message :"Invalid Code"});
             }
             let response = await authService.resetPassword(user, params.newPassword);
             if (response && !response.flag) {
-                return message.requestValidated(
-                    { "Content-Type": "application/json" },
-                    responseCode.success,
-                    response.data
-                );
+                return message.requestValidated({message :response.data});
             } 
-            return message.invalidRequest(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                response.data
-            );
+            return message.invalidRequest({message : response.data});
         } catch (error) {
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+            return message.failureResponse();
         }
     }
     const authentication = async (data)=>{
@@ -230,28 +143,13 @@ function makeAuthController({authService,makeUniqueValidation,<%-USER_MODEL%>Ser
                 let result = await authService.loginUser(username, password, url);
                 <%_}_%>
                 if(!result.flag){
-                    return message.loginSuccess(
-                        { "Content-Type": "application/json" },
-                        responseCode.success,
-                        result.data
-                    );
+                    return message.loginSuccess({data:result.data});
                 }
-                return message.loginFailed(
-                    { "Content-Type": "application/json" },
-                        responseCode.badRequest,
-                        result.data
-                ) 
+                return message.loginFailed({message: result.data}); 
             }
-            return message.insufficientParameters(
-                    { "Content-Type": "application/json" },
-                    responseCode.validationError,
-                )
+            return message.insufficientParameters()
         } catch (error) {
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+            return message.failureResponse();
         }
     }
     const logout = async (req) => {
@@ -262,23 +160,11 @@ function makeAuthController({authService,makeUniqueValidation,<%-USER_MODEL%>Ser
                   isTokenExpired : true
               }
               await userTokenService.updateDocument(userToken.id,updatedDocument);
-              return message.requestValidated(
-                        { "Content-Type": "application/json" },
-                        responseCode.success,
-                        "Logged out Successfully"
-                    );
+              return message.requestValidated({message:"Logged out Successfully"});
             }
-            return message.badRequest(
-                        { "Content-Type": "application/json" },
-                        responseCode.badRequest,
-                        {}
-                    );
+            return message.badRequest();
           } catch (error) {
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message
-            );
+            return message.failureResponse();
           }
     }
 

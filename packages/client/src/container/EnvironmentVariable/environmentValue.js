@@ -445,5 +445,5 @@ const EnvironmentValue = React.forwardRef(({
     </>
   );
 });
-EnvironmentValue.displayName='EnvironmentValue'
+EnvironmentValue.displayName = 'EnvironmentValue';
 export { EnvironmentValue };

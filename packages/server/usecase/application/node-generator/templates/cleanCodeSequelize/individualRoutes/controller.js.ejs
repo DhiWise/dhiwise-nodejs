@@ -16,7 +16,7 @@ const validUrl = require('valid-url');
 <%_}_%>
 const {Op} = require('sequelize')
 const message = require("../../../utils/messages");
-const responseCode = require("../../../utils/responseCode");
+
 <%_ if((UNIQ_REQUIRE_VALIDATION_MODELS && UNIQ_REQUIRE_VALIDATION_MODELS.length) || (UNIQ_TASK_MODELS && UNIQ_TASK_MODELS.length)){ %>
 function make<%-SERVICE_NAME_FC%>Controller({
     service, 
@@ -123,15 +123,21 @@ function make<%-SERVICE_NAME_FC%>Controller({service})
             const uploadFileRes = await new Promise(async (resolve, reject) => {
             form.parse(req, async function (err, fields, files) {
 
-            let filePaths = [];
+            if (err) {
+              reject(err);
+            }
+
+            let uploadSuccess = [];
+            let uploadFailed = [];
             let fileCount = 1;
 
             let fileArr = [];
             if (!files['file[]'] || files['file[]'].size == 0) {
-                resolve({
-                    'err': 'Please Select any one File',
-                    'status': false
+              reject({
+                  'message': 'Select at least one file to upload.',
+                  'name': 'validationError'
                 });
+              }
             }
             if (!Array.isArray(files['file[]'])) {
                 fileArr.push(files['file[]']);
@@ -141,35 +147,41 @@ function make<%-SERVICE_NAME_FC%>Controller({service})
             for (let file of files['file[]']) {
                 let response = await uploadFiles(file,fields,fileCount++,allowedFileTypes, maxFileSize);
                 if (response.status == false) {
-                    filePaths.push({
-                        'name': file.name,
-                        'err': response.message,
-                        'status': false
-                    });
+                  uploadFailed.push({
+                      'name': file.name,
+                      'error': response.message,
+                      'status': false
+                  });
                 } else {
-                    filePaths.push({
-                        'path': response.data,
-                        'status': true
-                    });
+                  uploadSuccess.push({
+                    'name': file.name,
+                    'path': response.data,
+                    'status': true
+                  });
                 }
                 
             }
-            resolve(filePaths);
-
+            resolve({
+              uploadSuccess,
+              uploadFailed
+            });
         });
     });
     <%_if(S3_UPLOAD_PRIVATE){_%>
             let finalResponse = [];
-            if (Array.isArray(uploadFileRes) && uploadFileRes.length){
-                uploadFileRes = await new Promise(async (resolve, reject) => {
-                    for (let u of uploadFileRes){
-                    if (u.status && u.path) {
-                        u = await generatePreSignedURL(u.path);
-                        finalResponse.push(u);
+            if (Array.isArray(uploadFileRes.uploadSuccess) && uploadFileRes.uploadSuccess.length) {
+              uploadFileRes.uploadSuccess = await new Promise(async (resolve, reject) => {
+                for (let u of uploadFileRes.uploadSuccess) {
+                  if (u.status && u.path) {
+                    let presignedUrl = await generatePreSignedURL(u.path);
+                    if (presignedUrl && presignedUrl.status) {
+                      u.path = presignedUrl.path;
                     }
-                    }
-                    resolve(finalResponse);
-                });
+                    finalResponse.push(u);
+                  }
+                }
+                resolve(finalResponse);
+              });
             }
             <%_}_%>
     <%_} else {_%>
@@ -192,15 +204,20 @@ function make<%-SERVICE_NAME_FC%>Controller({service})
 
         form.parse(req, async function (err, fields, files) {
 
-            let filePaths = [];
+            if (err) {
+              reject(err);
+            }
+
+            let uploadSuccess = [];
+            let uploadFailed = [];
             let fileCount = 1;
 
             let fileArr = [];
             if (!files['file[]'] || files['file[]'].size == 0) {
-                resolve({
-                    'err': 'Please Select any one File',
-                    'status': false
-                });
+              reject({
+                'message': 'Select at least one file to upload.',
+                'name': 'validationError'
+              });
             }
             if (!Array.isArray(files['file[]'])) {
                 fileArr.push(files['file[]']);
@@ -212,9 +229,9 @@ function make<%-SERVICE_NAME_FC%>Controller({service})
                 let response = await uploadFiles(file, fields, fileCount++,allowedFileTypes, maxFileSize, defaultDirectory);
 
                 if (response.status == false) {
-                    filePaths.push({
+                    uploadFailed.push({
                         'name': file.name,
-                        'err': response.message,
+                        'error': response.message,
                         'status': false
                     });
                 } else {
@@ -223,46 +240,61 @@ function make<%-SERVICE_NAME_FC%>Controller({service})
                         response.data = response.data.replace('/public', '');
                         url = `${response.data}`;
                     }
-                    filePaths.push({
+                    uploadSuccess.push({
+                        'name': file.name,
                         'path': url,
                         'status': true
                     });
                 }
             }
-                resolve(filePaths);
+                resolve({
+                  uploadSuccess,
+                  uploadFailed
+                });
                 });
             });
             <%_}_%>
-            combinedOutput.uploadFileRes = uploadFileRes;
+            let fileUploadResponseObj = {};
+            if (uploadFileRes.uploadSuccess.length > 0) {
+              let message = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
+              fileUploadResponseObj = {
+                message: message,
+                data: uploadFileRes
+              };
+            } else {
+              let message = 'Failed to upload files.';
+              fileUploadResponseObj = {
+                message: message,
+                data: uploadFileRes
+              };
+            }
+            combinedOutput.uploadFileRes = fileUploadResponseObj;
             <%_ }
           } _%>
         <%_ } _%>
         <%_if(typeof(v.queryBuilder) !== "undefined" && v.queryBuilder.length > 0){_%>
             if(combinedOutput){
-                return message.successResponse(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                combinedOutput);
+                return message.successResponse({data:combinedOutput});
             }
         <%_}else{_%>
             let result = service.<%-v.functionName%>();
             if(result){
-                return message.successResponse(
-                { "Content-Type": "application/json" },
-                responseCode.success,
-                result);
+                return message.successResponse({data:result});
             }
         <%_}_%>
             
         }catch(error){
-            return message.failureResponse(
-                { "Content-Type": "application/json" },
-                responseCode.internalServerError,
-                error.message);
+          if (error.name && error.name == 'validationError') {
+            return message.validationError({ message: error.message });
+          } else {
+            return message.failureResponse();
+          }
         }
     }
 <%_})_%>
+
     return Object.freeze({
+        
         <%_ROUTES.forEach((v,i)=>{_%>
             <%- v.functionName %>,
         <%_ })_%>          
@@ -525,7 +557,68 @@ async function unlinkFile (path) {
 <%_}_%>
 
 module.exports= make<%-SERVICE_NAME_FC%>Controller
+
+
+
 <%_
+function getRandomExtraKeys(nestedCalls){
+    const controllers1=[]
+    let randomExtraKeys=[]
+    if(nestedCalls.pre) {controllers1.push(...(nestedCalls.pre))}
+    if(nestedCalls.post) {controllers1.push(...(nestedCalls.post))}
+    const extraKeys = []
+    for(const controller of controllers1){
+        if(controller.method!="customQuery"){
+            if(controller.dataKey)
+                extraKeys.push(`${controller.dataKey}`)
+            if(controller.filterKey)
+                extraKeys.push(`${controller.filterKey}`)
+            if(controller.idKey)
+                extraKeys.push(`${controller.idKey}`)
+        } 
+    }                
+    randomExtraKeys=extraKeys.map(keys=>{return `${keys}:${keys}${getRandomInt(10000)}`})
+    return randomExtraKeys;
+}
+_%>
+<%_
+function printSequelizeFilter(filter) {
+  let mainstr = ""
+  if (typeof filter === typeof {}) {
+    if (filter.length) {
+      mainstr += '['
+      for (let obj of filter) {
+        if (typeof obj === typeof {}) {
+          mainstr+= printSequelizeFilter(obj)
+        } else {
+          mainstr += `${obj}`
+        }
+      }
+      mainstr += ']'
+    } else {
+      for (key in filter) {
+        mainstr += '{'
+        if (typeof filter[key] === typeof {}) {
+          mainstr += `${key}:`
+          mainstr += printSequelizeFilter(filter[key])
+        } else {
+          if(!isNaN(`${filter[key]}`)){ 
+            mainstr += `${key}:${filter[key]}`
+          }else if(filter[key] === true || false){
+            mainstr += `${key}:${filter[key]}`
+          }else{
+            mainstr += `${key}:"${filter[key]}"`
+          }
+        }
+        mainstr += '},'
+      }
+    }
+  } else {
+    mainstr += `${k}:"${filter[k]}"`
+  }
+  return mainstr
+}
+
 function printSequelizeSort(sortObj){
   const finalSortArray = []
   for (const [key, value] of Object.entries(sortObj)) {

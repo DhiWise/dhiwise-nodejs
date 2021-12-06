@@ -4,9 +4,8 @@ const path = require('path');
 
 /* config-overrides.js */
 module.exports = function override(config, env) {
-  config = rewireAliases.aliasesOptions({
-    '@assets': path.resolve(__dirname, `${paths.appSrc}/assets`),
-    '@constant': path.resolve(__dirname, `${paths.appSrc}/constant/`),
+  return rewireAliases.aliasesOptions({
+    '@assets': path.resolve(__dirname, `./${paths.appSrc}/assets`),
+    '@constant': path.resolve(__dirname, `./${paths.appSrc}/constant/`),
   })(config, env);
-  return config;
 };

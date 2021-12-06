@@ -84,7 +84,7 @@ const update = (projectConstantRepo, applicationRepo) => async (id, params) => {
       data: updatedConstantData,
     };
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return SERVER_ERROR;
   }
 };

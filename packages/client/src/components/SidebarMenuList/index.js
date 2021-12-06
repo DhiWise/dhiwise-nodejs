@@ -116,4 +116,4 @@ SidebarMenuList.propTypes = {
   /** * used to pass Initial selected Id */
   initialSelectedId: PropTypes.string,
 };
-SidebarMenuList.displayName='SidebarMenuList'
+SidebarMenuList.displayName = 'SidebarMenuList';

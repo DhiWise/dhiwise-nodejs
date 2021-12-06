@@ -5,7 +5,7 @@ import {
 } from 'react-tabs';
 import Drawer from 'rc-drawer';
 import { capitalize } from 'lodash';
-import { TabCSs } from '@assets/css/tab';
+import { TabCSs } from '../../../../assets/css/tab';
 import {
   Description, DrawerFooter, DrawerHead, DrawerClose,
 } from '../../../../components';

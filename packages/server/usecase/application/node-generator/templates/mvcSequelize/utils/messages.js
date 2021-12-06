@@ -1,85 +1,81 @@
 const responseCode = require('./responseCode');
 
-exports.successResponse = (data, res) => res.status(responseCode.success).json({
-  status: 'SUCCESS',
-  message: 'Your request is successfully executed',
-  data,
-});
+module.exports = {
+  successResponse: (data, res) => res.status(responseCode.success).json({
+    status: 'SUCCESS',
+    message: data.message || 'Your request is successfully executed',
+    data: data.data && Object.keys(data.data).length ? data.data : null,
+  }),
 
-exports.failureResponse = (data, res) => res.status(responseCode.internalServerError).json({
-  status: 'FAILURE',
-  message: 'Internal Server Error',
-  data: {},
-});
+  failureResponse: (data, res) => res.status(responseCode.internalServerError).json({
+    status: 'FAILURE',
+    message: data.message || 'Internal server error.',
+    data: data.data && Object.keys(data.data).length ? data.data : null,
+  }),
 
-exports.badRequest = (data, res) => res.status(responseCode.badRequest).json({
-  status: 'BAD_REQUEST',
-  message: 'The request cannot be fulfilled due to bad syntax',
-  data: {},
-});
+  badRequest: (data, res) => res.status(responseCode.badRequest).json({
+    status: 'BAD_REQUEST',
+    message: data.message || 'The request cannot be fulfilled due to bad syntax.',
+    data: data.data && Object.keys(data.data).length ? data.data : null,
+  }),
 
-exports.validationError = (data, res) => res.status(responseCode.validationError).json({
-  status: 'VALIDATION_ERROR',
-  message: `Invalid Data, Validation Failed at ${data}`,
-  data: {},
-});
+  validationError: (data, res) => res.status(responseCode.validationError).json({
+    status: 'VALIDATION_ERROR',
+    message: data.message || `Invalid data, Validation failed.`,
+    data: data.data && Object.keys(data.data).length ? data.data : null,
+  }),
 
-exports.isDuplicate = (data, res) => res.status(responseCode.validationError).json({
-  status: 'VALIDATION_ERROR',
-  message: 'Data Duplication Found',
-  data: {},
-});
+  isDuplicate: (data, res) => res.status(responseCode.validationError).json({
+    status: 'VALIDATION_ERROR',
+    message: data.message || 'Data duplication found.',
+    data: data.data && Object.keys(data.data).length ? data.data : null,
+  }),
 
-exports.recordNotFound = (data, res) => res.status(responseCode.success).json({
-  status: 'RECORD_NOT_FOUND',
-  message: 'Record not found with specified criteria.',
-  data: {},
-});
+  recordNotFound: (data, res) => res.status(responseCode.success).json({
+    status: 'RECORD_NOT_FOUND',
+    message: data.message || 'Record not found with specified criteria.',
+    data: data.data && Object.keys(data.data).length ? data.data : null,
+  }),
 
-exports.insufficientParameters = (res) => res.status(responseCode.badRequest).json({
-  status: 'BAD_REQUEST',
-  message: 'Insufficient parameters',
-  data: {},
-});
+  insufficientParameters: (data, res) => res.status(responseCode.badRequest).json({
+    status: 'BAD_REQUEST',
+    message: data.message || 'Insufficient parameters.',
+    data: data.data && Object.keys(data.data).length ? data.data : null,
+  }),
 
-exports.mongoError = (err, res) => res.status(responseCode.internalServerError).json({
-  status: 'FAILURE',
-  message: 'Mongo db related error',
-  data: {},
-});
+  inValidParam: (data, res) => res.status(responseCode.validationError).json({
+    status: 'VALIDATION_ERROR',
+    message: data.message || `Invalid values in parameters`,
+    data: data.data && Object.keys(data.data).length ? data.data : null,
+  }),
 
-exports.inValidParam = (err, res) => res.status(responseCode.validationError).json({
-  status: 'VALIDATION_ERROR',
-  message: `Invalid values in parameters,${err}`,
-  data: {},
-});
+  unAuthorizedRequest: (data, res) => res.status(responseCode.unAuthorizedRequest).json({
+    status: 'UNAUTHORIZED',
+    message: data.message || 'You are not authorized to access the request.',
+    data: data.data && Object.keys(data.data).length ? data.data : null,
+  }),
 
-exports.unAuthorizedRequest = (err, res) => res.status(responseCode.unAuthorizedRequest).json({
-  status: 'UNAUTHORIZED',
-  message: 'You are not authorized to access the request',
-  data: {},
-});
+  loginSuccess: (data, res) => res.status(responseCode.success).json({
+    status: 'SUCCESS',
+    message: data.message || 'Login successful.',
+    data: data.data && Object.keys(data.data).length ? data.data : null,
+  }),
 
-exports.loginSuccess = (data, res) => res.status(responseCode.success).json({
-  status: 'SUCCESS',
-  message: 'Login Successful',
-  data,
-});
+  loginFailed: (data, res) => res.status(responseCode.badRequest).json({
+    status: 'BAD_REQUEST',
+    message: data.message || `Login failed.`,
+    data: data.data && Object.keys(data.data).length ? data.data : null,
+  }),
 
-exports.loginFailed = (data, res) => res.status(responseCode.badRequest).json({
-  status: 'BAD_REQUEST',
-  message: `Login Failed, ${data}`,
-  data: {},
-});
+  requestValidated: (data, res) => res.status(responseCode.success).json({
+    status: 'SUCCESS',
+    message: data.message || 'Your request is successfully executed.',
+    data: data.data && Object.keys(data.data).length ? data.data : null,
+  }),
 
-exports.invalidRequest = (data, res) => res.status(responseCode.success).json({
-  status: 'FAILURE',
-  message: data,
-  data: {},
-});
-
-exports.requestValidated = (data, res) => res.status(responseCode.success).json({
-  status: 'SUCCESS',
-  message: data,
-  data: {},
-});
+  invalidRequest: (data, res) => res.status(responseCode.success).json({
+    status: 'FAILURE',
+    message: data.message || 'Invalid data, Validation failed.',
+    data: data.data && Object.keys(data.data).length ? data.data : null,
+  }),
+};

@@ -75,9 +75,11 @@ if (process.env.NODE_ENV !== 'test' ) {
     });
     <%_} else {_%>
     <%_ if(!NO_PLATFORM && typeof IS_ROUTE!=="undefined" && IS_ROUTE) { _%>
-    //all routes 
-    const routes =  require("./routes");
-    app.use(routes)
+        //all routes 
+        const routes =  require("./routes");
+        models.sequelize.sync({}).then(()=>{
+            app.use(routes)
+        });
     <%_ } _%>
     <%_}_%>
     app.listen(process.env.PORT,()=>{

@@ -15,7 +15,7 @@ const deleteById = (schemaDetailRepo) => async (params) => {
     const response = await (deleteSchemaDetailUseCase(schemaDetailRepo))({ find: { _id: params.id } }, params.isHardDelete);
     return response;
   } catch (err) {
-    console.log('error', err);
+    // console.log('error', err);
     return { ...SERVER_ERROR };
     // return { ...SERVER_ERROR, data: err.toString() };
   }

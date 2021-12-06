@@ -139,4 +139,4 @@ const DeleteRow = React.memo(({ deleteObj, isSubRow, disabled }) => {
   );
 });
 export { DeleteRow };
-DeleteRow.displayName='DeleteRow'
+DeleteRow.displayName = 'DeleteRow';

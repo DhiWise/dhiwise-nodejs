@@ -352,7 +352,7 @@ async function createEnvFileSequelize (templateFolder, jsonData, {
     DB_PORT: dbPort,
   };
 
-  if (options.shouldAddTestcaseVaribales) {
+  if (options.shouldAddTestCaseVariables) {
     Object.assign(env.locals.ENV, {
       TEST_HOST: 'localhost',
       TEST_DATABASE_USERNAME: 'test_user',
@@ -518,9 +518,9 @@ async function createValidationFile (validationFilePath, jsonData, auth, adapter
       validationTemp.locals.IS_AUTH = false;
     }
     if (flag) {
-      validationTemp.locals.ENUMSUPPORT = enumData;
+      validationTemp.locals.ENUM_SUPPORT = enumData;
     } else {
-      validationTemp.locals.ENUMSUPPORT = false;
+      validationTemp.locals.ENUM_SUPPORT = false;
     }
     if (enumData && enumData[key]) {
       const array = [];
@@ -609,6 +609,15 @@ async function addSeederMongoose (jsonData, filePath, authObj) {
   });
   forEach(roles, (allRoles) => {
     const fakeDataOfModels = fakeDataMongoose.validSchema(cloneDeep(models));
+    if (!isEmpty(requiredKeys)) {
+      for (const credentialKeys of credentials) {
+        for (const keys of requiredKeys) {
+          if (keys in fakeDataOfModels[userModel]) {
+            credentialKeys[keys] = fakeDataOfModels[userModel][keys];
+          }
+        }
+      }
+    }
     let authFakeData = {};
     if (!isEmpty(credentials)) {
       const existCredentials = credentials.find((credential) => (credential.type === allRoles));
@@ -681,9 +690,9 @@ async function addSeederSequelize (jsonData, filePath, authObj) {
     getRoles = [];
   const user = {};
   const requiredKeys = [];
-  forEach(models, (allschema, allModels) => {
+  forEach(models, (allSchema, allModels) => {
     if (allModels === userModel) {
-      forEach(allschema, (nestSchema, nestModel) => {
+      forEach(allSchema, (nestSchema, nestModel) => {
         if (has(nestSchema, 'required')) {
           requiredKeys.push(nestModel);
         }
@@ -692,6 +701,15 @@ async function addSeederSequelize (jsonData, filePath, authObj) {
   });
   forEach(roles, (allRoles) => {
     const fakeDataOfModels = fakeDataSequelize.validSchema(cloneDeep(models));
+    if (!isEmpty(requiredKeys)) {
+      for (const credentialKeys of credentials) {
+        for (const keys of requiredKeys) {
+          if (keys in fakeDataOfModels[userModel]) {
+            credentialKeys[keys] = fakeDataOfModels[userModel][keys];
+          }
+        }
+      }
+    }
     let authFakeData = {};
     if (!isEmpty(credentials)) {
       const existCredentials = credentials.find((credential) => (credential.type === allRoles));
@@ -706,10 +724,6 @@ async function addSeederSequelize (jsonData, filePath, authObj) {
     if (allRoles !== 'SYSTEM_USER') {
       authFakeData = removeGivenKeyFromObject(authFakeData,
         ['id', 'resetPasswordLink', 'loginRetryLimit', 'loginReactiveTime', 'addedBy', 'role', 'isActive', 'isDeleted', 'updatedBy', 'createdAt', 'updatedAt']);
-      /*
-       * const user = authFakeData;
-       * user.role = allRoles;
-       */
       user[allRoles] = authFakeData;
       const userToBeSeeded = {
         [authObj.userLoginWith.password]: `${authFakeData[authObj.userLoginWith.password]}`,

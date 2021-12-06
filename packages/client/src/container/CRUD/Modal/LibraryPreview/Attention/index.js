@@ -65,7 +65,6 @@ export const Attention = ({
       modelIndexes: model.modelIndexes,
     }))];
     const request = { currentApplicationCode, applicationId, models };
-    // TODO:
     createMultipleModels(request).then((res) => {
       addSuccessToast(res.message);
       hideSubmit();
