@@ -157,7 +157,7 @@ async function generateController (apis, platformName, controllers, ormProvider,
 
           // ? filter By LoggedInUser
           Object.assign(apiObject, {
-            isLogin: value.isAuth,
+            isLogin: value.isAuth && controllers.auth.isAuth,
             addedBy: 'addedBy',
             login: controllers.auth.userModel,
           });
