@@ -1,4 +1,4 @@
-<%_if(ROLE_PERMISSION){ _%>
+<%_if(IS_AUTH && ROLE_PERMISSION){ _%>
 const mongoose = require('mongoose');
 const UserRole = require('../model/userRole');
 const RouteRole = require('../model/routeRole');
@@ -85,7 +85,7 @@ const getDifferenceOfTwoDatesInTime = (currentDate,toDate) =>{
   return `${minutes} minute and ${seconds} second`; 
 }
 <%_}_%>
-<%_if(ROLE_PERMISSION){ _%>
+<%_if(IS_AUTH && ROLE_PERMISSION){ _%>
 /*
  * getRoleAccessData: return roleAccess of User
  * @param userId : id of user to find role data
@@ -136,7 +136,7 @@ module.exports = {
   uniqueValidation,
   getDifferenceOfTwoDatesInTime,
   <%_}_%>
-  <%_if(ROLE_PERMISSION){ _%>
+  <%_if(IS_AUTH && ROLE_PERMISSION){ _%>
   getRoleAccessData,
   <%_}_%>
 };

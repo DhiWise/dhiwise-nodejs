@@ -62,7 +62,7 @@ return Object.freeze({ uniqueValidation });
     return `${minutes} minute and ${seconds} second`; 
   };
 <%_}_%>
-<%_if(ROLE_PERMISSION){ _%>
+<%_if(IS_AUTH && ROLE_PERMISSION){ _%>
 /*
  * getRoleAccessData: return roleAccess of User
  * @param userRoleService : user role db service
@@ -115,7 +115,7 @@ module.exports = {
   makeUniqueValidation,
   getDifferenceOfTwoDatesInTime,
   <%_}_%>
-  <%_if(ROLE_PERMISSION){ _%>
+  <%_if(IS_AUTH && ROLE_PERMISSION){ _%>
   getRoleAccessData,
   <%_}_%>
 };
