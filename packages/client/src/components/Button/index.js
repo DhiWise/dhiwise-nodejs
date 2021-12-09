@@ -19,7 +19,7 @@ export const Button = React.forwardRef(({
   type,
   label,
   tooltip,
-  loading = false,
+  loading,
   wrapClass,
   ...rest
 }, ref) => {
@@ -101,16 +101,19 @@ Button.propTypes = {
    * Additional classname
    */
   className: PropTypes.string,
+  loading: PropTypes.bool,
+  label: PropTypes.string,
+  type: PropTypes.type,
 };
 
 Button.defaultProps = {
-  variant : 'primary',
-  backgroundColor : '',
-  shape : 'square',
-  className : '',
-  disabled :false,
-  size : 'normal',
-  type : 'button',
-  label : '',
-  loading :false,
+  variant: 'primary',
+  backgroundColor: '',
+  shape: 'square',
+  className: '',
+  disabled: false,
+  size: 'normal',
+  type: 'button',
+  label: '',
+  loading: false,
 };
