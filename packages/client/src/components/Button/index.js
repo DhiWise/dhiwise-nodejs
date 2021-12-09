@@ -8,16 +8,16 @@ import { Spinner } from '../Spinner';
  * Primary UI component for Button
  */
 export const Button = React.forwardRef(({
-  variant = 'primary',
-  backgroundColor = '',
-  shape = 'square',
+  variant,
+  backgroundColor,
+  shape,
   children,
-  className = '',
-  disabled = false,
+  className,
+  disabled,
   icon,
-  size = 'normal',
-  type = 'button',
-  label = '',
+  size,
+  type,
+  label,
   tooltip,
   loading = false,
   wrapClass,
@@ -56,7 +56,7 @@ export const Button = React.forwardRef(({
       data-for={tooltip}
     >
       {!!icon && !loading && <div className={`${ButtonCss.iconImg} ${iconSize} ${label ? 'mr-2' : ''}`}>{icon}</div>}
-      {!!tooltip && <ReactTooltip place="bottom" id={tooltip} type="dark"><div className="max-w-48 text-center">{tooltip}</div></ReactTooltip>}
+      {!!tooltip && <ReactTooltip place="bottom" id={tooltip} type="dark"><div className="text-center max-w-48">{tooltip}</div></ReactTooltip>}
       {loading && <Spinner className={`${variant === 'outline' && 'themeSpinner'} ${size === 'medium' && 'spinnerMedium'} ${variant === 'ghost' && 'themeSpinner'}`} />}
       <span className={`${loading && 'opacity-0'} ${wrapClass}`}>{label || children}</span>
     </button>
@@ -104,11 +104,13 @@ Button.propTypes = {
 };
 
 Button.defaultProps = {
-  variant: 'primary',
-  icon: null,
-  backgroundColor: null,
-  size: 'normal',
-  className: '',
-  disabled: false,
-  shape: 'square',
+  variant : 'primary',
+  backgroundColor : '',
+  shape : 'square',
+  className : '',
+  disabled :false,
+  size : 'normal',
+  type : 'button',
+  label : '',
+  loading :false,
 };
