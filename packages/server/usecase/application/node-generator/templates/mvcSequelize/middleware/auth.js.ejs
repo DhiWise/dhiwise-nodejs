@@ -1,3 +1,7 @@
+/**
+ * auth.js
+ * @description :: middleware that checks authentication and authorization of user
+ */
 const passport = require('passport');
 const { ROLE_RIGHTS, USER_ROLE 
 <%_if(CUSTOM_ROUTES){_%><%_ for(let platform in CUSTOM_ROUTES){ _%>
@@ -8,6 +12,13 @@ const { ROLE_RIGHTS, USER_ROLE
 const model = require('../model');
 const dbService = require('../utils/dbService');
 
+/**
+ * @description : returns callback that verifies required rights and access
+ * @param {obj} req : request of route.
+ * @param {callback} resolve : resolve callback for succeeding method.
+ * @param {callback} reject : reject callback for error.
+ * @param {Array} requiredRights : array of rights for logged-in user.
+ */
 const verifyCallback = (req, resolve, reject, requiredRights) => async (err, user, info) => {
     if (err || info || !user) {
         return reject("Unauthorized User");
@@ -37,10 +48,13 @@ const verifyCallback = (req, resolve, reject, requiredRights) => async (err, use
     resolve();
 };
 
-/*
-* policy : authentication & authorization policy for platform wise check, 
-*          whether user is authenticated and authorized or not
-*/
+/**
+ * @description : authentication middleware for request.
+ * @param {obj} req : request of route.
+ * @param {obj} res : response of route.
+ * @param {callback} next : executes the next middleware succeeding the current middleware.
+ * @param {Array} requiredRights : array of rights for particular user.
+ */
 const auth = (...requiredRights) => async (req, res, next) => {
 <% var c = 0; %>
 let url =req.originalUrl;

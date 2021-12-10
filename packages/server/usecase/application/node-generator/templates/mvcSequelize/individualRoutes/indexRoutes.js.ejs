@@ -1,3 +1,8 @@
+/**
+ * index.js
+ * @description :: API routes
+ */
+ 
 <%_ ROUTES.forEach((v,i)=>{ _%>
 router.use("/",require("./<%-v.platform.toLowerCase()%>Route"));
 <%_ }) _%>

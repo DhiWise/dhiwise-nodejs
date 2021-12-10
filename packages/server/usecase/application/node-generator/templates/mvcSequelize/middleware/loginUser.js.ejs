@@ -1,10 +1,17 @@
+/**
+ * loginUser.js
+ * @description :: middleware that verifies user's JWT token
+ */
+
 const jwt = require("jsonwebtoken");
 <%_ PLATFORM.forEach((v)=>{ _%>
 const <%-v.toLowerCase()%>Secret = require("../constants/authConstant").JWT.<%-v.toUpperCase()%>_SECRET;
 <%_ }) _%> 
-/*
-* policy : authentication policy to check, 
-*          whether user is authenticated or not
+/**
+* @description : middleware for authenticate user with JWT token
+* @param {obj} req : request of route.
+* @param {obj} res : response of route.
+* @param {callback} next : executes the next middleware succeeding the current middleware.
 */
 const authenticateJWT = (req, res, next) => {
     const authHeader = req.headers.authorization;
