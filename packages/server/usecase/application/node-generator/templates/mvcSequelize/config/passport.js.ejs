@@ -1,5 +1,5 @@
-/*
- * <%- STRATEGY %> authentication - with passport
+/**
+ * <%- STRATEGY %>PassportStrategy.js
  */
 
 const { Strategy, ExtractJwt } = require("passport-jwt")
@@ -7,6 +7,11 @@ const { JWT } = require("../constants/authConstant")
 const model = require("../model/index");
 const dbService = require('../utils/dbService');
 
+/**
+ * @description : exports authentication strategy for <%-STRATEGY.toLowerCase()%> using passport.js
+ * @params {obj} passport : passport object for authentication
+ * @return {callback} : returns callback to be used in middleware
+ */
 module.exports = {
     <%- STRATEGY.toLowerCase() %>PassportStrategy: passport => {
         const options = {};

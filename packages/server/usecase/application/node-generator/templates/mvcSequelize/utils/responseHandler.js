@@ -1,5 +1,16 @@
+/**
+ * responseHandler.js
+ * @description :: exports all handlers for response format.
+ */
+
 const message = require('./messages');
 
+/**
+ *
+ * @param {obj} req : request
+ * @param {obj} res : response
+ * @param {*} next : executes the middleware succeeding the current middleware.
+ */
 const responseHandler = (req, res, next) => {
   res.ok = (data) => {
     message.successResponse(data, res);
