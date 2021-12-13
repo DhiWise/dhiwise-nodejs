@@ -1,3 +1,7 @@
+/**
+ * @description :: exports API action methods
+ */
+
 <%_
 if(typeof(UNIQ_TASK_MODELS)!== 'undefined'){
 let models = UNIQ_TASK_MODELS
@@ -47,15 +51,17 @@ const customQueryService = require("../../services/customQueryService")
 const <%-v.service%>Service = require("../../services/<%-v.platform%>/<%-v.service%>Service"); 
 <%_ })_%> 
 <%_}_%>
+
 <%_ROUTES.forEach((v,i)=>{_%>
 <%_ if(v.isUploadedCodeBlock){ _%>
 const <%-v.functionName%> = <%-v.queryBuilder[0].code%>
 <%_}else{_%>
-<%_if(typeof(v.descriptions)!=='undefined'){_%>
-/* 
-* <%-v.descriptions%>
-*/
-<%_}_%>
+/** 
+  * @description : <%-v.descriptions%>
+  * @param {obj} req : request for <%-v.functionName%>
+  * @param {obj} res : response for <%-v.functionName%>
+  * @return {obj} : response for <%-v.functionName%>
+  */
 const <%-v.functionName%>=async (req,res)=>{
 try {
     <%_if(typeof(v.queryBuilder) !== "undefined" && v.queryBuilder.length > 0){_%>
@@ -281,7 +287,16 @@ try {
 
 <%_if(FILE_UPLOAD){_%>
 <%_if(S3_UPLOAD){_%>
-async function uploadFiles (file,fields,fileCount,allowedFileTypes, maxFileSize){
+/**
+ * @description : upload files
+ * @param {obj} file : file to upload
+ * @param {obj} fields : fields for file
+ * @param {number} fileCount : total number of files to upload
+ * @param {Array} allowedFileTypes : array of file types
+ * @param {number} maxFileSize : maxium size of file to be uploaded
+ * @return {obj} : response for file upload
+ */
+const uploadFiles = async (file,fields,fileCount,allowedFileTypes, maxFileSize) => {
 
   let extension = path.extname(file.name);
   extension = extension.split('.').pop();
@@ -324,7 +339,13 @@ async function uploadFiles (file,fields,fileCount,allowedFileTypes, maxFileSize)
 
 }
 
-async function uploadToS3 (file, fileName){
+/**
+ * @description : upload file to AWS s3
+ * @param {obj} file : file to upload
+ * @param {string} fileName : name of file
+ * @return {obj} : response for file upload to AWS s3
+ */
+const uploadToS3 = async (file, fileName) => {
   let S3Config = {
     AWS_S3_ACCESS_KEY_ID: process.env.AWS_S3_ACCESS_KEY_ID,
     AWS_S3_SECRET_ACCESS_KEY: process.env.AWS_S3_SECRET_ACCESS_KEY,
@@ -362,8 +383,14 @@ async function uploadToS3 (file, fileName){
 
   return response;
 }
+
 <%_if(S3_UPLOAD_PRIVATE){_%>
-async function generatePreSignedURL (uri){
+/**
+ * @description : generate pre signed url for file
+ * @param {string} uri : url of file
+ * @return {obj} : response for generate pre signed url
+ */
+const generatePreSignedURL = async (uri) => {
   if (uri){
     let S3Config = {
       AWS_S3_ACCESS_KEY_ID: process.env.AWS_S3_ACCESS_KEY_ID,
@@ -412,13 +439,14 @@ async function generatePreSignedURL (uri){
     };
   }
 }
+
 <%_}_%>
 <%_} else {_%>
+
 /**
- * 
- * Function used to create directory.
- * 
- * @param  {} dirPath
+ * @description : create directory to specified path
+ * @param {string} directoryPath : location where directory will be created
+ * @return {boolean} : returns true if directory is created or false
  */
 const makeDirectory = async (directoryPath) => {
 
@@ -434,13 +462,16 @@ const makeDirectory = async (directoryPath) => {
 };
 
 /**
- * 
- * Function used to upload file
- * 
- * @param  {} files
- * @param  {} fields
+ * @description : upload files
+ * @param {obj} file : file to upload
+ * @param {obj} fields : fields for file
+ * @param {number} fileCount : total number of files to upload
+ * @param {Array} allowedFileTypes : array of file types
+ * @param {number} maxFileSize : maxium size of file to be uploaded
+ * @param {string} defaultDirectory : default location of directory
+ * @return {obj} : response for file upload
  */
-async function uploadFiles (file, fields, fileCount,allowedFileTypes, maxFileSize, defaultDirectory) {
+const uploadFiles = async (file, fields, fileCount,allowedFileTypes, maxFileSize, defaultDirectory) => {
 
   let tempPath = file.path;
   let unlink;
@@ -513,12 +544,11 @@ async function uploadFiles (file, fields, fileCount,allowedFileTypes, maxFileSiz
 }
 
 /**
- * 
- * Function used to unlink file.
- * 
- * @param  {} path
+ * @description : unlink(delete) file from specified path
+ * @param {string} path : location of file 
+ * @return {obj} : return unlink file status {status, message}
  */
-async function unlinkFile (path) {
+const unlinkFile = async (path) => {
 
   fs.unlink(path, function (err) {
     if (err) {
@@ -533,7 +563,6 @@ async function unlinkFile (path) {
 }
 <%_}_%>
 <%_}_%>
-
 
 module.exports={
 <%_ROUTES.forEach((v,i)=>{_%>

@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const common = require("../utils/common");
 const dayjs = require("dayjs");
 const emailService = require("./email/emailService");
-const sendSMS = require("./sms/smsService");
+const smsService = require("./sms/smsService");
 <%_if(FORGOT_WITH_LINK){_%>
 const uuid = require("uuid").v4;
 <%_}_%>
@@ -234,7 +234,7 @@ function makeAuthService({model,<%-MODEL%>Service,userTokenService<%_if(ROLE_PER
                     message:msg
                 }
                 try{
-                    await sendSMS(smsObj);
+                    await smsService.sendSMS(smsObj);
                     resultOfSMS = true;
                 }catch(error){
                     console.log(error)
@@ -249,7 +249,7 @@ function makeAuthService({model,<%-MODEL%>Service,userTokenService<%_if(ROLE_PER
                     message:msg
                 }
                 try{
-                    await sendSMS(smsObj);
+                    await smsService.sendSMS(smsObj);
                     resultOfSMS = true;
                 }catch(error){
                     console.log(error)
@@ -325,7 +325,7 @@ function makeAuthService({model,<%-MODEL%>Service,userTokenService<%_if(ROLE_PER
                     message:msg
                 }
                 try{
-                    await sendSMS(smsObj);
+                    await smsService.sendSMS(smsObj);
                     resultOfSMS = true;
                 }catch(error){
                     console.log(error)
@@ -338,7 +338,7 @@ function makeAuthService({model,<%-MODEL%>Service,userTokenService<%_if(ROLE_PER
                     to: user.<%-MOBILE_FIELD%>,
                 };
                 try{
-                    await sendSMS(smsObj);
+                    await smsService.sendSMS(smsObj);
                     resultOfSMS = true;
                 }catch(error){
                     console.log(error)

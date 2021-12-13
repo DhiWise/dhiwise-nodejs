@@ -103,7 +103,14 @@ const TechnologySetStep = () => {
   return (
     <Layout hideHeader bodyClass="flex-col h-full">
       <>
-        <div className="relative border-b border-gray-200 py-2 headTop pl-2 md:pl-16">
+        <div className="flex px-3 py-2 bg-gray-200 justify-center relative header flex-shrink-0">
+          {/* <div className="w-full"> */}
+          <img
+            className="absolute left-4 top-2.5 z-1 w-20"
+            src="https://dxuoui1db8w1y.cloudfront.net/DhiWise-white.svg"
+            alt="logo"
+          />
+          {/* </div> */}
           <ContainerBox className="py-0 text-center">
             <div className="full">
               <Heading className="hidden md:block" variant="h5">

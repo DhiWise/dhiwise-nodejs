@@ -1,3 +1,8 @@
+/**
+ * common.js
+ * @description: exports helper methods for project.
+ */
+
 <%_if(IS_AUTH && ROLE_PERMISSION){ _%>
 const mongoose = require('mongoose');
 const UserRole = require('../model/userRole');
@@ -6,21 +11,24 @@ const RouteRole = require('../model/routeRole');
 <%_if(IS_AUTH){ _%>
 const dbService = require('./dbService');
 <%_}_%>
-/*
- * convertObjectToEnum : convert object to enum
- * @param obj          : {}
+
+/**
+ * convertObjectToEnum : converts object to enum
+ * @param {obj} obj : object to be converted
+ * @return {array} : converted array
  */
-const convertObjectToEnum = (obj) => {
+function convertObjectToEnum (obj) {
   const enumArr = [];
   Object.values(obj).map((val) => enumArr.push(val));
   return enumArr;
-};
+}
 
-/*
- * randomNumber : generate random numbers.
- * @param length          : number *default 4
+/**
+ * randomNumber : generate random numbers for given length
+ * @param {number} length : length of random number to be generated (default 4)
+ * @return {number} : generated random number
  */
-const randomNumber = (length = 4) => {
+function randomNumber (length = 4) {
   const numbers = '12345678901234567890';
   let result = '';
   for (let i = length; i > 0; i -= 1) {
@@ -29,21 +37,25 @@ const randomNumber = (length = 4) => {
   return result;
 };
 
-/*
- * replaceAll: find and replace al; occurrence of a string in a searched string
- * @param string : string to be replace
- * @param search : string which you want to replace
- * @param replace: string with which you want to replace a string
+/**
+ * replaceAll: find and replace all occurrence of a string in a searched string
+ * @param {string} string  : string to be replace
+ * @param {string} search  : string which you want to replace
+ * @param {string} replace : string with which you want to replace a string
+ * @return {string} : replaced new string
  */
-const replaceAll = (string, search, replace) => string.split(search).join(replace);
+function replaceAll (string, search, replace) { 
+  return string.split(search).join(replace); 
+}
 
 <%_if(IS_AUTH){ _%>
-/*
- * uniqueValidation: validate Login With Fields while Registration
- * @param Model : Mongoose Model, on which query runs
- * @param data : data , coming from request
+/**
+ * uniqueValidation: check unique validation while user registration
+ * @param {obj} model : mongoose model instance of collection
+ * @param {obj} data : data, coming from request
+ * @return {boolean} : validation status
  */
-const uniqueValidation = async (Model,data) =>{
+async function uniqueValidation (Model,data){
     <%_if (LOGIN_WITH.length > 1) {_%>
     let filter = {$or:[]};
     <%_for(let i in LOGIN_WITH){_%>
@@ -72,7 +84,13 @@ const uniqueValidation = async (Model,data) =>{
 <%_}_%>
 
 <%_if(IS_AUTH){_%>
-const getDifferenceOfTwoDatesInTime = (currentDate,toDate) =>{
+/**
+ * getDifferenceOfTwoDatesInTime : get difference between two dates in time
+ * @param {date} currentDate  : current date
+ * @param {date} toDate  : future date
+ * @return {string} : difference of two date in time
+ */
+function getDifferenceOfTwoDatesInTime(currentDate,toDate){
   let hours = toDate.diff(currentDate,'hour');
   currentDate =  currentDate.add(hours, 'hour');
   let minutes = toDate.diff(currentDate,'minute');
@@ -85,12 +103,14 @@ const getDifferenceOfTwoDatesInTime = (currentDate,toDate) =>{
   return `${minutes} minute and ${seconds} second`; 
 }
 <%_}_%>
+
 <%_if(IS_AUTH && ROLE_PERMISSION){ _%>
-/*
- * getRoleAccessData: return roleAccess of User
- * @param userId : id of user to find role data
+/** 
+ * getRoleAccessData: returns role access of User
+ * @param {objectId} userId : id of user to find role data
+ * @return {obj} : user's role access for APIs of model
  */
-const getRoleAccessData = async (userId) =>{
+async function getRoleAccessData (userId) {
   let userRole = await dbService.getAllDocuments(UserRole, { userId: userId },{pagination:false});
   let routeRole = await dbService.getAllDocuments(RouteRole, { roleId: { $in: userRole.data ? userRole.data.map(u=>u.roleId) : [] } },{ pagination:false,populate:['roleId','routeId'] });
   let models = mongoose.modelNames();
@@ -102,7 +122,7 @@ const getRoleAccessData = async (userId) =>{
       models.forEach(model => {
         if (routeRole.data && routeRole.data.length) {
           routeRole.data.map(rr => {
-            if (rr.routeId && rr.routeId.uri.includes(model.toLowerCase()) && rr.roleId && rr.roleId.name === role) {
+            if (rr.routeId && rr.routeId.uri.includes(`/${model.toLowerCase()}/`) && rr.roleId && rr.roleId.name === role) {
               if (!roleAccess[role][model]) {
                 roleAccess[role][model] = [];
               }
@@ -125,7 +145,7 @@ const getRoleAccessData = async (userId) =>{
     });
   }
   return roleAccess;
-};
+}
 <%_}_%>
 
 module.exports = {

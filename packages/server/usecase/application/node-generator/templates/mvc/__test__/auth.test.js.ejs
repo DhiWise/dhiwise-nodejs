@@ -1,3 +1,8 @@
+/**
+ * auth.test.js
+ * @description :: contains test cases of APIs for authentication module.
+ */
+
 <%_
 if(typeof(AUTH_MODEL_JSON) !== 'undefined'){
   Object.keys(AUTH_MODEL_JSON).forEach(function(field){
@@ -32,6 +37,9 @@ let inserted_<%-MODELS[model]%> = {}
 <%_ }); _%> 
 <%_}_%>
 
+/**
+ * @description : model dependencies resolver
+ */
 beforeAll(async function(){
   try {
     await client.connect();
@@ -51,6 +59,8 @@ beforeAll(async function(){
       client.close();
   }
 })
+
+// test cases
 
 describe('POST /register -> if email and username is given', () => {
   test('should register a <%-AUTH_MODEL%>', async () => {

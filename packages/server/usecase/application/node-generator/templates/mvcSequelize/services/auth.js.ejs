@@ -9,7 +9,7 @@ const common = require("../utils/common");
 const dayjs = require("dayjs");
 const bcrypt = require("bcrypt");
 const emailService = require("./email/emailService");
-const sendSMS = require("./sms/smsService");
+const smsService = require("./sms/smsService");
 const {Op} = require('sequelize')
 <%_if(FORGOT_WITH_LINK){_%>
 const uuid = require("uuid").v4;
@@ -240,7 +240,7 @@ let auth =  module.exports = {}
                     message:msg
                 }
                 try{
-                    await sendSMS(smsObj);
+                    await smsService.sendSMS(smsObj);
                     resultOfSMS = true;
                 }catch(error){
                     console.log(error)
@@ -254,7 +254,7 @@ let auth =  module.exports = {}
                     message:msg
                 }
                 try{
-                    await sendSMS(smsObj);
+                    await smsService.sendSMS(smsObj);
                     resultOfSMS = true;
                 }catch(error){
                     console.log(error)
@@ -333,7 +333,7 @@ let auth =  module.exports = {}
                     message:msg
                 }
                 try{ 
-                    await sendSMS(smsObj);
+                    await smsService.sendSMS(smsObj);
                     resultOfSMS = true;
                 }catch(error){ 
                     console.log(error);
@@ -346,7 +346,7 @@ let auth =  module.exports = {}
                     to: user.<%-MOBILE_FIELD%>,
                 };
                 try{ 
-                    await sendSMS(smsObj);
+                    await smsService.sendSMS(smsObj);
                     resultOfSMS = true;
                 }catch(error){ 
                     console.log(error);

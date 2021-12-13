@@ -536,6 +536,7 @@ async function createValidationFile (validationFilePath, jsonData, auth, adapter
     validationTemp.locals.UPDATE_VALIDATION_KEY = updateValStr;
     validationTemp.locals.VALIDATION_KEY = valStr;
     validationTemp.locals.PATH = validationFilePath.validationFolderPath;
+    validationTemp.locals.MODEL_NAME = key;
     if (!isEmpty(jsonData.validationVariables) && !isEmpty(jsonData.validationVariables[key])) {
       validationTemp.locals.VARIABLES = jsonData.validationVariables[key];
     }

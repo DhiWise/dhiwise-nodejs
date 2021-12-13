@@ -1,8 +1,8 @@
-/*
- * modelValidation.js
- * purpose     : request validation
- * description : validate each post and put request as per mongoose model
- **/
+/**
+ * <%-MODEL_NAME%>Validation.js
+ * @description :: validate each post and put request as per <%-MODEL_NAME%> model
+ */
+
 const joi = require("joi");
 <%_if(ENUM_VALIDATION){_%>
 <%_for(let enumIndex of ENUM_VALIDATION){_%>
@@ -17,5 +17,9 @@ const {convertObjectToEnum} = require("../common");
 for(let i=0;i< VARIABLES.length; i++) {_%>
 <%-VARIABLES[i]%>
 <%_ } } _%>
+
+/** validation keys and properties of <%-MODEL_NAME%> */
 exports.schemaKeys = joi.object(<%-VALIDATION_KEY%>).unknown(true);
+
+/** validation keys and properties of <%-MODEL_NAME%> for updation */
 exports.updateSchemaKeys = joi.object(<%-UPDATE_VALIDATION_KEY%>).unknown(true);

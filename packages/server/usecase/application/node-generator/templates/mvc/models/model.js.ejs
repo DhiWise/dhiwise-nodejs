@@ -1,8 +1,8 @@
-<%_if(COMMENT){_%>
-/*
-* model : <%-COMMENT.description%>
-*/
-<%_}_%>
+/**
+  * <%-DB_MODEL %>.js
+  * @description :: model of a database collection <%-DB_MODEL %>
+  */
+
 <%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
 <%_if(FLAG){_%>    
 const dayjs = require('dayjs');
