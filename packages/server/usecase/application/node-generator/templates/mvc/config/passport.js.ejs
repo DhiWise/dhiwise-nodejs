@@ -3,8 +3,8 @@
  */
 
 const { Strategy, ExtractJwt } = require("passport-jwt")
-const { JWT } = require("<%-CONSTANT_PATH%>/authConstant")
-const <%- MODEL %> = require("<%-MODEL_PATH%>/<%- MODEL%>")
+const { JWT } = require("../constants/authConstant")
+const <%- MODEL %> = require("../model/<%- MODEL%>")
 
 /**
  * @description : exports authentication strategy for <%-STRATEGY.toLowerCase()%> using passport.js
