@@ -1,3 +1,7 @@
+/**
+ * seeder.js
+ * @description :: functions that seeds mock data to run the application
+ */
 
 const User = require('../model/<%-MODEL%>');
 const authConstant=require('../constants/authConstant');
@@ -8,6 +12,7 @@ const <%-model_FC%> = require('../model/<%-model%>')
 <%_}_%>
 const { replaceAll } = require('../utils/common');
 
+/* seeds roles */
 async function seedRole() {
   try{
     const roles = <%=ROLES%>;
@@ -26,6 +31,8 @@ async function seedRole() {
     console.log('Role seeder failed.')
   }
 }
+
+/* seeds routes of project */
 async function seedProjectRoutes(routes) {
   try{
     if (routes && routes.length) {
@@ -53,6 +60,8 @@ async function seedProjectRoutes(routes) {
     console.log('ProjectRoute seeder failed.')
   }
 }
+
+/* seeds role for routes */
 async function seedRouteRole() {
   try{
     const routeRoles =[ 
@@ -86,6 +95,8 @@ async function seedRouteRole() {
     console.log('RouteRole seeder failed.')
   }
 }
+
+/* seeds roles for users */
 async function seedUserRole (){
   try{
     <%_for(let i in USER_EXIST_CONDITION){_%>
@@ -112,6 +123,8 @@ async function seedUserRole (){
   }
 }
 <%_}_%>
+
+/* seeds default users */
 async function seedUser() {
   try{
     <%_for(let i in USER_EXIST_CONDITION){_%>
@@ -131,6 +144,8 @@ async function seedUser() {
     console.log('User seeder failed.')
   }
 }
+
+/* calls of functions to seed mock data into multiple collections */
 <%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
 async function seedData(allRegisterRoutes){
     await seedUser();

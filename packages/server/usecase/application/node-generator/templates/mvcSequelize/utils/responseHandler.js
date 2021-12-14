@@ -1,43 +1,54 @@
+/**
+ * responseHandler.js
+ * @description :: exports all handlers for response format.
+ */
+
 const message = require('./messages');
 
+/**
+ *
+ * @param {obj} req : request
+ * @param {obj} res : response
+ * @param {*} next : executes the middleware succeeding the current middleware.
+ */
 const responseHandler = (req, res, next) => {
-  res.ok = (data) => {
+  res.ok = (data = {}) => {
     message.successResponse(data, res);
   };
-  res.badRequest = (data) => {
+  res.badRequest = (data = {}) => {
     message.badRequest(data, res);
   };
-  res.failureResponse = (data) => {
+  res.failureResponse = (data = {}) => {
     message.failureResponse(data, res);
   };
-  res.inValidParam = (data) => {
+  res.inValidParam = (data = {}) => {
     message.inValidParam(data, res);
   };
-  res.insufficientParameters = () => {
-    message.insufficientParameters(res);
+  res.insufficientParameters = (data = {}) => {
+    message.insufficientParameters(data, res);
   };
-  res.invalidRequest = (data) => {
+  res.invalidRequest = (data = {}) => {
     message.invalidRequest(data, res);
   };
-  res.requestValidated = (data) => {
+  res.requestValidated = (data = {}) => {
     message.requestValidated(data, res);
   };
-  res.isDuplicate = (data) => {
+  res.isDuplicate = (data = {}) => {
     message.isDuplicate(data, res);
   };
-  res.loginSuccess = (data) => {
+  res.loginSuccess = (data = {}) => {
     message.loginSuccess(data, res);
   };
-  res.loginFailed = (data) => {
+  res.loginFailed = (data = {}) => {
     message.loginFailed(data, res);
   };
-  res.unAuthorizedRequest = (data) => {
+  res.unAuthorizedRequest = (data = {}) => {
     message.unAuthorizedRequest(data, res);
   };
-  res.validationError = (data) => {
+  res.validationError = (data = {}) => {
     message.validationError(data, res);
   };
-  res.recordNotFound = (data) => {
+  res.recordNotFound = (data = {}) => {
     message.recordNotFound(data, res);
   };
   next();

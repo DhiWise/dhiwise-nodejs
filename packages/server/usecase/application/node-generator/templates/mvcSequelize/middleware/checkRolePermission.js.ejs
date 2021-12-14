@@ -1,8 +1,19 @@
+/**
+ * checkRolePermission.js
+ * @description :: middleware that checks logged-in user's access of APIs
+ */
+
 const { Op } = require('sequelize');
 const model = require('../model');
 const dbService = require('../utils/dbService');
 const { replaceAll } = require('../utils/common');
 
+/**
+   * @description : middleware for authentication with role and permission.
+   * @param {obj} req : request of route.
+   * @param {obj} res : response of route.
+   * @param {callback} next : executes the next middleware succeeding the current middleware.
+   */
 const checkRolePermission = async (req, res, next) => {
   if (req.user) {
     const loggedInUserId = req.user.id;

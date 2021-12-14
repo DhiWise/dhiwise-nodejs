@@ -1,3 +1,8 @@
+/**
+  * fileUploadController.js
+  * @description :: exports methods related file upload/download
+  */
+
 <%_if(S3_UPLOAD){_%>
 const fs = require('fs');
 const path = require('path');
@@ -10,7 +15,13 @@ const AmazonS3URI = require('amazon-s3-uri');
 let allowedFileTypes = <%=VALIDATION_TYPES%>;<%_var max_size = MAX_SIZE ? MAX_SIZE : 5%>
 let maxFileSize = <%=max_size%>; //In Megabyte
 
-const upload = async (req,res) =>{
+/**
+  * @description : uploads file using formidable.
+  * @param {obj} req : request of file upload API
+  * @param {obj} res : response of file upload API.
+  * @return {obj} : response of file upload. {status, message, data}
+  */
+const upload = async (req,res) => {
   try {
 
     // Setting up formidable options.
@@ -31,7 +42,7 @@ const upload = async (req,res) =>{
         let fileCount = 1;
 
         let fileArr = [];
-        if (!files['file[]'] || files['file[]'].size == 0) {
+        if (!files['file[]']) {
           reject({
             'message': 'Select at least one file to upload.',
             'name': 'validationError'
@@ -89,6 +100,11 @@ const upload = async (req,res) =>{
 };
 
 <%_if(S3_UPLOAD_PRIVATE){_%>
+/**
+  * @description : generate pre signed url for file
+  * @param {string} uri : url of file
+  * @return {obj} : response for generate pre signed url
+  */
 const generatePreSignedURL = async (req, res) => {
     try {
         if (req.body && req.body.uri){
@@ -134,9 +150,16 @@ const generatePreSignedURL = async (req, res) => {
         return res.failureResponse();
     }
 }
-<%_}_%>
 
-async function uploadFiles (file,fields,fileCount){
+<%_}_%>
+/**
+  * @description : upload files
+  * @param {obj} file : file to upload
+  * @param {obj} fields : fields for file
+  * @param {number} fileCount : total number of files to upload
+  * @return {obj} : response for file upload
+  */
+const uploadFiles = async (file,fields,fileCount) => {
 
   let extension = path.extname(file.name);
   extension = extension.split('.').pop();
@@ -179,7 +202,13 @@ async function uploadFiles (file,fields,fileCount){
 
 }
 
-async function uploadToS3 (file, fileName){
+/**
+  * @description : upload file to AWS s3
+  * @param {obj} file : file to upload
+  * @param {string} fileName : name of file
+  * @return {obj} : response for file upload to AWS s3
+  */
+const uploadToS3 = async (file, fileName) => {
   let S3Config = {
     AWS_S3_ACCESS_KEY_ID: process.env.AWS_S3_ACCESS_KEY_ID,
     AWS_S3_SECRET_ACCESS_KEY: process.env.AWS_S3_SECRET_ACCESS_KEY,
@@ -229,6 +258,12 @@ let defaultDirectory = 'public/assets';
 let allowedFileTypes = <%=VALIDATION_TYPES%>;<%_var max_size = MAX_SIZE ? MAX_SIZE : 5%>
 let maxFileSize = <%=max_size%>; //In Megabyte
 
+/**
+  * @description : uploads file using formidable.
+  * @param {obj} req : request of file upload API
+  * @param {obj} res : response of file upload API.
+  * @return {obj} : response of file upload. {status, message, data}
+  */
 const upload = async (req, res) => {
   try {
     // Create Directory if not exist.
@@ -254,7 +289,7 @@ const upload = async (req, res) => {
         let fileCount = 1;
 
         let fileArr = [];
-        if (!files['file[]'] || files['file[]'].size == 0) {
+        if (!files['file[]']) {
           reject({
             'message': 'Select at least one file to upload.',
             'name': 'validationError'
@@ -315,13 +350,12 @@ const upload = async (req, res) => {
       return res.failureResponse();
     }
   }
-};
+}
 
 /**
- * 
- * Function used to create directory.
- * 
- * @param  {} dirPath
+ * @description : create directory to specified path
+ * @param {string} directoryPath : location where directory will be created
+ * @return {boolean} : returns true if directory is created or false
  */
 const makeDirectory = async (directoryPath) => {
 
@@ -334,16 +368,16 @@ const makeDirectory = async (directoryPath) => {
     });
   }
   return true;
-};
+}
 
 /**
- * 
- * Function used to upload file
- * 
- * @param  {} files
- * @param  {} fields
+ * @description : upload files
+ * @param {obj} file : file to upload
+ * @param {obj} fields : fields for file
+ * @param {number} fileCount : total number of files to upload
+ * @return {obj} : response for file upload
  */
-async function uploadFiles (file, fields, fileCount) {
+const uploadFiles = async  (file, fields, fileCount) => {
 
   let tempPath = file.path;
   let unlink;
@@ -416,12 +450,11 @@ async function uploadFiles (file, fields, fileCount) {
 }
 
 /**
- * 
- * Function used to unlink file.
- * 
- * @param  {} path
- */
-async function unlinkFile (path) {
+  * @description : unlink(delete) file from specified path
+  * @param {string} path : location of file 
+  * @return {obj} : return unlink file status {status, message}
+  */
+const unlinkFile = async (path) => {
 
   fs.unlink(path, function (err) {
     if (err) {

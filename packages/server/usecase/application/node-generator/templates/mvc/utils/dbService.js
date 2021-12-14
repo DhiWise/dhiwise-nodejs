@@ -1,7 +1,8 @@
 /*
- * createDocument : create any mongoose document
- * @param  model  : mongoose model
- * @param  data   : {}
+ * @description : create any mongoose document
+ * @param  {obj} model : mongoose model
+ * @param  {obj} data : {}
+ * @return Promise
  */
 const createDocument = (model, data) => new Promise((resolve, reject) => {
   model.create(data, (err, result) => {
@@ -11,10 +12,11 @@ const createDocument = (model, data) => new Promise((resolve, reject) => {
 });
 
 /*
- * updateDocument : update any existing mongoose document
- * @param  model  : mongoose model
- * @param id      : mongoose document's _id
- * @param data    : {}
+ * @description : update any existing mongoose document
+ * @param  {obj} model : mongoose model
+ * @param {ObjectId} id : mongoose document's _id
+ * @param {obj} data : {}
+ * @return Promise
  */
 const updateDocument = (model, id, data) => new Promise((resolve, reject) => {
   model.updateOne({ _id: id }, data, {
@@ -27,9 +29,10 @@ const updateDocument = (model, id, data) => new Promise((resolve, reject) => {
 });
 
 /*
- * deleteDocument : delete any existing mongoose document
- * @param  model  : mongoose model
- * @param  id     : mongoose document's _id
+ * @description : delete any existing mongoose document
+ * @param  {obj} model : mongoose model
+ * @param  {ObjectId} id : mongoose document's _id
+ * @return Promise
  */
 const deleteDocument = (model, id) => new Promise((resolve, reject) => {
   model.deleteOne({ _id: id }, (err, data) => {
@@ -39,10 +42,11 @@ const deleteDocument = (model, id) => new Promise((resolve, reject) => {
 });
 
 /*
- * getAllDocuments : find all the mongoose document
- * @param  model   : mongoose model
- * @param query    : {}
- * @param options  : {}
+ * @description : find all the mongoose document
+ * @param  {obj} model : mongoose model
+ * @param {obj} query : {}
+ * @param {obj} options : {}
+ * @return Promise
  */
 const getAllDocuments = (model, query, options) => new Promise((resolve, reject) => {
   model.paginate(query, options, (err, data) => {
@@ -52,10 +56,11 @@ const getAllDocuments = (model, query, options) => new Promise((resolve, reject)
 });
 
 /*
- * getSingleDocumentById : find single mongoose document
- * @param  model  : mongoose model
- * @param  id     : mongoose document's _id
- * @param  select : [] *optional
+ * @description : find single mongoose document
+ * @param  {obj} model : mongoose model
+ * @param  {ObjectId} id : mongoose document's _id
+ * @param  {Array} select : [] *optional
+ * @return Promise
  */
 const getSingleDocumentById = (model, id, select = []) => new Promise((resolve, reject) => {
   model.findOne({ _id: id }, select, (err, data) => {
@@ -65,14 +70,15 @@ const getSingleDocumentById = (model, id, select = []) => new Promise((resolve, 
 });
 
 /*
- * findExistsData : find existing mongoose document
- * @param  model  : mongoose model
- * @params data   : {
+ * @description : find existing mongoose document
+ * @param  {obj} model  : mongoose model
+ * @params {obj} data   : {
  *                   "query":{
  *                       "and":[{"Name":"Dhiraj"},{"Salary":300}],
  *                        "or":[{"Name":"Dhiraj"},{"Salary":300}]
  *                   }
  * }
+ * @return Promise
  */
 const findExistsData = (model, data) => {
   // let { model } = data;
@@ -103,9 +109,10 @@ const findExistsData = (model, data) => {
 };
 
 /*
- * softDeleteDocument : soft delete ( partially delete ) mongoose document
- * @param  model      : mongoose model
- * @param  id         : mongoose document's _id
+ * @description : soft delete ( partially delete ) mongoose document
+ * @param  {obj} model : mongoose model
+ * @param  {ObjectId} id : mongoose document's _id
+ * @return Promise
  */
 // eslint-disable-next-line no-async-promise-executor
 const softDeleteDocument = (model, id) => new Promise(async (resolve, reject) => {
@@ -119,8 +126,9 @@ const softDeleteDocument = (model, id) => new Promise(async (resolve, reject) =>
 
 /*
  * bulkInsert     : create document in bulk mongoose document
- * @param  model  : mongoose model
- * @param  data   : {}
+ * @param  {obj} model  : mongoose model
+ * @param  {obj} data   : {}
+ * @return Promise
  */
 const bulkInsert = (model, data) => new Promise((resolve, reject) => {
   model.insertMany(data, (err, result) => {
@@ -133,10 +141,11 @@ const bulkInsert = (model, data) => new Promise((resolve, reject) => {
 });
 
 /*
- * bulkInsert     : update existing document in bulk mongoose document
- * @param  model  : mongoose model
- * @param  filter : {}
- * @param  data   : {}
+ * @description     : update existing document in bulk mongoose document
+ * @param  {obj} model  : mongoose model
+ * @param  {obj} filter : {}
+ * @param  {obj} data   : {}
+ * @return Promise
  */
 const bulkUpdate = (model, filter, data) => new Promise((resolve, reject) => {
   model.updateMany(filter, data, (err, result) => {
@@ -149,9 +158,10 @@ const bulkUpdate = (model, filter, data) => new Promise((resolve, reject) => {
 });
 
 /*
- * countDocument : count total number of records in particular model
- * @param  model : mongoose model
- * @param where  : {}
+ * @description : count total number of records in particular model
+ * @param  {obj} model : mongoose model
+ * @param {obj} where  : {}
+ * @return Promise
  */
 const countDocument = (model, where) => new Promise((resolve, reject) => {
   model.where(where).countDocuments((err, result) => {
@@ -164,10 +174,10 @@ const countDocument = (model, where) => new Promise((resolve, reject) => {
 });
 
 /*
- * getDocumentByQuery : find document by dynamic query
- * @param  model      : mongoose model
- * @param  where      : {}
- * @param  select     : [] *optional
+ * @description : find document by dynamic query
+ * @param  {obj} model : mongoose model
+ * @param  {obj} where : {}
+ * @param  {Array} select : [] *optional
  */
 const getDocumentByQuery = (model, where, select = []) => new Promise((resolve, reject) => {
   model.findOne(where, select, (err, data) => {
@@ -177,11 +187,12 @@ const getDocumentByQuery = (model, where, select = []) => new Promise((resolve, 
 });
 
 /*
- * findOneAndUpdateDocument : find existing document and update mongoose document
- * @param  model   : mongoose model
- * @param  filter  : {}
- * @param  data    : {}
- * @param  options : {} *optional
+ * @description : find existing document and update mongoose document
+ * @param  {obj} model   : mongoose model
+ * @param  {obj} filter  : {}
+ * @param  {obj} data    : {}
+ * @param  {obj} options : {} *optional
+ * @return Promise
  */
 const findOneAndUpdateDocument = (model, filter, data, options = {}) => new Promise((resolve, reject) => {
   model.findOneAndUpdate(filter, data, options, (err, result) => {
@@ -191,10 +202,11 @@ const findOneAndUpdateDocument = (model, filter, data, options = {}) => new Prom
 });
 
 /*
- * findOneAndDeleteDocument : find existing document and delete mongoose document
- * @param  model  : mongoose model
- * @param  filter  : {}
- * @param  options : {} *optional
+ * @description : find existing document and delete mongoose document
+ * @param  {obj} model  : mongoose model
+ * @param  {obj} filter  : {}
+ * @param  {obj} options : {} *optional
+ * @return Promise
  */
 const findOneAndDeleteDocument = (model, filter, options = {}) => new Promise((resolve, reject) => {
   model.findOneAndDelete(filter, options, (err, data) => {
@@ -204,10 +216,11 @@ const findOneAndDeleteDocument = (model, filter, options = {}) => new Promise((r
 });
 
 /*
- * deleteMany : delete multiple document
- * @param  model  : mongoose model
- * @param  filter  : {}
- * @param  options : {} *optional
+ * @description : delete multiple document
+ * @param  {obj} model  : mongoose model
+ * @param  {obj} filter  : {}
+ * @param  {obj} options : {} *optional
+ * @return Promise
  */
 const deleteMany = (model, filter, options = {}) => new Promise((resolve, reject) => {
   model.deleteMany(filter, options, (err, data) => {

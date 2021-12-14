@@ -44,10 +44,17 @@ const <%-SERVICES_TO_IMPORT[i]-%>Service = require('../../services/<%-MODULE%>/<
 <%_ }else{ _%>
 const <%-SERVICES_TO_IMPORT[i]-%>Service1 = require('../../services/<%-MODULE%>/<%-SERVICES_TO_IMPORT[i]-%>Service');
 <%_} }_%>  
-<%_ } _%> 
+<%_ } _%>
+
 <%_for(let i=0;i< SUPPORT_API.length;i++){_%>
 <%_ if(SUPPORT_API[i].method=="create") {_%>
     <%_methods.push('add'+DB_MODEL_FC+',') _%> 
+/**
+* @description : create document of <%-DB_MODEL_FC%> in mongodb collection.
+* @param {obj} req : request including body for creating document.
+* @param {obj} res : response of created document
+* @return {obj} : created <%-DB_MODEL_FC%>. {status, message, data}
+*/ 
 const add<%-DB_MODEL_FC%> = async(req, res) => {
     try {
         let validateRequest = validation.validateParamsWithJoi(req.body,<%-DB_MODEL %>SchemaKey.schemaKeys);
@@ -75,9 +82,16 @@ const add<%-DB_MODEL_FC%> = async(req, res) => {
         return res.failureResponse(); 
     }
 }
+
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="createBulk") {_%>
     <%_methods.push('bulkInsert'+DB_MODEL_FC+',') _%>
+/**
+* @description : create multiple documents of <%-DB_MODEL_FC%> in mongodb collection.
+* @param {obj} req : request including body for creating documents.
+* @param {obj} res : response of created documents.
+* @return {obj} : created <%-DB_MODEL_FC%>s. {status, message, data}
+*/
 const bulkInsert<%-DB_MODEL_FC %> = async(req,res)=>{
     try{
         let data;   
@@ -105,9 +119,16 @@ const bulkInsert<%-DB_MODEL_FC %> = async(req,res)=>{
         return res.failureResponse(); 
     }
 }
+
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="update") {_%>
     <%_methods.push('update'+DB_MODEL_FC+',') _%>
+/**
+* @description : update document of <%-DB_MODEL_FC%> with data by id.
+* @param {obj} req : request including id in request params and data in request body.
+* @param {obj} res : response of updated <%-DB_MODEL_FC%>.
+* @return {obj} : updated <%-DB_MODEL_FC%>. {status, message, data}
+*/
 const update<%-DB_MODEL_FC%> = async(req,res) => {
     try {
         delete req.body["addedBy"]
@@ -170,9 +191,16 @@ const update<%-DB_MODEL_FC%> = async(req,res) => {
         return res.failureResponse(); 
     }
 }
+
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="bulkUpdate") {_%>
     <%_methods.push('bulkUpdate'+DB_MODEL_FC+',') _%>
+/**
+* @description : update multiple records of <%-DB_MODEL_FC%> with data by filter.
+* @param {obj} req : request including filter and data in request body.
+* @param {obj} res : response of updated <%-DB_MODEL_FC%>s.
+* @return {obj} : updated <%-DB_MODEL_FC%>s. {status, message, data}
+*/
 const bulkUpdate<%-DB_MODEL_FC%>=async(req,res)=>{
     try {
         let filter={};
@@ -212,9 +240,16 @@ const bulkUpdate<%-DB_MODEL_FC%>=async(req,res)=>{
         return res.failureResponse(); 
     }
 }
+
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="partialUpdate") {_%>
     <%_methods.push('partialUpdate'+DB_MODEL_FC+',') _%>
+/**
+* @description : partially update document of <%-DB_MODEL_FC%> with data by id;
+* @param {obj} req : request including id in request params and data in request body.
+* @param {obj} res : response of updated <%-DB_MODEL_FC%>.
+* @return {obj} : updated <%-DB_MODEL_FC%>. {status, message, data}
+*/
 const partialUpdate<%-DB_MODEL_FC%> = async(req,res) => {
     try {
         delete req.body["addedBy"]
@@ -258,9 +293,16 @@ const partialUpdate<%-DB_MODEL_FC%> = async(req,res) => {
         return res.failureResponse()
     }
 }
+
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="findAll") {_%>
     <%_methods.push('findAll'+DB_MODEL_FC+',') _%>
+/**
+* @description : find all documents of <%-DB_MODEL_FC%> from collection based on query and options.
+* @param {obj} req : request including option and query. {query, options : {page, limit, pagination, populate}, isCountOnly}
+* @param {obj} res : response contains data found from collection.
+* @return {obj} : found <%-DB_MODEL_FC%>(s). {status, message, data}
+*/
 const findAll<%-DB_MODEL_FC%> = async(req,res) => {
     try {
         let options = {}
@@ -355,9 +397,16 @@ const findAll<%-DB_MODEL_FC%> = async(req,res) => {
         return res.failureResponse();
     }
 }
+
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="findById") {_%>
     <%_methods.push('get'+DB_MODEL_FC+',') _%>
+/**
+* @description : find document of <%-DB_MODEL_FC%> from table by id;
+* @param {obj} req : request including id in request params.
+* @param {obj} res : response contains document retrieved from table.
+* @return {obj} : found <%-DB_MODEL_FC%>. {status, message, data}
+*/
 const get<%-DB_MODEL_FC%> = async(req,res) => {
     try {
         let query={};
@@ -404,9 +453,16 @@ const get<%-DB_MODEL_FC%> = async(req,res) => {
         return res.failureResponse()
     }
 }
+
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="count") {_%>
     <%_methods.push('get'+DB_MODEL_FC+'Count,') _%>
+/**
+* @description : returns total number of documents of <%-DB_MODEL_FC%>.
+* @param {obj} req : request including where object to apply filters in req body 
+* @param {obj} res : response that returns total number of documents.
+* @return {obj} : number of documents. {status, message, data}
+*/
 const get<%-DB_MODEL_FC%>Count = async(req,res) => {
     try {
         let where ={};
@@ -434,10 +490,17 @@ const get<%-DB_MODEL_FC%>Count = async(req,res) => {
         return res.failureResponse();
     }
 }
+
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="delete") {_%>
     <%_methods.push('delete'+DB_MODEL_FC+',') _%>
     <%_ if(DELETE_DEPENDENT_MODEL){_%>
+/**
+* @description : delete document of <%-DB_MODEL_FC%> from table.
+* @param {obj} req : request including id as req param.
+* @param {obj} res : response contains deleted document.
+* @return {obj} : deleted <%-DB_MODEL_FC%>. {status, message, data}
+*/
 const delete<%-DB_MODEL_FC%> =async(req,res) => {
     try{
         if(req.params.id){
@@ -501,6 +564,12 @@ const delete<%-DB_MODEL_FC%> =async(req,res) => {
     }
 }
 <%_} else {_%>
+/**
+* @description : delete document of <%-DB_MODEL_FC%> from table.
+* @param {obj} req : request including id as req param.
+* @param {obj} res : response contains deleted document.
+* @return {obj} : deleted <%-DB_MODEL_FC%>. {status, message, data}
+*/
 const delete<%-DB_MODEL_FC%> =async(req,res) => {
     try {
         <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
@@ -539,11 +608,18 @@ const delete<%-DB_MODEL_FC%> =async(req,res) => {
         return res.failureResponse();
     }
 }
+
 <%_}_%>
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="deleteMany") {_%>
     <%_methods.push('deleteMany'+DB_MODEL_FC+',') _%>
     <%_ if(DELETE_DEPENDENT_MODEL){_%>
+/**
+* @description : delete documents of <%-DB_MODEL_FC%> in table by using ids.
+* @param {obj} req : request including array of ids in request body.
+* @param {obj} res : response contains no of documents deleted.
+* @return {obj} : no of documents deleted. {status, message, data}
+*/
 const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
     try{
         let ids = req.body.ids; 
@@ -586,6 +662,12 @@ const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
     }
 }
 <%_} else {_%>
+/**
+* @description : delete documents of <%-DB_MODEL_FC%> in table by using ids.
+* @param {obj} req : request including array of ids in request body.
+* @param {obj} res : response contains no of documents deleted.
+* @return {obj} : no of documents deleted. {status, message, data}
+*/
 const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
     try{
         let ids = req.body.ids; 
@@ -615,11 +697,18 @@ const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
         return res.failureResponse(); 
     }
 }
+
 <%_}_%>
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="softDelete") {_%>
     <%_methods.push('softDelete'+DB_MODEL_FC+',') _%>
     <%_ if(DELETE_DEPENDENT_MODEL){_%>
+/**
+* @description : deactivate document of <%-DB_MODEL_FC%> from table by id;
+* @param {obj} req : request including id in request params.
+* @param {obj} res : response contains updated document of <%-DB_MODEL_FC%>.
+* @return {obj} : deactivated <%-DB_MODEL_FC%>. {status, message, data}
+*/
 const softDelete<%-DB_MODEL_FC%> = async(req,res) => {
     try{
         <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
@@ -656,6 +745,12 @@ const softDelete<%-DB_MODEL_FC%> = async(req,res) => {
     }
 }
 <%_} else {_%>
+/**
+* @description : deactivate document of <%-DB_MODEL_FC%> from table by id;
+* @param {obj} req : request including id in request params.
+* @param {obj} res : response contains updated document of <%-DB_MODEL_FC%>.
+* @return {obj} : deactivated <%-DB_MODEL_FC%>. {status, message, data}
+*/
 const softDelete<%-DB_MODEL_FC%> = async(req,res) => {
     try{
         <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
@@ -691,11 +786,18 @@ const softDelete<%-DB_MODEL_FC%> = async(req,res) => {
         return res.failureResponse(); 
     }
 }
+
 <%_}_%>
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="softDeleteMany") {_%>
     <%_methods.push('softDeleteMany'+DB_MODEL_FC+',') _%>
     <%_ if(DELETE_DEPENDENT_MODEL){_%>
+/**
+* @description : deactivate multiple documents of <%-DB_MODEL_FC%> from table by ids;
+* @param {obj} req : request including array of ids in request body.
+* @param {obj} res : response contains updated documents of <%-DB_MODEL_FC%>.
+* @return {obj} : number of deactivated documents of <%-DB_MODEL_FC%>. {status, message, data}
+*/
 const softDeleteMany<%-DB_MODEL_FC%> = async(req,res) => {
     try{
         let ids = req.body.ids;
@@ -725,6 +827,12 @@ const softDeleteMany<%-DB_MODEL_FC%> = async(req,res) => {
     }
 }
 <%_} else {_%>
+/**
+* @description : deactivate multiple documents of <%-DB_MODEL_FC%> from table by ids;
+* @param {obj} req : request including array of ids in request body.
+* @param {obj} res : response contains updated documents of <%-DB_MODEL_FC%>.
+* @return {obj} : number of deactivated documents of <%-DB_MODEL_FC%>. {status, message, data}
+*/
 const softDeleteMany<%-DB_MODEL_FC%> = async(req,res) => {
     try{
         let ids = req.body.ids;
@@ -753,12 +861,19 @@ const softDeleteMany<%-DB_MODEL_FC%> = async(req,res) => {
         return res.failureResponse(); 
     }
 }
+
 <%_}_%>
 <%_}_%>
 <%_}_%>
 <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){
     methods.push('changePassword,')
     methods.push('updateProfile,')%>
+    /**
+    * @description : change password
+    * @param {obj} req : request including user credentials.
+    * @param {obj} res : response contains updated user document.
+    * @return {obj} : updated user document {status, message, data}
+    */
     const changePassword = async(req, res) => {
         try {
             let params = req.body;
@@ -778,6 +893,12 @@ const softDeleteMany<%-DB_MODEL_FC%> = async(req,res) => {
         }
     }
 
+/**
+* @description : update user profile.
+* @param {obj} req : request including user profile details to update in request body.
+* @param {obj} res : updated user document.
+* @return {obj} : updated user document. {status, message, data}
+*/
 const updateProfile = async(req, res) => {
     try {
         if(!req.body || !req.user.id){
@@ -823,11 +944,12 @@ _%>
 <%_ if(v.isUploadedCodeBlock){ _%>
 const <%-v.functionName%> = <%-v.queryBuilder[0].code%>
 <%_}else{_%>
-<%_if(typeof(v.descriptions)!=='undefined'){_%>
-/* 
-* <%-v.descriptions%>
+/**
+* @description : <%-v.functionName%> 
+* @param {obj} req : request
+* @param {obj} res : response 
+* @return {obj} : response of <%-v.functionName%> {status, message, data}
 */
-<%_}_%>
 const <%-v.functionName%>=async(req,res)=>{
 try {
     <%_if(typeof(v.queryBuilder) !== "undefined" && v.queryBuilder.length > 0){_%>
@@ -1048,6 +1170,16 @@ try {
 
 <%_if(FILE_UPLOAD){_%>
 <%_if(S3_UPLOAD){_%>
+/**
+    * Function for upload files.
+    * @description : This method is used for upload files. 
+    * @param {obj} file : file object
+    * @param {obj} fields : fields for files. 
+    * @param {number} fileCount : total files count.
+    * @param {Array} allowedFileTypes : array of allowed file types. 
+    * @param {number} maxFileSize : maximum file size for uploaded files.
+    * @return {obj} : Promise for uploading files.
+    */
 async function uploadFiles (file,fields,fileCount,allowedFileTypes, maxFileSize){
 
   let extension = path.extname(file.name);
@@ -1091,6 +1223,13 @@ async function uploadFiles (file,fields,fileCount,allowedFileTypes, maxFileSize)
 
 }
 
+/**
+* Function for upload file to aws s3.
+* @description : This method is used for upload file to aws s3. 
+* @param {obj} file : file object.
+* @param {string} fileName : file name for uploaded file.
+* @return {obj} returns promise for upload file to aws s3
+*/
 async function uploadToS3 (file, fileName){
   let S3Config = {
     AWS_S3_ACCESS_KEY_ID: process.env.AWS_S3_ACCESS_KEY_ID,
@@ -1129,7 +1268,14 @@ async function uploadToS3 (file, fileName){
 
   return response;
 }
+
 <%_if(S3_UPLOAD_PRIVATE){_%>
+/**
+* Function for generate pre signed url.
+* @description : This method is used for generate preSigned url for aws s3.
+* @param {string} uri : uri for particular file in aws s3.
+* @return {obj} returns promise presignedUrl for s3 object.
+*/
 async function generatePreSignedURL (uri){
   if (uri){
     let S3Config = {
@@ -1179,14 +1325,16 @@ async function generatePreSignedURL (uri){
     };
   }
 }
+
 <%_}_%>
 <%_} else {_%>
 /**
- * 
- * Function used to create directory.
- * 
- * @param  {} dirPath
- */
+* 
+* Function used to create directory.
+* @description : This method is used for create directory by given directory path.
+* @param  {string} directoryPath : directory path where new directory is created.
+* @return {boolean} : returns true if directory is created otherwise returns false.
+*/
 const makeDirectory = async (directoryPath) => {
 
   if (!fs.existsSync(directoryPath)) {
@@ -1198,15 +1346,21 @@ const makeDirectory = async (directoryPath) => {
     });
   }
   return true;
-};
+}
 
 /**
- * 
- * Function used to upload file
- * 
- * @param  {} files
- * @param  {} fields
- */
+    * 
+    * Function used to upload file
+    * @description: This method is used for upload file.
+    * @param  {obj} file : file object
+    * @param {obj} file : file object
+    * @param {obj} fields : fields for files. 
+    * @param {number} fileCount : total files count.
+    * @param {Array} allowedFileTypes : array of allowed file types. 
+    * @param {number} maxFileSize : maximum file size for uploaded files.
+    * @param {defaultDirectory} : default directory where file is uploaded.
+    * @return {obj} : Promise for uploading file.
+    */
 async function uploadFiles (file, fields, fileCount,allowedFileTypes, maxFileSize, defaultDirectory) {
 
   let tempPath = file.path;
@@ -1280,11 +1434,12 @@ async function uploadFiles (file, fields, fileCount,allowedFileTypes, maxFileSiz
 }
 
 /**
- * 
- * Function used to unlink file.
- * 
- * @param  {} path
- */
+* 
+* Function used to unlink file.
+* @description: This method is used for unlink (remove) file from particular location.
+* @param  {string} path : location where file is removed.
+* @return {obj} : status of operation for unlink file. {status, message}
+*/
 async function unlinkFile (path) {
 
   fs.unlink(path, function (err) {

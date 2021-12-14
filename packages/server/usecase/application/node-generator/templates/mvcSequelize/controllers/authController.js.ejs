@@ -1,3 +1,8 @@
+/**
+ * authController.js
+ * @description :: exports authentication methods
+*/
+
 const authService =  require("../../services/auth")
 const model = require("../../model/index");
 const dbService = require("../../utils/dbService");
@@ -12,197 +17,219 @@ const sendSMS = require("../../services/sms/smsService");
 const ejs = require("ejs")
 <%_}_%>
 const { uniqueValidation } = require('../../utils/common');
-    
-module.exports = {
-    /*
-     * api: user register 
-     * description : first time user registration.
-     */
-    register : async(req, res) => {
-        try {
-            let validateRequest = validation.validateParamsWithJoi(
-                req.body,
-                <%-USER_MODEL %>SchemaKey.schemaKeys
-            );
-            if (!validateRequest.isValid) {
-                return res.inValidParam({message :  `Invalid values in parameters, ${validateRequest.message}`});
-            }
-            let unique = await uniqueValidation(model.<%-USER_MODEL%>,req.body);   
-            if (!unique){ 
-                return res.inValidParam({message:'User Registration Failed, Duplicate Data found'});
-            }     
-            const result = await dbService.createOne(model.<%-USER_MODEL%>,{...req.body});
-            <%_if(NOTIFICATION_TYPE==="SMS"){_%>
-            // send sms to user for successfully registered.
-            let renderData = {
-                <%_if(typeof REGISTER_TEMPLATE_ATTRIBUTE === "object"){_%>
+
+/**
+* @description : user registration 
+* @param {obj} req : request for register
+* @param {obj} res : response for register
+* @return {obj} : response for register {status, message, data}
+*/
+const register = async(req, res) => {
+    try {
+        let validateRequest = validation.validateParamsWithJoi(
+            req.body,
+            <%-USER_MODEL %>SchemaKey.schemaKeys
+        );
+        if (!validateRequest.isValid) {
+            return res.inValidParam({message :  `Invalid values in parameters, ${validateRequest.message}`});
+        }
+        let unique = await uniqueValidation(model.<%-USER_MODEL%>,req.body);   
+        if (!unique){ 
+            return res.inValidParam({message:'User Registration Failed, Duplicate Data found'});
+        }     
+        const result = await dbService.createOne(model.<%-USER_MODEL%>,{...req.body});
+        <%_if(NOTIFICATION_TYPE==="SMS"){_%>
+        // send sms to user for successfully registered.
+        let renderData = {
+            <%_if(typeof REGISTER_TEMPLATE_ATTRIBUTE === "object"){_%>
+            <%_for(let i in REGISTER_TEMPLATE_ATTRIBUTE){_%>
+            <%-i%>:result.<%-REGISTER_TEMPLATE_ATTRIBUTE[i].replace(/.*?\./, "");%>,
+            <%_}_%>
+            <%_}else{_%>
+            ...result
+            <%_}_%>
+        }
+        const msg = await ejs.renderFile(`${__basedir}/views/<%-REGISTER_TEMPLATE_NAME%>/html.ejs`, renderData);
+        let smsObj = {
+            to:result.<%-MOBILE_FIELD%>,
+            message:msg
+        }
+        await sendSMS(smsObj);
+        <%_}else if(NOTIFICATION_TYPE==="EMAIL"){_%>
+        // send email to user for successfully registered.
+        let mailObj = {
+            subject: "Register User",
+            to: result.<%-EMAIL_FIELD%>,
+            <%_if(typeof REGISTER_TEMPLATE_ATTRIBUTE === "object"){_%>
+            template: "/views/<%-REGISTER_TEMPLATE_NAME%>",
+            data:{
                 <%_for(let i in REGISTER_TEMPLATE_ATTRIBUTE){_%>
                 <%-i%>:result.<%-REGISTER_TEMPLATE_ATTRIBUTE[i].replace(/.*?\./, "");%>,
                 <%_}_%>
-                <%_}else{_%>
-                ...result
-                <%_}_%>
             }
-            const msg = await ejs.renderFile(`${__basedir}/views/<%-REGISTER_TEMPLATE_NAME%>/html.ejs`, renderData);
-            let smsObj = {
-                to:result.<%-MOBILE_FIELD%>,
-                message:msg
-            }
-            await sendSMS(smsObj);
-            <%_}else if(NOTIFICATION_TYPE==="EMAIL"){_%>
-            // send email to user for successfully registered.
-            let mailObj = {
-                subject: "Register User",
-                to: result.<%-EMAIL_FIELD%>,
-                <%_if(typeof REGISTER_TEMPLATE_ATTRIBUTE === "object"){_%>
-                template: "/views/<%-REGISTER_TEMPLATE_NAME%>",
-                data:{
-                    <%_for(let i in REGISTER_TEMPLATE_ATTRIBUTE){_%>
-                    <%-i%>:result.<%-REGISTER_TEMPLATE_ATTRIBUTE[i].replace(/.*?\./, "");%>,
-                    <%_}_%>
-                }
-                <%_}else if(!REGISTER_TEMPLATE_ATTRIBUTE){_%>
-                template: "/views/<%-REGISTER_TEMPLATE_NAME%>",
-                data:result
-                <%_}_%>
-            };
-            await emailService.sendEmail(mailObj);
+            <%_}else if(!REGISTER_TEMPLATE_ATTRIBUTE){_%>
+            template: "/views/<%-REGISTER_TEMPLATE_NAME%>",
+            data:result
             <%_}_%>
-            return  res.ok({data:result});
-        } catch (error) {
-            return res.failureResponse();
-        }  
-    },
-    /*
-     * api : forgot password
-     * description : send email or sms to user for forgot password.
-     */
-    forgotPassword: async (req, res) => {
-        const params = req.body;
-        try {
-            if (!params.email) {
-                return res.insufficientParameters();
-            }
-            let where = {<%-EMAIL_FIELD%>: params.email};
-            params.email = params.email.toString().toLowerCase();
-            let isUser = await dbService.findOne(model.<%-USER_MODEL%>,where);
-            if (isUser) {
-                let {resultOfEmail,resultOfSMS} = await authService.sendResetPasswordNotification(isUser);
-                if(resultOfEmail && resultOfSMS){
-                    return res.requestValidated({message:"otp successfully send."});
-                }else if(resultOfEmail && !resultOfSMS) {
-                    return res.requestValidated({message:"otp successfully send to your email."});
-                } else if (!resultOfEmail && resultOfSMS) { 
-                    return res.requestValidated({message:"otp successfully send to your mobile number."});
-                }else{
-                    return res.failureResponse({message:"otp can not be sent due to some issue try again later"});
-                }
-            } else {
-                return res.recordNotFound();
-            }
-        } catch (error) {
-            return res.failureResponse();
+        };
+        await emailService.sendEmail(mailObj);
+        <%_}_%>
+        return  res.ok({data:result});
+    } catch (error) {
+        return res.failureResponse();
+    }  
+}
+
+/**
+ * @description : send email or sms to user with OTP on forgot password
+ * @param {obj} req : request for forgotPassword
+ * @param {obj} res : response for forgotPassword
+ * @return {obj} : response for forgotPassword {status, message, data}
+ */
+const forgotPassword = async (req, res) => {
+    const params = req.body;
+    try {
+        if (!params.email) {
+            return res.insufficientParameters();
         }
-    },
-    /*
-     * api : validate forgot password otp 
-     * description : after successfully sent mail or sms for forgot password validate otp
-     */
-    validateResetPasswordOtp: async (req, res) => {
-        const params = req.body;
-        try {
-            if (!params || !params.otp) {
-                return res.insufficientParameters();
+        let where = {<%-EMAIL_FIELD%>: params.email};
+        params.email = params.email.toString().toLowerCase();
+        let isUser = await dbService.findOne(model.<%-USER_MODEL%>,where);
+        if (isUser) {
+            let {resultOfEmail,resultOfSMS} = await authService.sendResetPasswordNotification(isUser);
+            if(resultOfEmail && resultOfSMS){
+                return res.requestValidated({message:"otp successfully send."});
+            }else if(resultOfEmail && !resultOfSMS) {
+                return res.requestValidated({message:"otp successfully send to your email."});
+            } else if (!resultOfEmail && resultOfSMS) { 
+                return res.requestValidated({message:"otp successfully send to your mobile number."});
+            }else{
+                return res.failureResponse({message:"otp can not be sent due to some issue try again later"});
             }
-            let isUser = await dbService.findOne(model.userAuthSettings, { resetPasswordCode: params.otp });
-            if (!isUser || !isUser.resetPasswordCode) {
-                return res.invalidRequest({message:"Invalid OTP"});
-            }
-            // link expire
-            if (dayjs(new Date()).isAfter(dayjs(isUser.expiredTimeOfResetPasswordCode))) {
+        } else {
+            return res.recordNotFound();
+        }
+    } catch (error) {
+        return res.failureResponse();
+    }
+}
+
+/**
+ * @description : validate OTP
+ * @param {obj} req : request for validateResetPasswordOtp
+ * @param {obj} res : response for validateResetPasswordOtp
+ * @return {obj} : response for validateResetPasswordOtp  {status, message, data}
+ */ 
+const validateResetPasswordOtp = async (req, res) => {
+    const params = req.body;
+    try {
+        if (!params || !params.otp) {
+            return res.insufficientParameters();
+        }
+        let isUser = await dbService.findOne(model.userAuthSettings, { resetPasswordCode: params.otp });
+        if (!isUser || !isUser.resetPasswordCode) {
+            return res.invalidRequest({message:"Invalid OTP"});
+        }
+        // link expire
+        if (dayjs(new Date()).isAfter(dayjs(isUser.expiredTimeOfResetPasswordCode))) {
+            return res.invalidRequest({message:"Your reset password link is expired or invalid"});
+        }
+        return res.requestValidated({message:'Otp verified'});
+    } catch (error) {
+        return res.failureResponse();
+    }
+}
+
+/**
+ * @description : reset password with code and new password
+ * @param {obj} req : request for resetPassword
+ * @param {obj} res : response for resetPassword
+ * @return {obj} : response for resetPassword {status, message, data}
+ */
+const resetPassword = async (req, res) => {
+    const params = req.body;
+    try {
+        if (!params.code || !params.newPassword) {
+            return res.insufficientParameters();
+        }
+        let userAuth = await dbService.findOne(model.userAuthSettings, { resetPasswordCode: params.code });
+        if (userAuth && userAuth.expiredTimeOfResetPasswordCode) {
+            if (dayjs(new Date()).isAfter(dayjs(userAuth.expiredTimeOfResetPasswordCode))) {// link expire
                 return res.invalidRequest({message:"Your reset password link is expired or invalid"});
             }
-            return res.requestValidated({message:'Otp verified'});
-        } catch (error) {
-            return res.failureResponse();
+        } else {
+            // invalid code
+            return res.invalidRequest({message:"Invalid Code"});
         }
-    },
-    /*
-     * api : reset password
-     * description : after successfully sent email or sms for forgot password,
-     *                validate otp or link and reset password
-     */
-    resetPassword : async (req, res) => {
-        const params = req.body;
-        try {
-            if (!params.code || !params.newPassword) {
-                return res.insufficientParameters();
-            }
-            let userAuth = await dbService.findOne(model.userAuthSettings, { resetPasswordCode: params.code });
-            if (userAuth && userAuth.expiredTimeOfResetPasswordCode) {
-                if (dayjs(new Date()).isAfter(dayjs(userAuth.expiredTimeOfResetPasswordCode))) {// link expire
-                    return res.invalidRequest({message:"Your reset password link is expired or invalid"});
-                }
-            } else {
-                // invalid code
-                return res.invalidRequest({message:"Invalid Code"});
-            }
-            let response = await authService.resetPassword(userAuth.userId, params.newPassword);
-            if(response && !response.flag){
-                return res.requestValidated({message:response.data});
-            }
-            return res.invalidRequest({message:response.data});
-        } catch (error) {
-            return res.failureResponse();
+        let response = await authService.resetPassword(userAuth.userId, params.newPassword);
+        if(response && !response.flag){
+            return res.requestValidated({message:response.data});
         }
-    },
-    /*
-     * api :  authentication
-     * description : login user
-     */
-    login:async(req,res)=>{
-        try {
-            let {username,password} = req.body;
-            let url = req.originalUrl
-            if(username && password){
-                <%_if(ROLE_PERMISSION){_%>
-                let roleAccess = false;
-                if (req.body.includeRoleAccess){
-                    roleAccess = req.body.includeRoleAccess;
-                }
-                let result = await authService.loginUser(username, password, url, roleAccess);
-                <%_} else {_%>
-                let result = await authService.loginUser(username,password,url); 
-                <%_}_%>
-                if(!result.flag){
-                    return res.loginSuccess({data:result.data});
-                }
-                return res.loginFailed({message:result.data});
-            }else{
-                return res.insufficientParameters();
-            }
-        } catch (error) {
-            return res.failureResponse();
-        }
-    },
-    /*
-    * api : logout
-    * description : Logout User
-    */
-    logout: async (req, res) => {
-        try {
-            if (req.user) {
-              let userTokens = await dbService.findOne(model.userToken, { token: (req.headers.authorization).replace('Bearer ', ''),userId:req.user.id });
-              userTokens.isTokenExpired = true;
-              let id = userTokens.id;
-              delete userTokens.id;
-              await dbService.updateByPk(model.userToken,id, userTokens.toJSON());
-              return res.requestValidated({message:'Logged Out Successfully'});
-            }
-            return res.badRequest();
-          } catch (error) {
-            return res.failureResponse();
-          }
-    },
+        return res.invalidRequest({message:response.data});
+    } catch (error) {
+        return res.failureResponse();
+    }
+}
 
+/**
+ * @description : login with username and password
+ * @param {obj} req : request for login 
+ * @param {obj} res : response for login
+ * @return {obj} : response for login {status, message, data}
+ */
+const login = async(req,res)=>{
+    try {
+        let {username,password} = req.body;
+        let url = req.originalUrl
+        if(username && password){
+            <%_if(ROLE_PERMISSION){_%>
+            let roleAccess = false;
+            if (req.body.includeRoleAccess){
+                roleAccess = req.body.includeRoleAccess;
+            }
+            let result = await authService.loginUser(username, password, url, roleAccess);
+            <%_} else {_%>
+            let result = await authService.loginUser(username,password,url); 
+            <%_}_%>
+            if(!result.flag){
+                return res.loginSuccess({data:result.data});
+            }
+            return res.loginFailed({message:result.data});
+        }else{
+            return res.insufficientParameters();
+        }
+    } catch (error) {
+        return res.failureResponse();
+    }
+}
+
+/**
+ * @description : logout user
+ * @param {obj} req : request for logout
+ * @param {obj} res : response for logout
+ * @return {obj} : response for logout {status, message, data}
+ */
+const logout = async (req, res) => {
+    try {
+    if (req.user) {
+        let userTokens = await dbService.findOne(model.userToken, { token: (req.headers.authorization).replace('Bearer ', ''),userId:req.user.id });
+        userTokens.isTokenExpired = true;
+        let id = userTokens.id;
+        delete userTokens.id;
+        await dbService.updateByPk(model.userToken,id, userTokens.toJSON());
+        return res.requestValidated({message:'Logged Out Successfully'});
+    }
+        return res.badRequest();
+    } catch (error) {
+        return res.failureResponse();
+    }
+}
+
+module.exports = {
+    register,
+    forgotPassword,
+    validateResetPasswordOtp,
+    resetPassword,
+    login,
+    logout
 }

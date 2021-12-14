@@ -1,3 +1,6 @@
+/**
+ * @description :: exports custom route methods.
+ */
 <%_
 if(typeof(UNIQ_TASK_MODELS)!== 'undefined'){
 let models = UNIQ_TASK_MODELS
@@ -41,6 +44,12 @@ const <%-v.service%>Service = require("../../services/<%-v.platform%>/<%-v.servi
 * <%-v.descriptions%>
 */
 <%_}_%>
+/** 
+  * @description : <%-v.descriptions%>
+  * @param {obj} req : request for <%-v.functionName%>
+  * @param {obj} res : response for <%-v.functionName%>
+  * @return {obj} : response for <%-v.functionName%>
+  */
 const <%-v.functionName%>=async (req,res)=>{
 try {
     <%_if(typeof(v.queryBuilder) !== "undefined" && v.queryBuilder.length > 0){_%>
@@ -261,6 +270,15 @@ try {
 
 <%_if(FILE_UPLOAD){_%>
 <%_if(S3_UPLOAD){_%>
+/**
+ * @description : upload files
+ * @param {obj} file : file to upload
+ * @param {obj} fields : fields for file
+ * @param {number} fileCount : total number of files to upload
+ * @param {Array} allowedFileTypes : array of file types
+ * @param {number} maxFileSize : maxium size of file to be uploaded
+ * @return {obj} : response for file upload
+ */
 async function uploadFiles (file,fields,fileCount,allowedFileTypes, maxFileSize){
 
   let extension = path.extname(file.name);
@@ -303,7 +321,12 @@ async function uploadFiles (file,fields,fileCount,allowedFileTypes, maxFileSize)
   return response;
 
 }
-
+/**
+ * @description : upload file to AWS s3
+ * @param {obj} file : file to upload
+ * @param {string} fileName : name of file
+ * @return {obj} : response for file upload to AWS s3
+ */
 async function uploadToS3 (file, fileName){
   let S3Config = {
     AWS_S3_ACCESS_KEY_ID: process.env.AWS_S3_ACCESS_KEY_ID,
@@ -343,6 +366,11 @@ async function uploadToS3 (file, fileName){
   return response;
 }
 <%_if(S3_UPLOAD_PRIVATE){_%>
+/**
+ * @description : generate pre signed url for file
+ * @param {string} uri : url of file
+ * @return {obj} : response for generate pre signed url
+ */
 async function generatePreSignedURL (uri){
   if (uri){
     let S3Config = {
@@ -395,10 +423,9 @@ async function generatePreSignedURL (uri){
 <%_}_%>
 <%_} else {_%>
 /**
- * 
- * Function used to create directory.
- * 
- * @param  {} dirPath
+ * @description : create directory to specified path
+ * @param {string} directoryPath : location where directory will be created
+ * @return {boolean} : returns true if directory is created or false
  */
 const makeDirectory = async (directoryPath) => {
 
@@ -414,11 +441,14 @@ const makeDirectory = async (directoryPath) => {
 };
 
 /**
- * 
- * Function used to upload file
- * 
- * @param  {} files
- * @param  {} fields
+ * @description : upload files
+ * @param {obj} file : file to upload
+ * @param {obj} fields : fields for file
+ * @param {number} fileCount : total number of files to upload
+ * @param {Array} allowedFileTypes : array of file types
+ * @param {number} maxFileSize : maxium size of file to be uploaded
+ * @param {string} defaultDirectory : default location of directory
+ * @return {obj} : response for file upload
  */
 async function uploadFiles (file, fields, fileCount,allowedFileTypes, maxFileSize, defaultDirectory) {
 
@@ -493,10 +523,9 @@ async function uploadFiles (file, fields, fileCount,allowedFileTypes, maxFileSiz
 }
 
 /**
- * 
- * Function used to unlink file.
- * 
- * @param  {} path
+ * @description : unlink(delete) file from specified path
+ * @param {string} path : location of file 
+ * @return {obj} : return unlink file status {status, message}
  */
 async function unlinkFile (path) {
 

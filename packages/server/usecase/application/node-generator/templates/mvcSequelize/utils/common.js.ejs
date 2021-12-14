@@ -1,20 +1,27 @@
+/**
+ * common.js
+ * @description: exports helper methods for project.
+ */
+
 <%_if(IS_AUTH){ _%>
 const dbService = require('./dbService');
 const { Op } = require('sequelize');
 <%_}_%>
 
-/*
- * replaceAll: find and replace al; occurrence of a string in a searched string
- * @param string : string to be replace
- * @param search : string which you want to replace
- * @param replace: string with which you want to replace a string
+/**
+ * replaceAll: find and replace all occurrence of a string in a searched string
+ * @param {string} string  : string to be replace
+ * @param {string} search  : string which you want to replace
+ * @param {string} replace : string with which you want to replace a string
+ * @return {string} : replaced new string
  */
 const replaceAll = (string, search, replace) => string.split(search).join(replace); ;
 
-  /*
-   * convertObjectToEnum : convert object to enum
-   * @param obj          : {}
-   */
+  /**
+ * convertObjectToEnum : converts object to enum
+ * @param {obj} obj : object to be converted
+ * @return {array} : converted array
+ */
 const convertObjectToEnum = (obj) => {
     if (Array.isArray(obj)) {
       return obj;
@@ -24,10 +31,11 @@ const convertObjectToEnum = (obj) => {
     return enumArr;
   }
 
-  /*
-   * randomNumber : generate random numbers.
-   * @param length          : number *default 4
-   */
+/**
+ * randomNumber : generate random numbers for given length
+ * @param {number} length : length of random number to be generated (default 4)
+ * @return {number} : generated random number
+ */
 const randomNumber = (length = 4) => {
     const numbers = '12345678901234567890';
     let result = '';
@@ -38,11 +46,12 @@ const randomNumber = (length = 4) => {
   }
   
   <%_if(IS_AUTH){ _%>
-  /*
-  * uniqueValidation: validate Login With Fields while Registration
-  * @param Model : Mongoose Model, on which query runs
-  * @param data : data , coming from request
-  */
+/**
+ * uniqueValidation: check unique validation while user registration
+ * @param {obj} model : sequelize model instance of table
+ * @param {obj} data : data, coming from request
+ * @return {boolean} : validation status
+ */
 const uniqueValidation = async (Model,data) =>{
       <%_if (LOGIN_WITH.length > 1) {_%>
       let filter = { [Op.or]:[]};
@@ -70,6 +79,12 @@ const uniqueValidation = async (Model,data) =>{
   <%_}_%>
 
 <%_if(IS_AUTH){_%>
+/**
+ * getDifferenceOfTwoDatesInTime : get difference between two dates in time
+ * @param {date} currentDate  : current date
+ * @param {date} toDate  : future date
+ * @return {string} : difference of two date in time
+ */
   const getDifferenceOfTwoDatesInTime = (currentDate,toDate) =>{
     let hours = toDate.diff(currentDate,'hour');
     currentDate =  currentDate.add(hours, 'hour');
@@ -84,10 +99,11 @@ const uniqueValidation = async (Model,data) =>{
   };
 <%_}_%>
   <%_if(ROLE_PERMISSION){ _%>
-/*
- * getRoleAccessData: return roleAccess of User
- * @param model : sequelize models
- * @param userId : Id of user to find role data
+/** 
+ * getRoleAccessData : returns role access of User
+ * @param {obj} model : sequelize model instance of tables
+ * @param {int} userId : id of user to find role data
+ * @return {obj} : user's role access for APIs of model
  */
 const getRoleAccessData = async (model,userId) =>{
   let userRoles = await dbService.findAllRecords(model.userRole, { userId: userId });
@@ -148,4 +164,3 @@ const getRoleAccessData = async (model,userId) =>{
     getRoleAccessData,
     <%_}_%>
   };
-  

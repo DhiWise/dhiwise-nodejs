@@ -1,3 +1,7 @@
+/**
+ * auth.js
+ * @description :: service functions used in authentication
+ */
 const model = require("../model")
 const dbService = require("../utils/dbService");
 const { JWT,LOGIN_ACCESS,
@@ -9,7 +13,7 @@ const common = require("../utils/common");
 const dayjs = require("dayjs");
 const bcrypt = require("bcrypt");
 const emailService = require("./email/emailService");
-const sendSMS = require("./sms/smsService");
+const smsService = require("./sms/smsService");
 const {Op} = require('sequelize')
 <%_if(FORGOT_WITH_LINK){_%>
 const uuid = require("uuid").v4;
@@ -18,12 +22,30 @@ const uuid = require("uuid").v4;
 const ejs = require("ejs");
 <%_}_%>
 
+/**
+* @description : service to generate JWT token for authentication.
+* @param {obj} user : user who wants to login.
+* @param {string} secret : secret for JWT.
+* @return {string}  : returns JWT token.
+*/
 async function generateToken(user,secret){
     return jwt.sign( {id:user.id,'<%-LOGIN_WITH[0]%>':user.<%-LOGIN_WITH[0]%>}, secret, {
         expiresIn: JWT.EXPIRES_IN * 60
     });
 }
+
 let auth =  module.exports = {}
+
+/**
+* @description : service of login user.
+* @param {string} username : username of user.
+* @param {string} password : password of user.
+* @param {string} url : url of requested route to login, for platform identification.
+<%_if(ROLE_PERMISSION) {_%>
+* @param {boolean} roleAccess: a flag to request user's role access
+<%_}_%>
+* @return {obj} : returns authentication status. {flag, data}
+*/
     auth.loginUser = async(username,password,url<%_if(ROLE_PERMISSION){_%>,roleAccess<%_}_%>) => {
             try {
                 <%_ if(LOGIN_WITH.length>1){ _%>
@@ -144,6 +166,12 @@ let auth =  module.exports = {}
                 throw new Error(error.message)
             }
     },
+
+/**
+* @description : service to change password.
+* @param {obj} params : object of new password, old password and user's id.
+* @return {obj}  : returns status of change password. {flag,data}
+*/
     auth.changePassword = async(params)=>{
         try {
             let password = params.newPassword;
@@ -167,6 +195,12 @@ let auth =  module.exports = {}
             throw new Error(error.message)
         }
     },
+
+/**
+* @description : service to send notification on reset password.
+* @param {obj} user : user document
+* @return {}  : returns status where notification is sent or not
+*/
     auth.sendResetPasswordNotification = async (user) => {
         let resultOfEmail=false;
         let resultOfSMS=false;
@@ -240,7 +274,7 @@ let auth =  module.exports = {}
                     message:msg
                 }
                 try{
-                    await sendSMS(smsObj);
+                    await smsService.sendSMS(smsObj);
                     resultOfSMS = true;
                 }catch(error){
                     console.log(error)
@@ -254,7 +288,7 @@ let auth =  module.exports = {}
                     message:msg
                 }
                 try{
-                    await sendSMS(smsObj);
+                    await smsService.sendSMS(smsObj);
                     resultOfSMS = true;
                 }catch(error){
                     console.log(error)
@@ -333,7 +367,7 @@ let auth =  module.exports = {}
                     message:msg
                 }
                 try{ 
-                    await sendSMS(smsObj);
+                    await smsService.sendSMS(smsObj);
                     resultOfSMS = true;
                 }catch(error){ 
                     console.log(error);
@@ -346,7 +380,7 @@ let auth =  module.exports = {}
                     to: user.<%-MOBILE_FIELD%>,
                 };
                 try{ 
-                    await sendSMS(smsObj);
+                    await smsService.sendSMS(smsObj);
                     resultOfSMS = true;
                 }catch(error){ 
                     console.log(error);
@@ -359,6 +393,13 @@ let auth =  module.exports = {}
             throw new Error(error.message)
         }
     },
+    
+/**
+* @description : service to reset password.
+* @param {obj} userId : user's id
+* @param {string} newPassword : new password to be set.
+* @return {}  : returns status whether new password is set or not. {flag, data}
+*/
     auth.resetPassword = async (userId, newPassword) => {
         try {
             let where = { id: userId };  

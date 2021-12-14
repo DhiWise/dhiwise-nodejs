@@ -1,4 +1,14 @@
+/**
+ * customQueryService.js
+ * @description :: exports functions used in manipulating data from database
+ */
 
+/**
+ * @description : uses model instance and other parameters to find the desire data from collection
+ * @param {obj} model : mongoose model instance of collection
+ * @param {obj} : filter,populate,skip,limit,select and sort to be applied with query
+ * @return {obj} : found document(s).
+ */   
 const find = async (model, { filter = {}, populate, skip, limit, select, sort }) => {
     let query = model.find(filter)
     if (select) {
@@ -18,6 +28,14 @@ const find = async (model, { filter = {}, populate, skip, limit, select, sort })
     }
     return await query.exec()
 }
+
+/**
+ * @description : create a new document into the collection
+ * @param {obj} model : mongoose model instance of collection
+ * @param {obj} data  : data to be created
+ * @param {obj} option : mongoose options used with create method
+ * @return {obj} : created document(s)
+ */  
 const create = async(model,data,options={})=>{
     try {
         if(data && data.length){
@@ -29,6 +47,15 @@ const create = async(model,data,options={})=>{
         throw new Error(error.message)
     }
 }
+
+/**
+ * @description : find and update the document of collection
+ * @param {obj} model  : mongoose model instance of collection
+ * @param {obj} filter : filter to find the data 
+ * @param {obj} data   : data to update
+ * @param {obj} option : mongoose options used with findOneAndUpdate method
+ * @return {obj} : updated document.
+ */ 
 const findOneAndUpdate = async(model,filter,data,options={new:true})=>{
     try {
         return await model.findOneAndUpdate(filter,data,options)        
@@ -36,6 +63,14 @@ const findOneAndUpdate = async(model,filter,data,options={new:true})=>{
         throw new Error(error.message)
     }
 }
+
+/**
+ * @description : find and remove the document from collection
+ * @param {obj} model  : mongoose model instance of collection
+ * @param {obj} filter : filter to find the document 
+ * @param {obj} option : mongoose options used with findOneAndDelete method
+ * @return {obj} : removed document.
+ */ 
 const findOneAndDelete = async(model,filter,options={})=>{
     try {
         return await model.findOneAndDelete(filter,options)        
@@ -43,6 +78,15 @@ const findOneAndDelete = async(model,filter,options={})=>{
         throw new Error(error.message)
     }
 }
+
+/**
+ * @description : find and update multiple documents into the collection
+ * @param {obj} model  : mongoose model instance of collection
+ * @param {obj} filter : filter to find the document to be updated
+ * @param {obj} data   : data to update
+ * @param {obj} option : mongoose options used with updateMany method
+ * @return {array} : updated document(s).
+ */ 
 const updateMany = async(model,filter,data,options={})=>{
     try {
         const documentsToBeUpdated =  await model.find(filter);
@@ -52,6 +96,14 @@ const updateMany = async(model,filter,data,options={})=>{
         throw new Error(error.message)
     }
 }
+
+/**
+ * @description : removes multiple documents from collection
+ * @param {obj} model  : mongoose model instance of collection
+ * @param {obj} filter : filter to find the document 
+ * @param {obj} option : mongoose options used with deleteMany method
+ * @return {array} : removed document(s).
+ */ 
 const deleteMany = async(model,filter,options={})=>{
     try {
         const documentsToBeDeleted = await model.find(filter);
@@ -61,6 +113,13 @@ const deleteMany = async(model,filter,options={})=>{
         throw new Error(error.message)
     }
 }
+
+/**
+ * @description : find the aggregate data of collection
+ * @param {obj} model  : mongoose model instance of collection
+ * @param {array} queries : pipeline to be applied for aggregation 
+ * @return {array} : found document(s).
+ */ 
 const aggregate = async(model, queries)=>{
     try {
         return await model.aggregate(queries)
@@ -68,12 +127,13 @@ const aggregate = async(model, queries)=>{
         throw new Error(error.message)
     }
 }
+
 module.exports = {
     find,
+    create,
     findOneAndUpdate,
     findOneAndDelete,
     updateMany,
     deleteMany,
-    create,
     aggregate
 }

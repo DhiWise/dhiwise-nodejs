@@ -1,3 +1,9 @@
+/**
+ * app.js
+ * Use `app.js` to run your app.
+ * To start the server, run: `node app.js`.
+ */
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -52,6 +58,10 @@ app.use(<%- use %>);
 <% mounts.forEach(function (mount) { -%>
 app.use(<%= mount.path %>, <%- mount.code %>);
 <% }); -%>
+
+app.get('/', (req, res) => {
+  res.render('index');
+})
 
 if (process.env.NODE_ENV !== 'test' ) {
     <%_if(SHOULD_ADD_ROLE_PERMISSION){_%>

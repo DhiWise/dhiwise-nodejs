@@ -16,6 +16,7 @@ async function createConstantFiles (templateFolder, dir, constants, toPath) {
     _.forEach(constants, (value, key) => {
       const requestConstant = writeOperations.loadTemplate(`${templateFolder}/requestConstant.js`);
       requestConstant.locals.CONSTANTS = JSON.stringify(value);
+      requestConstant.locals.FILE_NAME = key;
       writeOperations.write(path.join(dir, `${toPath}/${key}.js`), requestConstant.render());
     });
   }

@@ -1,5 +1,10 @@
-var express = require('express');
-var router = express.Router();
+/**
+ * uploadRoutes.js
+ * @description :: routes of upload/download attachment
+ */
+
+const express = require('express');
+const router = express.Router();
 const fileUploadController = require("../../controller/<%-PLATFORM%>/fileUploadController");
 <%_ if(IS_AUTH){ _%>
 const auth = require("../../middleware/auth");
