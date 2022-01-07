@@ -36,7 +36,7 @@ const TechnologySetStep = () => {
   } = useForm({ mode: 'onChange' });
   React.useEffect(() => {
     dispatch(resetBuildState());
-    if (!location.state?.isNewApp) {
+    if (!location.state?.isNewApp && applicationId) {
       redirectApplication(applicationId).then((response) => {
         dispatch(setBuildCodeState({
           buildArchitecture: response.data.projectType,

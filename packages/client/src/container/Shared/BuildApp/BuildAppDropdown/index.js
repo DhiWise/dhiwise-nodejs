@@ -119,6 +119,7 @@ export const BuildAppDropdown = () => {
     dispatch(setBuildCodeState({ buildArchitecture: val }));
   };
   const applicationId = useSelector((state) => state.projects.currentApplicationId);
+  const [isBuild, setBuild, hideBuild] = useBoolean(false);
 
   return (
     <>
@@ -166,6 +167,10 @@ export const BuildAppDropdown = () => {
         <Button
           loading={isBuildLoading}
           onClick={() => {
+            if (generatedId) {
+              setBuild();
+              return;
+            }
             dispatch(codeGenerator({ applicationId, projectType: architectureValue }));
           }}
           className="w-full"
@@ -177,6 +182,18 @@ export const BuildAppDropdown = () => {
 
       </DropdownMenu>
       <BuildVSCodePopup />
+      <ConfirmationAlert
+        isOpen={isBuild}
+        description="Building a new application will permanently delete your old build application."
+        okText="Build app"
+        variant="primary"
+        handleSubmit={() => {
+          hideBuild();
+          dispatch(codeGenerator({ applicationId, projectType: architectureValue }));
+        }}
+        handleClose={hideBuild}
+      />
+
     </>
   );
 };
