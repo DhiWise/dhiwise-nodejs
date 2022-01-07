@@ -16,7 +16,7 @@ const fakeDataMongoose = require('../generateFakeData');
 const fakeDataSequelize = require('../generateFakeDataSequelize');
 const { removeGivenKeyFromObject } = require('../utils/common');
 
-async function createMVCBlankFolder (dir, userDirectoryStructure) {
+async function createMVCBlankFolder(dir, userDirectoryStructure) {
   writeOperations.mkdir(dir, userDirectoryStructure.controllerFolderPath);
   writeOperations.mkdir(dir, userDirectoryStructure.modelFolderPath);
   writeOperations.mkdir(dir, userDirectoryStructure.configFolderPath);
@@ -29,13 +29,13 @@ async function createMVCBlankFolder (dir, userDirectoryStructure) {
   writeOperations.mkdir(dir, userDirectoryStructure.viewsFolderPath);
   writeOperations.mkdir(dir, 'postman');
 }
-function createAppName (Name) {
+function createAppName(Name) {
   return Name
     .replace(/[^A-Za-z0-9.-]+/g, '-')
     .replace(/^[-_.]+|-+$/g, '')
     .toLowerCase();
 }
-async function createPackageJson ({
+async function createPackageJson({
   name,
   packages,
   mainJsFile,
@@ -46,7 +46,7 @@ async function createPackageJson ({
     name: createAppName(name),
     version: '0.0.1',
     private: true,
-    scripts: { start: `node ${mainJsFile}` },
+    scripts: { start: `nodemon ${mainJsFile}` },
     dependencies: {
       'cookie-parser': '~1.4.4',
       debug: '~2.6.9',
@@ -67,6 +67,7 @@ async function createPackageJson ({
       eslint: '~7.12.1',
       'eslint-config-airbnb': '~18.2.1',
       'eslint-plugin-import': '~2.22.1',
+      nodemon: '^2.0.15',
     },
   };
   forEach(packages?.dependencies, (depValue, depName) => {
@@ -93,7 +94,7 @@ async function createPackageJson ({
   return pkg;
 }
 
-async function createPackageJsonForSequelize ({
+async function createPackageJsonForSequelize({
   name,
   packages,
   mainJsFile,
@@ -151,7 +152,7 @@ async function createPackageJsonForSequelize ({
   return pkg;
 }
 
-async function setUpAppJS (templateFolder, jsonData) {
+async function setUpAppJS(templateFolder, jsonData) {
   const app = writeOperations.loadTemplate(`${templateFolder}/app.js`);
 
   app.locals.NO_PLATFORM = false;
@@ -187,7 +188,7 @@ async function setUpAppJS (templateFolder, jsonData) {
   return app;
 }
 
-async function setDB (dir, adapter = '') {
+async function setDB(dir, adapter = '') {
   const db = writeOperations.loadTemplate(`${dir}/db.js`);
   if (!isEmpty(adapter)) {
     db.locals.ADAPTER = adapter;
@@ -199,7 +200,7 @@ async function setDB (dir, adapter = '') {
   }
   return db;
 }
-async function createEnvFile (templateFolder, jsonData, {
+async function createEnvFile(templateFolder, jsonData, {
   database, port,
 }, options = {}) {
   const env = writeOperations.loadTemplate(`${templateFolder}/.env`);
@@ -325,7 +326,7 @@ async function createEnvFile (templateFolder, jsonData, {
   };
 }
 
-async function createEnvFileSequelize (templateFolder, jsonData, {
+async function createEnvFileSequelize(templateFolder, jsonData, {
   database, port,
 }, options = {}) {
   const env = writeOperations.loadTemplate(`${templateFolder}/.env`);
@@ -469,7 +470,7 @@ async function createEnvFileSequelize (templateFolder, jsonData, {
   };
 }
 
-async function createValidationFile (validationFilePath, jsonData, auth, adapter = '', enumData) {
+async function createValidationFile(validationFilePath, jsonData, auth, adapter = '', enumData) {
   const {
     isAuth, userModel, socialAuth,
   } = auth;
@@ -545,7 +546,7 @@ async function createValidationFile (validationFilePath, jsonData, auth, adapter
   });
   return validatedObj;
 }
-async function createPostmanCollection (pName, postmanCollections, auth) {
+async function createPostmanCollection(pName, postmanCollections, auth) {
   const {
     isAuth, userModel, userLoginWith, loginAccessPlatform, userRoles, socialAuth,
   } = auth;
@@ -562,7 +563,7 @@ async function createPostmanCollection (pName, postmanCollections, auth) {
   const envPostman = await postman.generateEnvForPostman(postmanCollections.config);
   return [jsonCollectionsV20, jsonCollectionsV21, envPostman];
 }
-async function createCCBlankFolder (dir, userDirectoryStructure) {
+async function createCCBlankFolder(dir, userDirectoryStructure) {
   writeOperations.mkdir(dir, userDirectoryStructure.controllerFolderPath);
   writeOperations.mkdir(dir, userDirectoryStructure.modelFolderPath);
   writeOperations.mkdir(dir, userDirectoryStructure.entityFolderPath);
@@ -579,7 +580,7 @@ async function createCCBlankFolder (dir, userDirectoryStructure) {
   writeOperations.mkdir(dir, 'seeders');
 }
 
-async function envParser (env) {
+async function envParser(env) {
   const envObj = {};
   forEach(env.environments, (value) => {
     envObj[value] = {};
@@ -590,7 +591,7 @@ async function envParser (env) {
   return envObj;
 }
 
-async function addSeederMongoose (jsonData, filePath, authObj) {
+async function addSeederMongoose(jsonData, filePath, authObj) {
   const roles = authObj.userRoles;
   const { models } = jsonData;
   const seeder = writeOperations.loadTemplate(`${filePath}/index.js`);
@@ -680,7 +681,7 @@ async function addSeederMongoose (jsonData, filePath, authObj) {
   return [seeder, user];
 }
 
-async function addSeederSequelize (jsonData, filePath, authObj) {
+async function addSeederSequelize(jsonData, filePath, authObj) {
   // const roles = commonService.uniqRolesFromRolePermissions(jsonData.rolePermission);
   const roles = authObj.userRoles;
   const { models } = jsonData;

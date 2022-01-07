@@ -1,5 +1,7 @@
 /* global _,appRootPath */
 const fs = require('fs');
+const path = require('path');
+const fsExtra = require('fs-extra');
 const mongoose = require('mongoose');
 const os = require('os');
 const { getAllDirFilesCount } = require('../../util-service/common');
@@ -41,13 +43,12 @@ const ProjectRoleAccessPermissions = new ProjectRoleAccessPermissionsRepo();
 const NestedQueryBuilder = new NestedQueryBuilderRepo();
 
 const generateNodeCode = async (
-  input, applicationRepo, definition, generatedId, dirPath, projectName, applicationId, generatorRepo,
+  input, applicationRepo, definition, generatedId, dirPath, projectName, applicationId, generatorRepo, isReBuild,
 ) => {
   try {
     const updatedApp = await applicationRepo.update(applicationId, { 'inProcessStatus.build_app': IN_PROCESS });
     await generatorRepo.update(generatedId, { 'inProcessStatus.build_app': IN_PROCESS });
-
-    await generator(input);
+    await generator(input, isReBuild);
     // eslint-disable-next-line max-len
     const lastGeneratorRecord = await generatorRepo.getDetails({
       find: {
@@ -419,6 +420,46 @@ const nodeExpressRequest = async (applicationId, project, schemaRepo) => {
   };
 };
 
+const getDirectoryAndFiles = (source) => {
+  const directory = [];
+  const files = [];
+  fs.readdirSync(source).forEach((file) => {
+    if (fs.lstatSync(path.resolve(source, file)).isDirectory()) {
+      directory.push(file);
+    } else {
+      files.push(file);
+    }
+  });
+  return {
+    directory,
+    files,
+  };
+};
+
+const overwriteProject = async (generatedId, projectName) => {
+  await fsExtra.copy(`./output/${generatedId}/${projectName}/.env`, `./output/${generatedId}/${projectName}_dhiwise_temp_app/.env`);
+
+  const outputProjectDir = `./output/${generatedId}/${projectName}`;
+  // fsExtra.emptyDirSync(directory);
+
+  const {
+    directories, files,
+  } = await getDirectoryAndFiles(outputProjectDir);
+
+  _.forEach(directories, (dirName) => {
+    if (dirName !== 'node_modules') {
+      fsExtra.emptyDirSync(`${outputProjectDir}/${dirName}`);
+    }
+  });
+
+  _.forEach(files, (fileName) => {
+    fsExtra.remove(`${outputProjectDir}/${fileName}`);
+  });
+
+  await fsExtra.copy(`./output/${generatedId}/${projectName}_dhiwise_temp_app`, `./output/${generatedId}/${projectName}`); // copies file
+  await fsExtra.remove(`./output/${generatedId}/${projectName}_dhiwise_temp_app`);
+};
+
 const generate = (applicationRepo, schemaRepo, generatorRepo) => async (params) => {
   try {
     if (!params.applicationId) {
@@ -447,6 +488,9 @@ const generate = (applicationRepo, schemaRepo, generatorRepo) => async (params) 
       };
     }
 
+    let generated;
+    let isReBuild = false;
+
     const definition = {
       generatorPath: `${appRootPath}/output`,
       inputPath: `${appRootPath}/input`,
@@ -457,11 +501,34 @@ const generate = (applicationRepo, schemaRepo, generatorRepo) => async (params) 
       config: definition,
       applicationId: params.applicationId,
       type: 1,
-      status: 1,
+      status: 2,
       versionNumber: '1',
       semanticVersionNumber: '1.0',
     };
-    let generated = await generatorRepo.create(obj);
+
+    if (params.applicationId) {
+      const query = {
+        find: {
+          applicationId: params.applicationId,
+          isDeleted: false,
+          config: definition,
+          type: 1,
+          status: 2,
+        },
+        sortBy: { _id: -1 },
+      };
+
+      const generatedApps = await generatorRepo.getDetails(query);
+
+      if (generatedApps.length > 0) {
+        generated = generatedApps[0]; // latest App
+        generated.id = generated._id;
+        isReBuild = true;
+      } else {
+        obj.status = 1;
+        generated = await generatorRepo.create(obj);
+      }
+    }
     if (!generated) {
       return GENERATOR_FAILED_CREATE;
     }
@@ -566,9 +633,12 @@ const generate = (applicationRepo, schemaRepo, generatorRepo) => async (params) 
     await generatorRepo.update(generated.id, { 'inProcessStatus.build_app': IN_QUEUE });
 
     const status = await generateNodeCode(
-      inputFile, applicationRepo, definition, generated.id, dirPath, project.name, params.applicationId, generatorRepo,
+      inputFile, applicationRepo, definition, generated.id, dirPath, project.name, params.applicationId, generatorRepo, isReBuild,
     );
     if (status) {
+      if (isReBuild) {
+        await overwriteProject(generated.id, jsonData.config.projectName);
+      }
       return {
         ...PROJECT_GENERATED,
         data: {
@@ -580,7 +650,7 @@ const generate = (applicationRepo, schemaRepo, generatorRepo) => async (params) 
     }
     return SERVER_ERROR;
   } catch (err) {
-    // console.log('error', err);
+    console.log('error', err);
     return SERVER_ERROR;
   }
 };
