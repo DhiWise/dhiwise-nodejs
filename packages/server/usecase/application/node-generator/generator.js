@@ -18,7 +18,7 @@ function trimModelNameFromInput (models) {
   throw new Error('modelName should not contain spaces');
 }
 
-async function main (inputFilepath) {
+async function main (inputFilepath, isReBuild) {
   let projectPath;
   try {
     const inputData = fs.readFileSync(inputFilepath, { encoding: 'utf8' });
@@ -39,6 +39,7 @@ async function main (inputFilepath) {
       directory: projectPath,
       projectName: config.projectName,
       jsonData,
+      isReBuild,
     });
   } catch (err) {
     console.log(err);

@@ -46,7 +46,7 @@ async function createPackageJson ({
     name: createAppName(name),
     version: '0.0.1',
     private: true,
-    scripts: { start: `node ${mainJsFile}` },
+    scripts: { start: `nodemon ${mainJsFile}` },
     dependencies: {
       'cookie-parser': '~1.4.4',
       debug: '~2.6.9',
@@ -67,6 +67,7 @@ async function createPackageJson ({
       eslint: '~7.12.1',
       'eslint-config-airbnb': '~18.2.1',
       'eslint-plugin-import': '~2.22.1',
+      nodemon: '^2.0.15',
     },
   };
   forEach(packages?.dependencies, (depValue, depName) => {
