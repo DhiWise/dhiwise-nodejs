@@ -521,6 +521,7 @@ const generate = (applicationRepo, schemaRepo, generatorRepo) => async (params) 
       const generatedApps = await generatorRepo.getDetails(query);
 
       if (generatedApps.length > 0) {
+        // eslint-disable-next-line prefer-destructuring
         generated = generatedApps[0]; // latest App
         generated.id = generated._id;
         isReBuild = true;
