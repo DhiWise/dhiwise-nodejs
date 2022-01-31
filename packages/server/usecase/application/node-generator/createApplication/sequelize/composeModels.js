@@ -355,16 +355,18 @@ const createModels = async (dir, jsonData, forValidationModels, modelData, authO
           jsonData.addDataFormate[key] = jsonData.addDataFormate.allModels_data_format;
         }
         let formateArray = [];
-        formateArray = concatAttributes(jsonData.addDataFormate[key], {
-          boolKeys,
-          dateKeys,
-          dateOnlyKey,
-        });
-        model.locals.CONCAT_HOOK = formateArray.array;
-        model.locals.STRING_ATT = formateArray.stringAttributeArray;
-        model.locals.FLAG = formateArray.flag;
-        boolKeys = [];
-        dateKeys = [];
+        if (jsonData.addDataFormate[key]) {
+          formateArray = concatAttributes(jsonData.addDataFormate[key], {
+            boolKeys,
+            dateKeys,
+            dateOnlyKey,
+          });
+          model.locals.CONCAT_HOOK = formateArray.array;
+          model.locals.STRING_ATT = formateArray.stringAttributeArray;
+          model.locals.FLAG = formateArray.flag;
+          boolKeys = [];
+          dateKeys = [];
+        }
       } else {
         model.locals.CONCAT_HOOK = false;
       }

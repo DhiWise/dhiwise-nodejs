@@ -337,6 +337,7 @@ const findAll<%-DB_MODEL_FC%> = async(req,res) => {
             }
             _%>
             result = await dbService.countDocument(<%-DB_MODEL_FC%>, query);
+            result = { totalRecords:result }
             return res.ok({data:result});
         }
         else {
@@ -480,11 +481,8 @@ const get<%-DB_MODEL_FC%>Count = async(req,res) => {
         }}
         _%> 
         let result = await dbService.countDocument(<%-DB_MODEL_FC%>,where);
-        if(result){
-            result = {totalRecords:result}
-            return res.ok({data:result});
-        }
-        return res.recordNotFound();
+        result = {totalRecords:result}
+        return res.ok({data:result});
     }
     catch(error){
         return res.failureResponse();
@@ -624,38 +622,38 @@ const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
     try{
         let ids = req.body.ids; 
         if(!ids || !Array.isArray(ids) || ids.length < 1){
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (req.user){
-                query = {
-                    "_id": {
-                        "$in": ids,
-                        "$ne": req.user.id
-                    }
-                }
-            } 
-            else{
-                return res.badRequest();
-            } 
-            <%_}else{_%>
-            let query = {_id:{"$in":ids}}
-            <%_}_%>
-            if (req.body.isWarning) {
-                let result = await deleteDependentService.count<%-DB_MODEL_FC%>(query);
-                if(result){
-                    return res.ok({data:result}); 
-                }
-                return res.recordNotFound();
-            }
-            else{
-                let result = await deleteDependentService.delete<%-DB_MODEL_FC%>(query);
-                if(result){
-                    return res.ok({data:result}); 
-                }
-                return res.recordNotFound();
-            }
+            return res.badRequest();
         }
-        return res.badRequest(); 
+        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
+        let query = {}
+        if (req.user){
+            query = {
+                "_id": {
+                    "$in": ids,
+                    "$ne": req.user.id
+                }
+            }
+        } 
+        else{
+            return res.badRequest();
+        } 
+        <%_}else{_%>
+        let query = {_id:{"$in":ids}}
+        <%_}_%>
+        if (req.body.isWarning) {
+            let result = await deleteDependentService.count<%-DB_MODEL_FC%>(query);
+            if(result){
+                return res.ok({data:result}); 
+            }
+            return res.recordNotFound();
+        }
+        else{
+            let result = await deleteDependentService.delete<%-DB_MODEL_FC%>(query);
+            if(result){
+                return res.ok({data:result}); 
+            }
+            return res.recordNotFound();
+        }
     }
     catch(error){
         return res.failureResponse(); 
@@ -672,26 +670,26 @@ const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
     try{
         let ids = req.body.ids; 
         if(!ids || !Array.isArray(ids) || ids.length < 1){
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (req.user){
-                query = {
-                    "_id": {
-                        "$in": ids,
-                        "$ne": req.user.id
-                    }
-                }
-            } 
-            <%_}else{_%>
-            let query = {"_id":{"$in":ids}}
-            <%_}_%>
-            let result = await dbService.deleteMany(<%-DB_MODEL_FC%>,query);
-            if(result){
-                return res.ok({data:result}); 
-            }
-            return res.recordNotFound();
+            return res.badRequest(); 
         }
-        return res.badRequest(); 
+        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
+        let query = {}
+        if (req.user){
+            query = {
+                "_id": {
+                    "$in": ids,
+                    "$ne": req.user.id
+                }
+            }
+        } 
+        <%_}else{_%>
+        let query = {"_id":{"$in":ids}}
+        <%_}_%>
+        let result = await dbService.deleteMany(<%-DB_MODEL_FC%>,query);
+        if(result){
+            return res.ok({data:result}); 
+        }
+        return res.recordNotFound();
     }
     catch(error){
         return res.failureResponse(); 
@@ -802,26 +800,26 @@ const softDeleteMany<%-DB_MODEL_FC%> = async(req,res) => {
     try{
         let ids = req.body.ids;
         if(!ids || !Array.isArray(ids) || ids.length < 1){
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (req.user){
-                query = {
-                    "_id": {
-                        "$in": ids,
-                        "$ne": req.user.id
-                    }
-                }
-            } 
-            <%_}else{_%>
-            let query = {_id:{$in:ids}}
-            <%_}_%>
-            let result = await deleteDependentService.softDelete<%-DB_MODEL_FC%>(query<%_if(SUPPORT_API[i].isLogin){_%>,req.user<%_}_%>);
-            if (!result) {
-                return res.recordNotFound();
-            }
-            return  res.ok({data:result});
+            return res.badRequest();
         }
-        return res.badRequest();
+        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
+        let query = {}
+        if (req.user){
+            query = {
+                "_id": {
+                    "$in": ids,
+                    "$ne": req.user.id
+                }
+            }
+        } 
+        <%_}else{_%>
+        let query = {_id:{$in:ids}}
+        <%_}_%>
+        let result = await deleteDependentService.softDelete<%-DB_MODEL_FC%>(query<%_if(SUPPORT_API[i].isLogin){_%>,req.user<%_}_%>);
+        if (!result) {
+            return res.recordNotFound();
+        }
+        return  res.ok({data:result});
     }catch(error){
         return res.failureResponse(); 
     }
@@ -837,26 +835,27 @@ const softDeleteMany<%-DB_MODEL_FC%> = async(req,res) => {
     try{
         let ids = req.body.ids;
         if(!ids || !Array.isArray(ids) || ids.length < 1){
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (req.user){
-                query = {
-                    "_id": {
-                        "$in": ids,
-                        "$ne": req.user.id
-                    }
-                }
-            } 
-            <%_}else{_%>
-            let query = {_id:{$in:ids}}
-            <%_}_%>
-            let data = await dbService.bulkUpdate(<%-DB_MODEL_FC%>,query, { isDeleted: true<%_if(SUPPORT_API[i].isLogin){_%>,updatedBy:req.user.id<%_}_%> });
-            if (!data) {
-                return res.recordNotFound();
-            }
-            return res.ok({data});
+            return res.badRequest();
         }
-        return res.badRequest();
+        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
+        let query = {}
+        if (req.user){
+            query = {
+                "_id": {
+                    "$in": ids,
+                    "$ne": req.user.id
+                }
+            }
+        } 
+        <%_}else{_%>
+        let query = {_id:{$in:ids}}
+        <%_}_%>
+        let data = await dbService.bulkUpdate(<%-DB_MODEL_FC%>,query, { isDeleted: true<%_if(SUPPORT_API[i].isLogin){_%>,updatedBy:req.user.id<%_}_%> });
+        if (!data) {
+            return res.recordNotFound();
+        }
+        return res.ok({data});
+        
     }catch(error){
         return res.failureResponse(); 
     }

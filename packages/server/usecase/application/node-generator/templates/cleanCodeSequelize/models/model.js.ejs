@@ -13,8 +13,8 @@ const <%-MODEL_ENUM[i].enumFile%>Enum=require("../constants/<%-MODEL_ENUM[i].enu
 <%_}_%>
 <%_}_%>
 <%_}_%>
-<%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
-<%_if(FLAG){_%>    
+<%_if(typeof CONCAT_HOOK !== "undefined" && CONCAT_HOOK){_%>
+<%_if(typeof FLAG !== "undefined"){_%>    
 const dayjs = require('dayjs');
 <%_}_%>
 <%_}_%>        
@@ -77,7 +77,7 @@ function makeModel (sequelize){
      <%_ } _%>
     <%-DB_MODEL_FC%>.prototype.toJSON = function () {
         var values = Object.assign({}, this.get());
-        <%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
+        <%_if(typeof CONCAT_HOOK !== "undefined" && CONCAT_HOOK){_%>
         <%_for(index of CONCAT_HOOK){_%>
         <%_for(formateIndex in index){_%>
         <%_if(typeof (index[formateIndex])==='object'){_%>

@@ -3,8 +3,8 @@
 <%_}_%>
 let mongoose = require('../connection');
 const mongoosePaginate = require('mongoose-paginate-v2');
-<%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
-    <%_if(FLAG){_%>    
+<%_if(typeof CONCAT_HOOK !== "undefined" && CONCAT_HOOK){_%>
+    <%_if(typeof FLAG !== "undefined"){_%>    
     const dayjs = require('dayjs');
     <%_}_%>
 <%_}_%>   
@@ -173,9 +173,9 @@ schema.methods.isPasswordMatch = async function (password) {
 };
 <%_ } _%>
 schema.method("toJSON", function () {
-    const { __v, ...object } = this.toObject({virtuals:true});
-    object.id = object._id;
-    <%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
+    const { _id, __v, ...object } = this.toObject({virtuals:true});
+    object.id = _id;
+    <%_if(Ctypeof CONCAT_HOOK !== "undefined" && CONCAT_HOOK){_%>
     <%_for(index of CONCAT_HOOK){_%>
     <%_for(formateIndex in index){_%>
     <%_if(typeof (index[formateIndex])==='object'){_%>

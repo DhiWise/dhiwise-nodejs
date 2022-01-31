@@ -3,8 +3,8 @@
   * @description :: model of a database collection <%-DB_MODEL %>
   */
 
-<%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
-<%_if(FLAG){_%>    
+<%_if(typeof CONCAT_HOOK !== "undefined" && CONCAT_HOOK){_%>
+<%_if(typeof FLAG !== "undefined"){_%>    
 const dayjs = require('dayjs');
 <%_}_%>
 <%_}_%>
@@ -17,7 +17,7 @@ var idValidator = require('mongoose-id-validator');
 <%_ if(DB_UNIQUE) { _%>
 const uniqueValidator = require('mongoose-unique-validator');
 <%_ } _%>
-<%_ if((typeof USER !== "undefined" && typeof IS_AUTH!=="undefined") && (USER && IS_AUTH)){ _%>
+<%_ if((typeof USER !== "undefined" && typeof IS_AUTH !== "undefined") && (USER && IS_AUTH)){ _%>
 const bcrypt = require("bcrypt");
 const{USER_ROLE} = require("../constants/authConstant");
 const {convertObjectToEnum} = require("../utils/common")
@@ -178,9 +178,9 @@ schema.methods.isPasswordMatch = async function (password) {
 };
 <%_ } _%>
 schema.method("toJSON", function () {
-    const { __v, ...object } = this.toObject({virtuals:true});
-    object.id = object._id;
-    <%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
+    const { _id, __v, ...object } = this.toObject({virtuals:true});
+    object.id = _id;
+    <%_if(typeof CONCAT_HOOK !== "undefined" && CONCAT_HOOK){_%>
     <%_for(index of CONCAT_HOOK){_%>
     <%_for(formateIndex in index){_%>
     <%_if(typeof (index[formateIndex])==='object'){_%>

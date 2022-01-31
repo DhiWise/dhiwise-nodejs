@@ -585,7 +585,7 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                             "field 1", "field 2"
                         ],
                         "page": 1,
-                        "paginate": 2
+                        "paginate": 10
                     },
                     "isCountOnly": false
                 }

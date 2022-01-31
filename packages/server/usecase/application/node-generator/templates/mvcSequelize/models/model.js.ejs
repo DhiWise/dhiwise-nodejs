@@ -7,13 +7,13 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/dbConnection')
 const sequelizePaginate = require('sequelize-paginate');
 const sequelizeTransforms = require('sequelize-transforms');
-<%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
-<%_if(FLAG){_%>    
+<%_if(typeof CONCAT_HOOK !== "undefined" && CONCAT_HOOK){_%>
+<%_if(typeof FLAG !== "undefined"){_%>    
 const dayjs = require('dayjs');
 <%_}_%>
 <%_}_%>    
 const { convertObjectToEnum } = require('../utils/common');
-<%_if(typeof USER !== undefined && USER){ _%> 
+<%_if(typeof USER !== "undefined" && USER){ _%> 
 const bcrypt = require('bcrypt');
 <%_}_%> 
 <%_if(MODEL_ENUM!==null && MODEL_ENUM){_%>
@@ -82,7 +82,7 @@ let <%-DB_MODEL_FC%> = sequelize.define("<%-DB_MODEL%>",{
 <%_ } _%>
 <%-DB_MODEL_FC%>.prototype.toJSON = function () {
     var values = Object.assign({}, this.get());
-    <%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
+    <%_if(typeof CONCAT_HOOK !== "undefined" && CONCAT_HOOK){_%>
     <%_for(index of CONCAT_HOOK){_%>
     <%_for(formateIndex in index){_%>
     <%_if(typeof (index[formateIndex])==='object'){_%>

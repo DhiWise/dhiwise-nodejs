@@ -1,6 +1,6 @@
 const {
   JWT,LOGIN_ACCESS,
-  PLATFORM,MAX_LOGIN_RETRY_LIMIT,LOGIN_REACTIVE_TIME,FORGOT_PASSWORD_WITH
+  PLATFORM,MAX_LOGIN_RETRY_LIMIT,LOGIN_REACTIVE_TIME,FORGOT_PASSWORD_WITH<%_if(MAX_DEVICE_ALLOWED){_%>,NO_OF_DEVICE_ALLOWED<%_}_%>
 } = require('../../constants/authConstant');
 const dayjs = require('dayjs');
 const generateToken = require('../../utils/generateToken');
@@ -23,9 +23,9 @@ const loginUser = ({ <%-USER_MODEL-%>Db,userTokensDb<%_if(ROLE_PERMISSION){_%>,u
     let user = await <%-USER_MODEL-%>Db.findOne(where);
     if (user) {
         <%_if(MAX_DEVICE_ALLOWED){_%>
-            const userToken = await userTokenDb.count({ $and:[{ tokenExpiredTime: { $gt: dayjs().toISOString() }, },{ isTokenExpired: 0, },{ userId:user.id }] } );
+            const userToken = await userTokensDb.count({ $and:[{ tokenExpiredTime: { $gt: dayjs().toISOString() }, },{ isTokenExpired: 0, },{ userId:user.id }] } );
             if(userToken >= NO_OF_DEVICE_ALLOWED){
-                response.badRequest({message : "You've reached your device limit"});
+                return response.badRequest({message : "You've reached your device limit"});
             }
         <%_}_%>
         <%_if(LOGIN_RETRY_LIMIT){_%>
