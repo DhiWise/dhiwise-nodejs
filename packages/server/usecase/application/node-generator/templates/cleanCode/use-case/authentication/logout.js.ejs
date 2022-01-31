@@ -1,0 +1,17 @@
+const response = require('../../utils/response');
+
+const logout = ({userTokensDb}) => async (user, token,req={},res={}) => {
+    let userToken = await userTokensDb.findOne({ token:token ,userId:user.id });
+    let updatedDocument = {
+        isTokenExpired : true
+    }
+    await userTokensDb.updateOne( {_id:userToken.id},updatedDocument);
+    <%_if(typeof PUSH_NOTIFICATION !== 'undefined'){_%>
+        let found = await pushNotificationService.getSingleDocumentByQuery({ userId:req.user.id });
+        if(found){
+            await pushNotificationService.updateDocument(found.id,{isActive:false});
+        }
+    <%_}_%>
+    return response.success({message:"Logged out Successfully"});
+}
+module.exports = logout;

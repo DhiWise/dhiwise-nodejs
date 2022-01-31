@@ -10,8 +10,11 @@ for(let i=0;i< VARIABLES.length; i++) {_%>
 <%-VARIABLES[i]%>
 <%_ } } _%>
 <%_if(typeof IS_AUTH!=="undefined" && IS_AUTH){_%>
-const {USER_ROLE} = require("../constants/authConstant");
-const {convertObjectToEnum} = require("../utils/common")   
+const {USER_ROLE} = require("../../constants/authConstant");
+const {convertObjectToEnum} = require("../../utils/common")   
 <%_}_%>
-exports.schemaKeys = joi.object(<%-VALIDATION_KEY%>).unknown(true);
-exports.updateSchemaKeys = joi.object(<%-UPDATE_VALIDATION_KEY%>).unknown(true);
+const createSchema = joi.object(<%-VALIDATION_KEY%>).unknown(true);
+
+const updateSchema = joi.object(<%-UPDATE_VALIDATION_KEY%>).unknown(true);
+
+module.exports = {createSchema, updateSchema};

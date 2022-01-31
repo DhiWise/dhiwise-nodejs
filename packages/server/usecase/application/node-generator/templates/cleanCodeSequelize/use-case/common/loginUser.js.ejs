@@ -1,0 +1,121 @@
+const {
+  JWT,LOGIN_ACCESS,
+  PLATFORM,MAX_LOGIN_RETRY_LIMIT,LOGIN_REACTIVE_TIME,FORGOT_PASSWORD_WITH
+} = require('../../constants/authConstant');
+const dayjs = require('dayjs');
+const generateToken = require('../../utils/generateToken');
+const {getDifferenceOfTwoDatesInTime} = require('../../helpers/date');
+const response = require('../../utils/response');
+const responseStatus = require('../../utils/response/responseStatus');
+
+<%_if(ROLE_PERMISSION){_%>
+    const makeGetRoleAccess = require('../common/getRoleAccess');
+<%_}_%>
+
+
+const loginUser = ({ <%-USER_MODEL-%>Db,userTokenDb<%_if(ROLE_PERMISSION){_%>,userRoleDb,routeRoleDb<%_}_%> })=> async(username,url,password = null <%_if(ROLE_PERMISSION){_%>,roleAccess<%_}_%>) => {
+
+    <%_ if(LOGIN_WITH.length>1){ _%>
+        let where = <%-MULTIPLE_LOGIN%>
+    <%_ }else{_%>
+        let where ={'<%-LOGIN_WITH[0]%>':username}
+    <%_}_%>
+    let user = await <%-USER_MODEL-%>Db.findOne(where);
+    if (user) {
+        <%_if(MAX_DEVICE_ALLOWED){_%>
+            const userToken = await userTokenDb.count({ $and:[{ tokenExpiredTime: { $gt: dayjs().toISOString() }, },{ isTokenExpired: 0, },{ userId:user.id }] } );
+            if(userToken >= NO_OF_DEVICE_ALLOWED){
+                response.badRequest({message : "You've reached your device limit"});
+            }
+        <%_}_%>
+        <%_if(LOGIN_RETRY_LIMIT){_%>
+            if(user.<%-LOGIN_RETRY_LIMIT.key%> >= MAX_LOGIN_RETRY_LIMIT){
+                let now = dayjs();
+                if (user.loginReactiveTime){
+                    let limitTime = dayjs(user.loginReactiveTime);
+                    if (limitTime > now){
+                        let expireTime = dayjs().add(LOGIN_REACTIVE_TIME,'minute');
+                        if (!(limitTime > expireTime)){
+                        return response.badRequest({message :`you have exceed the number of limit.you can login after ${getDifferenceOfTwoDatesInTime(now,limitTime)}.`});
+                        }   
+                        await <%-USER_MODEL-%>Db.updateOne({_id :user.id},{
+                        loginReactiveTime:expireTime.toISOString(),
+                        <%-LOGIN_RETRY_LIMIT.key%>:user.<%-LOGIN_RETRY_LIMIT.key%> + 1  
+                        });
+                        return response.badRequest({message : `you have exceed the number of limit.you can login after ${getDifferenceOfTwoDatesInTime(now,expireTime)}.`});
+                    }else {
+                        user = await <%-USER_MODEL-%>Db.updateOne({ _id:user.id },{
+                            loginReactiveTime:'',
+                            <%-LOGIN_RETRY_LIMIT.key%>:0
+                        },{ new:true });
+                    }
+                } else {
+                    // send error
+                    let expireTime = dayjs().add(LOGIN_REACTIVE_TIME,'minute');
+                    await <%-USER_MODEL-%>Db.updateOne(user.id,{
+                        loginReactiveTime:expireTime.toISOString(),
+                        <%-LOGIN_RETRY_LIMIT.key%>:user.<%-LOGIN_RETRY_LIMIT.key%> + 1 
+                    });
+                    return response.badRequest({message :`you have exceed the number of limit.you can login after ${getDifferenceOfTwoDatesInTime(now,expireTime)}.`}); 
+                } 
+            }
+        <%_}_%>
+        if(password){
+            const isPasswordMatched = await <%-USER_MODEL-%>.isPasswordMatch(password);
+            if (!isPasswordMatched) {
+                <%_if(LOGIN_RETRY_LIMIT){_%>
+                    await <%-USER_MODEL-%>Db.updateOne({_id : user.id},{<%-LOGIN_RETRY_LIMIT.key%>:user.<%-LOGIN_RETRY_LIMIT.key%>+1});
+                <%_}_%>
+                return response.badRequest({message : "incorrect password"});
+            }
+        }
+        
+        const userData=user.toJSON()
+        let token;
+        if (!user.role) {
+            return response.badRequest({message : "You have not been assigned role." });
+        }
+        <%_for(let i=0; i<PLATFORMS.length; i++){_%>
+            <%_if(i===0){_%>
+            if(url.includes('<%-PLATFORMS[i].toLowerCase()%>')){
+                if(!LOGIN_ACCESS[user.role].includes(PLATFORM.<%-PLATFORMS[i].toUpperCase()%>)){
+                    return response.badRequest({message : 'you are unable to access this platform'});
+                }
+                token = await generateToken(userData,JWT.<%-PLATFORMS[i].toUpperCase()%>_SECRET)
+            }
+            <%_}else{_%>
+            else if(url.includes('<%-PLATFORMS[i].toLowerCase()%>')){
+                if(!LOGIN_ACCESS[user.role].includes(PLATFORM.<%-PLATFORMS[i].toUpperCase()%>)){
+                    return response.badRequest({ message : 'you are unable to access this platform'});
+                }
+                token = await generateToken(userData,JWT.<%-PLATFORMS[i].toUpperCase()%>_SECRET)
+            }
+            <%_}_%>
+        <%_}_%> 
+        <%_if(LOGIN_RETRY_LIMIT){_%>
+            if(user.<%-LOGIN_RETRY_LIMIT.key%>){
+                await <%-USER_MODEL-%>Db.updateOne({_id :user.id},{<%-LOGIN_RETRY_LIMIT.key%>:0,loginReactiveTime:''});
+            }
+        <%_}_%>
+        let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
+        await userTokenDb.create({ userId: user.id, token: token,tokenExpiredTime: expire });                  
+        let userToReturn = { ...userData, ...{ token } };
+        <%_if(ROLE_PERMISSION){_%>
+            let roleAccessData = {};
+            if (roleAccess){
+                const getRoleAccessData = makeGetRoleAccess({userRoleDb,routeRoleDb}); //Dependency Injection
+                roleAccessData = await getRoleAccessData(user.id);
+
+                if(roleAccessData.status == responseStatus.success){
+                    userToReturn.roleAccess = roleAccessData.data
+                }
+                
+            }
+        <%_}_%>
+        return response.success({data:userToReturn, message : 'Login Successful'});
+    } else {
+        return response.badRequest({message :"User not exists"});
+    }
+}
+
+module.exports = loginUser;

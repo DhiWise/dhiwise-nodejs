@@ -1,0 +1,18 @@
+
+/**
+ *createBulk.js
+ */
+
+const  <%-MODEL_NAME-%>Entity = require('../../entities/<%-MODEL_NAME-%>');
+const response = require('../../utils/response');
+<%_if(typeof DEFAULT_USER_ROLE !== "undefined" && DEFAULT_USER_ROLE){ _%>
+const authConstant = require('../../constants/authConstant');
+<%_}_%>
+
+const createBulk = ({ <%-MODEL_NAME-%>Db,createValidation }) => async (params) => {
+    let { data } = params;
+    let <%-MODEL_NAME.toLowerCase()-%>Entities = data.map(item => <%-MODEL_NAME-%>Entity(item))
+    let results = await <%-MODEL_NAME-%>Db.createMany(<%-MODEL_NAME.toLowerCase()-%>Entities);
+    return response.success({data:results});
+}
+module.exports = createBulk;

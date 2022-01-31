@@ -1,12 +1,14 @@
 /* eslint-disable no-console */
 /* global _ */
 const fs = require('fs');
-const { PROJECT_TYPE } = require('./constants/constant');
+const {
+  PROJECT_TYPE, DB_ADAPTER,
+} = require('./constants/constant');
 
 global.__basedir = __dirname;
 const CodeGenerator = require('./codeGenerator');
 
-function trimModelNameFromInput (models) {
+function trimModelNameFromInput(models) {
   const oldModelNames = _.keys(models);
   let newModelNames = [];
   _.forEach(models, (model, modelName) => {
@@ -18,7 +20,7 @@ function trimModelNameFromInput (models) {
   throw new Error('modelName should not contain spaces');
 }
 
-async function main (inputFilepath) {
+async function main(inputFilepath) {
   let projectPath;
   try {
     const inputData = fs.readFileSync(inputFilepath, { encoding: 'utf8' });
@@ -33,7 +35,7 @@ async function main (inputFilepath) {
         jsonData.projectType = `${jsonData.projectType}_${(jsonData.ORM).toUpperCase()}`;
       }
     }
-    const codeGenerator = new CodeGenerator(jsonData.projectType || PROJECT_TYPE.MVC);
+    const codeGenerator = new CodeGenerator(jsonData.projectType || PROJECT_TYPE.MVC, jsonData.adapter || DB_ADAPTER.MONGODB);
     console.time();
     await codeGenerator.createApp({
       directory: projectPath,
@@ -46,4 +48,5 @@ async function main (inputFilepath) {
   }
 }
 
+main('/home/mihirpatel/DhiWise/project/GitHub/dhiwise-nodejs/packages/server/input/61d665254078f34d4835a289.json');
 module.exports = main;

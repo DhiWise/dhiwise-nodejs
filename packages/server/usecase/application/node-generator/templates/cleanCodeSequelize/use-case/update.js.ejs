@@ -1,0 +1,25 @@
+/**
+ *update.js
+ */
+
+const <%-MODEL_NAME-%>Entity = require('../../entities/<%-MODEL_NAME-%>');
+const response = require('../../utils/response');
+
+const update = ({ <%-MODEL_NAME-%>Db, updateValidation}) => async (params) => {
+    let { data, query } = params;
+    const validateRequest = await updateValidation(data);
+    if (!validateRequest.isValid) {
+        return response.validationError({ message : `Invalid values in parameters, ${validateRequest.message}` });
+    }
+    let  <%-MODEL_NAME.toLowerCase()-%> =  <%-MODEL_NAME.toLowerCase()-%>Entity({
+        ...data,
+        id:query.id
+    });
+
+    <%-MODEL_NAME.toLowerCase()-%> = await <%-MODEL_NAME-%>Db.updateOne(query,<%-MODEL_NAME.toLowerCase()-%>);
+    if(<%-MODEL_NAME.toLowerCase()-%>){
+        return response.success({data:<%-MODEL_NAME.toLowerCase()-%>});
+    }
+    return response.recordNotFound();
+}
+module.exports = update;

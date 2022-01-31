@@ -1,0 +1,34 @@
+let Sequence = require('../db/mongoDB/models/sequence');
+let {
+  create,
+  createMany,
+  updateOne,
+  updateMany,
+  deleteOne,
+  deleteMany,
+  softDelete,
+  softDeleteMany,
+  findOne,
+  findMany,
+  paginate,
+  count,
+  upsert,
+  aggregate 
+} = require('../db/mongoDB/dbService')(Sequence);
+
+module.exports = {
+  create,
+  createMany,
+  updateOne,
+  updateMany,
+  deleteOne,
+  deleteMany,
+  softDelete,
+  softDeleteMany,
+  findOne,
+  findMany,
+  paginate,
+  count,
+  upsert,
+  aggregate
+};

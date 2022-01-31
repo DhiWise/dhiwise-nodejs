@@ -1,0 +1,26 @@
+/**
+ * create.js
+ */
+const  <%-MODEL_NAME-%>Entity = require('../../entities/<%-MODEL_NAME-%>');
+const response = require('../../utils/response');
+<%_if(typeof DEFAULT_USER_ROLE !== "undefined" && DEFAULT_USER_ROLE){ _%>
+const authConstant = require('../../constants/authConstant');
+<%_}_%>
+
+/**
+ * @description : create documents of document of <%-MODEL_NAME-%> in mongodb collection
+ * @param {obj} <%-MODEL_NAME-%>Db : db service instance
+ * @param {obj} params : {data: data to add}
+ * @return {obj} : response of create. {status, message, data}
+ */
+const create = ({ <%-MODEL_NAME-%>Db,createValidation }) => async (params) => {
+    let { data } = params;
+    const validateRequest = await createValidation(data);
+    if (!validateRequest.isValid) {
+        return response.validationError({ message : `Invalid values in parameters, ${validateRequest.message}` });
+    }
+    let <%-MODEL_NAME-%> = <%-MODEL_NAME-%>Entity(data);
+    <%-MODEL_NAME-%> = await <%-MODEL_NAME-%>Db.create(<%-MODEL_NAME-%>);
+    return response.success({data:<%-MODEL_NAME-%>});
+}
+module.exports = create;

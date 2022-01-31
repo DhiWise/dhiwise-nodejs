@@ -1,0 +1,16 @@
+/**
+ partialUpdate.js
+ */
+
+const <%-MODEL_NAME-%>Entity = require('../../entities/<%-MODEL_NAME-%>');
+const response = require('../../utils/response');
+
+const partialUpdate = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
+    let { data, query } = params;
+    const <%-MODEL_NAME.toLowerCase()-%> = await <%-MODEL_NAME-%>Db.updateOne(query,data);
+    if(<%-MODEL_NAME.toLowerCase()-%>){
+        return response.success({data:<%-MODEL_NAME.toLowerCase()-%>});
+    }
+    return response.recordNotFound();
+}
+module.exports = partialUpdate;

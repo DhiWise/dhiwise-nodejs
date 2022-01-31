@@ -1,0 +1,15 @@
+
+const response = require('../../utils/response');
+const makeLoginUser = require('../common/loginUser'); 
+
+const authentication = ({ <%-USER_MODEL-%>Db,userTokensDb<%_if(ROLE_PERMISSION){_%>,userRoleDb,routeRoleDb<%_}_%> }) => async (data, url,req={},res={}) => {
+    let username = data.username;
+    let password = data.password;
+
+    if(!username || !password){
+        return response.badRequest()
+    }
+    const loginUser = makeLoginUser({<%-USER_MODEL-%>Db,userTokensDb});
+    return result = await loginUser(username, url, password);
+}
+module.exports = authentication;

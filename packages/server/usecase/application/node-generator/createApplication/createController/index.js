@@ -11,7 +11,7 @@ const {
 } = require('../../constants/constant');
 const { getSQLRelationshipDependencies } = require('../getDeleteDependency');
 
-async function getFieldSelection (model, platform, fieldSelectionObj) {
+async function getFieldSelection(model, platform, fieldSelectionObj) {
   let fieldSelection = false;
   if (!isEmpty(fieldSelectionObj) && !isEmpty(fieldSelectionObj[platform]) && !isEmpty(fieldSelectionObj[platform][model])) {
     forEach(fieldSelectionObj[platform][model], (value, key) => {
@@ -22,7 +22,7 @@ async function getFieldSelection (model, platform, fieldSelectionObj) {
   }
   return fieldSelection;
 }
-async function getNotification (model, modelNotifications) {
+async function getNotification(model, modelNotifications) {
   let notificationObj = false;
   if (!isEmpty(modelNotifications) && !isEmpty(modelNotifications[model])) {
     forEach(modelNotifications[model], (value, key) => {
@@ -34,7 +34,7 @@ async function getNotification (model, modelNotifications) {
   return notificationObj;
 }
 
-async function individualNotification (notificationObj) {
+async function individualNotification(notificationObj) {
   const notification = {};
   let email = []; let sms = []; let webNotification = [];
   forEach(notificationObj, (val) => {
@@ -51,7 +51,7 @@ async function individualNotification (notificationObj) {
   return notification;
 }
 
-async function getDeleteDependentModel (model, deleteDependency) {
+async function getDeleteDependentModel(model, deleteDependency) {
   let deleteModels = [];
   // eslint-disable-next-line no-restricted-syntax
   for (const k in deleteDependency) {
@@ -85,7 +85,7 @@ const transformRouteWithQueryBuilder = async (routes) => {
   return { routes };
 };
 
-async function findAndTransformQueryBuilderInNestedCall (nestedCall) {
+async function findAndTransformQueryBuilderInNestedCall(nestedCall) {
   forEach(nestedCall, async (nestedCallArray, preAndPost) => {
     const temp = await transformRouteWithQueryBuilder(nestedCallArray);
     nestedCall[preAndPost] = temp.routes;
@@ -93,8 +93,8 @@ async function findAndTransformQueryBuilderInNestedCall (nestedCall) {
   return nestedCall;
 }
 
-async function generateController (apis, platformName, controllers, ormProvider, models) {
-  const returnController = { };
+async function generateController(apis, platformName, controllers, ormProvider, models) {
+  const returnController = {};
   const packageDependencies = { dependencies: {} };
   const customRoutes = (controllers?.jsonData?.routes?.apis?.length) ? controllers.jsonData.routes.apis : [];
   const customRoutesOfPlatform = groupBy(customRoutes, 'platform')[platformName];
@@ -275,7 +275,7 @@ async function generateController (apis, platformName, controllers, ormProvider,
     packageDependencies,
   };
 }
-async function generateControllerIndex (platform, platformName, controllers) {
+async function generateControllerIndex(platform, platformName, controllers) {
   const controllerIndexFiles = [];
   const customRoutes = (controllers.jsonData.routes?.apis && controllers.jsonData.routes?.apis.length) ? controllers.jsonData.routes?.apis : [];
   const customRoutesOfPlatform = groupBy(customRoutes, 'platform')[platformName];
@@ -292,9 +292,26 @@ async function generateControllerIndex (platform, platformName, controllers) {
       platformIndexController.locals.SMS = false;
       platformIndexController.locals.WEB = false;
       platformIndexController.locals.IS_AUTH = false;
+      platformIndexController.locals.CONTROLLER_METHODS = element;
+      platformIndexController.locals.USER_MODEL = controllers.auth.isAuth && controllers.auth.userModel === model;
       if (controllers.auth.isAuth && controllers.auth.userModel === model) {
         platformIndexController.locals.IS_AUTH = controllers.auth.isAuth;
       }
+
+      const deleteDependency = await getDeleteDependentModel(model, controllers.deleteDependency);
+      platformIndexController.locals.DELETE_DEPENDENT_MODEL = deleteDependency.length ? deleteDependency : false;
+
+      let dbDependencyInjection = [model];
+      if (deleteDependency.length) {
+        if (!isEmpty(deleteDependency)) {
+          forEach(deleteDependency, (value) => {
+            dbDependencyInjection.push(value.model);
+          });
+        }
+        dbDependencyInjection = uniq(dbDependencyInjection);
+      }
+      platformIndexController.locals.DB_DEPENDENCY_INJECTION = dbDependencyInjection;
+
       const notificationObj = await getNotification(model, controllers.jsonData.modelNotifications);
       if (notificationObj) {
         platformIndexController.locals.NOTIFICATION = true;
@@ -342,7 +359,7 @@ async function generateControllerIndex (platform, platformName, controllers) {
   }
   return controllerIndexFiles;
 }
-async function makeControllerIndex (controllers) {
+async function makeControllerIndex(controllers) {
   const platform = controllers.jsonData.modelConfig;
   // const platform = cloneDeep(controllers.jsonData.authentication.platform);
   const controllerIndex = {};
@@ -361,7 +378,7 @@ async function makeControllerIndex (controllers) {
   return controllerIndex;
 }
 
-async function makeController (controllers) {
+async function makeController(controllers) {
   const platform = controllers.jsonData.modelConfig;
   const platformWiseController = {};
   const packageDependencies = {};

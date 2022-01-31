@@ -1,0 +1,31 @@
+let <%-MODEL_NAME_FC-%> = require('../db/sequelize/models').<%-MODEL_NAME-%>;
+let { create,
+    createMany,
+    updateOne,
+    updateMany,
+    deleteOne,
+    deleteMany,
+    softDelete,
+    softDeleteMany,
+    findOne,
+    findMany,
+    paginate,
+    count,    
+    upsert,
+     } = require('../db/sequelize/dbService')(<%-MODEL_NAME_FC-%>);
+
+module.exports = {
+    create,
+    createMany,
+    updateOne,
+    updateMany,
+    deleteOne,
+    deleteMany,
+    softDelete,
+    softDeleteMany,
+    findOne,
+    findMany,
+    paginate,
+    count,
+    upsert,    
+};

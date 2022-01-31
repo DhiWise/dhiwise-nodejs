@@ -20,7 +20,7 @@ const dayjs = require('dayjs');
 <%_}_%>        
 const sequelizePaginate = require('sequelize-paginate');
 const sequelizeTransforms = require('sequelize-transforms');
-const { convertObjectToEnum } = require('../utils/common');
+const { convertObjectToEnum } = require('../../../utils/common');
 function makeModel (sequelize){
     <%_ var model = DB_SCHEMA _%>
     <%_ var modelArr = Object.keys(model)_%>

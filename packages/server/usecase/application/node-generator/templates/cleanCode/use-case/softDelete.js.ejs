@@ -1,0 +1,38 @@
+/**
+ softDelete.js
+ */
+
+const response = require('../../utils/response');
+<%_ if(DELETE_DEPENDENT_MODEL){ _%>
+    const makeGetDependencyCount = require('./deleteDependent').getDependencyCount;
+    const makeSoftDeleteWithDependency = require('./deleteDependent').softDeleteWithDependency;
+<%_ } _%>
+
+
+<%_ if(DELETE_DEPENDENT_MODEL){ _%>
+const softDelete = ({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>}) => async (params) => {
+    let {data, query } = params;
+    const dataToUpdate = { isDeleted: true };
+    let result = {};
+    if (data.isWarning) {
+        const getDependencyCount = makeGetDependencyCount({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>}) //dependency injection
+        result = await getDependencyCount(query);
+        return response.success({data:result});
+    } else {
+        const softDeleteWithDependency = makeSoftDeleteWithDependency({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>}) //dependency injection
+        return await softDeleteWithDependency(query, dataToUpdate);
+    }
+    
+}
+<%_ } else { _%>
+const softDelete = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
+    let { query } = params;
+    const dataToUpdate = { isDeleted: true };
+    let result = await <%-MODEL_NAME-%>Db.softDelete(query, dataToUpdate);
+    if(result){
+        return response.success({data:result});
+    }
+    return response.recordNotFound();
+}
+<%_ } _%>
+module.exports = softDelete;

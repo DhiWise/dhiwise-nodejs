@@ -19,11 +19,10 @@ let <%- variable %> = require('<%- modules[variable] %>');
 <% Object.keys(localModules).sort().forEach(function (variable) { -%>
 const <%- variable %> = require('<%- localModules[variable] %>');
 <% }); -%>
-
-const models = require('./model');
+const models = require('./db/sequelize/models');
 <%_ if(typeof PLATFORM !== "undefined" && PLATFORM){ _%>
 <%_ for(const platform of PLATFORM){ _%>
-const {<%-platform.toLowerCase()%>PassportStrategy} = require("./config/<%-platform%>PassportStrategy");
+const {<%-platform.toLowerCase()%>PassportStrategy} = require('./middleware');
 <%_ } _%>
 <%_ } _%>
 

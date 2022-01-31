@@ -60,6 +60,10 @@ module.exports = {
     GENERATE_TEST_CASES_SEQUELIZE: 52,
     RENDER_EJS: 53,
     APPLY_ESLINT: 54,
+    CREATE_DATA_ACCESS_FILES: 55,
+    CREATE_USECASE_FILES: 56,
+    CREATE_COMMON_USE_CASE_FILES: 57,
+    CREATE_MIDDLEWARE_INDEX: 58,
   },
   SUPPORT_API: ['C', 'R', 'U', 'D', 'UP', 'HD', 'BC', 'BU'],
   APIS: [
@@ -571,6 +575,7 @@ module.exports = {
     MYSQL: 'mysql',
     MSSQL: 'mssql',
     POSTGRESQL: 'postgres',
+    MONGODB: 'mongodb',
   },
   REMOVE_FIELD_FOR_FAKE_DATA: ['isActive', 'isDeleted', 'createdAt', 'updatedAt', 'addedBy', 'modifiedBy', 'updatedBy'],
   SEQUELIZE_DATATYPE_MAPPINGS: {

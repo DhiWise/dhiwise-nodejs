@@ -1,111 +1,107 @@
 <%_if(COMMENT){_%>
     // <%-COMMENT.description%>
+<%_}_%>
+let mongoose = require('../connection');
+const mongoosePaginate = require('mongoose-paginate-v2');
+<%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
+    <%_if(FLAG){_%>    
+    const dayjs = require('dayjs');
     <%_}_%>
-    function makeModel(mongoose,...dependencies){
-    
-    if(!mongoose.models.<%-DB_MODEL%>){
-        const mongoosePaginate = require('mongoose-paginate-v2');
-        <%_if(CONCAT_HOOK!==null && CONCAT_HOOK){_%>
-        <%_if(FLAG){_%>    
-        const dayjs = require('dayjs');
-        <%_}_%>
-        <%_}_%>    
-        const idvalidator = require('mongoose-id-validator');
-        <%_ if(ATTRS_WITH_SEQ){ _%>
-        const autoIncrement = require('mongoose-sequence')(mongoose);
-        <%_ } _%>
-        <%_ if(DB_UNIQUE) { _%>
-        const uniqueValidator = require('mongoose-unique-validator');
-        <%_ } _%>
-        <%_ if((typeof USER !== "undefined" && typeof IS_AUTH!=="undefined")){ _%>
-        <%_if(IS_AUTH && USER){_%>
-        const {convertObjectToEnum} = require("../utils/common")
-        const{USER_ROLE} =  require("../constants/authConstant");
-        <%_}_%>
-        <%_if(USER){_%>
+<%_}_%>   
+const idvalidator = require('mongoose-id-validator');
+<%_ if(ATTRS_WITH_SEQ){ _%>
+    const autoIncrement = require('mongoose-sequence')(mongoose);
+<%_ } _%>
+<%_ if(DB_UNIQUE) { _%>
+    const uniqueValidator = require('mongoose-unique-validator');
+<%_ } _%>
+<%_ if((typeof USER !== "undefined" && typeof IS_AUTH!=="undefined")){ _%>
+    <%_if(IS_AUTH && USER){_%>
+        const {convertObjectToEnum} = require("../../../utils/common")
+        const{USER_ROLE} =  require("../../../constants/authConstant");
+    <%_}_%>
+    <%_if(USER){_%>
         const bcrypt = require("bcrypt");
-        <%_}_%>
-        <%_}_%>
-        <%_if(MODEL_ENUM){_%>
-            <%_let a=[]_%>    
-            <%_for(let i in MODEL_ENUM){_%>
-            <%_for(let j in MODEL_ENUM[i]){_%>    
+    <%_}_%>
+<%_}_%>
+<%_if(MODEL_ENUM){_%>
+    <%_let a=[]_%>    
+    <%_for(let i in MODEL_ENUM){_%>
+        <%_for(let j in MODEL_ENUM[i]){_%>    
             <%_if(typeof (MODEL_ENUM[i][j])==='object'){_%>
-            <%_if(!a.includes(MODEL_ENUM[i][j].enumFile)){_%>
-            <%_a.push(MODEL_ENUM[i][j].enumFile)_%>
-        const <%-MODEL_ENUM[i][j].enumFile%>Enum=require("../constants/<%-MODEL_ENUM[i][j].enumFile%>")
-            <%_}_%>    
+                <%_if(!a.includes(MODEL_ENUM[i][j].enumFile)){_%>
+                    <%_a.push(MODEL_ENUM[i][j].enumFile)_%>
+                    const <%-MODEL_ENUM[i][j].enumFile%>Enum=require("../constants/<%-MODEL_ENUM[i][j].enumFile%>")
+                <%_}_%>    
             <%_}else{_%>
-            <%_if(!a.includes(MODEL_ENUM[i].enumFile)){_%>
-            <%_a.push(MODEL_ENUM[i].enumFile)_%>
-        const <%-MODEL_ENUM[i].enumFile%>Enum=require("../constants/<%-MODEL_ENUM[i].enumFile%>")
+                <%_if(!a.includes(MODEL_ENUM[i].enumFile)){_%>
+                    <%_a.push(MODEL_ENUM[i].enumFile)_%>
+                    const <%-MODEL_ENUM[i].enumFile%>Enum=require("../constants/<%-MODEL_ENUM[i].enumFile%>")
+                <%_}_%>        
             <%_}_%>        
-                    
-            <%_}_%>        
-            <%_}_%>   
-            <%_}_%>
-            <%_}_%>
-        const myCustomLabels = {
-            totalDocs: 'itemCount',
-            docs: 'data',
-            limit: 'perPage',
-            page: 'currentPage',
-            nextPage: 'next',
-            prevPage: 'prev',
-            totalPages: 'pageCount',
-            pagingCounter: 'slNo',
-            meta: 'paginator',
-        };
-        mongoosePaginate.paginate.options = {
-            customLabels: myCustomLabels
-        };
-        const Schema = mongoose.Schema;
-        const schema = new Schema(
-            <%_ var model = DB_SCHEMA _%>
-            <%_ var modelArr = Object.keys(model)_%>
-            {
-            <%_ for(let v in model){ _%>
+        <%_}_%>   
+    <%_}_%>
+<%_}_%>
+const myCustomLabels = {
+    totalDocs: 'itemCount',
+    docs: 'data',
+    limit: 'perPage',
+    page: 'currentPage',
+    nextPage: 'next',
+    prevPage: 'prev',
+    totalPages: 'pageCount',
+    pagingCounter: 'slNo',
+    meta: 'paginator',
+};
+mongoosePaginate.paginate.options = {
+    customLabels: myCustomLabels
+};
+const Schema = mongoose.Schema;
+const schema = new Schema(
+    <%_ var model = DB_SCHEMA _%>
+    <%_ var modelArr = Object.keys(model)_%>
+    {
+        <%_ for(let v in model){ _%>
             <%_if(COMMENT && COMMENT.attributeComment && COMMENT.attributeComment[v]){_%>
                 // <%-COMMENT.attributeComment[v].comment%>
             <%_}else{_%>
             <%_}_%>
             <%_ let jsonStr = JSON.stringify(model[v]);
-                var finalStr = new String();
-                finalStr = jsonStr.toString().replace(/"/g, "");
-                finalStr = finalStr.replace(/@@/g, '"');
+            var finalStr = new String();
+            finalStr = jsonStr.toString().replace(/"/g, "");
+            finalStr = finalStr.replace(/@@/g, '"');
             _%>
-<%_ if(modelArr[modelArr.length-1]!==v){ _%>
-    <%-v%>:<%-finalStr%>,
-<%_}else{_%>
-    <%-v%>:<%-finalStr%>
-<%_ } _%>
-<%_ } _%>
+            <%_ if(modelArr[modelArr.length-1]!==v){ _%>
+                <%-v%>:<%-finalStr%>,
+            <%_}else{_%>
+                <%-v%>:<%-finalStr%>
+            <%_ } _%>
+        <%_ } _%>
     },
     { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } }
 );
-<%_ 
-if(ATTRS_WITH_SEQ){
+<%_ if(ATTRS_WITH_SEQ){
     for(const [attributeName, value] of Object.entries(ATTRS_WITH_SEQ) ){
         if(value.isAutoIncrement){ _%>
-schema.plugin(autoIncrement, {
-    inc_field: "<%-attributeName%>",
-    id:"<%-DB_MODEL%>_<%-attributeName%>_sequence",
-    inc_amount: 1, 
-    start_seq: 1,
-    prefix: "",
-    suffix: "",
-    length: 6
-    });
-<%_     }
+            schema.plugin(autoIncrement, {
+                inc_field: "<%-attributeName%>",
+                id:"<%-DB_MODEL%>_<%-attributeName%>_sequence",
+                inc_amount: 1, 
+                start_seq: 1,
+                prefix: "",
+                suffix: "",
+                length: 6
+            });
+        <%_}
     } 
-}
-_%>
+} _%>
 <%_if(INDEXES && INDEXES.length){_%>
-<%_for(const index of INDEXES){ _%>
-<%_if(index.indexFields && JSON.stringify(index.indexFields)!=='{}'){ _%>
-schema.index(<%-JSON.stringify(index.indexFields)%><%_if(index.options && JSON.stringify(index.options)!=='{}'){_%>,<%-JSON.stringify(index.options)%><%_}_%>)
-<%_} }_%>
-<%_}_%>
+    <%_for(const index of INDEXES){ _%>
+        <%_if(index.indexFields && JSON.stringify(index.indexFields)!=='{}'){ _%>
+            schema.index(<%-JSON.stringify(index.indexFields)%><%_if(index.options && JSON.stringify(index.options)!=='{}'){_%>,<%-JSON.stringify(index.options)%><%_}_%>)
+        <%_}
+    }_%>
+<%_}_%>      
 <%_if(VIRTUAL_RELATION && VIRTUAL_RELATION.length>0){_%>
     <%_for(const VIRTUAL_REL of VIRTUAL_RELATION){ _%>
     schema.virtual(<%= VIRTUAL_REL.fieldName %>, {
@@ -236,10 +232,4 @@ schema.plugin(uniqueValidator);
 <% } %>
 
 const <%-DB_MODEL %> = mongoose.model("<%- DB_MODEL %>",schema,"<%- DB_MODEL %>");
-return <%- DB_MODEL %>
-}
-else{
-return mongoose.models.<%-DB_MODEL %>
-}
-}
-module.exports = makeModel
+module.exports = <%-DB_MODEL %>

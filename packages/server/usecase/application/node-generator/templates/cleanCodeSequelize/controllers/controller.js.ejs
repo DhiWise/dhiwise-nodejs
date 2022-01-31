@@ -1,30 +1,6 @@
-
-<%_
-let isCombinedOutputDefined = false;
-function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
-  }
-_%>
-<%_if(FILE_UPLOAD){_%>
-<%_if(S3_UPLOAD){_%>
-const fs = require('fs');
-const path = require('path');
-const formidable = require('formidable');
-const AWS = require('aws-sdk');
-<%_if(S3_UPLOAD_PRIVATE){_%>
-const AmazonS3URI = require('amazon-s3-uri');
-<%_}_%> 
-<%_} else {_%>
-const fs = require('fs');
-const path = require('path');
-const formidable = require('formidable');
-const validUrl = require('valid-url');
-<%_}_%>
-<%_}_%>
+const response = require('../../../utils/response');
 const {Op} = require("sequelize");
-const deleteDependentService = require("../../../utils/deleteDependent")
-const message = require("../../../utils/messages");
-const models = require("../../../model");
+
 <%_var customRouteServices=[]
 if(SERVICES_TO_IMPORT && SERVICES_TO_IMPORT.length){
     for(let i=0;i < SERVICES_TO_IMPORT.length;i++){ 
@@ -37,79 +13,169 @@ if(SERVICES_TO_IMPORT && SERVICES_TO_IMPORT.length){
 }
 _%>
 <%_ var methods = [] _%>
-<%_ if((UNIQ_TASK_MODELS && UNIQ_TASK_MODELS.length)){ %>
-function make<%-DB_MODEL_FC%>Controller({
-    <%-DB_MODEL%>Service,make<%-DB_MODEL_FC%><%if(IS_AUTH){%>,authService<%_}_%> 
-    <%_
-        let entities=UNIQ_TASK_MODELS
-        if(entities){
-        let entityFC=""
-        for(const entity of entities){ 
-            entityFC=entity.charAt(0).toUpperCase() + entity.slice(1); 
-            if(DB_MODEL !== entity){_%>
-    ,make<%-entityFC%>, <%-entity%>CqService, <%-entity%>Service
-    <%_} } } _%>
-    <%_if(customRouteServices.length){_%>,<%-customRouteServices.join()%><%_}_%>
-})
-<%_ }else{_%>
-function make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC%><%if(IS_AUTH){%>,authService<%_}_%><%_if(customRouteServices.length){_%>,<%-customRouteServices.join()%><%_}_%>})
-<%_}_%>
-{
+
 <%_for(let i=0;i< SUPPORT_API.length;i++){ _%>
-<%_ if(SUPPORT_API[i].method=="create") {_%>
-    <%_methods.push('add'+DB_MODEL_FC) _%> 
-    const add<%-DB_MODEL_FC%> = async ({ data <%_ if(SUPPORT_API[i].isLogin){ _%> ,loggedInUser <%_}_%>}) => {
-        try {
-            const originalData = data;
-            delete originalData.addedBy
-            delete originalData.updatedBy
-            <%_ if(SUPPORT_API[i].isLogin){ _%>
-              originalData.addedBy=loggedInUser.id
-            <%_ } _%>
-            const <%-DB_MODEL%> = make<%-DB_MODEL_FC%>(originalData, 'insert<%-DB_MODEL_FC%>Validator');
-            let created<%-DB_MODEL_FC%> = await <%-DB_MODEL%>Service.createOne(<%-DB_MODEL%>)
+  <%_ if(SUPPORT_API[i].method=="create") {_%>
+      <%_methods.push('add'+DB_MODEL_FC) _%> 
+      const add<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async ({ data <%_ if(SUPPORT_API[i].isLogin){ _%> ,loggedInUser <%_}_%>}) => {
+          try {
+              const originalData = data;
+              delete originalData.updatedBy
+              <%_ if(SUPPORT_API[i].isLogin){ _%>
+                originalData.addedBy=loggedInUser.id
+              <%_ } _%>
+              let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data :originalData});
               <%_if(SUPPORT_API[i].fieldSelection){_%>
-            created<%-DB_MODEL_FC%> = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(created<%-DB_MODEL_FC%>);
-            <%_}_%>
-            return message.successResponse({data:created<%-DB_MODEL_FC%>});
-          } catch (error) {
-            if (error.name === 'ValidationError') {
-              return message.inValidParam({message : error.message});
+              result.data = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result.data);
+              <%_}_%>
+              return result;
+            } catch (error) {
+               return response.internalServerError();
             }
-            return message.failureResponse();
+          };
+  <%_}_%>
+  <%_ if(SUPPORT_API[i].method=="createBulk") {_%>
+    <%_methods.push('bulkInsert'+DB_MODEL_FC) _%>
+    const bulkInsert<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async({body<%_ if(SUPPORT_API[i].isLogin){ _%> ,loggedInUser <%_}_%>})=>{
+      try{
+        let data = body.data;
+        let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data});
+        <%_if(SUPPORT_API[i].fieldSelection){_%>
+          if(result.data.length){
+            for(let i=0;i< result.data.length; i++){
+              result.data[i] = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result.data[i]);
+            }
           }
-        };
-<%_}_%>
-<%_ if(SUPPORT_API[i].method=="createBulk") {_%>
-  <%_methods.push('bulkInsert'+DB_MODEL_FC) _%>
-  const bulkInsert<%-DB_MODEL_FC%> = async({body<%_ if(SUPPORT_API[i].isLogin){ _%> ,loggedInUser <%_}_%>})=>{
-    try{
-      let data = body.data;
-      const <%-DB_MODEL%>Entities=data.map((item)=>{
-        delete item.addedBy
-        delete item.updatedBy
-        <%_ if(SUPPORT_API[i].isLogin){ _%>
-        item.addedBy=loggedInUser.id
-        <%_ } _%>
-        return make<%-DB_MODEL_FC%>(item,"insert<%-DB_MODEL_FC%>Validator")
-      })
-      const results = await <%-DB_MODEL%>Service.createMany(<%-DB_MODEL%>Entities)
-      return message.successResponse({data:results});
-    }catch(error){
-      if (error.name === 'ValidationError') {
-          return message.inValidParam({message : error.message});
+        <%_}_%>
+        return result;
+      }catch(error){
+        return response.internalServerError();
       }
-      return message.failureResponse();
     }
-  }
-<%_}_%>
-<%_ if(SUPPORT_API[i].method=="partialUpdate") {_%>
-  <%_methods.push('partialUpdate'+DB_MODEL_FC) _%>
-  const partialUpdate<%-DB_MODEL_FC%> = async (id,data<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) =>{
-      try {
-        if (data && id){          
-          const <%-DB_MODEL %> = make<%-DB_MODEL_FC%>(data,'update<%-DB_MODEL_FC%>Validator');
-          const filterData = removeEmpty(<%-DB_MODEL %>);
+  <%_}_%>
+  <%_ if(SUPPORT_API[i].method=="partialUpdate") {_%>
+    <%_methods.push('partialUpdate'+DB_MODEL_FC) _%>
+    const partialUpdate<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) =>  async (id,data<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) =>{
+        try {
+          if (data && id){          
+            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
+              let query = {}
+              if (loggedInUser){
+                  query = {
+                      "id": {
+                          [Op.eq]: id,
+                          [Op.ne]: loggedInUser.id
+                      }
+                  }
+              } else{
+                return response.badRequest();
+              }
+            <%_}else{_%>
+              let query = {id:id}
+            <%_}_%>
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query});
+            <%_if(SUPPORT_API[i].fieldSelection){_%>
+              if(Object.keys(result.data).length){
+                result.data = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result.data);
+              }
+            <%_}_%>
+            return result;
+          }
+          return response.badRequest();
+        }
+        catch (error){
+          return response.internalServerError();
+        }
+      }
+  <%_}_%>
+  <%_ if(SUPPORT_API[i].method=="update") {_%>
+    <%_methods.push('update'+DB_MODEL_FC) _%>
+    const update<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (data, id<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) =>{
+        try {
+          if (id){          
+            delete data.addedBy
+            delete data.updatedBy
+            <%_ if(SUPPORT_API[i].isLogin){ _%>
+                data.updatedBy=loggedInUser.id
+            <%_ } _%>
+            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
+            let query = {}
+            if (loggedInUser){
+                query = {
+                    "id": {
+                        [Op.eq]: id,
+                        [Op.ne]: loggedInUser.id
+                    }
+                }
+            } else{
+              return response.badRequest();
+            }
+            <%_}else{_%>
+            let query = {id:id}
+            <%_}_%>
+            <%_         
+            let nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>
+                    <%_}}
+                }                
+            }
+            _%>
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query});
+            <%_if(SUPPORT_API[i].fieldSelection){_%>
+              if(Object.keys(result.data).length){
+                result.data = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result.data);
+              }
+            <%_}_%>
+            return result;
+          }
+          return response.badRequest();
+        }
+        catch (error){
+          return response.internalServerError();
+        }
+      }
+  <%_}_%>
+  <%_ if(SUPPORT_API[i].method=="bulkUpdate") {_%>
+    <%_methods.push('bulkUpdate'+DB_MODEL_FC) _%>
+    const bulkUpdate<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) =>  async(data<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) =>{
+      try{
+        if(data.filter && data.data){
+          delete data.data.addedBy
+          delete data.data.updatedBy
+          <%_ if(SUPPORT_API[i].isLogin){ _%>
+              data.data.updatedBy=loggedInUser.id
+          <%_ } _%>
+          <%_         
+          nestedCalls={}
+          if(SUPPORT_API[i].IS_NESTED_CALL){
+              nestedCalls = SUPPORT_API[i].NESTED_CALLS
+              if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                  for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                  data.filter = <%=JSON.parse(element.filter)%>                                            
+                  <%_}}
+              }                
+          }
+          _%>
+          return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data: data.data,query :data.filter});
+        }else{
+          return response.badRequest();
+        }
+      }catch(error){
+        return response.internalServerError();
+      }
+    }
+  <%_}_%>
+  <%_ if(SUPPORT_API[i].method=="delete") {_%>
+    <%_methods.push('delete'+DB_MODEL_FC) _%>
+      const delete<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (data,id<%_if(SUPPORT_API[i].isLogin){_%>,loggedInUser,<%_}_%>options={})=>{
+        try {
+          if(!id){
+            return response.badRequest();
+          }
           <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
           let query = {}
           if (loggedInUser){
@@ -120,212 +186,35 @@ function make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC
                   }
               }
           } else{
-            return message.badRequest();
+              return response.badRequest();
           }
           <%_}else{_%>
           let query = {id:id}
           <%_}_%>
-          let updated<%-DB_MODEL_FC%> = await <%-DB_MODEL %>Service.updateMany(query,filterData);
-          <%_if(SUPPORT_API[i].fieldSelection){_%>
-          updated<%-DB_MODEL_FC%> = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(updated<%-DB_MODEL_FC%>);
-          <%_}_%>
-          return message.successResponse({data:updated<%-DB_MODEL_FC%>});
-        }
-        return message.badRequest();
-      }
-      catch (error){
-        if (error.name === 'ValidationError') {
-          return message.inValidParam({message : error.message});
-        }
-        return message.failureResponse();
-      }
-    }
-<%_}_%>
-<%_ if(SUPPORT_API[i].method=="update") {_%>
-  <%_methods.push('update'+DB_MODEL_FC) _%>
-  const update<%-DB_MODEL_FC%> = async (pk, data<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) =>{
-      try {
-        if (pk){          
-          delete data.addedBy
-          delete data.updatedBy
-          <%_ if(SUPPORT_API[i].isLogin){ _%>
-              data.updatedBy=loggedInUser.id
-          <%_ } _%>
-          const <%-DB_MODEL %> = make<%-DB_MODEL_FC%>(data,'update<%-DB_MODEL_FC%>Validator');
-          const filterData = removeEmpty(<%-DB_MODEL %>);
-          <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-          let query = {}
-          if (loggedInUser){
-              query = {
-                  "id": {
-                      [Op.eq]: pk,
-                      [Op.ne]: loggedInUser.id
-                  }
-              }
-          } else{
-            return message.badRequest();
-          }
-          <%_}else{_%>
-          let query = {id:pk}
-          <%_}_%>
           <%_         
-          let nestedCalls={}
+          nestedCalls={}
           if(SUPPORT_API[i].IS_NESTED_CALL){
               nestedCalls = SUPPORT_API[i].NESTED_CALLS
               if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
                   for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                      <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>
+                      <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>    
                   <%_}}
               }                
           }
           _%>
-          let updated<%-DB_MODEL_FC%> = await <%-DB_MODEL %>Service.updateMany(query,filterData);
-          <%_if(SUPPORT_API[i].fieldSelection){_%>
-          updated<%-DB_MODEL_FC%> = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(updated<%-DB_MODEL_FC%>);
-          <%_}_%>
-          return message.successResponse({data:updated<%-DB_MODEL_FC%>});
+          return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query});
+        } catch (error) {
+          return response.internalServerError();
         }
-        return message.badRequest();
       }
-      catch (error){
-        if (error.name === 'ValidationError') {
-          return message.inValidParam({message : error.message});
-        }
-        return message.failureResponse();
-      }
-    }
-<%_}_%>
-<%_ if(SUPPORT_API[i].method=="bulkUpdate") {_%>
-  <%_methods.push('bulkUpdate'+DB_MODEL_FC) _%>
-  const bulkUpdate<%-DB_MODEL_FC%> = async(data<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) =>{
-    try{
-      if(data.filter && data.data){
-        delete data.data.addedBy
-        delete data.data.updatedBy
-        <%_ if(SUPPORT_API[i].isLogin){ _%>
-            data.data.updatedBy=loggedInUser.id
-        <%_ } _%>
-        const <%-DB_MODEL%> = make<%-DB_MODEL_FC%>(data.data,"update<%-DB_MODEL_FC%>Validator")
-        const filterData=removeEmpty(<%-DB_MODEL%>);
-        <%_         
-        nestedCalls={}
-        if(SUPPORT_API[i].IS_NESTED_CALL){
-            nestedCalls = SUPPORT_API[i].NESTED_CALLS
-            if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
-                for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                data.filter = <%=JSON.parse(element.filter)%>                                            
-                <%_}}
-            }                
-        }
-        _%>
-        const updated<%-DB_MODEL_FC%>s = await <%-DB_MODEL%>Service.updateMany(data.filter,filterData);
-        return message.successResponse({data:updated<%-DB_MODEL_FC%>s});
-      }
-      return message.badRequest();
-    }catch(error){
-      if (error.name === 'ValidationError') {
-          return message.inValidParam({message : error.message});
-      }
-      return message.failureResponse();
-    }
-  }
-<%_}_%>
-<%_ if(SUPPORT_API[i].method=="delete") {_%>
-  <%_methods.push('delete'+DB_MODEL_FC) _%>
-    const delete<%-DB_MODEL_FC%> = async (pk, body<%_if(SUPPORT_API[i].isLogin){_%>,loggedInUser,<%_}_%>options={})=>{
-      try {
-        if(!pk){
-          return message.badRequest();
-        }
-        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-        let query = {}
-        if (loggedInUser){
-            query = {
-                "id": {
-                    [Op.eq]: pk,
-                    [Op.ne]: loggedInUser.id
-                }
-            }
-        } else{
-            return message.badRequest();
-        }
-        <%_}else{_%>
-        let query = {id:pk}
-        <%_}_%>
-        <%_         
-        nestedCalls={}
-        if(SUPPORT_API[i].IS_NESTED_CALL){
-            nestedCalls = SUPPORT_API[i].NESTED_CALLS
-            if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
-                for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                    <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>    
-                <%_}}
-            }                
-        }
-        _%>
-        <%_ if(DELETE_DEPENDENT_MODEL){ _%>
-          let deleted<%-DB_MODEL_FC%>=""
-          if(isWarning){
-            deleted<%-DB_MODEL_FC%> = await deleteDependentService.count<%-DB_MODEL_FC%>(query);
-          }else{
-            deleted<%-DB_MODEL_FC%> = await deleteDependentService.delete<%-DB_MODEL_FC%>(query);
-          }
-        <%_}else{ _%>
-          deleted<%-DB_MODEL_FC%> = await <%-DB_MODEL%>Service.deleteByPk(pk);  
-      <%_ }_%>
-        return message.successResponse({data:deleted<%-DB_MODEL_FC%>});
-      } catch (error) {
-        if (error.name === 'ValidationError') {
-          return message.inValidParam({message : error.message});
-        }
-        return message.failureResponse();
-      }
-    }
-<%_}_%>
-<%_ if(SUPPORT_API[i].method=="deleteMany") {_%>
-    <%_methods.push('deleteMany'+DB_MODEL_FC) _%>
-    <%_ if(DELETE_DEPENDENT_MODEL){ _%>
-const deleteMany<%-DB_MODEL_FC%> =async(data<%_if(SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>) => {
-    try{
-        if(data && data.ids){
-          let ids = data.ids
-          <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-          let query = {}
-          if (loggedInUser){
-              query = {
-                  id: {
-                      [Op.in]: ids,
-                      [Op.ne]: loggedInUser.id
-                  }
-              }
-          } else{
-            return message.badRequest();
-          }
-          <%_}else{_%>
-          let query = {id:{[Op.in]: ids}}
-          <%_}_%>
-            let result;
-            if(data.isWarning){
-               result = await deleteDependentService.count<%-DB_MODEL_FC%>(query);
-            }
-            else{
-              result = await deleteDependentService.delete<%-DB_MODEL_FC%>(query);
-            }
-            return message.successResponse({data:result});
-        }
-        return message.badRequest();
-    }
-    catch(error){
-      if (error.name === 'ValidationError') {
-          return message.inValidParam({message : error.message});
-      }
-      return message.failureResponse();
-    }
-  }
-<%_ } else { _%>
-const deleteMany<%-DB_MODEL_FC%> =async(ids<%_if(typeof USER_MODEL !== 'undefined' && USER_MODEL){_%>, loggedInUser<%_}_%>) => {
-    try{
-        if(!ids || !Array.isArray(ids) || ids.length < 1){
+  <%_}_%>
+  <%_ if(SUPPORT_API[i].method=="deleteMany") {_%>
+      <%_methods.push('deleteMany'+DB_MODEL_FC) _%>
+      <%_ if(DELETE_DEPENDENT_MODEL){ _%>
+  const deleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(data<%_if(SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>) => {
+      try{
+          if(data && data.ids){
+            let ids = data.ids
             <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
             let query = {}
             if (loggedInUser){
@@ -336,49 +225,199 @@ const deleteMany<%-DB_MODEL_FC%> =async(ids<%_if(typeof USER_MODEL !== 'undefine
                     }
                 }
             } else{
-              return message.badRequest();
+              return response.badRequest();
             }
             <%_}else{_%>
-            let query = {id:{[Op.in]: ids}}
+              let query = {id:{[Op.in]: ids}}
             <%_}_%>
-            let result = await <%-DB_MODEL%>Service.deleteMany(query);
-            return message.successResponse({data:result});
-        }
-        return message.badRequest();
-    }
-    catch(error){
-      if (error.name === 'ValidationError') {
-          return message.inValidParam({message : error.message});
+            return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({ data, query});
+          }
+          return response.badRequest();
       }
-      return message.failureResponse();
+      catch(error){
+        return response.internalServerError();
+      }
     }
-}
-<%_ } _%>
-<%_ } _%>
+  <%_ } else { _%>
+  const deleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(data<%_if(typeof USER_MODEL !== 'undefined' && USER_MODEL){_%>, loggedInUser<%_}_%>) => {
+      try{
+        let ids = data.ids;
+        if (ids && (Array.isArray(ids) && ids.length > 0)) {
+              <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
+              let query = {}
+              if (loggedInUser){
+                  query = {
+                      id: {
+                          [Op.in]: ids,
+                          [Op.ne]: loggedInUser.id
+                      }
+                  }
+              } else{
+                return response.badRequest();
+              }
+              <%_}else{_%>
+              let query = {id:{[Op.in]: ids}}
+              <%_}_%>
+              const dataToUpdate = {
+                isDeleted: true,
+                <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
+                updatedBy: loggedInUser.id,
+                <%_}_%>
+              }
+              return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({dataToUpdate,query});
+          }else{
+            return response.badRequest();
+          }
+      }
+      catch(error){
+        return response.internalServerError();
+      }
+  }
+  <%_ } _%>
+  <%_ } _%>
 
-<%_ if(SUPPORT_API[i].method=="softDelete") {_%>
-  <%_methods.push('softDelete'+DB_MODEL_FC) _%>
-  const softDelete<%-DB_MODEL_FC%> = async({pk<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>},options={})=>{
-    try{
-        if(pk){
-          let updated<%-DB_MODEL_FC%>
-          <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-          let query = {}
+  <%_ if(SUPPORT_API[i].method=="softDelete") {_%>
+    <%_methods.push('softDelete'+DB_MODEL_FC) _%>
+    const softDelete<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) =>  async({data,id<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>},options={})=>{
+      try{
+          if(id){
+            let updated<%-DB_MODEL_FC%>
+            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
+            let query = {}
+            if (loggedInUser){
+                query = {
+                    id: {
+                        [Op.eq]: id,
+                        [Op.ne]: loggedInUser.id
+                    }
+                }
+            }else{
+              return response.badRequest();
+            }
+            <%_}else{_%>
+            let query={id:id}
+            <%_}_%>
+            <%_         
+            nestedCalls={}          
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        <%-element.existingVariable%> = <%=JSON.parse(element.filter)%> 
+                    <%_}}
+                }                
+            }
+            _%>
+            const dataToUpdate = {
+              isDeleted: true,
+              <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
+              updatedBy: loggedInUser.id,
+              <%_}_%>
+            }
+            return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,dataToUpdate,query});
+          }
+          return response.badRequest();
+      }catch(error){
+        return response.internalServerError();
+      }
+    }
+  <%_}_%>
+  <%_ if(SUPPORT_API[i].method=="softDeleteMany") {_%>
+      <%_methods.push('softDeleteMany'+DB_MODEL_FC) _%>
+      <%_ if(DELETE_DEPENDENT_MODEL){ _%>
+  const softDeleteMany<%-DB_MODEL_FC%> =  (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (data,ids<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) => {
+      try{
+         if (ids && (Array.isArray(ids) && ids.length > 0)) {
+              <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
+              let query = {}
+              if (loggedInUser){
+                  query = {
+                      id: {
+                          [Op.in]: ids,
+                          [Op.ne]: loggedInUser.id
+                      }
+                  }
+              } else{
+                return response.badRequest();
+              }
+              <%_}else{_%>
+              let query = {id:{[Op.in]: ids,}}
+              <%_}_%>
+             return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query });
+          }
+          return response.badRequest();
+      }catch(error){
+        return response.internalServerError();
+      }
+  }
+  <%_ } else { _%>
+  const softDeleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (ids<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) => {
+      try{
+           if (ids && (Array.isArray(ids) && ids.length > 0)) {
+              <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
+              let query = {}
+              if (loggedInUser){
+                  query = {
+                      id: {
+                          [Op.in]: ids,
+                          [Op.ne]: loggedInUser.id
+                      }
+                  }
+              } else{
+                return response.badRequest();
+              }
+              <%_}else{_%>
+              let query = {id:{[Op.in]: ids,}}
+              <%_}_%>
+              const options={}
+             return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query});
+          }
+          return response.badRequest();
+      }catch(error){
+        return response.internalServerError();
+      }
+  }
+  <%_ } _%>
+  <%_ } _%>
+
+  <%_ if(SUPPORT_API[i].method=="findAll") {_%>
+    <%_methods.push('findAll'+DB_MODEL_FC) _%>
+      const findAll<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async ({ data<%_ if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>}) => {
+        try {
+          let query = {};
+          let options = {};
+          if (data.query !== undefined){
+            query = { ...data.query };
+          }
+          if(data.options !== undefined){
+            options = { ...data.options };
+          }
+          <%_ if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
           if (loggedInUser){
               query = {
-                  id: {
-                      [Op.eq]: pk,
-                      [Op.ne]: loggedInUser.id
-                  }
+                ...query,
+              id: { [Op.ne]: loggedInUser.id }
               }
-          }else{
-            return message.badRequest();
+              if (data.query && data.query.id) {
+                  Object.assign(query.id, { [Op.in]: [data.query.id] })
+              }
+          } else{
+              return response.badRequest();
           }
-          <%_}else{_%>
-          let query={id:pk}
+          <%_}_%>
+          <%_if(SUPPORT_API[i].fieldSelection){_%>
+            if(options && options.select && options.select.length){
+                options.attributes = <%=SUPPORT_API[i].fields%>.filter(Set.prototype.has, new Set(options.select));
+            }else{
+                options.attributes=<%=SUPPORT_API[i].fields%>
+            }
+          <%_} else {_%>
+          if(options && options.select && options.select.length){
+            options.attributes = options.select;
+          }
           <%_}_%>
           <%_         
-          nestedCalls={}          
+          nestedCalls={}
           if(SUPPORT_API[i].IS_NESTED_CALL){
               nestedCalls = SUPPORT_API[i].NESTED_CALLS
               if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
@@ -387,236 +426,77 @@ const deleteMany<%-DB_MODEL_FC%> =async(ids<%_if(typeof USER_MODEL !== 'undefine
                   <%_}}
               }                
           }
-          _%>
-          <%_ if(DELETE_DEPENDENT_MODEL){ _%>      
-            updated<%-DB_MODEL_FC%> = await deleteDependentService.softDelete<%-DB_MODEL_FC%>(query<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser.id<%_}_%>);            
-          <%_}else{_%>
-            updated<%-DB_MODEL_FC%> = await <%-DB_MODEL%>Service.softDeleteMany(query, options<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser.id<%_}_%>);
-          <%_}_%>
-          return message.successResponse({data:updated<%-DB_MODEL_FC%>});
+          _%> 
+          return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query,options});
         }
-        return message.badRequest();
-    }catch(error){
-      if (error.name === 'ValidationError') {
-          return message.inValidParam({message : error.message});
-      }
-      return message.failureResponse();
-    }
-  }
-<%_}_%>
-<%_ if(SUPPORT_API[i].method=="softDeleteMany") {_%>
-    <%_methods.push('softDeleteMany'+DB_MODEL_FC) _%>
-    <%_ if(DELETE_DEPENDENT_MODEL){ _%>
-const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) => {
-    try{
-        if(!ids || !Array.isArray(ids) || ids.length < 1){
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (loggedInUser){
-                query = {
-                    id: {
-                        [Op.in]: ids,
-                        [Op.ne]: loggedInUser.id
-                    }
-                }
-            } else{
-              return message.badRequest();
-            }
-            <%_}else{_%>
-            let query = {id:{[Op.in]: ids,}}
-            <%_}_%>
-            let data = await deleteDependentService.softDelete<%-DB_MODEL_FC%>(query<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser.id<%_}_%>);
-            return message.successResponse({data});
+        catch (error){
+          return response.internalServerError();
         }
-        return message.badRequest();
-    }catch(error){
-      if (error.name === 'ValidationError') {
-          return message.inValidParam({message : error.message});
-      }
-      return message.failureResponse();
-    }
-}
-<%_ } else { _%>
-const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) => {
-    try{
-        if(!ids || !Array.isArray(ids) || ids.length < 1){
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (loggedInUser){
-                query = {
-                    id: {
-                        [Op.in]: ids,
-                        [Op.ne]: loggedInUser.id
-                    }
-                }
-            } else{
-              return message.badRequest();
-            }
-            <%_}else{_%>
-            let query = {id:{[Op.in]: ids,}}
-            <%_}_%>
-            const options={}
-            let data = await <%-DB_MODEL%>Service.softDeleteMany(query,options<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser.id<%_}_%>);
-            return message.successResponse({data});
-        }
-        return message.badRequest();
-    }catch(error){
-      if (error.name === 'ValidationError') {
-          return message.inValidParam({message : error.message});
-      }
-      return message.failureResponse();
-    }
-}
-<%_ } _%>
-<%_ } _%>
-
-<%_ if(SUPPORT_API[i].method=="findAll") {_%>
-  <%_methods.push('findAll'+DB_MODEL_FC) _%>
-    const findAll<%-DB_MODEL_FC%> = async ({ data<%_ if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>}) => {
+      };
+  <%_}_%>
+  <%_ if(SUPPORT_API[i].method=="findById") {_%>
+    <%_methods.push('get'+DB_MODEL_FC+'ById') _%>
+   const get<%-DB_MODEL_FC%>ById = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(query, data = {}) =>{
       try {
-        let query = {};
-        let options = {};
-        if (data.query !== undefined){
-          query = { ...data.query };
-        }
-        if(data.options !== undefined){
-          options = { ...data.options };
-        }
-        query = <%-DB_MODEL%>Service.queryBuilderParser(query);
-        <%_ if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-        if (loggedInUser){
-            query = {
-              ...query,
-             id: { [Op.ne]: loggedInUser.id }
-            }
-            if (data.query && data.query.id) {
-                Object.assign(query.id, { [Op.in]: [data.query.id] })
-            }
-        } else{
-            return message.badRequest();
-        }
-        <%_}_%>
-        <%_if(SUPPORT_API[i].fieldSelection){_%>
-          if(options && options.select && options.select.length){
-              options.attributes = <%=SUPPORT_API[i].fields%>.filter(Set.prototype.has, new Set(options.select));
-          }else{
-              options.attributes=<%=SUPPORT_API[i].fields%>
-          }
-        <%_} else {_%>
-        if(options && options.select && options.select.length){
-          options.attributes = options.select;
-        }
-        <%_}_%>
-        if (options && options.sort){
-          options.order = <%-DB_MODEL%>Service.sortParser(options.sort);
-          delete options.sort;
-        }
-        let result;  
-        if (options && options.include && options.include.length){
-            let include = [];
-            options.include.forEach(i => {
-            i.model = models[i.model];
-            if (i.query) {
-                i.where = <%-DB_MODEL%>Service.queryBuilderParser(i.query);
-            }
-            include.push(i);
-            });
-            options.include = include;
-        }  
-        <%_         
-        nestedCalls={}
-        if(SUPPORT_API[i].IS_NESTED_CALL){
-            nestedCalls = SUPPORT_API[i].NESTED_CALLS
-            if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
-                for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                    <%-element.existingVariable%> = <%=JSON.parse(element.filter)%> 
-                <%_}}
-            }                
-        }
-        _%> 
-        if (data.isCountOnly){
-          result = await <%-DB_MODEL%>Service.count(query, options);
-          return message.successResponse({data:result});
-        } else {
-          result = await <%-DB_MODEL%>Service.findMany(query, options);
-        } 
-        if (result){
-         return message.successResponse({data:result});
-        } else {
-          return message.badRequest();
-        }
+       let options = {};
+            if (data && data.populate && data.populate.length) options.populate = data.populate;
+            if (data && data.select && data.select.length) options.select = data.select;
+            <%_if(SUPPORT_API[i].fieldSelection){_%>
+                let fieldSelect = <%=SUPPORT_API[i].fields%>
+                options.select = {
+                    ...options.select,
+                    ...fieldSelect
+                }
+            <%_}_%>
+        return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data, query, options});  
       }
       catch (error){
-        if (error.name === 'ValidationError') {
-          return message.inValidParam({message : error.message});
-        }
-        return message.failureResponse();
+        return response.internalServerError();
       }
     };
-<%_}_%>
-<%_ if(SUPPORT_API[i].method=="findById") {_%>
-  <%_methods.push('find'+DB_MODEL_FC+'ByPk') _%>
-  const find<%-DB_MODEL_FC%>ByPk = async (pk,options={}) => {
-    try {
-      <%_if(SUPPORT_API[i].fieldSelection){_%>
-      options.attributes = <%=SUPPORT_API[i].fields%>
-      <%_}_%>
-      let result = await <%-DB_MODEL%>Service.findByPk(pk, options);   
-      if (result){
-        return message.successResponse({data:result});
-      } else {
-        return message.recordNotFound();
-      }    
+  <%_}_%>
+  <%_ if(SUPPORT_API[i].method=="count") {_%>
+    <%_methods.push('get'+DB_MODEL_FC+'Count') _%>
+    const get<%-DB_MODEL_FC%>Count = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(data) => {
+        try {
+            let where = data && data.where ? data.where : {};
+            <%_         
+                nestedCalls={}
+                if(SUPPORT_API[i].IS_NESTED_CALL){
+                    nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                    if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                        for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                            where=...<%=JSON.parse(element.filter)%>                      
+                        <%_}}
+                    }                
+                }
+                _%>
+            return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({where});  
+        } catch(error){
+            return response.internalServerError();
+        }
     }
-    catch (error){
-      if (error.name === 'ValidationError') {
-          return message.inValidParam({message : error.message});
-      }
-      return message.failureResponse();
-    }
-  };
+<%_ } _%>
 <%_}_%>
-<%_}_%>
+
 <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>
   <%_methods.push('changePassword'); methods.push('updateProfile');  _%>
-  const changePassword = async (params) => {
-      try {
-          if (!params.newPassword || !params.userId || !params.oldPassword) { 
-              return message.inValidParam({message:'Please Provide userId and Password'});
-          }
-          let result = await authService.changePassword(params);
-          if (result.flag) {
-                return message.invalidRequest({message:result.data});
-            }
-            return message.requestValidated({message:result.data});
-      } catch (error) {
-        if (error.name === 'ValidationError') {
-          return message.inValidParam({message : error.message});
-        }
-        return message.failureResponse();
-      }
-  }     
-  const updateProfile = async(data,id) =>{
+   
+   const changePassword = (changePasswordUsecase) => async (params) => {
         try{
-          if(id && data){
-            if(data.password) delete data.password;
-            if(data.createdAt) delete data.createdAt;
-            if(data.updatedAt) delete data.updatedAt;
-            if(data.id) delete data.id;
-            const user = make<%-DB_MODEL_FC%>(data,"update<%-DB_MODEL_FC%>Validator");
-            const filterData = removeEmpty(user);
-            let updated<%-DB_MODEL_FC%> = await <%-DB_MODEL%>Service.updateByPk(id,filterData);
-            return message.successResponse({data:updated<%-DB_MODEL_FC%>});
-          }
-          return message.badRequest();
+            return await changePasswordUsecase(params);
+        }catch(error){
+            return response.internalServerError();
         }
-        catch(error){
-          if (error.name === 'ValidationError') {
-            return message.inValidParam({message : error.message});
-          }
-          return message.failureResponse();
-        }
-    };   
+    }   
+    const updateProfile = (updateProfileUsecase) => async (data,id) => {
+        try{
+            return await updateProfileUsecase({data,id});
+        }catch(error){
+            return response.internalServerError();
+        }   
+    }
+  
 <%_}_%>
 <%_if(CUSTOM_ROUTES){_%>
   <%_CUSTOM_ROUTES.forEach((v,i)=>{ 
@@ -830,295 +710,29 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (ids<%_if(SUPPORT_API[i].isLogin){ 
           <%_}_%>
               
           }catch(error){
-            if(error.name==="ValidationError"){
-              return message.inValidParam({message:error.message});
-            }
-            return message.failureResponse();
+            return response.internalServerError();
           }
       }
   <%_})_%>
-  <%_}_%>
-
-    const removeEmpty = (obj) => {
-        Object.entries(obj).forEach(([key,value])=>{
-            if(value === undefined){
-                delete obj[key]
-            }
-        })
-        return obj
-    };
-
-    return Object.freeze({
-        <%-methods.join(',')%>
-    })
-}
-
-<%_if(FILE_UPLOAD){_%>
-<%_if(S3_UPLOAD){_%>
-async function uploadFiles (file,fields,fileCount,allowedFileTypes, maxFileSize){
-
-  let extension = path.extname(file.name);
-  extension = extension.split('.').pop();
-
-  fileType = file.type;
-
-  if (allowedFileTypes.length) {
-    //Check allowed extension;
-    if (!allowedFileTypes.includes(extension)) {
-      return {
-        status: false,
-        message: 'Filetype not allowed.'
-      };
-    }
-  }
-
-  // Check File Size
-  const fileSize = ((file.size / 1024) / 1024);
-  if (maxFileSize < fileSize) {
-    return {
-      status: false,
-      message: `Allow file size upto ${maxFileSize} MB.`
-    };
-  }
-
-  let fileName = file.name;
-  //Create Requested Directory,if given in request parameter.
-  if (fields && fields.folderName) {
-    fileName = fields.folderName + '/' + fileName;
-  }
-  else if (fields && fields.fileName) {
-    fileName = fields.fileName + '-' + fileCount + path.extname(file.name);
-  }
-
-  const response = await new Promise(async (resolve, reject) => {
-    resolve(await uploadToS3(file,fileName));
-  });
-
-  return response;
-
-}
-
-async function uploadToS3 (file, fileName){
-  let S3Config = {
-    AWS_S3_ACCESS_KEY_ID: process.env.AWS_S3_ACCESS_KEY_ID,
-    AWS_S3_SECRET_ACCESS_KEY: process.env.AWS_S3_SECRET_ACCESS_KEY,
-    AWS_S3_REGION: process.env.AWS_S3_REGION,
-    AWS_S3_BUCKET_NAME: process.env.AWS_S3_BUCKET_NAME,
-  };
-
-  const s3 = new AWS.S3({
-    region: S3Config.AWS_S3_REGION,
-    accessKeyId: S3Config.AWS_S3_ACCESS_KEY_ID,
-    secretAccessKey: S3Config.AWS_S3_SECRET_ACCESS_KEY
-  });
-
-  let params = {
-    Bucket: S3Config.AWS_S3_BUCKET_NAME,
-    Body: fs.createReadStream(file.path),
-    Key: fileName,
-  };
-
-  const response = await new Promise(async (resolve, reject) => {
-    s3.putObject(params, function (err, data) {
-      if (err) {
-        resolve({
-          status: false,
-          message: err.message
-        });
-      } else {
-        resolve({
-          status: true,
-          data: 'https://' + process.env.AWS_S3_BUCKET_NAME + '.s3.' + S3Config.AWS_S3_REGION + '.amazonaws.com/' + fileName
-        });
-      }
-    });
-  });
-
-  return response;
-}
-<%_if(S3_UPLOAD_PRIVATE){_%>
-async function generatePreSignedURL (uri){
-  if (uri){
-    let S3Config = {
-      AWS_S3_ACCESS_KEY_ID: process.env.AWS_S3_ACCESS_KEY_ID,
-      AWS_S3_SECRET_ACCESS_KEY: process.env.AWS_S3_SECRET_ACCESS_KEY,
-      AWS_S3_REGION: process.env.AWS_S3_REGION,
-      AWS_S3_BUCKET_NAME: process.env.AWS_S3_BUCKET_NAME,
-    };
-
-    const s3 = new AWS.S3({
-      region: S3Config.AWS_S3_REGION,
-      accessKeyId: S3Config.AWS_S3_ACCESS_KEY_ID,
-      secretAccessKey: S3Config.AWS_S3_SECRET_ACCESS_KEY
-    });
-
-    const {
-      region, bucket, key 
-    } = AmazonS3URI(uri);
-
-    let options = {
-      Bucket: bucket,
-      Key: key,
-      Expires: 1 * 60 * 60, // 1 hour
-    };
-
-    let response = await new Promise(async (resolve,reject)=>{
-      await s3.getSignedUrl('getObject', options, (err, url) => {
-        if (err) {
-          resolve({
-            status: false,
-            err: err,
-          });
-        } else {
-          resolve({
-            status: true,
-            path: url,
-          });
-        }
-      });
-    });
-    return response;
-  }
-  else {
-    return {
-      status:false,
-      err:'Please send Url'
-    };
-  }
-}
 <%_}_%>
-<%_} else {_%>
-/**
- * 
- * Function used to create directory.
- * 
- * @param  {} dirPath
- */
-const makeDirectory = async (directoryPath) => {
 
-  if (!fs.existsSync(directoryPath)) {
-    fs.promises.mkdir(directoryPath, { recursive: true }, (err) => {
-      if (err) {
-        return false;
-      };
-      return true;
-    });
-  }
-  return true;
+const removeEmpty = (obj) => {
+    Object.entries(obj).forEach(([key,value])=>{
+        if(value === undefined){
+            delete obj[key]
+        }
+    })
+    return obj
 };
 
-/**
- * 
- * Function used to upload file
- * 
- * @param  {} files
- * @param  {} fields
- */
-async function uploadFiles (file, fields, fileCount,allowedFileTypes, maxFileSize, defaultDirectory) {
 
-  let tempPath = file.path;
-  let unlink;
-  let fileName = file.name;
-
-  let extension = path.extname(file.name);
-  extension = extension.split('.').pop();
-
-  fileType = file.type;
-
-  if (allowedFileTypes.length) {
-    //Check allowed extension;
-    if (!allowedFileTypes.includes(extension)) {
-      return {
-        status: false,
-        message: 'Filetype not allowed.'
-      };
-    }
-  }
-
-  // Check File Size
-  const fileSize = ((file.size / 1024) / 1024);
-  if (maxFileSize < fileSize) {
-    return {
-      status: false,
-      message: `Allow file size upto ${maxFileSize} MB.`
-    };
-  }
-
-  //Create New path
-  let newPath = defaultDirectory + '/' + new Date().getTime() + path.extname(file.name);
-
-  //Create Requested Directory,if given in request parameter.
-  if (fields && fields.folderName) {
-    let newDir = defaultDirectory + '/' + fields.folderName;
-    const createDir = await makeDirectory(newDir);
-    if (createDir) {
-      if (fields.fileName) {
-        newPath = newDir + '/' + fields.fileName + '-' + fileCount + path.extname(file.name);
-        fileName = fields.fileName;
-      }
-    }
-  }
-  else if (fields && fields.fileName) {
-    newPath = defaultDirectory + '/' + fields.fileName + '-' + fileCount + path.extname(file.name);
-    fileName = fields.fileName;
-  }
-  
-  const response = await new Promise(async (resolve, reject) => {
-    fs.readFile(tempPath, function (err, data) {
-      fs.writeFile(newPath, data, async function (err) {
-  
-        //Remove file from temp
-        unlink = await unlinkFile(tempPath);
-  
-        if (unlink.status == false) {
-          reject(unlink);
-        } else {
-          resolve({
-            status: true,
-            message: 'File upload successfully.',
-            data: '/' + newPath
-          });
-        }
-      });
-    });
-  });
-
-  return response;
+module.exports = {
+    <%_methods.forEach(v=> {_%>
+    <%-v%>,
+    <%_})_%>
+    <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>
+    changePassword,
+    updateProfile,
+    <%_}_%>
 }
 
-/**
- * 
- * Function used to unlink file.
- * 
- * @param  {} path
- */
-async function unlinkFile (path) {
-
-  fs.unlink(path, function (err) {
-    if (err) {
-      return {
-        status: false,
-        message: err.message
-      };
-    }
-  });
-
-  return { status: true };
-}
-<%_}_%>
-<%_}_%>
-
-module.exports = make<%-DB_MODEL_FC%>Controller;
-
-<%_
-function printSequelizeSort(sortObj){
-  const finalSortArray = []
-  for (const [key, value] of Object.entries(sortObj)) {
-    let finalSort = []
-    finalSort.push(key)
-    finalSort.push(value === 1 ? 'ASC' : 'DESC')
-    finalSortArray.push(finalSort)
-  }
-  return finalSortArray;
-}
-_%>

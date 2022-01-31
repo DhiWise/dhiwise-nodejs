@@ -1,0 +1,22 @@
+/**
+ *findAll.js
+ */
+
+const response = require('../../utils/response');
+
+const findAll = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
+    let { data, query, options } = params;
+    let result;
+    if(data.isCountOnly){
+        result = await <%-MODEL_NAME-%>Db.count(query);
+        result = { totalRecords: result };
+        return response.success({ data:result });  
+    } else {
+        result = await <%-MODEL_NAME-%>Db.paginate(query,options);
+        if(result){
+            return response.success({ data:result });
+        }
+        return response.recordNotFound();
+    }
+}
+module.exports = findAll;

@@ -1,0 +1,24 @@
+/**
+ updateProfile.js
+ */
+
+
+const <%-MODEL_NAME-%>Entity = require('../../entities/<%-MODEL_NAME-%>');
+const response = require('../../utils/response');
+
+const updateProfile = ({<%-MODEL_NAME-%>Db,updateValidation}) => async (params) => {
+    let {id, data} = params;
+    if(id && data){
+        delete data.createdAt;
+        delete data.updatedAt;
+        const validateRequest = await updateValidation(data);
+        if (!validateRequest.isValid) {
+            return response.validationError({ message : `Invalid values in parameters, ${validateRequest.message}` });
+        }
+        data.id = id;
+        let updated<%-MODEL_NAME_FC%> = await <%-MODEL_NAME-%>Db.updateOne({id:id},data);
+        return response.success({data:updated<%-MODEL_NAME_FC%>});
+    }
+    return response.badRequest();
+}
+module.exports = updateProfile;

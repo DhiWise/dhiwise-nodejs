@@ -1,0 +1,22 @@
+/**
+ aggregate.js
+ */
+
+const response = require('../../utils/response');
+
+/**
+ * @description : fetch data from database using aggregation pipelines
+ * @param {obj} <%-MODEL_NAME-%>Db : db service instance
+ * @param {obj} params : object of pipelines
+ * @return {obj} : response of aggregate. {status, message, data}
+ */
+
+const aggregate = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
+    let { data } = params;
+    let result = await <%-MODEL_NAME-%>Db.aggregate(data);
+    if(result && result.length){
+        return response.success({data:result});
+    }
+    return response.recordNotFound();
+}
+module.exports = aggregate;

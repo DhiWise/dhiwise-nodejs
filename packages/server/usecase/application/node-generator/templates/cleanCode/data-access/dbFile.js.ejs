@@ -1,0 +1,32 @@
+let <%-MODEL_NAME_FC-%> = require('../db/mongoDB/models/<%-MODEL_NAME-%>');
+let { create,
+    createMany,
+    updateOne,
+    updateMany,
+    deleteOne,
+    deleteMany,
+    softDelete,
+    softDeleteMany,
+    findOne,
+    findMany,
+    paginate,
+    count,
+    upsert,
+    aggregate } = require('../db/mongoDB/dbService')(<%-MODEL_NAME_FC-%>);
+
+module.exports = {
+    create,
+    createMany,
+    updateOne,
+    updateMany,
+    deleteOne,
+    deleteMany,
+    softDelete,
+    softDeleteMany,
+    findOne,
+    findMany,
+    paginate,
+    count,
+    upsert,
+    aggregate
+};

@@ -1,29 +1,24 @@
+module.exports = (<%-ENTITY_NAME-%>) => {
 
-function buildMake<%-ENTITY_NAME_FC-%>({insert<%-ENTITY_NAME_FC-%>Validator,update<%-ENTITY_NAME_FC-%>Validator}){
-    return function make<%-ENTITY_NAME_FC-%>(data,validatorName){
-        let isValid =''
-        switch(validatorName){
-            case 'insert<%-ENTITY_NAME_FC-%>Validator':
-                 isValid = insert<%-ENTITY_NAME_FC-%>Validator(data)
-                 break;
+    let new<%-ENTITY_NAME_FC-%> = { 
+        <%_ for(const key of ENTITY_KEYS){ _%>
+                <%-key%>: <%-ENTITY_NAME-%>.<%-key%>,
+        <%_} _%>  
+    };
 
-             case 'update<%-ENTITY_NAME_FC-%>Validator':
-                 isValid=update<%-ENTITY_NAME_FC-%>Validator(data)  
-                 break; 
-        }
-        if(isValid.error){
-            throw ({
-                name:"ValidationError",
-                message:`Invalid data in <%-ENTITY_NAME_FC-%> entity. ${isValid.error}`
-            })
-        }
-      
-        return {
-            <%_ for(const key of ENTITY_KEYS){ _%>
-                <%-key%>:data.<%-key%>,
-            <%_} _%>            
-        }
+    // remove undefined values
+    Object.keys(new<%-ENTITY_NAME_FC-%>).forEach(key =>{ 
+        if(new<%-ENTITY_NAME_FC-%>[key] === undefined) return new<%-ENTITY_NAME_FC-%>[key]=null
+    });
+
+    // To validate Entity uncomment this block
+
+    /* const validate = (new<%-ENTITY_NAME_FC-%>) => {
+         if (!new<%-ENTITY_NAME_FC-%>.field) {
+             throw new Error("this field is required");
+         }
     }
+    
+    validate(new<%-ENTITY_NAME_FC-%>) */
+    return Object.freeze(new<%-ENTITY_NAME_FC-%>);
 }
-module.exports =  buildMake<%-ENTITY_NAME_FC-%>
-

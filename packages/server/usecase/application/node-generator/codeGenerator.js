@@ -14,7 +14,7 @@ const {
 } = require('./createApplication/createController');
 const { makeRoutes } = require('./createApplication/createRoutes');
 const {
-  makeAuth, isAuthenticationFromInput, makeAuthIndex,
+  makeAuth, isAuthenticationFromInput, makeAuthIndex, makeMiddlewareIndex,
 } = require('./createApplication/createAuthentication');
 const common = require('./createApplication/utils/common');
 const { makeIndividualPolicy } = require('./createApplication/makeCustomPolicy');
@@ -40,11 +40,16 @@ const createModelsSequelize = require('./createApplication/sequelize/composeMode
 const sequelizeService = require('./createApplication/sequelize/service');
 const { configureMongoAuthTestCases } = require('./createApplication/createTestCases/mongooseTestCases');
 const { configureSequelizeAuthTestCases } = require('./createApplication/createTestCases/sequelizeTestCases');
+const { createDataAccessFiles } = require('./createApplication/createDataAccessFiles');
+const {
+  createUseCaseFiles, createCommonUseCaseFiles,
+} = require('./createApplication/createUseCaseFiles');
 
 class CodeGenerator {
-  constructor (projectType) {
+  constructor (projectType, databaseAdapter) {
     this.projectType = projectType;
-    const settingJson = projectSetting.setup(this.projectType);
+    this.databaseAdapter = databaseAdapter;
+    const settingJson = projectSetting.setup(this.projectType, this.databaseAdapter);
     this.setup = settingJson[this.projectType];
   }
 
@@ -294,8 +299,17 @@ class CodeGenerator {
       }
     }
 
+    // data-access files for cc
+    if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_DATA_ACCESS_FILES)) {
+      if (this.jsonData && this.jsonData.models) {
+        const templatePath = `${this.setup.templateFolderName}${templateRegistry.dataAccessFolderPath}`;
+        const { models } = this.jsonData;
+        this.dataAccessFiles = await createDataAccessFiles(templatePath, models);
+      }
+    }
+
     if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_DEPENDENCY_SERVICE) && this.deleteDependency) {
-      this.deleteDependent = await generateDeleteDependencyService(`${this.setup.templateFolderName}${templateRegistry.utilsFolderPath}`, this.deleteDependency);
+      this.deleteDependent = await generateDeleteDependencyService(this.projectType, `${this.setup.templateFolderName}${templateRegistry.utilsFolderPath}`, this.deleteDependency);
     }
 
     // ? create Entity For Clean-code-architecture
@@ -324,6 +338,7 @@ class CodeGenerator {
         auth: this.auth,
         jsonData: this.jsonData,
         controllerFilePath: `${templateFolderName}${templateRegistry.controllerFolderPath}`,
+        deleteDependency: this.deleteDependency,
       };
       this.controllerIndex = await makeControllerIndex(controllers);
     }
@@ -375,6 +390,8 @@ class CodeGenerator {
         platform: _.cloneDeep(this.auth.loginPlatform),
         ORM: this.jsonData.ORM ? this.jsonData.ORM : status.ORM_PROVIDERS.MONGOOSE,
         rolePermission: !_.isEmpty(this.jsonData.rolePermission),
+        projectType: this.projectType,
+        useCaseFolderPath: `${templateFolderName}${templateRegistry.useCaseFolderPath}`,
       };
       this.authModule = await makeAuth(makeAuthObj);
     }
@@ -443,6 +460,38 @@ class CodeGenerator {
       this.servicesOfCustomRoutes = await makeServiceForNonExistingService(makeCustomRouteObj);
     }
 
+    // use-case files for cc modal wise
+    if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_USECASE_FILES)) {
+      if (this.jsonData && this.jsonData.models) {
+        const { modelConfig } = this.jsonData;
+        const rootTemplatePath = `${this.setup.templateFolderName}${templateRegistry.useCaseFolderPath}`;
+        this.useCaseFiles = await createUseCaseFiles(rootTemplatePath, {
+          modelConfig,
+          deleteDependency: this.deleteDependency,
+          auth: this.auth,
+          defaultRole: this.jsonData.defaultRole || '',
+        });
+      }
+    }
+
+    // common use-case files for cc
+    if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_COMMON_USE_CASE_FILES)) {
+      if (this.auth.isAuth) {
+        const rootTemplatePath = `${this.setup.templateFolderName}${templateRegistry.useCaseFolderPath}`;
+        const { authService } = this.authModule;
+        this.commonUseCaseFiles = await createCommonUseCaseFiles(rootTemplatePath, authService);
+      }
+    }
+
+    if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_MIDDLEWARE_INDEX)) {
+      const middlewareObj = {
+        platforms: _.cloneDeep(this.jsonData.authentication.platform),
+        projectType: this.projectType,
+        middlewarePath: `${templateFolderName}${templateRegistry.middlewareFolderPath}`,
+        userModel: this.auth.userModel,
+      };
+      this.middlewareIndex = await makeMiddlewareIndex(middlewareObj);
+    }
     // ? create postman
     if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_POSTMAN)) {
       [this.postmanCollectionJSONV20, this.postmanCollectionJSONV21, this.envPostman] = await generateService.createPostmanCollection(params.projectName, this.postmanCollection, this.auth);
@@ -498,7 +547,7 @@ class CodeGenerator {
     }
 
     if (_.includes(steps, PROJECT_CREATION_STEP.GENERATE_STATIC_FILES_CC_SEQUELIZE)) {
-      await generateStaticFilesForCCSequelize(this.setup.templateFolderName, rootDirectory);
+      await generateStaticFilesForCCSequelize(this.setup.templateFolderName, rootDirectory, userDirectoryStructure);
     }
 
     if (_.includes(steps, PROJECT_CREATION_STEP.ADD_ROLE_PERMISSION) && !_.isEmpty(this.jsonData.rolePermission)) {
@@ -598,6 +647,10 @@ class CodeGenerator {
         rolePermissionService: this.rolePermissionService,
         customRoutesWithPath: this.customRoutesWithPath,
         customRouteIndexes: this.customRouteIndexes,
+        dataAccessFiles: this.dataAccessFiles,
+        useCaseFiles: this.useCaseFiles,
+        commonUseCaseFiles: this.commonUseCaseFiles,
+        middlewareIndex: this.middlewareIndex,
       };
       await startRenderingEJS(rootDirectory, this.setup.templateFolderName, renderObject);
     }

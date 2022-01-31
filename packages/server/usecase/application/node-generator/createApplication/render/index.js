@@ -7,10 +7,11 @@ const sortedObject = require('sorted-object');
 const fs = require('fs');
 const replace = require('key-value-replace');
 const writeOperations = require('../../writeOperations');
+const { PROJECT_TYPE } = require('../../constants/constant');
 
 dotenv.config({ path: `${__dirname}/../../.env` });
 
-async function createConstantFiles (templateFolder, dir, constants, toPath) {
+async function createConstantFiles(templateFolder, dir, constants, toPath) {
   if (constants) {
     writeOperations.mkdir(dir, toPath);
     _.forEach(constants, (value, key) => {
@@ -22,30 +23,61 @@ async function createConstantFiles (templateFolder, dir, constants, toPath) {
   }
 }
 
-async function startRenderingEJS (dir, templateFolder, renderObject) {
+async function startRenderingEJS(dir, templateFolder, renderObject) {
   const {
-    app, db, models, controllerDetails, modelWiseRoutes, authModule, authControllerIndex, pkg, emailService,
+    type, app, db, models, controllerDetails, modelWiseRoutes, authModule, authControllerIndex, pkg, emailService,
     smsService, indexRoute, modelValidation, constants, env,
     seeder, customPolicy, postmanCollectionJSONV20, postmanCollectionJSONV21, platformRoutes, customRoutes, shouldCopyQueryService, isAuth,
     fileUpload, socialData, allEJSEntities, controllerIndex, controllerIndexForCustomRoute,
     deleteDependent, userDirectoryStructure, servicesOfCustomRoutes, tableRelationships, dbConnection, customRoutePackageDependencies, testCases,
     commonService, readme, envPostman,
-    thirdPartySMSServices, thirdPartyEmailService, templateRegistry, rolePermissionService, customRoutesWithPath, customRouteIndexes,
+    thirdPartySMSServices, thirdPartyEmailService, templateRegistry, rolePermissionService, customRoutesWithPath, customRouteIndexes, dataAccessFiles, useCaseFiles, commonUseCaseFiles, middlewareIndex,
   } = renderObject;
 
   // db
-  const dbFilePath = userDirectoryStructure.dbConnectionFolderPath.split('/').filter((e) => e !== '');
-  const dbFileName = dbFilePath.pop();
-  if (!fs.existsSync(`${dir}${dbFilePath.join('/')}`)) {
-    writeOperations.mkdir(dir, dbFilePath.join('/'));
-  }
-  writeOperations.write(path.join(dir, `${dbFilePath.join('/')}/${dbFileName}`), db.render());
-  // writeOperations.write(path.join(dir, '/config/db.js'), db.render());
 
-  if (dbConnection) {
-    writeOperations.write(path.join(dir, `${dbFilePath.join('/')}/dbConnection.js`), dbConnection.render());
+  if (type === PROJECT_TYPE.CC_SEQUELIZE) {
+    if (db && dbConnection) {
+      let dbFilePath = userDirectoryStructure.configFolderPath.split('/').filter((e) => e !== '');
+      // let dbFileName = dbFilePath.pop();
+      if (!fs.existsSync(`${dir}${dbFilePath.join('/')}`)) {
+        writeOperations.mkdir(dir, dbFilePath.join('/'));
+      }
+      writeOperations.write(path.join(dir, `${dbFilePath.join('/')}/db.js`), db.render());
+      // writeOperations.write(path.join(dir, '/config/db.js'), db.render());
+      dbFilePath = userDirectoryStructure.dbConnectionFolderPath.split('/').filter((e) => e !== '');
+      dbFilePath.pop();
+      writeOperations.write(path.join(dir, `${dbFilePath.join('/')}/dbConnection.js`), dbConnection.render());
+    }
+  } else if (db) {
+    const dbFilePath = userDirectoryStructure.dbConnectionFolderPath.split('/').filter((e) => e !== '');
+    const dbFileName = dbFilePath.pop();
+    if (!fs.existsSync(`${dir}${dbFilePath.join('/')}`)) {
+      writeOperations.mkdir(dir, dbFilePath.join('/'));
+    }
+    writeOperations.write(path.join(dir, `${dbFilePath.join('/')}/${dbFileName}`), db.render());
+    // writeOperations.write(path.join(dir, '/config/db.js'), db.render());
+    if (dbConnection) {
+      writeOperations.write(path.join(dir, `${dbFilePath.join('/')}/dbConnection.js`), dbConnection.render());
+    }
   }
-  // seeder
+  const dbFilePath = userDirectoryStructure.dbConnectionFolderPath.split('/').filter((e) => e !== '');
+  dbFilePath.pop();
+
+  // const dbFilePath = userDirectoryStructure.dbConnectionFolderPath.split('/').filter((e) => e !== '');
+  // const dbFileName = dbFilePath.pop();
+  // if (!fs.existsSync(`${dir}${dbFilePath.join('/')}`)) {
+  //   writeOperations.mkdir(dir, dbFilePath.join('/'));
+  // }
+  // writeOperations.write(path.join(dir, `${dbFilePath.join('/')}/${dbFileName}`), db.render());
+  // // writeOperations.write(path.join(dir, '/config/db.js'), db.render());
+
+  /*
+   * if (dbConnection) {
+   *   writeOperations.write(path.join(dir, `${dbFilePath.join('/')}/dbConnection.js`), dbConnection.render());
+   * }
+   * seeder
+   */
   if (!_.isEmpty(seeder)) {
     app.locals.SEEDER = true;
     writeOperations.mkdir(dir, userDirectoryStructure.seedersPath);
@@ -56,6 +88,14 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
   _.forEach(models, (value, key) => {
     writeOperations.write(path.join(dir, `${userDirectoryStructure.modelFolderPath}/${key}.js`), value.render());
   });
+
+  // dataAccessFiles
+  if (!_.isEmpty(dataAccessFiles)) {
+    _.forEach(dataAccessFiles, (value, key) => {
+      writeOperations.mkdir(dir, `${userDirectoryStructure.dataAccessFolderPath}`);
+      writeOperations.write(path.join(dir, `${userDirectoryStructure.dataAccessFolderPath}/${key}Db.js`), value.render());
+    });
+  }
 
   if (!_.isEmpty(tableRelationships)) {
     // generate sql relationships
@@ -105,7 +145,15 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
 
   // delete dependency
   if (!_.isEmpty(deleteDependent)) {
-    writeOperations.write(path.join(dir, '/utils/deleteDependent.js'), deleteDependent.render(), MODE_0666);
+    /*  writeOperations.write(path.join(dir, '/utils/deleteDependent.js'), deleteDependent.render(), MODE_0666); */
+    _.forEach(deleteDependent, (dependency) => {
+      if (dependency.locals.PROJECT_TYPE === PROJECT_TYPE.MVC || dependency.locals.PROJECT_TYPE === PROJECT_TYPE.MVC_SEQUELIZE) {
+        writeOperations.write(path.join(dir, '/utils/deleteDependent.js'), dependency.render(), MODE_0666);
+      } else {
+        writeOperations.mkdir(dir, `${userDirectoryStructure.useCaseFolderPath}/${dependency.locals.MODEL_NAME}`);
+        writeOperations.write(path.join(dir, `${userDirectoryStructure.useCaseFolderPath}/${dependency.locals.MODEL_NAME}/deleteDependent.js`), dependency.render(), MODE_0666);
+      }
+    });
   }
 
   // authentication
@@ -123,6 +171,23 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
       });
     }
 
+    if (!_.isEmpty(useCaseFiles)) {
+      writeOperations.mkdir(dir, `${userDirectoryStructure.useCaseFolderPath}`);
+      _.forEach(useCaseFiles, (modelOperations, modelName) => {
+        writeOperations.mkdir(dir, `${userDirectoryStructure.useCaseFolderPath}/${modelName}`);
+        _.forEach(modelOperations, (operationEjs) => {
+          // console.log(require('util').inspect(operationEjs, false, null, true)); process.exit(1);
+          writeOperations.write(path.join(dir, `${userDirectoryStructure.useCaseFolderPath}/${modelName}/${operationEjs.locals.FILE_NAME}.js`), operationEjs.render());
+        });
+        /*  */
+      });
+    }
+
+    // middleware index.js
+    if (middlewareIndex) {
+      writeOperations.write(path.join(dir, `${userDirectoryStructure.middlewareFolderPath}/index.js`), middlewareIndex.render(), MODE_0666);
+    }
+
     // package
     Object.assign(pkg.dependencies, authModule.packageDependency.dependencies);
 
@@ -135,7 +200,13 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
 
     // authSetup
     _.forEach(authModule.authSetup, (value, platformName) => {
-      writeOperations.write(path.join(dir, `/config/${platformName}PassportStrategy.js`), value.passport.render(), MODE_0666);
+      // passport strategies
+      if (type === PROJECT_TYPE.MVC || type === PROJECT_TYPE.MVC_SEQUELIZE) {
+        writeOperations.write(path.join(dir, `${userDirectoryStructure.configFolderPath}/${platformName}PassportStrategy.js`), value.passport.render(), MODE_0666);
+      } else {
+        writeOperations.write(path.join(dir, `${userDirectoryStructure.middlewareFolderPath}/${platformName}PassportStrategy.js`), value.passport.render(), MODE_0666);
+      }
+      // writeOperations.write(path.join(dir, `/config/${platformName}PassportStrategy.js`), value.passport.render(), MODE_0666);
       writeOperations.write(path.join(dir, `/routes/${platformName}/auth.js`), value.authRoutes.render(), MODE_0666);
       const authPath = replace(value.authController.locals.PATH, { platform: platformName });
       writeOperations.write(path.join(dir, `${authPath}/authController.js`), value.authController.render(), MODE_0666);
@@ -156,6 +227,23 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
      * writeOperations.copyTemplate(`${templateFolder}/utils/common.js`, `${dir}${userDirectoryStructure.utilsFolderPath}/common.js`);
      * writeOperations.copyTemplate(`${templateFolder}/utils/common.js`, `${dir}/utils/common.js`);
      */
+
+    // Auth usecase for CC
+    _.forEach(authModule.authSetup, (value, platformName) => {
+      if (value.authUsecase) {
+        writeOperations.mkdir(`${dir}${userDirectoryStructure.useCaseFolderPath}`, 'authentication');
+        _.forEach(value.authUsecase, (usecase, usecaseName) => {
+          writeOperations.write(path.join(dir, `${userDirectoryStructure.useCaseFolderPath}/authentication/${usecase.locals.FILE_NAME}.js`), usecase.render(), MODE_0666);
+        });
+      }
+    });
+  }
+
+  if (!_.isEmpty(commonUseCaseFiles)) {
+    writeOperations.mkdir(dir, `${userDirectoryStructure.useCaseFolderPath}/common`);
+    _.forEach(commonUseCaseFiles, (usecaseEjs) => {
+      writeOperations.write(path.join(dir, `${userDirectoryStructure.useCaseFolderPath}/common/${usecaseEjs.locals.FILE_NAME}.js`), usecaseEjs.render());
+    });
   }
 
   if (emailService || isAuth) {
@@ -175,9 +263,20 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
   }
 
   //  validation
-  _.forEach(modelValidation, (value, key) => {
-    writeOperations.write(path.join(dir, `${value.locals.PATH}/${key}Validation.js`), value.render());
-  });
+  if (type === PROJECT_TYPE.CLEAN_CODE || type === PROJECT_TYPE.CC_SEQUELIZE) {
+    if (!_.isEmpty(modelValidation)) {
+      _.forEach(modelValidation, (value, key) => {
+        if (!fs.existsSync(`${value.locals.PATH}/schema`)) {
+          writeOperations.mkdir(dir, `${value.locals.PATH}/schema`);
+        }
+        writeOperations.write(path.join(dir, `${value.locals.PATH}/schema/${key}.js`), value.render());
+      });
+    }
+  } else {
+    _.forEach(modelValidation, (value, key) => {
+      writeOperations.write(path.join(dir, `${value.locals.PATH}/${key}Validation.js`), value.render());
+    });
+  }
 
   // constants
   if (!_.isEmpty(constants)) {

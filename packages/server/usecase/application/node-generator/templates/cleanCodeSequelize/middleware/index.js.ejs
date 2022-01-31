@@ -1,0 +1,22 @@
+let <%-USER_MODEL%>Db = require('../data-access/<%-USER_MODEL%>Db');
+let userTokenDb = require('../data-access/userTokenDb');
+let userRoleDb = require('../data-access/userRoleDb');
+let routeRoleDb = require('../data-access/routeRoleDb');
+let projectRouteDb = require('../data-access/projectRouteDb');
+const passport = require('passport');
+
+const auth = require('./auth')({ passport, userTokenDb });
+const checkRolePermission = require('./checkRolePermission')({ userRoleDb, routeRoleDb,projectRouteDb});
+
+<%_for(let platform of PLATFORMS){_%>  
+const <%-platform%>PassportStrategy = require('./<%-platform%>PassportStrategy')({ <%-USER_MODEL%>Db });
+<%_}_%>   
+
+
+module.exports = {
+  auth,
+  checkRolePermission,
+  <%_for(let platform of PLATFORMS){_%>  
+  <%-platform%>PassportStrategy,
+<%_}_%> 
+};

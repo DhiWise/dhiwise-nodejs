@@ -4,51 +4,40 @@ const router = express.Router();
 const session = require('express-session');
 <%_}_%>
 const adaptRequest = require("../../helpers/adaptRequest");
-const sendResponse = require("../../helpers/sendResponse");
+const responseHandler = require('../../utils/response/responseHandler');
+const {auth} = require('../../middleware');
 const authController = require("../../controller/<%-PLATFORM%>/authentication");
-const auth = require('../../middleware/auth');
+
 router.post("/register",(req,res,next)=>{
   req = adaptRequest(req);
-  authController.register({data:req.body}).then((result)=>{
-    sendResponse(res,result);
+  authController.register(req.body).then((result)=>{
+    responseHandler(res,result);
   })
 });
 router.post('/login',(req,res,next)=>{
-req = adaptRequest(req);
-authController.authentication(req).then((result) => {
-sendResponse(res,result)
-})
-.catch((error) => {
-sendResponse(res,error);
-});
+  req = adaptRequest(req);
+  authController.authentication(req.body,req.url).then((result) => {
+  responseHandler(res,result)
+  });
 })
 router.post("/forgot-password", (req, res, next) => {
-req = adaptRequest(req);
-authController.forgotPassword(req.body).then((result) => {
-sendResponse(res, result)
-})
-.catch((error) => {
-sendResponse(res, error)
+  req = adaptRequest(req);
+  authController.forgotPassword(req.body).then((result) => {
+    responseHandler(res, result)
+  });
 });
-})
 router.post("/validate-otp",(req,res,next)=>{
-req = adaptRequest(req);
-authController.validateResetPasswordOtp(req.body).then((result) => {
-sendResponse(res, result)
-})
-.catch((error) => {
-sendResponse(res, error)
+  req = adaptRequest(req);
+  authController.validateResetPasswordOtp(req.body).then((result) => {
+    responseHandler(res, result)
+  })
 });
-})
 router.put("/reset-password",(req,res,next)=>{
-req = adaptRequest(req);
-authController.resetPassword(req.body).then((result) => {
-sendResponse(res, result)
-})
-.catch((error) => {
-sendResponse(res, error)
+  req = adaptRequest(req);
+  authController.resetPassword(req.body).then((result) => {
+    responseHandler(res, result)
+  });
 });
-})
 <%_if(SOCIAL_PLATFORMS.length) { 
   SOCIAL_PLATFORMS.forEach(s=>{ _%>
 router.get("/<%-s.toLowerCase()%>",(req,res,next)=>{
@@ -61,11 +50,8 @@ res.redirect(`http://localhost:${process.env.PORT}/auth/<%-s.toLowerCase()%>`);
 <%_ returnRole = makePolicyRoutes('logout')_%>
 router.post('/logout',auth(...<%=returnRole.LOGOUT_API%>),(req,res,next)=>{
   req = adaptRequest(req);
-  authController.logout(req).then((result) => {
-  sendResponse(res, result)
-  })
-  .catch((error) => {
-  sendResponse(res, error)
+  authController.logout(req.user,req.headers.authorization).then((result) => {
+    responseHandler(res, result)
   });
 });
 

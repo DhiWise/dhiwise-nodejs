@@ -1,0 +1,15 @@
+/**
+ findById.js
+ */
+
+const response = require('../../utils/response');
+
+const findById = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
+    let { query, options  } = params;
+    let result = await <%-MODEL_NAME-%>Db.findOne(query, options);
+    if(result){
+        return response.success({data:result});
+    }
+    return response.recordNotFound();
+}
+module.exports = findById;

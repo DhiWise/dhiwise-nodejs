@@ -1,20 +1,17 @@
-const db = require('mongoose')
-const User = require('../model/<%-MODEL%>')(db);
-const authConstant=require('../constants/authConstant')
+const authConstant=require('../constants/authConstant');
+const <%-MODEL%>Db = require('../data-access/<%-MODEL%>Db');
 <%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
-<%_for(const model of ROLE_PERMISSION_MODELS){
-    let model_FC=(model).charAt(0).toUpperCase() + (model).slice(1); _%>
-const <%-model_FC%> = require('../model/<%-model%>')(db)
-<%_}_%>
-const { replaceAll } = require('../utils/common');
+  <%_for(const model of ROLE_PERMISSION_MODELS){ _%>
+    const <%-model%>Db = require('../data-access/<%-model%>Db');
+  <%_}_%>
 
-async function seedRole() {
-  try{
-    const roles = <%=ROLES%>;
-    for(let i=0; i< roles.length; i++) {
-      let result = await Role.findOne({ name: roles[i], isActive: true, isDeleted: false });
+  async function seedRole() {
+    try{
+      const roles = <%=ROLES%>;
+      for(let i=0; i< roles.length; i++) {
+      let result = await roleDb.findOne({ name: roles[i], code: roles[i].toUpperCase() });
       if (!result) {
-        await Role.create({
+        await roleDb.create({
           name: roles[i],
           code: roles[i].toUpperCase(),
           weight: 1
@@ -22,108 +19,108 @@ async function seedRole() {
       }
     };
     console.info('Role model seeded 🍺');
-  }catch(error){
-    console.log('Role seeder failed.')
+    }catch(error){
+      console.log('Role seeder failed.')
+    }
   }
-}
-async function seedProjectRoutes(routes) {
-  try{
-    if (routes && routes.length) {
-      for (let i = 0; i < routes.length; i++) {
-        const routeMethods = routes[i].methods
-        for (let j = 0; j < routeMethods.length; j++) {
-          const routeObj = {
-            uri: routes[i].path.toLowerCase(),
-            method: routeMethods[j],
-            route_name: `${replaceAll((routes[i].path).toLowerCase().substring(1), '/', '_')}`,
-            isActive: true, 
-            isDeleted: false
-          }
-          if(routeObj.route_name){
-            let result = await ProjectRoute.findOne(routeObj);
-            if (!result) {
-              await ProjectRoute.create(routeObj);
+
+  async function seedProjectRoutes(routes) {
+    try{
+      if (routes && routes.length) {
+        if (routes && routes.length) {  
+          for (let i = 0; i < routes.length; i++) {
+            const routeMethods = routes[i].methods
+            for (let j = 0; j < routeMethods.length; j++) {
+              const routeObj = {
+                uri: routes[i].path.toLowerCase(),
+                method: routeMethods[j],
+                route_name: `${replaceAll((routes[i].path).toLowerCase().substring(1), '/', '_')}`,
+              }
+              if(routeObj.route_name){
+                let result = await projectRouteDb.findOne(routeObj);
+                if (!result) {
+                  await projectRouteDb.create(routeObj);
+                }
+              }
             }
           }
-        }
+          console.info('ProjectRoute model seeded 🍺');
+        } 
       }
-      console.info('ProjectRoute model seeded 🍺');
+    }catch(error){
+      console.log('ProjectRoute seeder failed.')
     }
-  }catch(error){
-    console.log('ProjectRoute seeder failed.')
   }
-}
-async function seedRouteRole() {
-  try{
-    const routeRoles =[ 
-      <%_for(let i=0;i<ROUTE_ROLE_ARRAY.length;i++){_%>
-      <%=ROUTE_ROLE_ARRAY[i]%>,
-      <%_}_%>
 
-    ];
-    if (routeRoles && routeRoles.length) {
-      for (let i = 0; i < routeRoles.length; i++) {
-        let route = await ProjectRoute.findOne({ uri: routeRoles[i].route.toLowerCase(), method: routeRoles[i].method,isActive: true, isDeleted: false }, { id: 1 });
-        let role = await Role.findOne({ code: (routeRoles[i].role).toUpperCase(), isActive: true, isDeleted: false }, { id: 1 });
-        if (route && route.id && role && role.id) {
-          let routeRoleObj = await RouteRole.findOne({
-            roleId: role.id,
-            routeId: route.id,
-            isActive: true, 
-            isDeleted: false
-          });
-          if (!routeRoleObj) {
-            await RouteRole.create({
+  async function seedRouteRole() {
+    try{
+      const routeRoles =[ 
+        <%_for(let i=0;i<ROUTE_ROLE_ARRAY.length;i++){_%>
+        <%=ROUTE_ROLE_ARRAY[i]%>,
+        <%_}_%>
+      ];
+      if (routeRoles && routeRoles.length) {
+        for (let i = 0; i < routeRoles.length; i++) {
+          let route = await projectRouteDb.findOne({ uri: routeRoles[i].route.toLowerCase(), method: routeRoles[i].method,isActive: true, isDeleted: false }, { id: 1 });
+          let role = await roleDb.findOne({ code: (routeRoles[i].role).toUpperCase(), isActive: true, isDeleted: false }, { id: 1 });
+          if (route && route.id && role && role.id) {
+            let routeRoleObj = await routeRoleDb.findOne({
               roleId: role.id,
               routeId: route.id
             });
+            if (!routeRoleObj) {
+              await routeRoleDb.create({
+                roleId: role.id,
+                routeId: route.id
+              });
+            }
           }
-        }
-      };
-      console.info('RouteRole model seeded 🍺');
+        };
+        console.info('RouteRole model seeded 🍺');
+      }
+    }catch(error){
+      console.log('RouteRole seeder failed.')
     }
-  }catch(error){
-    console.log('RouteRole seeder failed.')
   }
-}
-async function seedUserRole (){
-  try{
-    <%_for(let i in USER_EXIST_CONDITION){_%>
-    let <%-ROLE_NAME[i].toLowerCase()%> = await User.findOne(<%-JSON.stringify(USER_EXIST_CONDITION[i])%>);
-    let <%-ROLE_NAME[i].toLowerCase()%>Role = await Role.findOne({ code: <%=DEFAULT_ROLE%> }, { id: 1 });
-    if (<%-ROLE_NAME[i].toLowerCase()%> && <%-ROLE_NAME[i].toLowerCase()%>.isPasswordMatch(<%=USER_PASSWORD[i]%>) && <%-ROLE_NAME[i].toLowerCase()%>Role){
-      let count = await UserRole.countDocuments({
-        userId: <%-ROLE_NAME[i].toLowerCase()%>.id,
-        roleId: <%-ROLE_NAME[i].toLowerCase()%>Role.id,
-        isActive: true, 
-        isDeleted: false
-      });
-      if (count == 0) {
-        await UserRole.create({
+
+  async function seedUserRole () {
+    try{
+      <%_for(let i in USER_EXIST_CONDITION){_%>
+      let <%-ROLE_NAME[i].toLowerCase()%> = await <%-MODEL%>Db.findOne(<%-JSON.stringify(USER_EXIST_CONDITION[i])%>);
+      let <%-ROLE_NAME[i].toLowerCase()%>Role = await roleDb.findOne({ code: <%=DEFAULT_ROLE%> }, { id: 1 });
+      if (<%-ROLE_NAME[i].toLowerCase()%> && <%-ROLE_NAME[i].toLowerCase()%>.isPasswordMatch(<%=USER_PASSWORD[i]%>) && <%-ROLE_NAME[i].toLowerCase()%>Role){
+        let count = await userRoleDb.count({
           userId: <%-ROLE_NAME[i].toLowerCase()%>.id,
-          roleId: <%-ROLE_NAME[i].toLowerCase()%>Role.id 
+          roleId: <%-ROLE_NAME[i].toLowerCase()%>Role.id
         });
-        console.info('<%-ROLE_NAME[i].toLowerCase()%> seeded 🍺');
-      }   
+        if (count == 0) {
+          await userRoleDb.create({
+            userId: <%-ROLE_NAME[i].toLowerCase()%>.id,
+            roleId: <%-ROLE_NAME[i].toLowerCase()%>Role.id 
+          });
+          console.info('<%-ROLE_NAME[i].toLowerCase()%> seeded 🍺');
+        }   
+      }
+      <%_}_%>
+    }catch(error){
+      console.log('UserRole seeder failed.')
     }
-    <%_}_%>
-  }catch(error){
-    console.log('UserRole seeder failed.')
   }
-}
+
 <%_}_%>
+
 async function seedUser() {
   try{
     <%_for(let i in USER_EXIST_CONDITION){_%>
-      let <%-ROLE_NAME[i].toLowerCase()%>= await User.findOne(<%-JSON.stringify(USER_EXIST_CONDITION[i])%>);
+      let <%-ROLE_NAME[i].toLowerCase()%>= await <%-MODEL%>Db.findOne(<%-JSON.stringify(USER_EXIST_CONDITION[i])%>);
       if (!<%-ROLE_NAME[i].toLowerCase()%> || !<%-ROLE_NAME[i].toLowerCase()%>.isPasswordMatch(<%=USER_PASSWORD[i]%>) ) {
         <%_var finalStr = new String();
         USER[i].role=`@@authConstant.USER_ROLE.${ROLE_NAME[i]}@@`;
         finalStr = JSON.stringify(USER[i]);
         finalStr = finalStr.replace(/@@"/g, "").replace(/"@@/g, "");
         _%>
-        let <%-ROLE_NAME[i].toLowerCase()%> = new User(<%-finalStr%>)
-          await User.create(<%-ROLE_NAME[i].toLowerCase()%>);
+        let <%-ROLE_NAME[i].toLowerCase()%> = <%-finalStr%>
+          await <%-MODEL%>Db.create(<%-ROLE_NAME[i].toLowerCase()%>);
       }
     <%_}_%>
     console.info('Users seeded🍺');
@@ -132,18 +129,21 @@ async function seedUser() {
   }
 }
 
-<%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
-async function seedData(allRegisterRoutes){
-  await seedUser();
-  await seedRole();
-  await seedProjectRoutes(allRegisterRoutes);
-  await seedRouteRole();
-  await seedUserRole();
-}     
-<%_}else{_%>
-async function seedData(){
-    await seedUser()    
-}   
-<%_}_%>
+function replaceAll (string, search, replace) {
+  return string.split(search).join(replace);
+};
 
+<%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
+  const seedData = async (allRegisterRoutes) => {
+    await seedUser();
+    await seedRole();
+    await seedProjectRoutes(allRegisterRoutes);
+    await seedRouteRole();
+    await seedUserRole();
+    }
+<%_}else{_%>
+  const seedData = async (allRegisterRoutes) => {
+    await seedUser();
+  }
+<%_}_%>
 module.exports = seedData;

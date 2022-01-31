@@ -1,55 +1,177 @@
-const db = require('mongoose');
-const <%-DB_MODEL %>Model = require('../../../model/<%- DB_MODEL %>')(db);
-const {schemaKeys,updateSchemaKeys} = require('../../../validation/<%-DB_MODEL%>Validation')
-const insert<%-DB_MODEL_FC%>Validator = require("../../../validation/genericValidator")(schemaKeys)
-const update<%-DB_MODEL_FC%>Validator = require("../../../validation/genericValidator")(updateSchemaKeys)
-const make<%-DB_MODEL_FC%>=require("../../../entity/<%-DB_MODEL%>")({insert<%-DB_MODEL_FC%>Validator,update<%-DB_MODEL_FC%>Validator})
-const <%-DB_MODEL%>Service = require("../../../services/mongoDbService")({model:<%-DB_MODEL %>Model,make<%-DB_MODEL_FC%>})
-const make<%-DB_MODEL_FC%>Controller = require("./<%- DB_MODEL %>")
-<%_
-let shouldPassCQ_Imports = false
-let models = UNIQ_TASK_MODELS
-let modelFC=""
-if(models && models.length){  shouldPassCQ_Imports = true_%>
-<%_if(IS_CQ){_%>
-const makeMongoCustomQueryService=require("../../../services/customQueryService");
-<%_}_%>
-let entities={}
-let cqServices={}
-let modelServices={}
-<%_
-let modelFC=""
-for(const model of models){
-    modelFC=model.charAt(0).toUpperCase() + model.slice(1);
-_%>
-<%_if(model !== DB_MODEL){_%>
-const <%-model%>Model = require("../../../model/<%-model%>")(db)
-const {schemaKeys:<%-model%>SchemaKeys,updateSchemaKeys:<%-model%>UpdateSchemaKeys} = require('../../../validation/<%-model%>Validation')
-const insert<%-modelFC%>Validator = require("../../../validation/genericValidator")(<%-model%>SchemaKeys)
-const update<%-modelFC%>Validator = require("../../../validation/genericValidator")(<%-model%>UpdateSchemaKeys)
-const make<%-modelFC%>=require("../../../entity/<%-model%>")({insert<%-modelFC%>Validator,update<%-modelFC%>Validator})
-const <%-model%>Service=require("../../../services/mongoDbService")({model:<%-model%>Model,make<%-modelFC%>})
-<%_}_%>
-modelServices.<%-model%>Service=<%-model%>Service
-entities.make<%-modelFC%>=make<%-modelFC%>
-<%_if(IS_CQ){_%>
-const <%-model%>CqService=makeMongoCustomQueryService(<%-model%>Model)
-cqServices.<%-model%>CqService=<%-model%>CqService
-<%_}_%>
-<%_ } } _%>
-<%_var customRouteServices=[]_%>
-<%_ if(SERVICES_TO_IMPORT && SERVICES_TO_IMPORT.length){ _%>
-<%_ for(let i=0;i < SERVICES_TO_IMPORT.length;i++){ 
-    if(SERVICES_TO_IMPORT[i] != DB_MODEL){ customRouteServices.push(`${SERVICES_TO_IMPORT[i]}Service`)_%>
-const <%-SERVICES_TO_IMPORT[i]-%>Service = require('../../../services/<%-PLATFORM%>/<%-SERVICES_TO_IMPORT[i]-%>Service');
-<%_ }else{ customRouteServices.push(`${SERVICES_TO_IMPORT[i]}Service1`)_%>
-const <%-SERVICES_TO_IMPORT[i]-%>Service1 = require('../../../services/<%-PLATFORM%>/<%-SERVICES_TO_IMPORT[i]-%>Service');
-<%_} } } _%>        
-<%_if(IS_AUTH){_%>
-const authService = require("../../../services/auth")({model:<%-DB_MODEL%>Model,<%-DB_MODEL%>Service})
-const <%-DB_MODEL%>Controller = make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC%>,authService<%_if(shouldPassCQ_Imports){_%>, ...entities, ...cqServices, ...modelServices<%_}_%><%_if(customRouteServices.length){_%>, <%-customRouteServices.join()%><%_}_%>})
-<%_}else{_%>
-const <%-DB_MODEL%>Controller = make<%-DB_MODEL_FC%>Controller({<%-DB_MODEL%>Service,make<%-DB_MODEL_FC%><%_if(shouldPassCQ_Imports){_%>, ...entities, ...cqServices, ...modelServices<%_}_%><%_if(customRouteServices.length){_%>, <%-customRouteServices.join()%><%_}_%>})
-<%_}_%>
-module.exports = <%-DB_MODEL%>Controller
+<%_ let usedDb = []; _%>
+<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%> 
+    const <%-model%>Db = require('../../../data-access/<%-model %>Db');
+<%_ usedDb.push(model);  }); _%>
 
+<%_ if(!usedDb.includes(DB_MODEL)){_%>
+const <%-DB_MODEL %>Db = require('../../../data-access/<%-DB_MODEL %>Db');
+<%_ } _%>
+
+const <%-DB_MODEL %>Schema = require('../../../validation/schema/<%-DB_MODEL %>');
+
+const createValidation = require('../../../validation')(<%-DB_MODEL %>Schema.createSchema);
+const updateValidation = require('../../../validation')(<%-DB_MODEL %>Schema.updateSchema);
+const filterValidation = require('../../../validation')(<%-DB_MODEL %>Schema.filterValidationSchema);
+
+<%_for(const controllerMethod in CONTROLLER_METHODS){_%>
+    <%_ if(controllerMethod === 'create'){ _%>
+        const <%-controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/create')({ <%-DB_MODEL %>Db,createValidation });
+    <%_}_%>
+    <%_ if(controllerMethod === 'update'){ _%>
+        const <%-controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/update')({ <%-DB_MODEL %>Db, updateValidation });
+    <%_}_%>
+    <%_ if(controllerMethod === 'delete'){ _%>
+        const <%-controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/deleteOne')({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>});
+    <%_}_%>
+    <%_ if(controllerMethod === 'findById'){ _%>
+        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/findById')({ <%-DB_MODEL %>Db, filterValidation});
+    <%_}_%>
+    <%_ if(controllerMethod === 'findAll'){ _%>
+        const <%-controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/findAll')({ <%-DB_MODEL %>Db, filterValidation});
+    <%_}_%>
+    <%_ if(controllerMethod === 'count'){ _%>
+        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/count')({ <%-DB_MODEL %>Db,filterValidation});
+    <%_}_%>
+        <%_ if(controllerMethod === 'createBulk'){ _%>
+        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/createBulk')({ <%-DB_MODEL %>Db});
+    <%_}_%>
+    <%_ if(controllerMethod === 'bulkUpdate'){ _%>
+        const <%-controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/updateBulk')({ <%-DB_MODEL %>Db});
+    <%_}_%>
+    <%_ if(controllerMethod === 'deleteMany'){ _%>
+        const <%-controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/deleteMany')({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>});
+    <%_}_%>
+    <%_ if(controllerMethod === 'softDelete'){ _%>
+        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/softDelete')({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>});
+    <%_}_%>
+    <%_ if(controllerMethod === 'softDeleteMany'){ _%>
+        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/softDeleteMany')({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>});
+    <%_}_%>
+    <%_ if(controllerMethod === 'partialUpdate'){ _%>
+        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/partialUpdate')({ <%-DB_MODEL %>Db,updateValidation});
+    <%_}_%>
+    <%_ if(controllerMethod === 'aggregate'){ _%>
+        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/aggregate')({ <%-DB_MODEL %>Db});
+    <%_}_%>
+<%_}_%>
+<%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>
+const changePasswordUsecase = require('../../../use-case/<%-DB_MODEL %>/changePassword')({ <%-DB_MODEL %>Db});
+const updateProfileUsecase = require('../../../use-case/<%-DB_MODEL %>/updateProfile')({ <%-DB_MODEL %>Db,updateValidation});
+<%_}_%>
+<%_if(CUSTOM_ROUTES){_%>
+  <%_CUSTOM_ROUTES.forEach((v,i)=>{_%>
+    const <%-v.functionName%>Usecase = require('../../../use-case/<%-DB_MODEL %>/<%-v.functionName%>')({ <%-DB_MODEL %>Db});
+  <%_});_%>
+<%_}_%>
+
+const <%-DB_MODEL %>Controller = require('./<%-DB_MODEL %>');
+
+<%_for(const controllerMethod in CONTROLLER_METHODS){_%>
+    <%_ if(controllerMethod === 'create'){ _%>
+        const add<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.add<%-DB_MODEL_FC %>(<%-controllerMethod +DB_MODEL_FC %>Usecase);
+    <%_}_%>
+    <%_ if(controllerMethod === 'update'){ _%>
+        const update<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.update<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
+    <%_}_%>
+    <%_ if(controllerMethod === 'delete'){ _%>
+        const delete<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.delete<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
+    <%_}_%>
+    <%_ if(controllerMethod === 'findById'){ _%>
+        const get<%-DB_MODEL_FC %>ById = <%-DB_MODEL %>Controller.get<%-DB_MODEL_FC %>ById(<%- controllerMethod + DB_MODEL_FC %>Usecase);
+    <%_}_%>
+    <%_ if(controllerMethod === 'findAll'){ _%>
+        const findAll<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.findAll<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
+    <%_}_%>
+    <%_ if(controllerMethod === 'count'){ _%>
+        const get<%-DB_MODEL_FC %>Count = <%-DB_MODEL %>Controller.get<%-DB_MODEL_FC %>Count(<%- controllerMethod + DB_MODEL_FC %>Usecase);
+    <%_}_%>
+        <%_ if(controllerMethod === 'createBulk'){ _%>
+        const bulkInsert<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.bulkInsert<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
+    <%_}_%>
+    <%_ if(controllerMethod === 'bulkUpdate'){ _%>
+        const bulkUpdate<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.bulkUpdate<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
+    <%_}_%>
+    <%_ if(controllerMethod === 'deleteMany'){ _%>
+        const deleteMany<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.deleteMany<%-DB_MODEL_FC %>(<%-controllerMethod + DB_MODEL_FC %>Usecase);
+    <%_}_%>
+    <%_ if(controllerMethod === 'softDelete'){ _%>
+        const softDelete<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.softDelete<%-DB_MODEL_FC %>(<%-controllerMethod + DB_MODEL_FC %>Usecase);
+    <%_}_%>
+    <%_ if(controllerMethod === 'softDeleteMany'){ _%>
+        const softDeleteMany<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.softDeleteMany<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
+    <%_}_%>
+    <%_ if(controllerMethod === 'partialUpdate'){ _%>
+        const partialUpdate<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.partialUpdate<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
+    <%_}_%>
+    <%_ if(controllerMethod === 'aggregate'){ _%>
+    const get<%-DB_MODEL_FC %>ByAggregate = <%-DB_MODEL %>Controller.get<%-DB_MODEL_FC %>ByAggregate(<%- controllerMethod + DB_MODEL_FC %>Usecase);
+    <%_}_%>
+<%_}_%>
+<%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>
+const changePassword = <%-DB_MODEL %>Controller.changePassword(changePasswordUsecase);
+const updateProfile = <%-DB_MODEL %>Controller.updateProfile(updateProfileUsecase);
+<%_}_%>
+<%_if(CUSTOM_ROUTES){_%>
+  <%_CUSTOM_ROUTES.forEach((v,i)=>{_%>
+    const <%-v.functionName%> = <%-DB_MODEL %>Controller.<%-v.functionName%>(<%-v.functionName%>Usecase);
+  <%_});_%>
+<%_}_%>
+
+
+<%_
+// Code For custom route
+let shouldPassCQ_Imports = false
+_%>
+
+module.exports = {
+<%_for(const controllerMethod in CONTROLLER_METHODS){_%>
+    <%_ if(controllerMethod === 'create'){ _%>
+        add<%-DB_MODEL_FC %>,
+    <%_}_%>
+    <%_ if(controllerMethod === 'update'){ _%>
+        update<%-DB_MODEL_FC %>,
+    <%_}_%>
+    <%_ if(controllerMethod === 'delete'){ _%>
+        delete<%-DB_MODEL_FC %>,
+    <%_}_%>
+    <%_ if(controllerMethod === 'findById'){ _%>
+        get<%-DB_MODEL_FC %>ById,
+    <%_}_%>
+    <%_ if(controllerMethod === 'findAll'){ _%>
+        findAll<%-DB_MODEL_FC %>,
+    <%_}_%>
+    <%_ if(controllerMethod === 'count'){ _%>
+        get<%-DB_MODEL_FC %>Count,
+    <%_}_%>
+    <%_ if(controllerMethod === 'createBulk'){ _%>
+        bulkInsert<%-DB_MODEL_FC %>,
+    <%_}_%>
+    <%_ if(controllerMethod === 'bulkUpdate'){ _%>
+        bulkUpdate<%-DB_MODEL_FC %>,
+    <%_}_%>
+    <%_ if(controllerMethod === 'deleteMany'){ _%>
+        deleteMany<%-DB_MODEL_FC %>,
+    <%_}_%>
+    <%_ if(controllerMethod === 'softDelete'){ _%>
+        softDelete<%-DB_MODEL_FC %>,
+    <%_}_%>
+    <%_ if(controllerMethod === 'softDeleteMany'){ _%>
+        softDeleteMany<%-DB_MODEL_FC %>,
+    <%_}_%>
+    <%_ if(controllerMethod === 'partialUpdate'){ _%>
+        partialUpdate<%-DB_MODEL_FC %>,
+    <%_}_%>
+    <%_ if(controllerMethod === 'aggregate'){ _%>
+        get<%-DB_MODEL_FC %>ByAggregate,
+    <%_}_%>
+<%_}_%>
+<%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>
+    changePassword,
+    updateProfile,
+    <%_}_%>
+<%_if(CUSTOM_ROUTES){_%>
+  <%_CUSTOM_ROUTES.forEach((v,i)=>{_%>
+    <%-v.functionName%>,
+  <%_});_%>
+<%_}_%>
+};

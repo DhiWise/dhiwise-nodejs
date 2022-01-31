@@ -5,9 +5,11 @@ const {
   getTemplateByName, getPlatformWiseAPIOfCustomRoutes,
 } = require('../utils/common');
 const writeOperations = require('../../writeOperations');
-const { ORM_PROVIDERS } = require('../../constants/constant');
+const {
+  ORM_PROVIDERS, PROJECT_TYPE,
+} = require('../../constants/constant');
 
-async function setPackagesForAuth ({
+async function setPackagesForAuth({
   userLoginRateLimit, socialAuth,
 }) {
   const pkg = { dependencies: {} };
@@ -25,7 +27,7 @@ async function setPackagesForAuth ({
   }
   return pkg;
 }
-async function getAuthorizeRoutes (PLATFORM, loginAccessPlatform) {
+async function getAuthorizeRoutes(PLATFORM, loginAccessPlatform) {
   const obj = {};
   forEach(loginAccessPlatform, (element, key) => {
     obj[key] = [];
@@ -69,7 +71,7 @@ async function getAuthorizeRoutes (PLATFORM, loginAccessPlatform) {
   };
 }
 
-async function generateAuthConstant (PLATFORM, auth, {
+async function generateAuthConstant(PLATFORM, auth, {
   keyObj, valObj,
 }, configPath, customRoutes = {}) {
   const {
@@ -120,8 +122,71 @@ async function generateAuthConstant (PLATFORM, auth, {
   return constant;
 }
 
-async function authenticationSetup (platformStrategy, {
-  auth, configPath, controllerPath, routePath, authControllerPath, templates, ORM, rolePermission,
+async function generateAuthUsecase(useCaseFolderPath, {
+  userModel,
+  passwordField,
+  notificationType,
+  emailFieldName,
+  mobileFieldName,
+  userLoginRetryLimit,
+  rolePermission,
+  userLoginWith,
+  orObj,
+  pushNotification,
+}) {
+  const authUsecase = {};
+  authUsecase.register = {};
+  // For Register
+  const registerUseCase = writeOperations.loadTemplate(`${useCaseFolderPath}/authentication/register.js`);
+  registerUseCase.locals.FILE_NAME = 'register';
+  registerUseCase.locals.USER_MODEL = userModel;
+  registerUseCase.locals.PASSWORD_FIELD = passwordField;
+  registerUseCase.locals.NOTIFICATION_TYPE = notificationType;
+  registerUseCase.locals.EMAIL_FIELD = emailFieldName;
+  registerUseCase.locals.MOBILE_FIELD = mobileFieldName;
+  registerUseCase.locals.ROLE_DB = 'roleDb';
+  registerUseCase.locals.USER_ROLE_DB = 'userRoleDb';
+  authUsecase.register = registerUseCase;
+
+  // For ForgotPassword
+  const forgotPasswordUseCase = writeOperations.loadTemplate(`${useCaseFolderPath}/authentication/forgotPassword.js`);
+  forgotPasswordUseCase.locals.FILE_NAME = 'forgotPassword';
+  forgotPasswordUseCase.locals.USER_MODEL = userModel;
+  forgotPasswordUseCase.locals.EMAIL_FIELD = emailFieldName;
+  authUsecase.forgotPassword = forgotPasswordUseCase;
+
+  // For Reset password
+
+  const resetPasswordUseCase = writeOperations.loadTemplate(`${useCaseFolderPath}/authentication/resetPassword.js`);
+  resetPasswordUseCase.locals.FILE_NAME = 'resetPassword';
+  resetPasswordUseCase.locals.USER_MODEL = userModel;
+  resetPasswordUseCase.locals.PASSWORD_FIELD = passwordField;
+  resetPasswordUseCase.locals.EMAIL_FIELD = emailFieldName;
+  resetPasswordUseCase.locals.LOGIN_RETRY_LIMIT = userLoginRetryLimit || null;
+  authUsecase.resetPassword = resetPasswordUseCase;
+
+  // For ValidateResetPasswordOtp
+  const validateResetPasswordOtpUseCase = writeOperations.loadTemplate(`${useCaseFolderPath}/authentication/validateResetPasswordOtp.js`);
+  validateResetPasswordOtpUseCase.locals.FILE_NAME = 'validateResetPasswordOtp';
+  validateResetPasswordOtpUseCase.locals.USER_MODEL = userModel;
+  authUsecase.validateResetPasswordOtp = validateResetPasswordOtpUseCase;
+
+  // For Logout
+  const logoutUseCase = writeOperations.loadTemplate(`${useCaseFolderPath}/authentication/logout.js`);
+  logoutUseCase.locals.FILE_NAME = 'logout';
+  authUsecase.logout = logoutUseCase;
+
+  const authentication = writeOperations.loadTemplate(`${useCaseFolderPath}/authentication/authentication.js`);
+  authentication.locals.FILE_NAME = 'authentication';
+  authentication.locals.USER_MODEL = userModel;
+  authentication.locals.ROLE_PERMISSION = rolePermission;
+  authUsecase.loginWithOTP = authentication;
+
+  return authUsecase;
+}
+
+async function authenticationSetup(platformStrategy, {
+  auth, configPath, controllerPath, routePath, authControllerPath, templates, ORM, rolePermission, projectType, useCaseFolderPath, middlewarePath,
 }) {
   const socialPlatforms = [];
   if (auth.socialAuth.platforms.length) {
@@ -133,7 +198,7 @@ async function authenticationSetup (platformStrategy, {
   }
   const or = [];
   const {
-    userModel, userLoginWith, noOfDeviceAllowed, registerAuth, loginAccessPlatform, emailField, mobileField,
+    userModel, userLoginWith, noOfDeviceAllowed, registerAuth, loginAccessPlatform, emailField, mobileField, userLoginRetryLimit,
   } = auth;
   userLoginWith.username.forEach((item) => {
     const query = {};
@@ -150,12 +215,19 @@ async function authenticationSetup (platformStrategy, {
   }
   orObj = JSON.stringify(orObj);
   orObj = orObj.toString().replace(/"/g, '');
-  const passport = writeOperations.loadTemplate(`${configPath}/passport.js`);
-  passport.locals.MODEL = userModel;
-  passport.locals.STRATEGY = platformStrategy;
-  passport.locals.LOGIN_WITH = userLoginWith.username;
-  passport.locals.MAX_DEVICE_ALLOWED = noOfDeviceAllowed.required;
 
+  // PASSPORT
+  let passport;
+  if (projectType === PROJECT_TYPE.MVC || projectType === PROJECT_TYPE.MVC_SEQUELIZE) {
+    passport = writeOperations.loadTemplate(`${configPath}/passport.js`);
+    passport.locals.MODEL = userModel;
+    passport.locals.STRATEGY = platformStrategy;
+    passport.locals.LOGIN_WITH = userLoginWith.username;
+    passport.locals.MAX_DEVICE_ALLOWED = noOfDeviceAllowed.required;
+  } else {
+    passport = writeOperations.loadTemplate(`${middlewarePath}/passport.js`);
+    passport.locals.STRATEGY = platformStrategy;
+  }
   const authController = writeOperations.loadTemplate(`${controllerPath}/authController.js`);
   authController.locals.LOGIN_WITH = userLoginWith.username;
   authController.locals.MULTIPLE_LOGIN = orObj;
@@ -199,13 +271,38 @@ async function authenticationSetup (platformStrategy, {
   authRoutes.locals.SOCIAL_PLATFORMS = socialPlatforms;
   authRoutes.locals.LOGIN_ACCESS_PLATFORM = loginAccessPlatform;
   authRoutes.locals.MODULE = platformStrategy;
+
+  let authUsecase;
+
+  if (projectType === PROJECT_TYPE.CLEAN_CODE || projectType === PROJECT_TYPE.CC_SEQUELIZE) {
+    const passwordField = userLoginWith.password || 'password';
+    const notificationType = authController.locals.NOTIFICATION_TYPE || false;
+    const emailFieldName = emailField;
+    const mobileFieldName = mobileField;
+    const pushNotification = authController.locals.PUSH_NOTIFICATION;
+
+    authUsecase = await generateAuthUsecase(useCaseFolderPath, {
+      userModel,
+      passwordField,
+      notificationType,
+      emailFieldName,
+      mobileFieldName,
+      userLoginRetryLimit,
+      rolePermission,
+      userLoginWith,
+      orObj,
+      pushNotification,
+    });
+  }
+
   return {
     passport,
     authController,
     authRoutes,
+    authUsecase,
   };
 }
-async function generateAuthMiddleware (PLATFORM, middlewarePath, platformWiseCustomRoutes, noOfDeviceAllowed) {
+async function generateAuthMiddleware(PLATFORM, middlewarePath, platformWiseCustomRoutes, noOfDeviceAllowed) {
   const middleware = writeOperations.loadTemplate(`${middlewarePath}/auth.js`);
   middleware.locals.CUSTOM_ROUTES = platformWiseCustomRoutes;
   middleware.locals.PLATFORM = PLATFORM;
@@ -217,7 +314,7 @@ async function generateAuthMiddleware (PLATFORM, middlewarePath, platformWiseCus
     authUser,
   };
 }
-async function generateAuthService (platforms, {
+async function generateAuthService(platforms, {
   auth, servicePath, templates, ORM, rolePermission,
 }) {
   const {
@@ -309,7 +406,7 @@ async function generateAuthService (platforms, {
   }
   return authService;
 }
-async function makeAuth (makeAuthObj) {
+async function makeAuth(makeAuthObj) {
   const app = { locals: {} };
   const PLATFORM = makeAuthObj.platform;
   const platformForAuth = makeAuthObj.platform;
@@ -360,7 +457,7 @@ async function makeAuth (makeAuthObj) {
     forgotPassword: makeAuthObj.auth.forgotPassword,
   };
 }
-async function isAuthenticationFromInput (jsonData) {
+async function isAuthenticationFromInput(jsonData) {
   let isAuth = false;
   let registerAuth = {};
   let userRoles = [];
@@ -505,7 +602,7 @@ async function isAuthenticationFromInput (jsonData) {
   };
 }
 
-async function makeAuthIndex (authObject) {
+async function makeAuthIndex(authObject) {
   const { platforms } = authObject;
   const authSetup = {};
   forEach(platforms, async (platformName) => {
@@ -528,8 +625,26 @@ async function makeAuthIndex (authObject) {
   return authSetup;
 }
 
+async function makeMiddlewareIndex(middlewareObj) {
+  const {
+    platforms, projectType, middlewarePath, userModel,
+  } = middlewareObj;
+  /*
+   * console.log(projectType, middlewareObj.userModel); process.exit(1);
+   * middleware index.js
+   */
+  let indexOfMiddleware;
+  if (projectType === PROJECT_TYPE.CLEAN_CODE || projectType === PROJECT_TYPE.CC_SEQUELIZE) {
+    indexOfMiddleware = writeOperations.loadTemplate(`${middlewarePath}/index.js`);
+    indexOfMiddleware.locals.PLATFORMS = platforms;
+    indexOfMiddleware.locals.USER_MODEL = userModel;
+  }
+  return indexOfMiddleware;
+}
+
 module.exports = {
   makeAuth,
   isAuthenticationFromInput,
   makeAuthIndex,
+  makeMiddlewareIndex,
 };

@@ -1,0 +1,19 @@
+/**
+ count.js
+ */
+
+const response = require('../../utils/response');
+
+/**
+ * @description : returns total number of documents of <%-MODEL_NAME%>
+ * @param {obj} <%-MODEL_NAME-%>Db : db service instance
+ * @param {obj} params : {where: query to find data}
+ * @return {obj} : response of count. {status, message, data}
+ */
+const count = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
+   let { where } = params;
+    let result = await <%-MODEL_NAME-%>Db.count(where);
+    result = {totalRecords:result}
+    return response.success({data:result});
+}
+module.exports = count;

@@ -8,15 +8,15 @@ const <%-CONTROLLERS_TO_IMPORT[i]-%>Controller = require('../../controller/<%-MO
 <%_ } }_%>  
 <%_ } _%> 
 const adaptRequest = require("../../helpers/adaptRequest");
-const sendResponse = require("../../helpers/sendResponse");
+const responseHandler = require('../../utils/response/responseHandler');
 <%_ if(IS_AUTH){ _%>
-const auth = require("../../middleware/auth");
+const {auth} = require('../../middleware');
 <%_ } _%>
 <%_ if(CUSTOM_POLICY.length){ 
     if(CUSTOM_POLICY.includes('auth')){ let arrayIndex = CUSTOM_POLICY.indexOf('auth'); delete CUSTOM_POLICY[arrayIndex]; CUSTOM_POLICY =  CUSTOM_POLICY.filter(Boolean);}
 _%>
 <%_ for(let i=0;i < CUSTOM_POLICY.length;i++){ _%>
-const <%-CUSTOM_POLICY[i]-%> = require("../../middleware/<%-CUSTOM_POLICY[i]-%>");
+const {<%-CUSTOM_POLICY[i]-%>} = require("../../middleware");
 <%_ } _%> <%_ } _%> 
 <%_ for(let i=0; i < SUPPORT_API.length; i++){ _%>
 <%_ if(SUPPORT_API[i].method=="create"){ _%>
@@ -24,20 +24,14 @@ const <%-CUSTOM_POLICY[i]-%> = require("../../middleware/<%-CUSTOM_POLICY[i]-%>"
 router.post('/<%-ROUTE_PREFIX%>/create',auth(...<%=returnRole.CREATE_API %>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
     <%-DB_MODEL%>Controller.add<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data: req.body, loggedInUser:req.user}).then((result)=>{
-        sendResponse(res, result);
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+        responseHandler(res, result);(res, result);
     });
 })
 <%_ }else{ _%>
 router.post('/<%-ROUTE_PREFIX%>/create',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
     <%-DB_MODEL%>Controller.add<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data:req.body}).then((result)=>{
-        sendResponse(res, result);
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+        responseHandler(res, result);
     });
 })
 <%_ } _%><%_ } _%>
@@ -45,20 +39,14 @@ router.post('/<%-ROUTE_PREFIX%>/create',<%_ if(SUPPORT_API[i].policy.length) { _
 <%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("createBulk") ; _%>
 router.post('/<%-ROUTE_PREFIX%>/addBulk',auth(...<%= returnRole.CREATE_BULK_API %>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     <%-DB_MODEL%>Controller.bulkInsert<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({body: req.body,loggedInUser: req.user}).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+        responseHandler(res,result)
     });
 })
 <%_ }else{ _%>
 router.post('/<%-ROUTE_PREFIX%>/addBulk',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
     <%-DB_MODEL%>Controller.bulkInsert<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({body: req.body}).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+        responseHandler(res,result)
     });
 })
 <%_ } _%><%_ } _%>
@@ -67,20 +55,14 @@ router.post('/<%-ROUTE_PREFIX%>/addBulk',<%_ if(SUPPORT_API[i].policy.length) { 
 router.post('/<%-ROUTE_PREFIX%>/list',auth(...<%=returnRole.READ_ALL_API %>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
     <%-DB_MODEL%>Controller.findAll<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data: req.body, loggedInUser:req.user}).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error);
+        responseHandler(res,result)
     });
 })
 <%_ }else{ _%>
 router.post('/<%-ROUTE_PREFIX%>/list',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
     <%-DB_MODEL%>Controller.findAll<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data:req.body}).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error);
+        responseHandler(res,result)
     });
 })
 <%_ } _%><%_ } _%>
@@ -88,70 +70,47 @@ router.post('/<%-ROUTE_PREFIX%>/list',<%_ if(SUPPORT_API[i].policy.length) { _%>
 <%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("findById") ; _%>
 router.get('/<%-ROUTE_PREFIX%>/:id',auth(...<%= returnRole.READ_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.find<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>ByPk(req.pathParams.id).then((result)=>{
-        sendResponse(res,result)
-    })  
-    .catch((error) => {
-        sendResponse(res,error);
-    })
+    <%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>ById({ id: req.pathParams.id}).then((result)=>{
+        responseHandler(res,result)
+    });
 });
 <%_ }else{ _%>
 router.get('/<%-ROUTE_PREFIX%>/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
     <%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>ById(req.pathParams.id).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error);
-    })
+        responseHandler(res,result)
+    });
 });
 <%_ } _%><%_ } _%>
 <%_ if(SUPPORT_API[i].method=="count"){ _%>
 <%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("count") ; _%>
 router.route('/<%-ROUTE_PREFIX%>/count').post(auth(...<%=returnRole.COUNT_API%>), <%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.findAll<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({
-        data:{
-          query: { ...req.body },
-          isCountOnly:true 
-        } 
-      }).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error);
-    })
+    <%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>Count(req.body).then((result)=>{
+        responseHandler(res,result)
+    });
 });
 <%_ }else{ _%>
 router.route('/<%-ROUTE_PREFIX%>/count').post(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
     <%-DB_MODEL%>Controller.findAll<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data:{iCountOnly:true}}).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error);
-    })
+        responseHandler(res,result)
+    });
 });
 <%_ } _%><%_ } _%>
 <%_if(SUPPORT_API[i].method=="update"){_%>
 <%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("update") ; _%>
 router.put('/<%-ROUTE_PREFIX%>/update/:id',auth(...<%=returnRole.UPDATE_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.update<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.pathParams.id,req.body,req.user).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+    <%-DB_MODEL%>Controller.update<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.pathParams.id,req.user).then((result)=>{
+        responseHandler(res,result)
     });
 })   
 <%_ }else{ _%>
 router.put('/<%-ROUTE_PREFIX%>/update/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
     <%-DB_MODEL%>Controller.update<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.pathParams.id,req.body).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+        responseHandler(res,result)
     });
 })  
 <%_}_%><%_}_%>
@@ -160,20 +119,14 @@ router.put('/<%-ROUTE_PREFIX%>/update/:id',<%_ if(SUPPORT_API[i].policy.length) 
 router.put('/<%-ROUTE_PREFIX%>/partial-update/:id',auth(...<%=returnRole.PARTIAL_UPDATE_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
     <%-DB_MODEL%>Controller.partialUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.pathParams.id,req.body,req.user).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+        responseHandler(res,result)
     });
 })   
 <%_ }else{ _%>
 router.put('/<%-ROUTE_PREFIX%>/partial-update/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
     <%-DB_MODEL%>Controller.partialUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.pathParams.id,req.body).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+        responseHandler(res,result)
     });
 })  
 <%_}_%><%_}_%>
@@ -181,21 +134,15 @@ router.put('/<%-ROUTE_PREFIX%>/partial-update/:id',<%_ if(SUPPORT_API[i].policy.
 <%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("bulkUpdate") ; _%>
 router.put('/<%-ROUTE_PREFIX%>/updateBulk',auth(...<%=returnRole.UPDATE_BULK_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.bulkUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+    <%-DB_MODEL%>Controller.bulkUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.user).then((result)=>{
+        responseHandler(res,result)
     });
 }) 
 <%_ }else{ _%>
 router.put('/<%-ROUTE_PREFIX%>/updateBulk',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
     <%-DB_MODEL%>Controller.bulkUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+        responseHandler(res,result)
     });
 })
 <%_}_%><%_}_%>
@@ -203,21 +150,15 @@ router.put('/<%-ROUTE_PREFIX%>/updateBulk',<%_ if(SUPPORT_API[i].policy.length) 
 <%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("delete") ; _%>
 router.delete('/<%-ROUTE_PREFIX%>/delete/:id',auth(...<%=returnRole.DELETE_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.delete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.pathParams.id,req.body,req.user).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+    <%-DB_MODEL%>Controller.delete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.pathParams.id,req.user).then((result)=>{
+        responseHandler(res,result)
     });
 })
 <%_ }else{ _%>
 router.delete('/<%-ROUTE_PREFIX%>/delete/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.delete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({pk:req.pathParams.id,isWarning:req.body.isWarning}).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+    <%-DB_MODEL%>Controller.delete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.pathParams.id).then((result)=>{
+        responseHandler(res,result)
     });
 })
 <%_}_%><%_}_%>
@@ -226,20 +167,14 @@ router.delete('/<%-ROUTE_PREFIX%>/delete/:id',<%_ if(SUPPORT_API[i].policy.lengt
 router.delete('/<%-ROUTE_PREFIX%>/deleteMany',auth(...<%=returnRole.DELETE_MANY_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
     <%-DB_MODEL%>Controller.deleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.user).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+        responseHandler(res,result)
     });
 })
 <%_ }else{ _%>
 router.delete('/<%-ROUTE_PREFIX%>/deleteMany',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
     <%-DB_MODEL%>Controller.deleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+        responseHandler(res,result)
     });
 })
 <%_}_%><%_}_%>
@@ -247,21 +182,15 @@ router.delete('/<%-ROUTE_PREFIX%>/deleteMany',<%_ if(SUPPORT_API[i].policy.lengt
 <%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("softDelete") ; _%>
 router.put('/<%-ROUTE_PREFIX%>/softDelete/:id',auth(...<%=returnRole.SOFT_DELETE_API%>), <%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.softDelete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({pk:req.pathParams.id,loggedInUser: req.user}).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+    <%-DB_MODEL%>Controller.softDelete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data : req.body,id:req.pathParams.id,loggedInUser: req.user}).then((result)=>{
+        responseHandler(res,result)
     });
 })
 <%_ }else{ _%>
 router.put('/<%-ROUTE_PREFIX%>/softDelete/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.softDelete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({pk:req.pathParams.id}).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+    <%-DB_MODEL%>Controller.softDelete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data : req.body,id:req.pathParams.id}).then((result)=>{
+        responseHandler(res,result)
     });
 })
 <%_}_%><%_}_%>
@@ -269,21 +198,15 @@ router.put('/<%-ROUTE_PREFIX%>/softDelete/:id',<%_ if(SUPPORT_API[i].policy.leng
 <%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("softDeleteMany") ; _%>
 router.put('/<%-ROUTE_PREFIX%>/softDeleteMany',auth(...<%=returnRole.SOFT_DELETE_MANY_API%>), <%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
-        <%-DB_MODEL%>Controller.softDeleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body.ids,req.user).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+        <%-DB_MODEL%>Controller.softDeleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.body.ids,req.user).then((result)=>{
+        responseHandler(res,result)
     });
 })
 <%_ }else{ _%>
 router.put('/<%-ROUTE_PREFIX%>/softDeleteMany',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
     req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.softDeleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body.ids).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+    <%-DB_MODEL%>Controller.softDeleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.body.ids).then((result)=>{
+        responseHandler(res,result)
     });
 })
 <%_}_%><%_}_%>
@@ -294,19 +217,13 @@ router.route('/<%-ROUTE_PREFIX%>/change-password').put(auth(...<%=returnRole.CHA
     req = adaptRequest(req);
     let params = {...req.body,userId:req.user.id}
     <%-DB_MODEL%>Controller.changePassword(params).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+        responseHandler(res,result)
     });
 });
 router.route('/<%-ROUTE_PREFIX%>/update-profile').put(auth(...<%=profile.UPDATE_PROFILE%>),(req,res,next)=>{
     req = adaptRequest(req);
     <%-DB_MODEL%>Controller.updateProfile(req.body,req.user.id).then((result)=>{
-        sendResponse(res,result)
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+        responseHandler(res,result)
     });
 });
 <%_ } _%>
@@ -322,10 +239,7 @@ router.route("<%-v.api%>").<%-v.method%>( <%_if(v.policies && v.policies.length)
     <%_}_%>(req, res, next) => {
     req = adaptRequest(req);
     <%-v.controller%>Controller.<%- v.functionName %>(req.body).then((result)=>{
-        sendResponse(res, result);
-    })
-    .catch((error) => {
-        sendResponse(res,error)
+        responseHandler(res, result);
     });
 })
 <%_})_%>

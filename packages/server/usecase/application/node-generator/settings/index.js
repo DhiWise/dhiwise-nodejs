@@ -1,8 +1,8 @@
 const {
-  PROJECT_TYPE, PROJECT_CREATION_STEP,
+  PROJECT_TYPE, PROJECT_CREATION_STEP, DB_ADAPTER,
 } = require('../constants/constant');
 
-function getProjectSteps (type) {
+function getProjectSteps(type) {
   if (type === PROJECT_TYPE.MVC) {
     return [
       PROJECT_CREATION_STEP.INPUT_PARSER,
@@ -69,6 +69,11 @@ function getProjectSteps (type) {
       PROJECT_CREATION_STEP.RENDER_EJS, // must be the last step
       PROJECT_CREATION_STEP.APPLY_ESLINT,
       PROJECT_CREATION_STEP.CREATE_APP_FILE,
+      PROJECT_CREATION_STEP.CREATE_DATA_ACCESS_FILES,
+      PROJECT_CREATION_STEP.CREATE_USECASE_FILES,
+      PROJECT_CREATION_STEP.CREATE_COMMON_USE_CASE_FILES,
+      PROJECT_CREATION_STEP.CREATE_MIDDLEWARE_INDEX,
+
     ];
   }
   if (type === PROJECT_TYPE.MVC_SEQUELIZE) {
@@ -147,13 +152,31 @@ function getProjectSteps (type) {
       PROJECT_CREATION_STEP.RENDER_EJS, // must be the last step
       PROJECT_CREATION_STEP.APPLY_ESLINT,
       PROJECT_CREATION_STEP.CREATE_APP_FILE,
+      PROJECT_CREATION_STEP.CREATE_DATA_ACCESS_FILES,
+      PROJECT_CREATION_STEP.CREATE_USECASE_FILES,
+      PROJECT_CREATION_STEP.CREATE_COMMON_USE_CASE_FILES,
+      PROJECT_CREATION_STEP.CREATE_MIDDLEWARE_INDEX,
     ];
   }
   return [];
 }
 
 module.exports = {
-  setup: (projectType) => {
+  setup: (projectType, databaseAdapter) => {
+    let modelPathAccordingORM = '/model';
+    let dbConnectionFilePathAccordingORM = '/config/db.js';
+    let dbServiceFilePathAccordingORM = '/service/dbService.js';
+
+    if (projectType === PROJECT_TYPE.CLEAN_CODE && (databaseAdapter === DB_ADAPTER.MONGODB)) {
+      modelPathAccordingORM = '/db/mongoDB/models';
+      dbConnectionFilePathAccordingORM = '/db/mongoDB/connection.js';
+      dbServiceFilePathAccordingORM = '/db/mongoDB/dbService.js';
+    } else if (projectType === PROJECT_TYPE.CC_SEQUELIZE && ([DB_ADAPTER.POSTGRESQL, DB_ADAPTER.MYSQL, DB_ADAPTER.MSSQL].includes(databaseAdapter))) {
+      modelPathAccordingORM = '/db/sequelize/models';
+      dbConnectionFilePathAccordingORM = '/db/sequelize/connection.js';
+      dbServiceFilePathAccordingORM = '/db/sequelize/dbService.js';
+    }
+
     let settingJson = {};
 
     settingJson = {
@@ -223,11 +246,13 @@ module.exports = {
           emailServiceTemplateName: '/services/emailService.js',
           pushNotificationPath: '/services/pushNotification',
           seedersPath: '/seeders',
+          dataAccessFolderPath: '/data-access',
+          useCaseFolderPath: '/use-case',
         },
         userDirectoryStructure: {
           mainJSFilePath: '/app.js',
-          entityFolderPath: '/entity',
-          modelFolderPath: '/model',
+          entityFolderPath: '/entities',
+          modelFolderPath: modelPathAccordingORM,
           configFolderPath: '/config',
           controllerFolderPath: '/controller',
           routesFolderPath: '/routes',
@@ -244,11 +269,14 @@ module.exports = {
           generatedControllerPath: '/controller/{{ platform }}/{{ model }}/{{ model }}.js',
           authControllerPath: '/controller/{{ platform }}/authentication',
           fileUploadControllerPath: '/controller/{{ platform }}/fileUpload',
-          dbConnectionFolderPath: '/config/db.js',
+          dbConnectionFolderPath: dbConnectionFilePathAccordingORM,
           generatedTestCasePath: '/__test__/{{ platform }}/{{ model }}.test.js',
           testCasePath: '/__test__',
           seedersPath: '/seeders',
           envFilePath: '.env',
+          dataAccessFolderPath: '/data-access',
+          dbServiceFilePath: dbServiceFilePathAccordingORM,
+          useCaseFolderPath: '/use-case',
         },
         steps: getProjectSteps(projectType),
       },
@@ -318,11 +346,13 @@ module.exports = {
           emailServiceTemplateName: '/services/emailService.js',
           pushNotificationPath: '/services/pushNotification',
           seedersPath: '/seeders',
+          dataAccessFolderPath: '/data-access',
+          useCaseFolderPath: '/use-case',
         },
         userDirectoryStructure: {
           mainJSFilePath: '/app.js',
-          entityFolderPath: '/entity',
-          modelFolderPath: '/model',
+          entityFolderPath: '/entities',
+          modelFolderPath: modelPathAccordingORM,
           configFolderPath: '/config',
           controllerFolderPath: '/controller',
           routesFolderPath: '/routes',
@@ -339,11 +369,14 @@ module.exports = {
           generatedControllerPath: '/controller/{{ platform }}/{{ model }}/{{ model }}.js',
           authControllerPath: '/controller/{{ platform }}/authentication',
           fileUploadControllerPath: '/controller/{{ platform }}/fileUpload',
-          dbConnectionFolderPath: '/config/db.js',
+          dbConnectionFolderPath: dbConnectionFilePathAccordingORM,
           generatedTestCasePath: '/__test__/{{ platform }}/{{ model }}.test.js',
           testCasePath: '/__test__',
           seedersPath: '/seeders',
           envFilePath: '.env',
+          dataAccessFolderPath: '/data-access',
+          dbServiceFilePath: dbServiceFilePathAccordingORM,
+          useCaseFolderPath: '/use-case',
         },
         steps: getProjectSteps(projectType),
       },

@@ -1,0 +1,85 @@
+const  <%-USER_MODEL-%>Entity = require('../../entities/<%-USER_MODEL-%>');
+const response = require('../../utils/response');
+const responseStatus = require('../../utils/response/responseStatus');
+const authConstant = require("../../constants/authConstant");
+<%_ if(NOTIFICATION_TYPE==="SMS"){ _%>
+const {sendSMS} = require('../../services/sms/smsService');
+<%_}else if(NOTIFICATION_TYPE==="EMAIL"){_%>
+const {sendMail} = require('../../services/email/emailService');
+<%_}_%>
+
+const register = ({ <%-USER_MODEL-%>Db, createValidation }) => async (data) => {
+    let validateSchema = await createValidation(data);
+    if (!validateSchema.isValid) {
+        return response.validationError({ message: validateSchema.message });
+    }
+    let newUser = <%-USER_MODEL-%>Entity(data);
+    let checkUniqueValidation = checkUnique({<%-USER_MODEL-%>Db}); //dependance injection
+    let unique = await checkUniqueValidation(data);    
+    if (unique.status != responseStatus.success ){
+        return response.badRequest({message : 'User Registration Failed, Duplicate data found'});
+    }
+    const result = await <%-USER_MODEL-%>Db.create(newUser);
+        <%_ if(NOTIFICATION_TYPE==="SMS"){ _%>
+        // send sms to user for successfully registered.
+        let renderData = {
+            <%_if(typeof REGISTER_TEMPLATE_ATTRIBUTE === "object"){_%>
+            <%_for(let i in REGISTER_TEMPLATE_ATTRIBUTE){_%>
+            <%-i%>:result.<%-REGISTER_TEMPLATE_ATTRIBUTE[i].replace(/.*?\./, "");%>,
+            <%_}_%>
+            <%_}else{_%>
+            ...result
+            <%_}_%>
+        }
+        const msg = await ejs.renderFile(`${__basedir}/views/<%-REGISTER_TEMPLATE_NAME%>/html.ejs`, renderData);
+        let smsObj = {
+            to:result.<%-MOBILE_FIELD%>,
+            message:msg
+        }
+        await sendSMS(smsObj);
+    <%_}else if(NOTIFICATION_TYPE==="EMAIL"){_%>
+        // send email to user for successfully registered.
+        let mailObj = {
+            subject: "Register User",
+            to: result.<%-EMAIL_FIELD%>,
+            <%_if(typeof REGISTER_TEMPLATE_ATTRIBUTE === "object"){_%>
+            template: "/views/<%-REGISTER_TEMPLATE_NAME%>",
+            data:{
+                <%_for(let i in REGISTER_TEMPLATE_ATTRIBUTE){_%>
+                <%-i%>:result.<%-REGISTER_TEMPLATE_ATTRIBUTE[i].replace(/.*?\./, "");%>,
+                <%_}_%>
+            }
+            <%_}else if(!REGISTER_TEMPLATE_ATTRIBUTE){_%>
+            template: "/views/<%-REGISTER_TEMPLATE_NAME%>",
+            data:result
+            <%_}_%>
+        };
+        await sendEmail(mailObj);
+    <%_}_%>
+    return response.success({data :result});
+}
+
+const checkUnique =({ <%-USER_MODEL-%>Db }) => async (data) =>{
+    let filter = { $or:[] };
+    if (data && data['username']){
+      filter['$or'].push(
+        { 'username':data['username'] },
+        { 'email':data['username'] },
+      );
+    }
+    if (data && data['email']){
+      filter['$or'].push(
+        { 'username':data['email'] },
+        { 'email':data['email'] },
+      );
+    }
+    let found = await <%-USER_MODEL-%>Db.findOne(filter);
+    if (found){
+      return response.failure();
+    }
+    return response.success();
+  };
+
+
+
+module.exports = register;
