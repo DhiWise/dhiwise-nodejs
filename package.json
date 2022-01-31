@@ -15,7 +15,7 @@
     "release_patch": "lerna publish patch --conventional-commits && conventional-github-releaser --preset angular",
     "release_premajor": "lerna publish premajor --conventional-commits && conventional-github-releaser --preset angular",
     "release": "lerna publish --conventional-commits && conventional-github-releaser --preset angular",
-    "lint": "eslint ."
+    "lint": "eslint . --ext .js --fix"
   },
   "jest": {
     "modulePathIgnorePatterns": [

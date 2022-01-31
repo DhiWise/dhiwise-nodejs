@@ -8,7 +8,7 @@ const {
 global.__basedir = __dirname;
 const CodeGenerator = require('./codeGenerator');
 
-function trimModelNameFromInput(models) {
+function trimModelNameFromInput (models) {
   const oldModelNames = _.keys(models);
   let newModelNames = [];
   _.forEach(models, (model, modelName) => {
@@ -20,7 +20,7 @@ function trimModelNameFromInput(models) {
   throw new Error('modelName should not contain spaces');
 }
 
-async function main(inputFilepath) {
+async function main (inputFilepath, isReBuild) {
   let projectPath;
   try {
     const inputData = fs.readFileSync(inputFilepath, { encoding: 'utf8' });
@@ -41,6 +41,7 @@ async function main(inputFilepath) {
       directory: projectPath,
       projectName: config.projectName,
       jsonData,
+      isReBuild,
     });
   } catch (err) {
     console.log(err);
@@ -48,5 +49,4 @@ async function main(inputFilepath) {
   }
 }
 
-main('/home/mihirpatel/DhiWise/project/GitHub/dhiwise-nodejs/packages/server/input/61d665254078f34d4835a289.json');
 module.exports = main;

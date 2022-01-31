@@ -58,6 +58,7 @@ class CodeGenerator {
       steps, templateFolderName, templateRegistry, userDirectoryStructure,
     } = this.setup;
     const jsonModels = _.cloneDeep(params.jsonData.models);
+    const { isReBuild } = params;
     /*
      * console.log('userDirectoryStructure ====== >', JSON.stringify(userDirectoryStructure));
      * ? JSON PARSERS
@@ -106,7 +107,12 @@ class CodeGenerator {
 
     // ? Create Project Dir
     if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_ROOT_DIRECTORY)) {
-      rootDirectory = await this.createProjectRootDirectory(params.directory, params.projectName);
+      let tempDirName = params.projectName;
+      if (isReBuild) {
+        tempDirName = `${tempDirName}_dhiwise_temp_app`;
+      }
+
+      rootDirectory = await this.createProjectRootDirectory(params.directory, tempDirName);
     }
 
     // ? Mongoose Type Validation

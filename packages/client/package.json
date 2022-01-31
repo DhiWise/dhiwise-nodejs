@@ -1,6 +1,6 @@
 {
   "name": "@nodejs-code-generator/client",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "dependencies": {
     "@babel/parser": "^7.15.8",
@@ -34,6 +34,8 @@
     "prop-types": "^15.7.2",
     "rc-drawer": "^4.4.2",
     "react": "^17.0.2",
+    "react-app-rewire-aliases": "^0.2.0",
+    "react-app-rewired": "^2.1.8",
     "react-awesome-query-builder": "^4.7.0",
     "react-content-loader": "^6.0.3",
     "react-datepicker": "^4.2.1",
@@ -68,11 +70,9 @@
     "redux-persist-transform-encrypt": "^3.0.1",
     "snake-case": "^3.0.4",
     "tailwindcss": "^2.2.17",
-    "three": "^0.133.1",
+    "three": "^0.137.0",
     "use-onclickoutside": "^0.4.0",
-    "web-vitals": "^1.1.2",
-    "react-app-rewire-aliases": "^0.2.0",
-    "react-app-rewired": "^2.1.8"
+    "web-vitals": "^1.1.2"
   },
   "scripts": {
     "start": "npm run watch:css && react-app-rewired start",
@@ -101,6 +101,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.15.8",
     "@babel/plugin-proposal-class-properties": "^7.14.5",
     "@babel/plugin-transform-react-jsx": "^7.14.9",
     "eslint": "^7.32.0",
@@ -109,7 +110,6 @@
     "eslint-plugin-import": "^2.22.2",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.26.1",
-    "eslint-plugin-react-hooks": "^4.2.0",
-    "@babel/eslint-parser": "^7.15.8"
+    "eslint-plugin-react-hooks": "^4.2.0"
   }
 }
