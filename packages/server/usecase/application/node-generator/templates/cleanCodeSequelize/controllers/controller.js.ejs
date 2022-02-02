@@ -1,17 +1,5 @@
 const response = require('../../../utils/response');
 const {Op} = require("sequelize");
-
-<%_var customRouteServices=[]
-if(SERVICES_TO_IMPORT && SERVICES_TO_IMPORT.length){
-    for(let i=0;i < SERVICES_TO_IMPORT.length;i++){ 
-        if(SERVICES_TO_IMPORT[i] != DB_MODEL){ 
-            customRouteServices.push(`${SERVICES_TO_IMPORT[i]}Service`)
-        }else{
-            customRouteServices.push(`${SERVICES_TO_IMPORT[i]}Service1`)
-        }
-    }
-}
-_%>
 <%_ var methods = [] _%>
 
 <%_for(let i=0;i< SUPPORT_API.length;i++){ _%>
@@ -498,236 +486,27 @@ _%>
     }
   
 <%_}_%>
+
 <%_if(CUSTOM_ROUTES){_%>
-  <%_CUSTOM_ROUTES.forEach((v,i)=>{ 
-      methods.push(v.functionName)
-      _%>
-      <%_if(typeof(v.descriptions)!=='undefined'){_%>
-      /* 
-      * <%-v.descriptions%>
-      */
-      <%_}_%>
-      const <%-v.functionName%> =async(data) =>{
-          try{
-              const <%-v.service%> = data
-              
-          <%_if(typeof(v.queryBuilder) !== "undefined" && v.queryBuilder.length > 0){_%>
-              const combinedOutput = {}
-              let result = <%_if(v.service==DB_MODEL){_%><%-v.service%>Service1<%_}else{_%><%-v.service%>Service<%_}_%>.<%-v.functionName%>();
-              <%_ 
-              const elements = v.queryBuilder
-              for(let element of elements){ 
-                  let elementModel_FC=""
-                  if(element.queryMode !== 'codeBlock' && element.model){ 
-                      elementModel_FC=element.model.charAt(0).toUpperCase() + element.model.slice(1);
-                  }
-              if(["findOneAndDelete","deleteMany"].includes(element.queryMode)){ _%>
-              let <%-element.outputVariable%>=await <%-element.model%>CqService.<%-element.queryMode%>(<%-JSON.stringify(JSON.parse(element.filter))%>,<%-JSON.stringify(element.option)%>);
-              <%_if(typeof element.outputSelect !== "undefined" && element.outputSelect.length){ element.outputSelect.push("id") _%>
-              <%-element.outputVariable%> = (({<%_element.outputSelect.forEach((item,index)=>{_%><%-item%><%_if(element.outputSelect.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_element.outputSelect.forEach((item,index)=>{_%><%-item%><%_if(element.outputSelect.length-1 !== index){_%>,<%_}_%><%_})_%>}))(<%-element.outputVariable%>);
-              <%_}_%>
-              combinedOutput.<%-element.outputVariable%> = <%-element.outputVariable%>
-              <%_ } else if(["findOneAndUpdate","updateMany"].includes(element.queryMode)){ _%> 
-              let <%-element.outputVariable%>=await <%-element.model%>CqService.<%-element.queryMode%>(<%-JSON.stringify(JSON.parse(element.filter))%>,
-                  make<%-elementModel_FC%>(<%-JSON.stringify(element.data)%>,"update<%-elementModel_FC%>Validator"),
-                  <%-JSON.stringify(element.option)%>);
-              <%_if(typeof element.outputSelect !== "undefined" && element.outputSelect.length){ element.outputSelect.push("id") _%>
-              <%-element.outputVariable%> = (({<%_element.outputSelect.forEach((item,index)=>{_%><%-item%><%_if(element.outputSelect.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_element.outputSelect.forEach((item,index)=>{_%><%-item%><%_if(element.outputSelect.length-1 !== index){_%>,<%_}_%><%_})_%>}))(<%-element.outputVariable%>);
-              <%_}_%>
-              combinedOutput.<%-element.outputVariable%> = <%-element.outputVariable%>
-              <%_ } else if(element.queryMode=="create"){ _%>                 
-              let <%-element.outputVariable%>=await <%-element.model%>CqService.<%-element.queryMode%>(
-                  make<%-elementModel_FC%>(<%-JSON.stringify(element.data)%>,"insert<%-elementModel_FC%>Validator"),
-                  <%-JSON.stringify(element.option)%>);
-              <%_if(typeof element.outputSelect !== "undefined" && element.outputSelect.length){ element.outputSelect.push("id") _%>
-              <%-element.outputVariable%> = (({<%_element.outputSelect.forEach((item,index)=>{_%><%-item%><%_if(element.outputSelect.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_element.outputSelect.forEach((item,index)=>{_%><%-item%><%_if(element.outputSelect.length-1 !== index){_%>,<%_}_%><%_})_%>}))(<%-element.outputVariable%>);
-              <%_}_%>
-              combinedOutput.<%-element.outputVariable%> = <%-element.outputVariable%>
-              <%_ } else if(element.queryMode === "codeBlock"){_%>
-                  <%-element.code%>
-              <%_} else if(element.queryMode === "find" && element.model){_%>
-              const <%-element.queryVarName%> = {}
-              <%_if(element.filter){ _%>
-              <%-element.queryVarName%>.filter =<%-element.filter%>
-              <%_}_%>
-              <%_if(element.skip){ _%>
-              <%-element.queryVarName%>.skip = <%-JSON.stringify(element.skip)%>
-              <%_}_%>
-              <%_if(element.limit){ _%>
-              <%-element.queryVarName%>.limit = <%-JSON.stringify(element.limit)%>
-              <%_}_%>
-              <%_if(element.populate && element.populate.length>0){ _%>
-              <%-element.queryVarName%>.populate = <%-JSON.stringify(element.populate)%>
-              <%_}_%>
-              <%_if(element.sort){ _%>
-              <%-element.queryVarName%>.order = <%=printSequelizeSort(JSON.parse(element.sort))%>
-              <%_}_%>
-              <%_if(element.select){ _%>
-              <%-element.queryVarName%>.attributes = <%-JSON.stringify(element.select)%>
-              <%_}_%>
-              
-              const <%-element.outputVariable%> = await <%-element.model%>CqService.<%-element.queryMode%>(<%-element.queryVarName%>)
-              combinedOutput.<%-element.outputVariable%> = <%-element.outputVariable%>
-              <%_}else if(element.queryMode === 'aggregate'){ _%>
-              combinedOutput.<%-element.outputVariable%> = await <%-element.model%>CqService.<%-element.queryMode%>(<%-JSON.stringify(element.pipes)%>)
-              <%_ } else if(element.queryMode === 'fileUpload'){ _%>
-              <%_if(S3_UPLOAD){_%>
+  <%_CUSTOM_ROUTES.forEach((v,i)=>{ methods.push(v.functionName)_%>
 
-              let allowedFileTypes = <%=element.validationType%>;<%_var max_size = element.maxSize ? element.maxSize : 5%>
-              let maxFileSize = <%=max_size%>; //In Megabyte
-
-              // Setting up formidable options.
-              const form = new formidable.IncomingForm();
-              form.multiples = true;
-              form.maxFileSize = 300 * 1024 * 1024; //300 MB
-              form.maxFieldsSize = 100 * 1024 * 1024; //50 MB
-
-              const uploadFileRes = await new Promise(async (resolve, reject) => {
-              form.parse(req, async function (err, fields, files) { 
-
-                let filePaths = [];
-                let fileCount = 1;
-
-                let fileArr = [];
-                if (!files['file[]'] || files['file[]'].size == 0) {
-                resolve({
-                    'err': 'Please Select any one File',
-                    'status': false
-                });
-                }
-                if (!Array.isArray(files['file[]'])) {
-                fileArr.push(files['file[]']);
-                files['file[]'] = fileArr;
-                }
-
-                for (let file of files['file[]']) {
-                let response = await uploadFiles(file,fields,fileCount++,allowedFileTypes, maxFileSize);
-                if (response.status == false) {
-                    filePaths.push({
-                    'name': file.name,
-                    'err': response.message,
-                    'status': false
-                    });
-                } else {
-                    filePaths.push({
-                    'path': response.data,
-                    'status': true
-                    });
-                }
-              }
-                resolve(filePaths);
-
-            });
-            });
-            <%_if(S3_UPLOAD_PRIVATE){_%>
-            let finalResponse = [];
-            if (Array.isArray(uploadFileRes) && uploadFileRes.length){
-                uploadFileRes = await new Promise(async (resolve, reject) => {
-                    for (let u of uploadFileRes){
-                    if (u.status && u.path) {
-                        u = await generatePreSignedURL(u.path);
-                        finalResponse.push(u);
-                    }
-                    }
-                    resolve(finalResponse);
-                });
-            }
-            <%_}_%>
-        <%_} else {_%>
-
-            let defaultDirectory = 'public/assets'
-            let allowedFileTypes = <%=element.validationType%>;<%_ var max_size = element.maxSize ? element.maxSize : 5 _%>
-            let maxFileSize = <%=max_size%>; //In Megabyte
-
-            // Create Directory if not exist.
-            await makeDirectory(defaultDirectory);
-
-            // Setting up formidable options.
-            const form = new formidable.IncomingForm();
-            form.multiples = true;
-            form.maxFileSize = 300 * 1024 * 1024; //300 MB
-            form.maxFieldsSize = 100 * 1024 * 1024; //50 MB
-
-            //Upload File one by one
-            const uploadFileRes = await new Promise(async (resolve, reject) => {
-
-            form.parse(req, async function (err, fields, files) {
-
-                let filePaths = [];
-                let fileCount = 1;
-
-                let fileArr = [];
-                if (!files['file[]'] || files['file[]'].size == 0) {
-                resolve({
-                    'err': 'Please Select any one File',
-                    'status': false
-                });
-                }
-                if (!Array.isArray(files['file[]'])) {
-                fileArr.push(files['file[]']);
-                files['file[]'] = fileArr;
-                }
-
-                for (let file of files['file[]']) {
-
-                let response = await uploadFiles(file, fields, fileCount++,allowedFileTypes, maxFileSize, defaultDirectory);
-
-                if (response.status == false) {
-                    filePaths.push({
-                    'name': file.name,
-                    'err': response.message,
-                    'status': false
-                    });
-                } else {
-                    let url = response.data;
-                    if (!validUrl.isUri(response.data)) {
-                    response.data = response.data.replace('/public', '');
-                    url = `${response.data}`;
-                    }
-                    filePaths.push({
-                    'path': url,
-                    'status': true
-                    });
-                }
-                }
-                resolve(filePaths);
-            });
-        });
-        <%_}_%>
-              combinedOutput.uploadFileRes = uploadFileRes; 
-              <%_}_%>
-          <%_ } _%>
-          <%_ } _%>
-          <%_if(typeof(v.queryBuilder) !== "undefined" && v.queryBuilder.length > 0){_%>
-              if(combinedOutput){
-                return message.successResponse({data:combinedOutput});
-              }
-          <%_}else{_%>
-              let result = <%_if(v.service==DB_MODEL){_%><%-v.service%>Service1<%_}else{_%><%-v.service%>Service<%_}_%>.<%-v.functionName%>();
-              if(result){
-                return message.successResponse({data:result});
-              }
-          <%_}_%>
-              
-          }catch(error){
-            return response.internalServerError();
-          }
-      }
-  <%_})_%>
+  <%_if(typeof(v.descriptions)!=='undefined'){_%>
+    /* 
+    * <%-v.descriptions%>
+    */
+  <%_}_%>
+  const <%-v.functionName%> = (<%-v.functionName%>Usecase) => async(req,res) =>{
+    try{
+      return await <%-v.functionName%>Usecase(req,res);
+    }catch(error){
+      return response.internalServerError();
+    }
+  }
+  <%_});_%>
 <%_}_%>
 
-const removeEmpty = (obj) => {
-    Object.entries(obj).forEach(([key,value])=>{
-        if(value === undefined){
-            delete obj[key]
-        }
-    })
-    return obj
-};
-
-
 module.exports = {
-    <%_methods.forEach(v=> {_%>
+    <%_ methods.forEach(v=> {_%>
     <%-v%>,
     <%_})_%>
     <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>

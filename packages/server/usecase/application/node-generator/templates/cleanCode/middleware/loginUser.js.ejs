@@ -1,9 +1,8 @@
 const jwt = require("jsonwebtoken");
 const message = require("../utils/messages");
-const responseCode = require("../utils/responseCode")
-const sendResponse = require("../helpers/sendResponse")
+const responseHandler = require("../utils/response/responseHandler");
 <%_ PLATFORM.forEach((v)=>{ _%>
-const <%-v%>Secret = require("../config/constant").JWT.<%-v.toUpperCase()%>_SECRET;
+const <%-v%>Secret = require("../constants/authConstant").JWT.<%-v.toUpperCase()%>_SECRET;
 <%_ }) _%>    
 const authenticateJWT = (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -24,13 +23,13 @@ const authenticateJWT = (req, res, next) => {
         <%_  }) _%>
         jwt.verify(token,secret, (err, user) => {
             if (err) {
-                sendResponse(res,message.unAuthorizedRequest());
+                responseHandler(res,message.unAuthorizedRequest());
             }
             req.user = user;
             next();
         });
     } else {
-        sendResponse(res,message.unAuthorizedRequest());
+        responseHandler(res,message.unAuthorizedRequest());
     }
 };
 module.exports = authenticateJWT

@@ -7,7 +7,7 @@ const rateLimit=require('express-rate-limit');
 const rateLimiter=rateLimit({
     windowMs:<%-REACTIVE_TIME%> *60 *1000,
     max:<%-LOGIN_RATE%>,
-    message: "Too many API calls from this IP, please try again after a <%-REACTIVE_TIME%> minutes"
+    message: "Rate limit exceeded, please try again after <%=REACTIVE_TIME%> minutes"
 });
 <%_}_%>
 

@@ -5,11 +5,8 @@ const {Op} = require('sequelize');
 <%_}_%>
 const dayjs = require('dayjs');
 
-const db = require("../config/dbConnection");
-const <%-MODEL_FC%>  = require("../model/<%-MODEL%>")(db)
-const <%-MODEL.toLowerCase()%>Service = require("./dbService")({model:<%-MODEL_FC%>})
-const userToken  = require("../model/userToken")(db)
-const userTokenService = require("./dbService")({model:userToken})
+const <%-MODEL.toLowerCase()%>Db = require("../data-access/<%-MODEL%>Db")
+const userTokensDb = require("../data-access/userTokenDb")
 const { JWT,LOGIN_ACCESS,USER_ROLE,PLATFORM<%_if(RESTRICTION){_%>,NO_OF_DEVICE_ALLOWED<%_}_%>} = require("../constants/authConstant")
 
 module.exports = {
@@ -34,15 +31,15 @@ module.exports = {
           'password':'',
           'role':USER_ROLE.User
         }
-        let found = await <%-MODEL.toLowerCase()%>Service.findOne({"email": userObj.email });
+        let found = await <%-MODEL.toLowerCase()%>Db.findOne({"email": userObj.email });
         if (found) {
           const id = found.id;
-          await <%-MODEL.toLowerCase()%>Service.updateByPk(id, userObj);
+          await <%-MODEL.toLowerCase()%>Db.updateOne(id, userObj);
         }
         else {
-          await <%-MODEL.toLowerCase()%>Service.createOne(userObj);
+          await <%-MODEL.toLowerCase()%>Db.create(userObj);
         }
-        let user = await <%-MODEL.toLowerCase()%>Service.findOne({ "githubId":profile.id });
+        let user = await <%-MODEL.toLowerCase()%>Db.findOne({ "githubId":profile.id });
         return done(null, user);
       }
       return done(null, null);
@@ -51,7 +48,7 @@ module.exports = {
   },
   loginUser: async (email, platform) => {
     try {
-      const user = await <%-MODEL.toLowerCase()%>Service.findOne({email });
+      const user = await <%-MODEL.toLowerCase()%>Db.findOne({email });
       if (user && user.email) {
         const { ...userData } = user.toJSON();
         let token;
@@ -88,7 +85,7 @@ module.exports = {
         <%_}_%>
         <%_}_%>
         let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
-        await userTokenService.createOne({
+        await userTokenService.create({
             userId: user.id,
             token: token,
             tokenExpiredTime: expire 

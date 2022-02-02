@@ -9,7 +9,7 @@ const {
   ORM_PROVIDERS, PROJECT_TYPE,
 } = require('../../constants/constant');
 
-async function setPackagesForAuth({
+async function setPackagesForAuth ({
   userLoginRateLimit, socialAuth,
 }) {
   const pkg = { dependencies: {} };
@@ -27,7 +27,7 @@ async function setPackagesForAuth({
   }
   return pkg;
 }
-async function getAuthorizeRoutes(PLATFORM, loginAccessPlatform) {
+async function getAuthorizeRoutes (PLATFORM, loginAccessPlatform) {
   const obj = {};
   forEach(loginAccessPlatform, (element, key) => {
     obj[key] = [];
@@ -71,7 +71,7 @@ async function getAuthorizeRoutes(PLATFORM, loginAccessPlatform) {
   };
 }
 
-async function generateAuthConstant(PLATFORM, auth, {
+async function generateAuthConstant (PLATFORM, auth, {
   keyObj, valObj,
 }, configPath, customRoutes = {}) {
   const {
@@ -122,7 +122,7 @@ async function generateAuthConstant(PLATFORM, auth, {
   return constant;
 }
 
-async function generateAuthUsecase(useCaseFolderPath, {
+async function generateAuthUsecase (useCaseFolderPath, {
   userModel,
   passwordField,
   notificationType,
@@ -130,9 +130,6 @@ async function generateAuthUsecase(useCaseFolderPath, {
   mobileFieldName,
   userLoginRetryLimit,
   rolePermission,
-  userLoginWith,
-  orObj,
-  pushNotification,
 }) {
   const authUsecase = {};
   authUsecase.register = {};
@@ -185,7 +182,7 @@ async function generateAuthUsecase(useCaseFolderPath, {
   return authUsecase;
 }
 
-async function authenticationSetup(platformStrategy, {
+async function authenticationSetup (platformStrategy, {
   auth, configPath, controllerPath, routePath, authControllerPath, templates, ORM, rolePermission, projectType, useCaseFolderPath, middlewarePath,
 }) {
   const socialPlatforms = [];
@@ -302,7 +299,7 @@ async function authenticationSetup(platformStrategy, {
     authUsecase,
   };
 }
-async function generateAuthMiddleware(PLATFORM, middlewarePath, platformWiseCustomRoutes, noOfDeviceAllowed) {
+async function generateAuthMiddleware (PLATFORM, middlewarePath, platformWiseCustomRoutes, noOfDeviceAllowed) {
   const middleware = writeOperations.loadTemplate(`${middlewarePath}/auth.js`);
   middleware.locals.CUSTOM_ROUTES = platformWiseCustomRoutes;
   middleware.locals.PLATFORM = PLATFORM;
@@ -314,7 +311,7 @@ async function generateAuthMiddleware(PLATFORM, middlewarePath, platformWiseCust
     authUser,
   };
 }
-async function generateAuthService(platforms, {
+async function generateAuthService (platforms, {
   auth, servicePath, templates, ORM, rolePermission,
 }) {
   const {
@@ -406,7 +403,7 @@ async function generateAuthService(platforms, {
   }
   return authService;
 }
-async function makeAuth(makeAuthObj) {
+async function makeAuth (makeAuthObj) {
   const app = { locals: {} };
   const PLATFORM = makeAuthObj.platform;
   const platformForAuth = makeAuthObj.platform;
@@ -457,7 +454,7 @@ async function makeAuth(makeAuthObj) {
     forgotPassword: makeAuthObj.auth.forgotPassword,
   };
 }
-async function isAuthenticationFromInput(jsonData) {
+async function isAuthenticationFromInput (jsonData) {
   let isAuth = false;
   let registerAuth = {};
   let userRoles = [];
@@ -602,7 +599,7 @@ async function isAuthenticationFromInput(jsonData) {
   };
 }
 
-async function makeAuthIndex(authObject) {
+async function makeAuthIndex (authObject) {
   const { platforms } = authObject;
   const authSetup = {};
   forEach(platforms, async (platformName) => {
@@ -625,7 +622,7 @@ async function makeAuthIndex(authObject) {
   return authSetup;
 }
 
-async function makeMiddlewareIndex(middlewareObj) {
+async function makeMiddlewareIndex (middlewareObj) {
   const {
     platforms, projectType, middlewarePath, userModel,
   } = middlewareObj;

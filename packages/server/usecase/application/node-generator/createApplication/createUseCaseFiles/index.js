@@ -1,9 +1,9 @@
 const {
   forEach, isEmpty, uniq,
 } = require('lodash');
-const writeOperations = require('../../writeOperations/index.js');
+const writeOperations = require('../../writeOperations/index');
 
-async function getDeleteDependentModel(model, deleteDependency) {
+async function getDeleteDependentModel (model, deleteDependency) {
   let deleteModels = [];
   // eslint-disable-next-line no-restricted-syntax
   for (const k in deleteDependency) {
@@ -228,6 +228,7 @@ const createCommonUseCaseFiles = async (rootTemplateDirPath, authService) => {
   });
   loginUser.locals.USER_MODEL = authService.locals.MODEL;
   loginUser.locals.FILE_NAME = 'loginUser';
+  loginUser.locals.PLATFORMS = authService.locals.PLATFORMS;
   allCommonUseCases.loginUser = loginUser;
 
   // Get RoleAccess Usecase

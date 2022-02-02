@@ -238,10 +238,8 @@ router.route("<%-v.api%>").<%-v.method%>( <%_if(v.policies && v.policies.length)
 <%-policy%>,<%_}_%>
 <%_})_%>
     <%_}_%>(req, res, next) => {
-    <%_const isFileUploadAvailable = checkFileUploadAvailability(v.queryBuilder ? v.queryBuilder : [])_%>
-    <%_if(!isFileUploadAvailable){_%>req = adaptRequest(req);<%_}_%>
-    
-    <%-v.controller%>Controller.<%- v.functionName %>(<%_if(!isFileUploadAvailable){_%>req.body<%_}else{_%>req<%_}_%>).then((result)=>{
+    req = adaptRequest(req);
+    <%-v.controller%>Controller.<%- v.functionName %>(req.body).then((result)=>{
         responseHandler(res, result);
     });
 })
@@ -312,15 +310,4 @@ router.route("<%-v.api%>").<%-v.method%>( <%_if(v.policies && v.policies.length)
     }
 }_%>
 
-<%_
-function checkFileUploadAvailability(queryBuilders){
-    let isFileUploadAvailable = false;
-    if (queryBuilders.length) {
-        const fileUploadRoutes = (queryBuilders).find((r) => (r.queryMode).toLowerCase() === 'fileupload');
-        if (fileUploadRoutes && !isFileUploadAvailable) {
-            isFileUploadAvailable = true;
-        }
-    }
-    return isFileUploadAvailable; 
-}_%>
 module.exports = router;

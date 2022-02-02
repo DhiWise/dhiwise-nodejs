@@ -1,6 +1,3 @@
-<%_if(COMMENT){_%>
-    // <%-COMMENT.description%>
-<%_}_%>
 let mongoose = require('../connection');
 const mongoosePaginate = require('mongoose-paginate-v2');
 <%_if(typeof CONCAT_HOOK !== "undefined" && CONCAT_HOOK){_%>
@@ -175,7 +172,7 @@ schema.methods.isPasswordMatch = async function (password) {
 schema.method("toJSON", function () {
     const { _id, __v, ...object } = this.toObject({virtuals:true});
     object.id = _id;
-    <%_if(Ctypeof CONCAT_HOOK !== "undefined" && CONCAT_HOOK){_%>
+    <%_if(typeof CONCAT_HOOK !== "undefined" && CONCAT_HOOK){_%>
     <%_for(index of CONCAT_HOOK){_%>
     <%_for(formateIndex in index){_%>
     <%_if(typeof (index[formateIndex])==='object'){_%>

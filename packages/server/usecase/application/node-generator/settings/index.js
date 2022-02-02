@@ -2,7 +2,7 @@ const {
   PROJECT_TYPE, PROJECT_CREATION_STEP, DB_ADAPTER,
 } = require('../constants/constant');
 
-function getProjectSteps(type) {
+function getProjectSteps (type) {
   if (type === PROJECT_TYPE.MVC) {
     return [
       PROJECT_CREATION_STEP.INPUT_PARSER,
@@ -73,6 +73,7 @@ function getProjectSteps(type) {
       PROJECT_CREATION_STEP.CREATE_USECASE_FILES,
       PROJECT_CREATION_STEP.CREATE_COMMON_USE_CASE_FILES,
       PROJECT_CREATION_STEP.CREATE_MIDDLEWARE_INDEX,
+      PROJECT_CREATION_STEP.CREATE_CUSTOM_ROUTES_USECASE,
 
     ];
   }
@@ -144,7 +145,6 @@ function getProjectSteps(type) {
       PROJECT_CREATION_STEP.CREATE_INDEX_FILES_OF_CONTROLLER_CUSTOM_ROUTES,
       PROJECT_CREATION_STEP.CREATE_CUSTOM_ROUTES_SERVICE,
       PROJECT_CREATION_STEP.CREATE_DEPENDENCY_SERVICE,
-      PROJECT_CREATION_STEP.QUERY_BUILDER_PARSE_SEQUELIZE,
       PROJECT_CREATION_STEP.ADD_ROLE_PERMISSION,
       PROJECT_CREATION_STEP.ADD_SEEDER_SEQUELIZE,
       PROJECT_CREATION_STEP.GENERATE_TEST_CASES_SEQUELIZE,
@@ -156,6 +156,7 @@ function getProjectSteps(type) {
       PROJECT_CREATION_STEP.CREATE_USECASE_FILES,
       PROJECT_CREATION_STEP.CREATE_COMMON_USE_CASE_FILES,
       PROJECT_CREATION_STEP.CREATE_MIDDLEWARE_INDEX,
+      PROJECT_CREATION_STEP.CREATE_CUSTOM_ROUTES_USECASE,
     ];
   }
   return [];
@@ -248,6 +249,7 @@ module.exports = {
           seedersPath: '/seeders',
           dataAccessFolderPath: '/data-access',
           useCaseFolderPath: '/use-case',
+          useCaseFilePath: '/use-case/{{ model }}/{{ fileName }}.js',
         },
         userDirectoryStructure: {
           mainJSFilePath: '/app.js',
@@ -277,6 +279,7 @@ module.exports = {
           dataAccessFolderPath: '/data-access',
           dbServiceFilePath: dbServiceFilePathAccordingORM,
           useCaseFolderPath: '/use-case',
+          useCaseFilePath: '/use-case/{{ model }}/{{ fileName }}.js',
         },
         steps: getProjectSteps(projectType),
       },
@@ -348,6 +351,7 @@ module.exports = {
           seedersPath: '/seeders',
           dataAccessFolderPath: '/data-access',
           useCaseFolderPath: '/use-case',
+          useCaseFilePath: '/use-case/{{ model }}/{{ fileName }}.js',
         },
         userDirectoryStructure: {
           mainJSFilePath: '/app.js',
@@ -377,6 +381,7 @@ module.exports = {
           dataAccessFolderPath: '/data-access',
           dbServiceFilePath: dbServiceFilePathAccordingORM,
           useCaseFolderPath: '/use-case',
+          useCaseFilePath: '/use-case/{{ model }}/{{ fileName }}.js',
         },
         steps: getProjectSteps(projectType),
       },

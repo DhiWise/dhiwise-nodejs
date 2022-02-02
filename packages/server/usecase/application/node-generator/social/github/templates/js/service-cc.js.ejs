@@ -3,11 +3,8 @@ const GithubStrategy = require('passport-github2').Strategy;
 const jwt = require("jsonwebtoken");
 const dayjs = require('dayjs');
 
-const db = require("../config/db");
-const <%-MODEL_FC%>  = require("../model/<%-MODEL%>")(db)
-const <%-MODEL.toLowerCase()%>Service = require("./mongoDbService")({model:<%-MODEL_FC%>})
-const userTokens  = require("../model/userTokens")(db)
-const userTokenService = require("./mongoDbService")({model:userTokens})
+const <%-MODEL.toLowerCase()%>Db = require("../data-access/<%-MODEL%>Db")
+const userTokensDb = require("../data-access/userTokensDb")
 const { JWT,LOGIN_ACCESS,USER_ROLE,PLATFORM<%_if(RESTRICTION){_%>,NO_OF_DEVICE_ALLOWED<%_}_%>} = require("../constants/authConstant")
 
 module.exports = {
@@ -32,15 +29,15 @@ module.exports = {
           'password':'',
           'role':USER_ROLE.User
         }
-        let found = await <%-MODEL.toLowerCase()%>Service.getSingleDocumentByQuery({"email": userObj.email });
+        let found = await <%-MODEL.toLowerCase()%>Db.findOne({"email": userObj.email });
         if (found) {
           const id = found.id;
-          await <%-MODEL.toLowerCase()%>Service.updateDocument(id, userObj);
+          await <%-MODEL.toLowerCase()%>Db.updateOne(id, userObj);
         }
         else {
-          await <%-MODEL.toLowerCase()%>Service.createDocument(userObj)
+          await <%-MODEL.toLowerCase()%>Db.create(userObj)
         }
-        let user = await <%-MODEL.toLowerCase()%>Service.getSingleDocumentByQuery({ "sso_auth.githubId":profile.id });
+        let user = await <%-MODEL.toLowerCase()%>Db.findOne({ "sso_auth.githubId":profile.id });
         return done(null, user);
       }
       return done(null, null);
@@ -49,10 +46,10 @@ module.exports = {
   },
   loginUser: async (email, platform) => {
     try {
-      const user = await <%-MODEL.toLowerCase()%>Service.getSingleDocumentByQuery({ email });
+      const user = await <%-MODEL.toLowerCase()%>Db.findOne({ email });
       if (user && user.email) {
         <%_if(RESTRICTION){_%>
-        const userToken = await userTokenService.countDocument({ $and:[{ tokenExpiredTime: { $gt: dayjs().toISOString() }, },{ isTokenExpired: 0, },{ userId:user.id }] } );
+        const userToken = await userTokensDb.count({ $and:[{ tokenExpiredTime: { $gt: dayjs().toISOString() }, },{ isTokenExpired: 0, },{ userId:user.id }] } );
         if(userToken >= NO_OF_DEVICE_ALLOWED){
             return {
                 flag: true,
@@ -86,7 +83,7 @@ module.exports = {
         <%_}_%>
         <%_}_%>
         let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
-        await userTokenService.createDocument({ userId: user.id, token: token,tokenExpiredTime: expire });                              
+        await userTokenService.create({ userId: user.id, token: token,tokenExpiredTime: expire });                              
         const userToReturn = { ...userData, ...{ token } };
         return {flag:false,data:userToReturn};
       }

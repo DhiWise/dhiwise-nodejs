@@ -1,0 +1,15 @@
+
+/**
+ *<%-FUNCTION_NAME%>.js
+ */
+const response = require('../../utils/response');
+
+const <%-FUNCTION_NAME%> = ({<%-MODELS.join()%>}) => async (req,res) => {
+  let combinedOutput = {};
+  <%_ for(let i=0;i< QUERY.length;i++){ _%>
+  combinedOutput.<%-QUERY[i].outputVariable%> = await <%-QUERY[i].model%>Db.findOne(<%-QUERY[i].filter%>); 
+  <%_}_%>
+  return response.success({data:combinedOutput});
+}; 
+
+module.exports = <%-FUNCTION_NAME %>;

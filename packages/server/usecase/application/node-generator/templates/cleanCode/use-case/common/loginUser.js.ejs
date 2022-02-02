@@ -1,6 +1,6 @@
 const {
   JWT,LOGIN_ACCESS,
-  PLATFORM,MAX_LOGIN_RETRY_LIMIT,LOGIN_REACTIVE_TIME,FORGOT_PASSWORD_WITH<%_if(MAX_DEVICE_ALLOWED){_%>,NO_OF_DEVICE_ALLOWED<%_}_%>
+  PLATFORM,MAX_LOGIN_RETRY_LIMIT,LOGIN_REACTIVE_TIME<%_if(MAX_DEVICE_ALLOWED){_%>,NO_OF_DEVICE_ALLOWED<%_}_%>
 } = require('../../constants/authConstant');
 const dayjs = require('dayjs');
 const generateToken = require('../../utils/generateToken');
@@ -11,7 +11,6 @@ const responseStatus = require('../../utils/response/responseStatus');
 <%_if(ROLE_PERMISSION){_%>
     const makeGetRoleAccess = require('../common/getRoleAccess');
 <%_}_%>
-
 
 const loginUser = ({ <%-USER_MODEL-%>Db,userTokensDb<%_if(ROLE_PERMISSION){_%>,userRoleDb,routeRoleDb<%_}_%> })=> async(username,url,password = null <%_if(ROLE_PERMISSION){_%>,roleAccess<%_}_%>) => {
 

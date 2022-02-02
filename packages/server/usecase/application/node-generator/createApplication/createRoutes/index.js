@@ -182,6 +182,7 @@ async function generateRoutes (platform, platformName, makeRouteObj, customRoute
       returnRoutes[customRoute.controller] = route;
     });
 
+    customRoutesOfPlatform = customRoutesOfPlatform.filter((route) => !isEmpty(route.model));
     customRoutesOfPlatform.forEach((customRoute) => {
       const isModelConfigAvailable = has(platform, customRoute.model);
       if (!isModelConfigAvailable) {

@@ -1,15 +1,9 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require("jsonwebtoken");
-<%_if(RESTRICTION){_%>
-const {Op} = require('sequelize');
-<%_}_%>
 const dayjs = require('dayjs');
 
-const db = require("../config/dbConnection");
-const <%-MODEL_FC%>  = require("../model/<%-MODEL%>")(db)
-const <%-MODEL.toLowerCase()%>Service = require("./dbService")({model:<%-MODEL_FC%>})
-const userToken  = require("../model/userToken")(db)
-const userTokenService = require("./dbService")({model:userToken})
+const <%-MODEL.toLowerCase()%>Db = require("../data-access/<%-MODEL%>Db")
+const userTokensDb = require("../data-access/userTokenDb")
 const { JWT,LOGIN_ACCESS,USER_ROLE,PLATFORM<%_if(RESTRICTION){_%>,NO_OF_DEVICE_ALLOWED<%_}_%>} = require("../constants/authConstant")
 
 module.exports = {
@@ -33,15 +27,15 @@ module.exports = {
           'password':'',
           'role':USER_ROLE.User
         }
-        let found = await <%-MODEL.toLowerCase()%>Service.findOne({"email": userObj.email });
+        let found = await <%-MODEL.toLowerCase()%>Db.findOne({"email": userObj.email });
         if (found) {
           const id = found.id;
-          await <%-MODEL.toLowerCase()%>Service.updateByPk(id, userObj);
+          await <%-MODEL.toLowerCase()%>Db.updateOne(id, userObj);
         }
         else {
-          await <%-MODEL.toLowerCase()%>Service.createOne(userObj);
+          await <%-MODEL.toLowerCase()%>Db.create(userObj);
         }
-        let user = await <%-MODEL.toLowerCase()%>Service.findOne({ "googleId":profile.id });
+        let user = await <%-MODEL.toLowerCase()%>Db.findOne({ "googleId":profile.id });
         return done(null, user);
       }
       return done(null, null);
@@ -50,7 +44,7 @@ module.exports = {
   },
   loginUser: async (email, platform) => {
     try {
-      const user = await <%-MODEL.toLowerCase()%>Service.findOne({email });
+      const user = await <%-MODEL.toLowerCase()%>Db.findOne({email });
       if (user && user.email) {
         const { ...userData } = user.toJSON();
         let token;
@@ -61,7 +55,7 @@ module.exports = {
           return {flag:true, data:'Please login through Platform'}
         }
         <%_if(RESTRICTION){_%>
-        const userToken = await userTokenService.count({ [Op.and]:{ tokenExpiredTime: { [Op.gt]: dayjs().toISOString() }, isTokenExpired: 0,userId: user.id} } );
+        const userToken = await userTokensDb.count({ $and:{ tokenExpiredTime: { $gt: dayjs().toISOString() }, isTokenExpired: 0,userId: user.id} } );
         if(userToken >= NO_OF_DEVICE_ALLOWED){
             return {
                 flag: true,
@@ -87,7 +81,7 @@ module.exports = {
         <%_}_%>
         <%_}_%>
         let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
-        await userTokenService.createOne({
+        await userTokensDb.create({
             userId: user.id,
             token: token,
             tokenExpiredTime: expire 

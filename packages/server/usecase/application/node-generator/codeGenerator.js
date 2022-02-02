@@ -19,7 +19,7 @@ const {
 const common = require('./createApplication/utils/common');
 const { makeIndividualPolicy } = require('./createApplication/makeCustomPolicy');
 const {
-  makeCustomRoutes, makeControllerIndexForCustomRoutes, makeServiceForNonExistingService,
+  makeCustomRoutes, makeControllerIndexForCustomRoutes, makeServiceForNonExistingService, makeCustomRoutesUsecase,
 } = require('./createApplication/createCustomRoutes');
 const { makeFileUploadFiles } = require('./createApplication/createFileUploadFiles');
 const { startRenderingEJS } = require('./createApplication/render');
@@ -305,6 +305,20 @@ class CodeGenerator {
       }
     }
 
+    // Create Usecase for Custom routes
+    if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_CUSTOM_ROUTES_USECASE)) {
+      if (!_.isEmpty(this.jsonData?.routes?.apis)) {
+        const customRouteObj = {
+          customRoutes: this.jsonData.routes.apis,
+          models: this.jsonData.models,
+          userDirectoryStructure,
+          templateRegistry,
+          templateFolderName: this.setup.templateFolderName,
+        };
+        this.customRoutesUsecase = await makeCustomRoutesUsecase(customRouteObj);
+      }
+    }
+
     // data-access files for cc
     if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_DATA_ACCESS_FILES)) {
       if (this.jsonData && this.jsonData.models) {
@@ -452,7 +466,7 @@ class CodeGenerator {
         customRoutesPath: `${templateFolderName}${templateRegistry.individualRoutesFolderPath}`,
         generatedCustomRouteControllerPath: `${userDirectoryStructure.generatedCustomRouteControllerPath}`,
       };
-      this.controllerIndexForCustomRoute = await makeControllerIndexForCustomRoutes(makeCustomRouteObj);
+      this.controllerIndexForCustomRoute = await makeControllerIndexForCustomRoutes(makeCustomRouteObj, userDirectoryStructure);
     }
 
     // ? create controller index file if CC project
@@ -657,6 +671,7 @@ class CodeGenerator {
         useCaseFiles: this.useCaseFiles,
         commonUseCaseFiles: this.commonUseCaseFiles,
         middlewareIndex: this.middlewareIndex,
+        customRoutesUsecase: this.customRoutesUsecase,
       };
       await startRenderingEJS(rootDirectory, this.setup.templateFolderName, renderObject);
     }

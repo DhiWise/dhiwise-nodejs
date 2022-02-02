@@ -64,6 +64,7 @@ module.exports = {
     CREATE_USECASE_FILES: 56,
     CREATE_COMMON_USE_CASE_FILES: 57,
     CREATE_MIDDLEWARE_INDEX: 58,
+    CREATE_CUSTOM_ROUTES_USECASE: 59,
   },
   SUPPORT_API: ['C', 'R', 'U', 'D', 'UP', 'HD', 'BC', 'BU'],
   APIS: [

@@ -55,7 +55,7 @@ function makeMongoCustomQueryService(model){
   const deleteMany = async(filter,options={})=>{
     try {
         const documentsToBeDelete=await model.find(filter)
-        await model.deleteMany(filter,data,options)
+        await model.deleteMany(filter,options)
         return documentsToBeDelete
     } catch (error) {
         throw new Error(error.message)

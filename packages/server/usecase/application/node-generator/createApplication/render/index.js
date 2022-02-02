@@ -11,7 +11,7 @@ const { PROJECT_TYPE } = require('../../constants/constant');
 
 dotenv.config({ path: `${__dirname}/../../.env` });
 
-async function createConstantFiles(templateFolder, dir, constants, toPath) {
+async function createConstantFiles (templateFolder, dir, constants, toPath) {
   if (constants) {
     writeOperations.mkdir(dir, toPath);
     _.forEach(constants, (value, key) => {
@@ -23,7 +23,7 @@ async function createConstantFiles(templateFolder, dir, constants, toPath) {
   }
 }
 
-async function startRenderingEJS(dir, templateFolder, renderObject) {
+async function startRenderingEJS (dir, templateFolder, renderObject) {
   const {
     type, app, db, models, controllerDetails, modelWiseRoutes, authModule, authControllerIndex, pkg, emailService,
     smsService, indexRoute, modelValidation, constants, env,
@@ -32,6 +32,7 @@ async function startRenderingEJS(dir, templateFolder, renderObject) {
     deleteDependent, userDirectoryStructure, servicesOfCustomRoutes, tableRelationships, dbConnection, customRoutePackageDependencies, testCases,
     commonService, readme, envPostman,
     thirdPartySMSServices, thirdPartyEmailService, templateRegistry, rolePermissionService, customRoutesWithPath, customRouteIndexes, dataAccessFiles, useCaseFiles, commonUseCaseFiles, middlewareIndex,
+    customRoutesUsecase,
   } = renderObject;
 
   // db
@@ -64,20 +65,6 @@ async function startRenderingEJS(dir, templateFolder, renderObject) {
   const dbFilePath = userDirectoryStructure.dbConnectionFolderPath.split('/').filter((e) => e !== '');
   dbFilePath.pop();
 
-  // const dbFilePath = userDirectoryStructure.dbConnectionFolderPath.split('/').filter((e) => e !== '');
-  // const dbFileName = dbFilePath.pop();
-  // if (!fs.existsSync(`${dir}${dbFilePath.join('/')}`)) {
-  //   writeOperations.mkdir(dir, dbFilePath.join('/'));
-  // }
-  // writeOperations.write(path.join(dir, `${dbFilePath.join('/')}/${dbFileName}`), db.render());
-  // // writeOperations.write(path.join(dir, '/config/db.js'), db.render());
-
-  /*
-   * if (dbConnection) {
-   *   writeOperations.write(path.join(dir, `${dbFilePath.join('/')}/dbConnection.js`), dbConnection.render());
-   * }
-   * seeder
-   */
   if (!_.isEmpty(seeder)) {
     app.locals.SEEDER = true;
     writeOperations.mkdir(dir, userDirectoryStructure.seedersPath);
@@ -216,7 +203,9 @@ async function startRenderingEJS(dir, templateFolder, renderObject) {
     writeOperations.copyTemplate(`${templateFolder}${templateRegistry.viewsFolderPath}/resetPassword.ejs`, `${dir}${userDirectoryStructure.viewsFolderPath}/successfullyResetPassword/html.ejs`);
 
     // authService
-    writeOperations.write(path.join(dir, `${userDirectoryStructure.serviceFolderPath}/auth.js`), authModule.authService.render(), MODE_0666);
+    if (type === PROJECT_TYPE.MVC || type === PROJECT_TYPE.MVC_SEQUELIZE) {
+      writeOperations.write(path.join(dir, `${userDirectoryStructure.serviceFolderPath}/auth.js`), authModule.authService.render(), MODE_0666);
+    }
 
     // policy
     writeOperations.write(path.join(dir, `${userDirectoryStructure.middlewareFolderPath}/auth.js`), authModule.policy.middleware.render(), MODE_0666);
@@ -229,10 +218,10 @@ async function startRenderingEJS(dir, templateFolder, renderObject) {
      */
 
     // Auth usecase for CC
-    _.forEach(authModule.authSetup, (value, platformName) => {
+    _.forEach(authModule.authSetup, (value) => {
       if (value.authUsecase) {
         writeOperations.mkdir(`${dir}${userDirectoryStructure.useCaseFolderPath}`, 'authentication');
-        _.forEach(value.authUsecase, (usecase, usecaseName) => {
+        _.forEach(value.authUsecase, (usecase) => {
           writeOperations.write(path.join(dir, `${userDirectoryStructure.useCaseFolderPath}/authentication/${usecase.locals.FILE_NAME}.js`), usecase.render(), MODE_0666);
         });
       }
@@ -329,19 +318,19 @@ async function startRenderingEJS(dir, templateFolder, renderObject) {
     }
     if (!_.isEmpty(customRoutes.old)) {
       _.forEach(customRoutes.old.controllerNServiceNRoutes, (element, customRoute) => {
-        writeOperations.mkdir(`${dir}${userDirectoryStructure.serviceFolderPath}`, customRoute.toLowerCase());
+        writeOperations.mkdir(`${dir}${userDirectoryStructure.serviceFolderPath}`, customRoute);
         _.forEach(element, (value, customKey) => {
           if (customRoutes.shouldCreateFolderOfController && !fs.existsSync(`${dir}${userDirectoryStructure.controllerFolderPath}/${value.controller.locals.platform}/${customKey}`)) {
-            writeOperations.mkdir(`${dir}${userDirectoryStructure.controllerFolderPath}/${value.controller.locals.platform}`, customKey.toLowerCase());
+            writeOperations.mkdir(`${dir}${userDirectoryStructure.controllerFolderPath}/${value.controller.locals.platform}`, customKey);
           }
           const controllerPath = replace(value.controller.locals.path, {
             platform: value.controller.locals.platform,
-            controller: customKey.toLowerCase(),
+            controller: customKey,
           });
           writeOperations.write(path.join(dir, controllerPath), value.controller.render(), MODE_0666);
           writeOperations.write(path.join(dir, `${userDirectoryStructure.serviceFolderPath}/${customRoute}/${customKey}Service.js`), value.service.render(), MODE_0666);
-          if (!_.isEmpty(element.route)) {
-            writeOperations.write(path.join(dir, `${userDirectoryStructure.routesFolderPath}/${customRoute}/${customKey}Routes.js`), element.route.render(), MODE_0666);
+          if (!_.isEmpty(value.route)) {
+            writeOperations.write(path.join(dir, `${userDirectoryStructure.routesFolderPath}/${customRoute}/${customKey}Routes.js`), value.route.render(), MODE_0666);
           }
         });
       });
@@ -401,6 +390,15 @@ async function startRenderingEJS(dir, templateFolder, renderObject) {
       }
 
       writeOperations.write(path.join(dir, `${userDirectoryStructure.serviceFolderPath}/${service.locals.PLATFORM}/${service.locals.SERVICE_NAME}Service.js`), service.render(), MODE_0666);
+    });
+  }
+
+  if (!_.isEmpty(customRoutesUsecase)) {
+    _.forEach(customRoutesUsecase, (usecase) => {
+      if (!fs.existsSync(`${dir}${usecase.locals.folderPath}`)) {
+        writeOperations.mkdir(`${dir}`, usecase.locals.folderPath);
+      }
+      writeOperations.write(path.join(dir, usecase.locals.path), usecase.render(), MODE_0666);
     });
   }
 

@@ -2,6 +2,7 @@
 const {
   forEach, isEmpty, has,
 } = require('lodash');
+const replace = require('key-value-replace');
 const writeOperations = require('../../writeOperations');
 const common = require('../utils/common');
 
@@ -135,17 +136,6 @@ const makeCustomRoutes = async (makeCustomRouteObj) => {
           controller.locals.IS_CQ = transformedControllerDetail.isQueryBuilderAvailable;
           controller.locals.platform = platform;
           controller.locals.path = makeCustomRouteObj.generatedCustomRouteControllerPath;
-          [controller.locals.S3_UPLOAD, controller.locals.FILE_UPLOAD, controller.locals.S3_UPLOAD_PRIVATE] = common.checkFileUploadInCR(routesWithQueryMode);
-          if (controller.locals.FILE_UPLOAD) {
-            packageDependencies.dependencies['valid-url'] = '~1.0.9';
-            packageDependencies.dependencies.formidable = '~1.2.2';
-          }
-          if (controller.locals.S3_UPLOAD) {
-            packageDependencies.dependencies['aws-sdk'] = '~2.901.0';
-          }
-          if (controller.locals.S3_UPLOAD_PRIVATE) {
-            packageDependencies.dependencies['amazon-s3-uri'] = '~0.1.1';
-          }
           if (transformedControllerDetail.isQueryBuilderAvailable) shouldCopyQueryService = true;
           controller.locals.SERVICES = _.uniqBy(transformedControllerDetail.routes, 'service');
           controller.locals.SERVICE_NAME_FC = controllerName.charAt(0).toUpperCase() + controllerName.slice(1);
@@ -202,26 +192,15 @@ const makeCustomRoutes = async (makeCustomRouteObj) => {
           controller.locals.IS_CQ = transformedControllerDetail.isQueryBuilderAvailable;
           controller.locals.platform = platform;
           controller.locals.path = makeCustomRouteObj.generatedCustomRouteControllerPath;
-          [controller.locals.S3_UPLOAD, controller.locals.FILE_UPLOAD, controller.locals.S3_UPLOAD_PRIVATE] = common.checkFileUploadInCR(routesWithQueryMode);
-          if (controller.locals.FILE_UPLOAD) {
-            packageDependencies.dependencies['valid-url'] = '~1.0.9';
-            packageDependencies.dependencies.formidable = '~1.2.2';
-          }
-          if (controller.locals.S3_UPLOAD) {
-            packageDependencies.dependencies['aws-sdk'] = '~2.901.0';
-          }
-          if (controller.locals.S3_UPLOAD_PRIVATE) {
-            packageDependencies.dependencies['amazon-s3-uri'] = '~0.1.1';
-          }
           if (transformedControllerDetail.isQueryBuilderAvailable) shouldCopyQueryService = true;
           controller.locals.SERVICES = _.uniqBy(transformedControllerDetail.routes, 'service');
           controller.locals.SERVICE_NAME_FC = controllerName.charAt(0).toUpperCase() + controllerName.slice(1);
           service.locals.ROUTES = transformedControllerDetail.routes;
-          if (isEmpty(finalCustomRoutes.new.controllerNServiceNRoutes[platform])) {
-            finalCustomRoutes.new.controllerNServiceNRoutes[platform] = {};
+          if (isEmpty(finalCustomRoutes.old.controllerNServiceNRoutes[platform])) {
+            finalCustomRoutes.old.controllerNServiceNRoutes[platform] = {};
           }
           // finalCustomRoutes.new.controllerNServiceNRoutes[platform] = {};
-          Object.assign(finalCustomRoutes.new.controllerNServiceNRoutes[platform], {
+          Object.assign(finalCustomRoutes.old.controllerNServiceNRoutes[platform], {
             [controllerName]: {
               controller,
               service,
@@ -235,7 +214,7 @@ const makeCustomRoutes = async (makeCustomRouteObj) => {
               }
               return false;
             }
-            return false;
+            return true;
           });
           if (!_.isEmpty(routeWithoutModel)) {
             const route = writeOperations.loadTemplate(`${customRoutesPath}/route.js`);
@@ -244,8 +223,8 @@ const makeCustomRoutes = async (makeCustomRouteObj) => {
             route.locals.ROUTES = transformedControllerDetail.routes;
             route.locals.IMPORT = transformedControllerDetail.routes;
             route.locals.SERVICE_NAME = controllerName;
-            finalCustomRoutes.new.controllerNServiceNRoutes[platform][controllerName] = {
-              ...finalCustomRoutes.new.controllerNServiceNRoutes[platform][controllerName],
+            finalCustomRoutes.old.controllerNServiceNRoutes[platform][controllerName] = {
+              ...finalCustomRoutes.old.controllerNServiceNRoutes[platform][controllerName],
               route,
             };
           }
@@ -278,17 +257,6 @@ const makeCustomRoutes = async (makeCustomRouteObj) => {
         controller.locals.IS_CQ = transformedControllerDetail.isQueryBuilderAvailable;
         controller.locals.path = controllerFilePath;
         controller.locals.name = controllerFile;
-        [controller.locals.S3_UPLOAD, controller.locals.FILE_UPLOAD, controller.locals.S3_UPLOAD_PRIVATE] = common.checkFileUploadInCR(routesWithQueryMode);
-        if (controller.locals.FILE_UPLOAD) {
-          packageDependencies.dependencies['valid-url'] = '~1.0.9';
-          packageDependencies.dependencies.formidable = '~1.2.2';
-        }
-        if (controller.locals.S3_UPLOAD) {
-          packageDependencies.dependencies['aws-sdk'] = '~2.901.0';
-        }
-        if (controller.locals.S3_UPLOAD_PRIVATE) {
-          packageDependencies.dependencies['amazon-s3-uri'] = '~0.1.1';
-        }
         if (transformedControllerDetail.isQueryBuilderAvailable) shouldCopyQueryService = true;
         controllerFiles.push(controller);
       });
@@ -352,7 +320,7 @@ const makeCustomRoutes = async (makeCustomRouteObj) => {
   return [finalCustomRoutes, shouldCopyQueryService, packageDependencies, customRoutesWithPath, customRouteByPlatform];
 };
 
-const makeControllerIndexForCustomRoutes = (makeCustomRouteObj) => {
+const makeControllerIndexForCustomRoutes = (makeCustomRouteObj, userDirectoryStructure) => {
   const PLATFORM = makeCustomRouteObj.platform;
   const { customRoutesPath } = makeCustomRouteObj;
   const { routes } = makeCustomRouteObj;
@@ -367,6 +335,7 @@ const makeControllerIndexForCustomRoutes = (makeCustomRouteObj) => {
   routes.apis = routes.apis.filter(Boolean);
   const folderWise = _.groupBy(routes.apis, 'platform');
   const controllerIndexes = [];
+  let controllerPath = '';
   _.map(folderWise, (platformDetails, platform) => {
     const controllerGroup = _.groupBy(platformDetails, 'controller');
     _.map(controllerGroup, (controllerDetails, controllerName) => {
@@ -380,6 +349,20 @@ const makeControllerIndexForCustomRoutes = (makeCustomRouteObj) => {
       controllerIndex.locals.PLATFORM = platform;
       controllerIndex.locals.CONTROLLER = controllerName;
       controllerIndex.locals.IS_CQ = transformedControllerDetail.isQueryBuilderAvailable;
+      controllerIndex.locals.ROUTES = transformedControllerDetail.routes;
+      controllerPath = userDirectoryStructure.generatedCustomRouteControllerPath;
+      controllerPath = replace(controllerPath, {
+        platform,
+        controller: controllerName,
+      });
+      const controllerFolderPath = controllerPath.substring(0, controllerPath.lastIndexOf('/'));
+      const controllerIndexFilePath = `${controllerFolderPath}/index.js`;
+      controllerIndex.locals.indexPath = controllerIndexFilePath;
+      controllerIndex.locals.controllerFolder = controllerFolderPath;
+
+      controllerIndex.locals.DATA_ACCESS_PATH = common.getImportPath(controllerFolderPath, userDirectoryStructure.dataAccessFolderPath);
+      controllerIndex.locals.VALIDATION_PATH = common.getImportPath(controllerFolderPath, userDirectoryStructure.validationFolderPath);
+      controllerIndex.locals.USECASE_PATH = common.getImportPath(controllerFolderPath, userDirectoryStructure.useCaseFolderPath);
       controllerIndexes.push(controllerIndex);
     });
   });
@@ -415,8 +398,51 @@ const makeServiceForNonExistingService = async (makeCustomRouteObj) => {
   });
   return services;
 };
+
+const makeCustomRoutesUsecase = async (customRouteObj) => {
+  const {
+    customRoutes, models, userDirectoryStructure, templateRegistry, templateFolderName,
+  } = customRouteObj;
+  let modelNames = [];
+  const useCaseForCustomRoutes = [];
+  if (!_.isEmpty(models)) {
+    modelNames = Object.keys(models);
+  }
+  let useCaseFolderPath = '';
+  let useCaseFilePath = '';
+  let modelName = '';
+  _.forEach(customRoutes, (customRoute) => {
+    if (!_.isEmpty(customRoute.model) && modelNames.includes(customRoute.model)) {
+      modelName = customRoute.model;
+      useCaseFilePath = replace(userDirectoryStructure.useCaseFilePath, {
+        model: customRoute.model,
+        fileName: customRoute.functionName,
+      });
+      useCaseFolderPath = (useCaseFilePath).substring(0, (useCaseFilePath).lastIndexOf('/'));
+    } else {
+      modelName = '';
+      useCaseFilePath = replace(userDirectoryStructure.useCaseFilePath, {
+        model: 'customRoutes',
+        fileName: customRoute.functionName,
+      });
+      useCaseFolderPath = (useCaseFilePath).substring(0, (useCaseFilePath).lastIndexOf('/'));
+    }
+    const useCase = writeOperations.loadTemplate(`${templateFolderName}${templateRegistry.useCaseFolderPath}/customRouteOfModel.js`);
+    useCase.locals.FUNCTION_NAME = customRoute.functionName;
+    useCase.locals.MODEL_NAME = modelName;
+    useCase.locals.path = useCaseFilePath;
+    useCase.locals.folderPath = useCaseFolderPath;
+    const queryBuilderForModel = customRoute.queryBuilder?.length ? customRoute.queryBuilder.filter((q) => q.queryMode === 'find') : [];
+    useCase.locals.MODELS = [...new Set(queryBuilderForModel.map((q) => `${q.model}Db`))];
+    useCase.locals.QUERY = queryBuilderForModel;
+    useCaseForCustomRoutes.push(useCase);
+  });
+  return useCaseForCustomRoutes;
+};
+
 module.exports = {
   makeCustomRoutes,
   makeControllerIndexForCustomRoutes,
   makeServiceForNonExistingService,
+  makeCustomRoutesUsecase,
 };

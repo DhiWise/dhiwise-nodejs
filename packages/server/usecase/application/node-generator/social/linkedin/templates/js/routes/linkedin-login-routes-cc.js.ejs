@@ -6,9 +6,8 @@ const passport = require('passport');
 const {
   linkedInStrategy,loginUser 
 } = require('../services/linkedin-login-service');
-const message = require('../utils/messages');
-const responseCode = require('../utils/responseCode');
-const sendResponse = require('../helpers/sendResponse');
+const response = require('../utils/response');
+const responseHandler = require('../utils/response/responseHandler');
 
 //linedin
 linkedInStrategy(passport);
@@ -30,7 +29,7 @@ passport.deserializeUser(function (user, cb) {
 });
 
 router.get('<%-ERROR_URL%>', (req, res) => {
-  let result = message.loginFailed({data:'Login failed'});
+  let result = response.badRequest({message:'Login Failed'});
   sendResponse(res,result);
 });
 
@@ -40,21 +39,20 @@ router.get('/auth/linkedin',passport.authenticate('linkedin', {
 }));
 
 router.get('<%-CALLBACK_URL%>',
-  passport.authenticate('linkedin', { failureRedirect: '<%-ERROR_URL%>' }),
+  passport.authenticate('linkedin', { failureRedirect: '/error' }),
   function (req,res){
     loginUser(req.user.email,req.session.platform).then(user=>{
       if (!user.flag){
-        let result = message.loginSuccess({data:user.data});
+        let result = response.success({message:'Login Successful',data:user.data});
         sendResponse(res,result);
       }
       else {
-        let result = message.loginFailed({data:user.data});
+        let result = response.badRequest({message:user.data});
         sendResponse(res,result);
-      }
-            
+      }  
     })
       .catch(error=>{
-        let result = message.failureResponse();
+        let result = response.internalServerError();
         sendResponse(res,result);
       });
   }

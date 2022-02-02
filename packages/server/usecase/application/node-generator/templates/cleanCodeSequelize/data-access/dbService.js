@@ -1,3 +1,4 @@
+/* eslint-disable */
 const { Op } = require('sequelize');
 const models = require('./models');
 
