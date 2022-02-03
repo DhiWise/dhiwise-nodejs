@@ -338,31 +338,6 @@ const getRouteRoleArray = (rolePermission) => {
   });
   return routeRoleArray;
 };
-const checkFileUploadInCR = (customRoutes) => {
-  let isS3Available = false;
-  let isPrivateS3Available = false;
-  let isFileUploadAvailable = false;
-  // eslint-disable-next-line no-restricted-syntax
-  for (const route of customRoutes) {
-    if (Object.prototype.hasOwnProperty.call(route, 'queryBuilder')) {
-      if (route.queryBuilder.length) {
-        const fileUploadS3Routes = (route.queryBuilder).find((r) => (r.queryMode).toLowerCase() === 'fileupload' && ((r.storage).toLowerCase() === 's3' || (r.storage).toLowerCase() === 's3_private'));
-        if (!isEmpty(fileUploadS3Routes) && !isS3Available) {
-          isS3Available = true;
-        }
-        const s3PrivateCheck = (route.queryBuilder).find((r) => (r.queryMode).toLowerCase() === 'fileupload' && ((r.storage).toLowerCase() === 's3_private'));
-        if (!isEmpty(s3PrivateCheck) && !isPrivateS3Available) {
-          isPrivateS3Available = true;
-        }
-        const fileUploadRoutes = (route.queryBuilder).find((r) => (r.queryMode).toLowerCase() === 'fileupload');
-        if (!isEmpty(fileUploadRoutes) && !isFileUploadAvailable) {
-          isFileUploadAvailable = true;
-        }
-      }
-    }
-  }
-  return [isS3Available, isFileUploadAvailable, isPrivateS3Available];
-};
 
 const removeGivenKeyFromObject = (obj, keysToRemove) => {
   forEach(keysToRemove, (key) => {
@@ -476,7 +451,6 @@ module.exports = {
   shouldCopyQueryService,
   uniqRolesFromRolePermissions,
   getRouteRoleArray,
-  checkFileUploadInCR,
   removeGivenKeyFromObject,
   createReadMeFile,
   createRelativePathFromAbsolutePath,

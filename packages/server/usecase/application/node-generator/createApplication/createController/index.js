@@ -197,25 +197,12 @@ async function generateController (apis, platformName, controllers, ormProvider,
         [uniqueTaskModels, uniqueRequireValidationModels] = commonService.getUniqModelsFromTasks(transformedControllerDetail.routes, 'queryBuilder');
         [api.locals.UNIQ_TASK_MODELS, api.locals.UNIQ_REQUIRE_VALIDATION_MODELS] = [uniqueTaskModels, uniqueRequireValidationModels];
         api.locals.IS_CQ = transformedControllerDetail.isQueryBuilderAvailable;
-        [api.locals.S3_UPLOAD, api.locals.FILE_UPLOAD, api.locals.S3_UPLOAD_PRIVATE] = commonService.checkFileUploadInCR(routesWithQueryMode);
-        if (api.locals.FILE_UPLOAD) {
-          packageDependencies.dependencies['valid-url'] = '~1.0.9';
-          packageDependencies.dependencies.formidable = '~1.2.2';
-        }
-        if (api.locals.S3_UPLOAD) {
-          packageDependencies.dependencies['aws-sdk'] = '~2.901.0';
-        }
-        if (api.locals.S3_UPLOAD_PRIVATE) {
-          packageDependencies.dependencies['amazon-s3-uri'] = '~0.1.1';
-        }
       } else {
         api.locals.CUSTOM_ROUTES = null;
         api.locals.IS_CQ = false;
         api.locals.UNIQ_TASK_MODELS = undefined;
         api.locals.UNIQ_REQUIRE_VALIDATION_MODELS = undefined;
         api.locals.SERVICES_TO_IMPORT = undefined;
-        api.locals.S3_UPLOAD = false;
-        api.locals.FILE_UPLOAD = false;
       }
       let modelsToImport = [];
       // ? for finding models which need to be imported in controller
@@ -253,18 +240,6 @@ async function generateController (apis, platformName, controllers, ormProvider,
         const [UNIQ_TASK_MODELS, UNIQ_REQUIRE_VALIDATION_MODELS] = commonService.getUniqModelsFromTasks(transformedControllerDetail.routes, 'queryBuilder');
         [api.locals.UNIQ_TASK_MODELS, api.locals.UNIQ_REQUIRE_VALIDATION_MODELS] = [UNIQ_TASK_MODELS, UNIQ_REQUIRE_VALIDATION_MODELS];
         api.locals.IS_CQ = transformedControllerDetail.isQueryBuilderAvailable;
-        api.locals.IS_CQ = transformedControllerDetail.isQueryBuilderAvailable;
-        [api.locals.S3_UPLOAD, api.locals.FILE_UPLOAD, api.locals.S3_UPLOAD_PRIVATE] = commonService.checkFileUploadInCR(routesWithQueryMode);
-        if (api.locals.FILE_UPLOAD) {
-          packageDependencies.dependencies['valid-url'] = '~1.0.9';
-          packageDependencies.dependencies.formidable = '~1.2.2';
-        }
-        if (api.locals.S3_UPLOAD) {
-          packageDependencies.dependencies['aws-sdk'] = '~2.901.0';
-        }
-        if (api.locals.S3_UPLOAD_PRIVATE) {
-          packageDependencies.dependencies['amazon-s3-uri'] = '~0.1.1';
-        }
         returnController[model] = api;
       }
     }
