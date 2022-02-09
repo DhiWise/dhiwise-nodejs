@@ -17,7 +17,6 @@ import { RouteTabIndexName, useAddRoute } from './AddRouteProvider';
 import { useAddToggle } from '../AddToggleProvider';
 import Basic from './Basic';
 import Advance from './Advance';
-import { Configuration } from './Configuration';
 import { useRoute } from '../RouteProvider';
 import { useBoolean } from '../../../../components/hooks';
 import { ModelPermission } from './ModelPermission';
@@ -117,20 +116,6 @@ export const AddRoutes = () => {
                 <TabPanel>
                   <div className="px-5 overflow-auto h-full">
                     <Advance />
-                  </div>
-                </TabPanel>
-                <TabPanel>
-                  <div className="px-5 overflow-auto h-full">
-                    <Controller
-                      control={control}
-                      name="uploads"
-                      defaultValue={editRouteData?.fileUpload?.uploads[0]}
-                      render={(controlProps) => (
-                        <Configuration
-                          {...controlProps}
-                        />
-                      )}
-                    />
                   </div>
                 </TabPanel>
                 <TabPanel>
