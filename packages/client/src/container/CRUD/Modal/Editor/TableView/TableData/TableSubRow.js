@@ -23,6 +23,7 @@ import { MAX_INPUT_FIELD_LIMIT } from '../../../../../../constant/common';
 import { modelAttrRegex } from '../../../../../../utils/regex';
 import { useEditor } from '../../EditorProvider';
 import { ORM_TYPE } from '../../../../../../constant/Project/applicationStep';
+import { useModel } from '../../ModelProvider';
 
 const AllCheckBox = ({
   cname, onInputChange, watch, control, disable, onKeyDownHandle, id,
@@ -67,7 +68,7 @@ const TableSubRow = React.memo((props) => {
   const {
     dependency, setDependency, ormType,
   } = useEditor();
-
+  const { setChangeInTable } = useModel();
   const { TABLE_TYPES, TYPE_OPTIONS } = CONST_VARIABLE;
   const {
     getValues, control, errors, setValue, watch,
@@ -208,6 +209,10 @@ const TableSubRow = React.memo((props) => {
 
   const onInputChange = React.useCallback((fieldName, value, focusId) => {
     if (['enum', 'isEnum'].includes(fieldName)) { setValue(fieldName, value); }
+    if (value && value !== subRow[fieldName]) {
+      setChangeInTable();
+    }
+
     if (fieldName === 'type' || fieldName === 'isEnum') {
       setValue('isAutoIncrement', undefined);
       setValue('default', undefined);
