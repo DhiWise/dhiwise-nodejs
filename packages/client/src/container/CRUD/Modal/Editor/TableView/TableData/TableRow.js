@@ -32,6 +32,7 @@ import RowSuspense from './RowSuspense';
 import { modelAttrRegex } from '../../../../../../utils/regex';
 import { MAX_INPUT_FIELD_LIMIT } from '../../../../../../constant/common';
 import { ORM_TYPE } from '../../../../../../constant/Project/applicationStep';
+import { useModel } from '../../ModelProvider';
 
 const TableSubRow = React.lazy(() => new Promise((resolve) => resolve(import('./TableSubRow'))));
 
@@ -115,7 +116,7 @@ const TableRow = React.memo((props) => {
   } = useForm({
     shouldUnregister: false,
   });
-
+  const { setChangeInTable } = useModel();
   const disable = React.useMemo(() => getDisableField(watch('type'),
     {
       isAutoIncrement: watch('isAutoIncrement'), match: watch('match'), unique: watch('unique'), default: watch('default'), filter: watch('filter'),
@@ -192,6 +193,7 @@ const TableRow = React.memo((props) => {
     }
 
     if (fieldValue !== row[fieldName]) {
+      setChangeInTable();
       // on change only when value is updated
       setDependency(dependency.map((x) => {
         if (row[fieldName] === x.oldKey) {

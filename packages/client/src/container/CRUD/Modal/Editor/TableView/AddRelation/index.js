@@ -6,6 +6,7 @@ import { Select } from '../../../../../../components';
 import { RELATION_TYPE, SEQUELIZE_RELATION_TYPE } from '../../../../../../constant/model';
 import { onSingleKeyDown } from '../../../../../../utils/domMethods';
 import { useEditor } from '../../EditorProvider';
+import { useModel } from '../../ModelProvider';
 
 const FiledPosition = {
   model: 1,
@@ -28,6 +29,7 @@ export const AddRelation = React.memo(({
   const [foreignField, setForeignField] = React.useState(foreignKey);
   const [refAttribute, setRefAttribute] = React.useState();
   const [relType, setRelType] = React.useState(); // default "hasMany"
+  const { setChangeInTable } = useModel();
 
   React.useEffect(() => setRefAttribute(otherProps?.refAttribute), [otherProps?.refAttribute]);
   React.useEffect(() => setRelType(otherProps?.relType || RELATION_TYPE.HAS_MANY), [otherProps?.relType]);
@@ -113,6 +115,7 @@ export const AddRelation = React.memo(({
       if (fields?.length > 0) setForeignKeys(fields.map((x) => ({ id: x, name: x }))); // ff
       else setForeignKeys([]);
     }
+    setChangeInTable();
   };
 
   return (

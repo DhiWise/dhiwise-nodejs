@@ -10,7 +10,7 @@ import omitDeep from 'omit-deep-lodash';
 import { useHistory } from 'react-router';
 import { Icons } from '@dhiwise/icons';
 import {
-  Button, MessageNotify, Error, Loader,
+  Button, MessageNotify, Error, Loader, ConfirmationAlert,
 } from '../../../../components';
 import ModelHeader from './ModelHeader';
 import { updateModel } from '../../../../redux/reducers/models';
@@ -46,7 +46,7 @@ const ErrorNotify = () => (
 
 const Editor = React.memo(({ currentId, saveRef, loaderRef }) => {
   const {
-    modelErrors, modelErrCount, isError, setModelErrors, setIsJsonError,
+    modelErrors, modelErrCount, isError, setModelErrors, setIsJsonError, setNoChangeInTable, isSaveWarning, hideSaveWarning, changeNextEvent,
   } = useModel();
   const history = useHistory();
   const { addErrorToast, addSuccessToast } = useToastNotifications();
@@ -67,6 +67,7 @@ const Editor = React.memo(({ currentId, saveRef, loaderRef }) => {
   const [jsonError, setJsonError] = useState(false);
   // const [showError, setShowError] = useBoolean(false);
   const [showError, setShowError, setHideError] = useBoolean(false);
+  const [isSaveLoading, setSaveLoading, hideSaveLoading] = useBoolean(false); // for save warning popup loading
   // Remove
   // const [, setSaveLoader, hideSaveLoader] = useBoolean(false);
   // saveLoader,
@@ -264,13 +265,14 @@ const Editor = React.memo(({ currentId, saveRef, loaderRef }) => {
   }, []);
 
   const saveJSON = React.useCallback(({
-    showMsg, tCode, tcustomSetting, indexes, tHooks, msg, isRedirect = false, tDependency,
+    isInSaveWarning = false, showMsg, tCode, tcustomSetting, indexes, tHooks, msg, isRedirect = false, tDependency,
   }) => {
   // Remove
   // isRedirect= if step remove ,remove await and async
     try {
       if (jsonError && !jsonError?.isCustom && !modelErrCount) {
         // if error then open error popup
+        if (isInSaveWarning) hideSaveWarning();
         handleShowError();
         return;
       }
@@ -396,6 +398,7 @@ const Editor = React.memo(({ currentId, saveRef, loaderRef }) => {
           errorFlag = { name: 'Error', message: `${isDuplicateAttr}: ${ERROR_MSG.duplicateAttr}`, isCustom: true };
         }
         if (errorFlag) {
+          if (isInSaveWarning) hideSaveWarning();
           setJsonError(errorFlag);
           return;
         }
@@ -510,12 +513,15 @@ const Editor = React.memo(({ currentId, saveRef, loaderRef }) => {
         });
       }
       if (errorFlag) {
+        if (isInSaveWarning) hideSaveWarning();
         setJsonError(errorFlag);
         return;
       }
       // error handler, to read data we'll have to parse twice due to backslash escaping
       errorFlag = isCustomErr(schema, null, null, { customSetting });
       if (errorFlag) {
+        if (isInSaveWarning) hideSaveWarning();
+
         setJsonError(errorFlag);
         // setShowError();
         // hideSaveLoader();
@@ -616,7 +622,10 @@ const Editor = React.memo(({ currentId, saveRef, loaderRef }) => {
       if (showError) setHideError();
 
       // loaderCallBack({ isHidePopup: false });
-      loaderRef.current.setLoader();
+      if (isInSaveWarning) { setSaveLoading(); } else {
+        loaderRef.current?.setLoader();
+      }
+
       apiClient(`${API_URLS.schema.update}/${currentId}`, {
         customJson,
         schemaJson: schema,
@@ -631,7 +640,8 @@ const Editor = React.memo(({ currentId, saveRef, loaderRef }) => {
       }).then((res) => {
         if (res?.code === 'E_BAD_REQUEST') {
           // manage multiple errors
-          loaderRef.current.setLoader();
+          if (isInSaveWarning) hideSaveLoading();
+          else loaderRef.current?.setLoader();
 
           if (res.data?.length > 0) { setModelErrors(res.data); }
           // hideSaveLoader();
@@ -643,7 +653,15 @@ const Editor = React.memo(({ currentId, saveRef, loaderRef }) => {
           // hideSaveLoader();
           // if (tableRef?.current && res?.message) addSuccessToast(res.message);
           // setCode(JSON.stringify(res?.data?.schemaJson || {}));
-          loaderRef.current.setLoader();
+          setNoChangeInTable(); // when direct save that
+          if (isInSaveWarning) {
+            changeNextEvent.current();
+            hideSaveLoading();
+
+            hideSaveWarning();
+          } else {
+            loaderRef.current?.setLoader();
+          }
 
           // loaderCallBack({ isHidePopup: true });
           if (isRedirect) {
@@ -653,7 +671,12 @@ const Editor = React.memo(({ currentId, saveRef, loaderRef }) => {
       }).catch((err) => {
         // hideSaveLoader();
         addErrorToast(err);
-        loaderRef.current.setLoader();
+        if (isInSaveWarning) {
+          hideSaveLoading();
+          hideSaveWarning();
+        } else {
+          loaderRef.current?.setLoader();
+        }
       });
       updateRef.current?.setHideEdit();
     } catch (err) {
@@ -731,6 +754,23 @@ const Editor = React.memo(({ currentId, saveRef, loaderRef }) => {
             />
           ) : null
       }
+      <ConfirmationAlert
+        description=" Do you wish to save your data before continuing ?"
+        handleSubmit={() => saveJSON({ isInSaveWarning: true })}
+        variant="primary"
+        title={(
+          <div className="flex justify-center items-center mb-5">
+            <div className="w-5 h-5 mr-3">
+              <Icons.Warring />
+            </div>
+            New changes detected
+          </div>
+)}
+        isOpen={isSaveWarning}
+        okText="Save"
+        isLoading={isSaveLoading}
+        handleClose={() => { changeNextEvent.current(); hideSaveWarning(); setNoChangeInTable(); }}
+      />
 
     </>
   );

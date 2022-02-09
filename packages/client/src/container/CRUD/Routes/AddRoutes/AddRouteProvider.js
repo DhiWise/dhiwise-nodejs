@@ -14,8 +14,8 @@ export const RouteTabIndexName = {
   [ROUTE_GENERATE_TYPE.MANUAL]: {
     0: 'Basic',
     1: 'Advance',
-    2: 'Configuration',
-    3: 'Query builder',
+    // 2: 'Configuration',
+    2: 'Query builder',
   },
   [ROUTE_GENERATE_TYPE.AUTO]: {
     get: {

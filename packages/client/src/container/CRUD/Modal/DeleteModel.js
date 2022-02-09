@@ -14,7 +14,7 @@ const DeleteModel = React.memo(({ currentId, className, isDeleteWhiteIcon }) => 
   const [visibleDelete, setVisibleDelete, hideVisibleDelete] = useBoolean(false);
   const [deleteLoader, setDeleteLoader, hideDeleteLoader] = useBoolean(false);
   const { addErrorToast, addSuccessToast } = useToastNotifications();
-  const { setModelErrors } = useModel();
+  const { setModelErrors, setNoChangeInTable } = useModel();
   const modelList = useSelector((state) => state.models.modelList);
   const currentApplicationCode = useSelector(({ projects }) => (projects.currentApplicationCode));
   const [delData, setDelData] = useState();
@@ -49,6 +49,7 @@ const DeleteModel = React.memo(({ currentId, className, isDeleteWhiteIcon }) => 
         addErrorToast(data.message);
         hideVisibleDelete();
       }
+      setNoChangeInTable();
       // dispatch(deleteCurrentModel());
     }).catch((err) => {
       hideVisibleDelete();

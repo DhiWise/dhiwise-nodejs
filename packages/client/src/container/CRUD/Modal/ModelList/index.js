@@ -23,7 +23,9 @@ import DeleteModel from '../DeleteModel';
 import { getModelDetail } from '../../../../redux/thunks/models';
 
 export const ModelList = ({ setPanel, modelPanel }) => {
-  const { isError, isJsonError } = useModel();
+  const {
+    isError, isJsonError, isChangeInTable, setChangeNextEvent, setNoChangeInTable, setSaveWarning,
+  } = useModel();
   const [modalStatus, showModal, hideModal] = useBoolean(false);
   const modelList = useSelector((state) => state.models.modelList);
   const currentId = useSelector((state) => state.models.currentId);
@@ -32,6 +34,15 @@ export const ModelList = ({ setPanel, modelPanel }) => {
   const location = useLocation();
 
   const openCreateModel = () => {
+    if (isChangeInTable) {
+      setChangeNextEvent(() => {
+        setNoChangeInTable();
+        showModal();
+      });
+      setSaveWarning();
+      return;
+    }
+
     showModal();
   };
   React.useEffect(() => {
@@ -55,7 +66,23 @@ export const ModelList = ({ setPanel, modelPanel }) => {
         <Tabs selectedIndex={modelPanel === ModelPanel.CUSTOM.name ? ModelPanel.CUSTOM.tabIndex : ModelPanel.LIBRARY.tabIndex} className="flex-grow flex flex-col h-0" selectedTabPanelClassName="h-0 flex-grow" selectedTabClassName={TabCSs.selectTab}>
           <TabList className={`${TabCSs.tabHead} modelListTab`}>
             <Tab onClick={() => { setPanel(ModelPanel.CUSTOM.name); }} className={TabCSs.tabSmallTitle}>Custom</Tab>
-            <Tab onClick={() => { setPanel(ModelPanel.LIBRARY.name); }} className={TabCSs.tabSmallTitle}>Library</Tab>
+            <Tab
+              onClick={() => {
+                if (isChangeInTable) {
+                  setChangeNextEvent(() => {
+                    setPanel(ModelPanel.LIBRARY.name);
+                    setNoChangeInTable();
+                  });
+                  setSaveWarning();
+                  return;
+                }
+                setPanel(ModelPanel.LIBRARY.name);
+              }}
+              className={TabCSs.tabSmallTitle}
+            >
+              Library
+
+            </Tab>
           </TabList>
           <TabPanel>
             <div className="overflow-auto h-full">
@@ -75,6 +102,16 @@ export const ModelList = ({ setPanel, modelPanel }) => {
                         <div
                           className="flex items-center justify-between w-full py-1 pr-8"
                           onClick={() => {
+                            if (isChangeInTable) {
+                              setChangeNextEvent(() => {
+                                dispatch(setCurrentModel({ currentId: d._id }));
+                                dispatch(getModelDetail(d._id));
+                                setNoChangeInTable();
+                              });
+                              setSaveWarning();
+                              return;
+                            }
+
                             if (d._id === currentId) return;
                             dispatch(setCurrentModel({ currentId: d._id }));
                             dispatch(getModelDetail(d._id));
