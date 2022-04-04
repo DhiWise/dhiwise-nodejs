@@ -1,44 +1,51 @@
 /**
  * loginUser.js
- * @description :: middleware that verifies JWT token
+ * @description :: middleware that verifies user's JWT token
  */
 
 const jwt = require("jsonwebtoken");
+const {PLATFORM} = require("../constants/authConstant");
+<%_if(NO_PLATFORM){ _%>
+const secret = require("../constants/authConstant").JWT.DEFAULT_SECRET;
+<%_ } else { _%>
 <%_ PLATFORM.forEach((v)=>{ _%>
 const <%-v.toLowerCase()%>Secret = require("../constants/authConstant").JWT.<%-v.toUpperCase()%>_SECRET;
-<%_ }) _%> 
+<%_ }) _%>    
+<%_}_%>
+
 /**
 * @description : middleware for authenticate user with JWT token
-* @param {object} req : request of route.
-* @param {object} res : response of route.
+* @param {obj} req : request of route.
+* @param {obj} res : response of route.
 * @param {callback} next : executes the next middleware succeeding the current middleware.
 */
-const authenticateJWT = (req, res, next) => {
+const authenticateJWT = (platform) =>  (req, res, next) => {
     const authHeader = req.headers.authorization;
-    if (authHeader) {
-        const token = authHeader.split(' ')[1];
-        let url = req.originalUrl;
-        let secret = '';
-        <%_ var c = 0; PLATFORM.forEach((v)=>{ c++;  _%>
-            <%_ if(c===1){ _%>
-            if(url.includes(<%= v.toLowerCase() %>)){
-                secret = <%-v.toLowerCase()%>Secret;
-            }
-            <%_ }else{ _%>
-            else if(url.includes(<%= v.toLowerCase()%>)){
-                secret = <%-v.toLowerCase()%>Secret;
-            }
-            <%_ } _%> 
-        <%_  }) _%>
-        jwt.verify(token,secret, (err, user) => {
-            if (err) {
-                return res.unAuthorized();
-            }
-            req.user = user;
-            next();
-        });
-    } else {
+    if (!authHeader) {
         return res.unAuthorized();
     }
+    const token = authHeader.split(' ')[1];
+    <%_if(!NO_PLATFORM){ _%>
+    let secret = '';
+    <%_ let c = 0; PLATFORM.forEach((v)=>{ c++;  _%>
+        <%_ if(c===1){ _%>
+            if(platform == PLATFORM.<%- v.toUpperCase() %>){
+            secret = <%-v.toLowerCase()%>Secret;
+        }
+        <%_ }else{ _%>
+        else  if(platform == PLATFORM.<%- v.toUpperCase() %>){
+            secret = <%-v.toLowerCase()%>Secret;
+        }
+        <%_ } _%> 
+    <%_  }) _%>
+    <%_ }_%>
+    jwt.verify(token,secret, (error, user) => {
+        if (error) {
+            return res.unAuthorized();
+        }
+        req.user = user;
+        next();
+    });
+
 };
 module.exports = authenticateJWT
