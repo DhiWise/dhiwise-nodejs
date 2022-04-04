@@ -123,7 +123,7 @@ function makeAuthService({<%-MODEL%>Service,userAuthSettingService,userTokenServ
                             token: token,
                             tokenExpiredTime: expire 
                         });
-                        let userToReturn = { ...userData, ...{ token } };
+                        let userToReturn = { ...userData, token };
                         <%_if(ROLE_PERMISSION){_%>
                         let roleAccessData = {};
                         if (roleAccess){

@@ -36,10 +36,10 @@ try {
         <%_}_%>
     <%_}_%>   
     <%_}_%>
-    return res.ok({data:combinedOutput});
+    return res.success({data:combinedOutput});
     <%_}_%>
 } catch (error) {
-  return res.failureResponse();
+  return res.internalServerError();
 }
 }    
 <%_})_%>

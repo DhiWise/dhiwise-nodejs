@@ -139,7 +139,7 @@ async function generateToken(user,secret){
                         <%_}_%>
                         let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
                         await dbService.createOne(model.userTokens, { userId: user.id, token: token,tokenExpiredTime: expire });
-                        let userToReturn = { ...userData, ...{ token } };
+                        let userToReturn = { ...userData, token };
                         <%_if(ROLE_PERMISSION){_%>
                             let roleAccessData = {};
                             if (roleAccess){

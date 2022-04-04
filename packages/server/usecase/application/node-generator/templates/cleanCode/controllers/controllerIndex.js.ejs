@@ -4,7 +4,7 @@
 <%_ usedDb.push(model);  }); _%>
 
 <%_ if(!usedDb.includes(DB_MODEL)){_%>
-const <%-DB_MODEL %>Db = require('../../../data-access/<%-usedDb%>Db');
+const <%-DB_MODEL %>Db = require('../../../data-access/<%-DB_MODEL %>Db');
 <%_ } _%>
 
 const <%-DB_MODEL %>Schema = require('../../../validation/schema/<%-DB_MODEL %>');
@@ -75,7 +75,7 @@ const <%-DB_MODEL %>Controller = require('./<%-DB_MODEL %>');
         const delete<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.delete<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
     <%_}_%>
     <%_ if(controllerMethod === 'findById'){ _%>
-        const get<%-DB_MODEL_FC %>ById = <%-DB_MODEL %>Controller.get<%-DB_MODEL_FC %>ById(<%- controllerMethod + DB_MODEL_FC %>Usecase);
+        const get<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.get<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
     <%_}_%>
     <%_ if(controllerMethod === 'findAll'){ _%>
         const findAll<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.findAll<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
@@ -125,7 +125,7 @@ module.exports = {
         delete<%-DB_MODEL_FC %>,
     <%_}_%>
     <%_ if(controllerMethod === 'findById'){ _%>
-        get<%-DB_MODEL_FC %>ById,
+        get<%-DB_MODEL_FC %>,
     <%_}_%>
     <%_ if(controllerMethod === 'findAll'){ _%>
         findAll<%-DB_MODEL_FC %>,

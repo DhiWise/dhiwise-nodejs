@@ -7,7 +7,7 @@
 <%_if(IS_AUTH){_%>
     const bcrypt = require('bcrypt')
     const <%-AUTH_MODEL_FC%> = require('../model/<%-AUTH_MODEL%>');
-    const authConstant=require('../../constants/authConstant');
+    const authConstant=require('../constants/authConstant');
   <%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
     <%_for(const model of ROLE_PERMISSION_MODELS){
       let model_FC=(model).charAt(0).toUpperCase() + (model).slice(1); _%>
@@ -25,7 +25,7 @@ const dbService = require('../utils/dbService');
       let userToBeInserted = {}
       <%_for(let i in USER_EXIST_CONDITION){_%>
         <%_var finalStr = new String();
-        USER[i].userType=`@@authConstant.USER_ROLE.${ROLE_NAME[i]}@@`;
+        USER[i].role=`@@authConstant.USER_ROLE.${ROLE_NAME[i]}@@`;
         finalStr = JSON.stringify(USER[i]);
         finalStr = finalStr.replace(/@@"/g, "").replace(/"@@/g, "");
         _%>

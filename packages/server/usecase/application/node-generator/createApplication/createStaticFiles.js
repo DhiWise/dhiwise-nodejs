@@ -17,6 +17,10 @@ async function generateStaticFilesForCC (templateFolderName, dir, userDirectoryS
 async function generateStaticFilesForMVC (templateFolderName, dir, userDirectoryStructure) {
   writeOperations.copyTemplateMulti(`${templateFolderName}/utils`, `${dir}${userDirectoryStructure.utilsFolderPath}`, '*.js');
   writeOperations.copyTemplate(`${templateFolderName}/views/index.ejs`, `${dir}${userDirectoryStructure.viewsFolderPath}/index.ejs`);
+
+  // create response folder
+  writeOperations.mkdir(dir, `${userDirectoryStructure.utilsFolderPath}/response`);
+  writeOperations.copyTemplateMulti(`${templateFolderName}/utils/response/`, `${dir}${userDirectoryStructure.utilsFolderPath}/response`, '*.js');
 }
 async function generateStaticFilesForMVCSequelize (templateFolderName, dir, userDirectoryStructure) {
   writeOperations.copyTemplateMulti(`${templateFolderName}/utils`, `${dir}${userDirectoryStructure.utilsFolderPath}`, '*.js');

@@ -73,7 +73,7 @@ const upload = async (req,res) =>{
       });
     } else {
       let responseMessage = 'Failed to upload files.';
-      return message.invalidRequest({
+      return message.failure({
         message: message,
         data: uploadFileRes
       });
@@ -83,7 +83,7 @@ const upload = async (req,res) =>{
      if (error.name && error.name == 'validationError') {
       return message.validationError({ message: error.message });
     } else {
-      return message.failureResponse();
+      return message.internalServerError();
     }
   }
 };
@@ -135,16 +135,16 @@ const generatePreSignedURL = async (req) => {
         if(result.status){
           return message.successResponse({data:result.path});
         } else {
-          return message.invalidRequest({message :result.err});
+          return message.failure({message :result.err});
         }
       } catch (err) {
-        return message.invalidRequest({ message: `${uri} is not a valid S3 uri` });
+        return message.failure({ message: `${uri} is not a valid S3 uri` });
       }
     } else {
       return message.badRequest();
     }
   } catch(error){
-    return message.failureResponse();
+    return message.internalServerError();
   }
 }
 <%_}_%>
@@ -319,7 +319,7 @@ const upload = async (req) => {
       });
     } else {
       let responseMessage = 'Failed to upload files.';
-      return message.invalidRequest({
+      return message.failure({
         message: message,
         data: uploadFileRes
       });
@@ -329,7 +329,7 @@ const upload = async (req) => {
     if (error.name && error.name == 'validationError') {
       return message.validationError({ message: error.message });
     } else {
-      return message.failureResponse();
+      return message.internalServerError();
     }
   }
 };

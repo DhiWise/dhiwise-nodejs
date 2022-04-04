@@ -44,9 +44,9 @@ router.route('/<%-ROUTE_PREFIX%>/list').post(<%_ if(SUPPORT_API[i].policy.length
 <%_ } _%><%_ } _%>
 <%_ if(SUPPORT_API[i].method=="findById"){ _%>
 <%_ if(SUPPORT_API[i].isAuth){ _%>
-router.route('/<%-ROUTE_PREFIX%>/:id').get(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>ById);
+router.route('/<%-ROUTE_PREFIX%>/:id').get(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>);
 <%_ }else{ _%>
-router.route('/<%-ROUTE_PREFIX%>/:id').get(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>ById);
+router.route('/<%-ROUTE_PREFIX%>/:id').get(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>);
 <%_ } _%><%_ } _%>
 <%_ if(SUPPORT_API[i].method=="count"){ _%>
 <%_ if(SUPPORT_API[i].isAuth){  _%>

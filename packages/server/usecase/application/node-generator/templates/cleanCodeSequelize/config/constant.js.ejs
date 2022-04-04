@@ -6,13 +6,8 @@ const JWT={
 }
 
 const USER_ROLE ={
-    <%_ let index_role = 0; _%>
-    <%_ if( USER_ROLE.includes('admin') || USER_ROLE.includes('Admin')) {_%>
-        <%_ USER_ROLE = USER_ROLE.filter(e=>e!=='admin'&&e!=='Admin') _%>
-        Admin :<%= index_role+=1 %>,
-    <%_ } _%>    
     <%_ USER_ROLE.forEach(function (role,index) { _%>
-        <%- role %>:<%- index_role+=1 %>,
+        <%- role %>:<%- index+=1 %>,
     <%_ }); _%>
 }
 
