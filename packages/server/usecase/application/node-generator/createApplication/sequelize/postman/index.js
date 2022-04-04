@@ -1083,7 +1083,7 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 let responseJsonData = {
                     "status": "SUCCESS",
                     "message": "Your request is successfully executed",
-                    "data": [bodyRawData]
+                    "data": 1
                 };
                 responseJsonData = JSON.stringify(responseJsonData, undefined, 2)
                 responseObject.body = responseJsonData;
