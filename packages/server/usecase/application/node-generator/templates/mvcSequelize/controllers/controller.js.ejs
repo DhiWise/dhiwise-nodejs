@@ -44,7 +44,7 @@ const add<%-DB_MODEL_FC%> = async(req, res) => {
             <%-DB_MODEL %>SchemaKey.schemaKeys
         );
         if (!validateRequest.isValid) {
-            return res.inValidParam({message : `Invalid values in parameters, ${validateRequest.message}`});
+            return res.validationError({message : `Invalid values in parameters, ${validateRequest.message}`});
         } 
         delete req.body["addedBy"]
         delete req.body["updatedBy"]  
@@ -58,9 +58,9 @@ const add<%-DB_MODEL_FC%> = async(req, res) => {
         <%_if(SUPPORT_API[i].fieldSelection){_%>
         result = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result);
         <%_}_%>
-        return res.ok({data:result});
+        return res.success({data:result});
     } catch (error) {
-        return res.failureResponse(); 
+        return res.internalServerError(); 
     }
 }
 <%_ } _%>
@@ -86,12 +86,12 @@ const bulkInsert<%-DB_MODEL_FC %> = async(req, res)=>{
             return item
         })        
         let result =await dbService.createMany(<%-DB_MODEL_FC %>,data);
-        return res.ok({data:result});
+        return res.success({data:result});
         }else{
             return res.badRequest()
         }  
     }catch(error){
-        return res.failureResponse();
+        return res.internalServerError();
     }
 }
 <%_ } _%>
@@ -118,7 +118,7 @@ const update<%-DB_MODEL_FC%> = async(req, res) => {
             <%-DB_MODEL%>SchemaKey.schemaKeys
         );
         if (!validateRequest.isValid) {
-            return res.inValidParam({message :  `Invalid values in parameters, ${validateRequest.message}`});
+            return res.validationError({message :  `Invalid values in parameters, ${validateRequest.message}`});
         }
         let query = {id:req.params.id}
         <%_ 
@@ -138,10 +138,10 @@ const update<%-DB_MODEL_FC%> = async(req, res) => {
         <%_if(SUPPORT_API[i].fieldSelection){_%>
         result = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result);
         <%_}_%>
-        return res.ok({data:result});
+        return res.success({data:result});
     }
     catch(error){
-        return res.failureResponse();
+        return res.internalServerError();
     }
 }
 <%_ } _%>
@@ -176,14 +176,14 @@ const bulkUpdate<%-DB_MODEL_FC%>=async(req, res)=>{
             if(!result){
                 return res.recordNotFound()
             }
-            return res.ok({data:result});
+            return res.success({data:result});
         }
         else{
-            return res.failureResponse()
+            return res.internalServerError()
         }
     }
     catch(error){
-        return res.failureResponse(); 
+        return res.internalServerError(); 
     }
 }
 <%_ } _%>
@@ -210,7 +210,7 @@ const partialUpdate<%-DB_MODEL_FC%> = async (req, res) => {
             <%-DB_MODEL%>SchemaKey.updateSchemaKeys
         );
         if (!validateRequest.isValid) {
-            return res.inValidParam({message : `Invalid values in parameters, ${validateRequest.message}`});
+            return res.validationError({message : `Invalid values in parameters, ${validateRequest.message}`});
         }
         let query = {id:req.params.id}
         let result = await dbService.updateMany(<%-DB_MODEL_FC%>, query, data);
@@ -222,10 +222,10 @@ const partialUpdate<%-DB_MODEL_FC%> = async (req, res) => {
         select.attributes = <%=SUPPORT_API[i].fields%>
         result = await dbService.findByPk(<%-DB_MODEL_FC%>,req.params.id,select);
         <%_}_%>
-        return res.ok({data:result});
+        return res.success({data:result});
     }
     catch(error){
-        return res.failureResponse()
+        return res.internalServerError()
     }
 }
 <%_ } _%>
@@ -269,7 +269,7 @@ const findAll<%-DB_MODEL_FC%> = async(req, res) => {
             _%>
             result = await dbService.count(<%-DB_MODEL_FC%>, query);
             result = {totalRecords: result};
-            return res.ok({data:result});
+            return res.success({data:result});
         }
         else {
             if (req.body && req.body.options !== undefined) {
@@ -333,11 +333,11 @@ const findAll<%-DB_MODEL_FC%> = async(req, res) => {
             if(!result){
                 return res.recordNotFound();
             }
-            return res.ok({data:result});   
+            return res.success({data:result});   
         }
     }
     catch(error){
-        return res.failureResponse();
+        return res.internalServerError();
     }
 }
 
@@ -369,12 +369,12 @@ const get<%-DB_MODEL_FC%> = async(req, res) => {
         _%>
         let result = await dbService.findByPk(<%-DB_MODEL_FC%>,id,query);
         if(result){    
-            return res.ok({data:result});
+            return res.success({data:result});
         }
         return res.recordNotFound();
     }
     catch(error){
-        return res.failureResponse()
+        return res.internalServerError()
     }
 }
 <%_ } _%>
@@ -405,10 +405,10 @@ const get<%-DB_MODEL_FC%>Count = async(req, res) => {
         _%>
         let result = await dbService.count(<%-DB_MODEL_FC%>,where);
         result = {totalRecords: result}
-        return res.ok({data:result});
+        return res.success({data:result});
     }
     catch(error){
-        return res.failureResponse();
+        return res.internalServerError();
     }
 }
 <%_ } _%>
@@ -439,7 +439,7 @@ const delete<%-DB_MODEL_FC%> =async(req, res) => {
             _%>
             let result = await deleteDependentService.count<%-DB_MODEL_FC%>(query);
             if(result){
-                return res.ok({data:result});
+                return res.success({data:result});
             }
             return res.recordNotFound();
         } else {
@@ -462,11 +462,11 @@ const delete<%-DB_MODEL_FC%> =async(req, res) => {
             <%_if(SUPPORT_API[i].fieldSelection){_%>
             result = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result);
             <%_}_%>
-            return res.ok({data:result});  
+            return res.success({data:result});  
         }
     }
     catch(error){
-        return res.failureResponse(); 
+        return res.internalServerError(); 
     }
 }
 <%_} else {_%>
@@ -491,12 +491,12 @@ const delete<%-DB_MODEL_FC%> =async(req, res) => {
         _%>  
         const result = await dbService.deleteByPk(<%-DB_MODEL_FC%>,req.params.id);
         if(result){
-            return res.ok({data:result});
+            return res.success({data:result});
         }
         return res.recordNotFound();
     }
     catch(error){
-        return res.failureResponse();
+        return res.internalServerError();
     }
 }
 <%_}_%>
@@ -523,12 +523,12 @@ const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
             else{
                 result = await deleteDependentService.delete<%-DB_MODEL_FC%>(query);
             }
-            return res.ok({data:result});
+            return res.success({data:result});
         }
         return res.badRequest(); 
     }
     catch(error){
-        return res.failureResponse(); 
+        return res.internalServerError(); 
     }
 }
 <%_} else {_%>
@@ -546,10 +546,10 @@ const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
         }
         let query = {id:{[Op.in]:ids}}
         let result = await dbService.deleteMany(<%-DB_MODEL_FC%>,query);
-        return res.ok({data:result});
+        return res.success({data:result});
     }
     catch(error){
-        return res.failureResponse(); 
+        return res.internalServerError(); 
     }
 }
 <%_ } _%>
@@ -592,9 +592,9 @@ const softDelete<%-DB_MODEL_FC%> = async (req, res) => {
         if(!result){
             return res.recordNotFound();
         }
-        return  res.ok({data:result});
+        return res.success({data:result});
     }catch(error){
-        return res.failureResponse(); 
+        return res.internalServerError(); 
     }
 }
 <%_} else {_%>
@@ -623,9 +623,9 @@ const softDelete<%-DB_MODEL_FC%> = async (req, res) => {
         if(!result){
             return res.recordNotFound();
         }
-        return  res.ok({data:result});
+        return res.success({data:result});
     }catch(error){
-        return res.failureResponse(); 
+        return res.internalServerError(); 
     }
 }
 <%_}_%>
@@ -651,10 +651,10 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (req, res) => {
         if (!result) {
             return res.recordNotFound();
         }
-        return  res.ok({data:result});
+        return res.success({data:result});
         
     }catch(error){
-        return res.failureResponse(); 
+        return res.internalServerError(); 
     }
 }
 <%_} else {_%>
@@ -675,9 +675,9 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (req, res) => {
         if (!result) {
             return res.recordNotFound();
         }
-        return  res.ok({data:result});
+        return res.success({data:result});
     }catch(error){
-        return res.failureResponse(); 
+        return res.internalServerError(); 
     }
 }
 <%_}_%>
@@ -699,15 +699,15 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (req, res) => {
         try {
             let params = req.body;
             if (!params.newPassword || !params.oldPassword) {
-                return res.inValidParam();
+                return res.validationError();
             }
             let result = await auth.changePassword({...params,userId:req.user.id});
             if(result.flag){
-                return res.invalidRequest({message:result.data});
+                return res.failure({message:result.data});
             }
-            return res.requestValidated({message:result.data});
+            return res.success({message:result.data});
         } catch (error) {
-            return res.failureResponse();
+            return res.internalServerError();
         }
     }
     /**
@@ -726,7 +726,7 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (req, res) => {
                 <%-DB_MODEL %>SchemaKey.updateSchemaKeys
             );
             if (!validateRequest.isValid) {
-                return res.inValidParam({message : `Invalid values in parameters, ${validateRequest.message}`});
+                return res.validationError({message : `Invalid values in parameters, ${validateRequest.message}`});
             }   
             delete data.password;
             delete data.createdAt;
@@ -736,10 +736,10 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (req, res) => {
             if (!result){
                 return res.recordNotFound();
             }            
-            return  res.ok({data:result});
+            return res.success({data:result});
         }
         catch (error){
-            return res.failureResponse(error.message);
+            return res.internalServerError(error.message);
         }
     };
 <%_}_%>
@@ -766,10 +766,10 @@ const <%-v.functionName%>=async (req, res)=>{
             <%_}_%>
         <%_}_%>   
         <%_}_%>
-        return res.ok({data:combinedOutput});
+        return res.success({data:combinedOutput});
         <%_}_%>
     } catch (error) {
-        return res.failureResponse();
+        return res.internalServerError();
     }  
 }   
 <%_ })_%>
