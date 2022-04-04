@@ -9,9 +9,9 @@ const authConstant = require('../../constants/authConstant');
 
 /**
  * @description : create documents of document of <%-MODEL_NAME-%> in mongodb collection
- * @param {obj} <%-MODEL_NAME-%>Db : db service instance
- * @param {obj} params : {data: data to add}
- * @return {obj} : response of create. {status, message, data}
+ * @param {object} <%-MODEL_NAME-%>Db : db service instance
+ * @param {object} params : {data: data to add}
+ * @return {object} : response of create. {status, message, data}
  */
 const create = ({ <%-MODEL_NAME-%>Db,createValidation }) => async (params) => {
     let { data } = params;

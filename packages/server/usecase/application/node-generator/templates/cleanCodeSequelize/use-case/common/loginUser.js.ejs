@@ -13,7 +13,7 @@ const responseStatus = require('../../utils/response/responseStatus');
 <%_}_%>
 
 
-const loginUser = ({ <%-USER_MODEL-%>Db,userTokenDb<%_if(ROLE_PERMISSION){_%>,userRoleDb,routeRoleDb<%_}_%> })=> async(username,url,password = null <%_if(ROLE_PERMISSION){_%>,roleAccess<%_}_%>) => {
+const loginUser = ({ <%-USER_MODEL-%>Db,userTokensDb<%_if(ROLE_PERMISSION){_%>,userRoleDb,routeRoleDb<%_}_%> })=> async(username,url,password = null <%_if(ROLE_PERMISSION){_%>,roleAccess<%_}_%>) => {
 
     <%_ if(LOGIN_WITH.length>1){ _%>
         let where = <%-MULTIPLE_LOGIN%>
@@ -23,9 +23,9 @@ const loginUser = ({ <%-USER_MODEL-%>Db,userTokenDb<%_if(ROLE_PERMISSION){_%>,us
     let user = await <%-USER_MODEL-%>Db.findOne(where);
     if (user) {
         <%_if(MAX_DEVICE_ALLOWED){_%>
-            const userToken = await userTokenDb.count({ $and:[{ tokenExpiredTime: { $gt: dayjs().toISOString() }, },{ isTokenExpired: 0, },{ userId:user.id }] } );
+            const userToken = await userTokensDb.count({ $and:[{ tokenExpiredTime: { $gt: dayjs().toISOString() }, },{ isTokenExpired: 0, },{ userId:user.id }] } );
             if(userToken >= NO_OF_DEVICE_ALLOWED){
-                response.badRequest({message : "You've reached your device limit"});
+                response.badRequest({message : "You have reached your device limit"});
             }
         <%_}_%>
         <%_if(LOGIN_RETRY_LIMIT){_%>
@@ -98,7 +98,7 @@ const loginUser = ({ <%-USER_MODEL-%>Db,userTokenDb<%_if(ROLE_PERMISSION){_%>,us
             }
         <%_}_%>
         let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
-        await userTokenDb.create({ userId: user.id, token: token,tokenExpiredTime: expire });                  
+        await userTokensDb.create({ userId: user.id, token: token,tokenExpiredTime: expire });                  
         let userToReturn = { ...userData, ...{ token } };
         <%_if(ROLE_PERMISSION){_%>
             let roleAccessData = {};

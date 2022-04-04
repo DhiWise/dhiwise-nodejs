@@ -24,12 +24,12 @@ const customQueryService = require("../../services/customQueryService")
 
 <%_for(let i=0;i< SUPPORT_API.length;i++){_%>
 <%_ if(SUPPORT_API[i].method=="create") {_%>
-    <%_methods.push('add'+DB_MODEL_FC+',') _%> 
+    <%_methods.push('add'+DB_MODEL_FC) _%> 
 /**
 * @description : create document of <%-DB_MODEL_FC%> in mongodb collection.
-* @param {obj} req : request including body for creating document.
-* @param {obj} res : response of created document
-* @return {obj} : created <%-DB_MODEL_FC%>. {status, message, data}
+* @param {object} req : request including body for creating document.
+* @param {object} res : response of created document
+* @return {object} : created <%-DB_MODEL_FC%>. {status, message, data}
 */ 
 const add<%-DB_MODEL_FC%> = async(req, res) => {
     try {
@@ -61,12 +61,12 @@ const add<%-DB_MODEL_FC%> = async(req, res) => {
 
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="createBulk") {_%>
-    <%_methods.push('bulkInsert'+DB_MODEL_FC+',') _%>
+    <%_methods.push('bulkInsert'+DB_MODEL_FC) _%>
 /**
 * @description : create multiple documents of <%-DB_MODEL_FC%> in mongodb collection.
-* @param {obj} req : request including body for creating documents.
-* @param {obj} res : response of created documents.
-* @return {obj} : created <%-DB_MODEL_FC%>s. {status, message, data}
+* @param {object} req : request including body for creating documents.
+* @param {object} res : response of created documents.
+* @return {object} : created <%-DB_MODEL_FC%>s. {status, message, data}
 */
 const bulkInsert<%-DB_MODEL_FC %> = async(req,res)=>{
     try{
@@ -74,7 +74,7 @@ const bulkInsert<%-DB_MODEL_FC %> = async(req,res)=>{
         if(req.body.data !== undefined && req.body.data.length){
             data = req.body.data;
             <%_if(SUPPORT_API[i].isLogin){_%>
-            if(req.user.id){
+            if(req.user && req.user.id){
                 for(let i=0;i< data.length;i++){
                     data[i].<%-SUPPORT_API[i].addedBy%> = req.user.id
                 }
@@ -98,21 +98,21 @@ const bulkInsert<%-DB_MODEL_FC %> = async(req,res)=>{
 
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="update") {_%>
-    <%_methods.push('update'+DB_MODEL_FC+',') _%>
+    <%_methods.push('update'+DB_MODEL_FC) _%>
 /**
 * @description : update document of <%-DB_MODEL_FC%> with data by id.
-* @param {obj} req : request including id in request params and data in request body.
-* @param {obj} res : response of updated <%-DB_MODEL_FC%>.
-* @return {obj} : updated <%-DB_MODEL_FC%>. {status, message, data}
+* @param {object} req : request including id in request params and data in request body.
+* @param {object} res : response of updated <%-DB_MODEL_FC%>.
+* @return {object} : updated <%-DB_MODEL_FC%>. {status, message, data}
 */
 const update<%-DB_MODEL_FC%> = async(req,res) => {
     try {
         delete req.body["addedBy"]
         delete req.body["updatedBy"]
         let data = {
-            ...req.body
+            ...req.body,
             <%_if(SUPPORT_API[i].isLogin){_%>
-                ,updatedBy:req.user.id
+            updatedBy:req.user.id
             <%_}_%>
         }
         let validateRequest = validation.validateParamsWithJoi(
@@ -122,21 +122,7 @@ const update<%-DB_MODEL_FC%> = async(req,res) => {
         if (!validateRequest.isValid) {
             return res.inValidParam({message :  `Invalid values in parameters, ${validateRequest.message}`});
         }
-        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-        let query = {}
-        if (req.user){
-            query = {
-                "_id": {
-                    "$eq": req.params.id,
-                    "$ne": req.user.id
-                }
-            }
-        }else{
-            return res.badRequest();
-        }
-        <%_}else{_%>
         let query = {_id:req.params.id}
-        <%_}_%>
         <%_         
         let nestedCalls={}
         if(SUPPORT_API[i].IS_NESTED_CALL){
@@ -170,12 +156,12 @@ const update<%-DB_MODEL_FC%> = async(req,res) => {
 
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="bulkUpdate") {_%>
-    <%_methods.push('bulkUpdate'+DB_MODEL_FC+',') _%>
+    <%_methods.push('bulkUpdate'+DB_MODEL_FC) _%>
 /**
 * @description : update multiple records of <%-DB_MODEL_FC%> with data by filter.
-* @param {obj} req : request including filter and data in request body.
-* @param {obj} res : response of updated <%-DB_MODEL_FC%>s.
-* @return {obj} : updated <%-DB_MODEL_FC%>s. {status, message, data}
+* @param {object} req : request including filter and data in request body.
+* @param {object} res : response of updated <%-DB_MODEL_FC%>s.
+* @return {object} : updated <%-DB_MODEL_FC%>s. {status, message, data}
 */
 const bulkUpdate<%-DB_MODEL_FC%>=async(req,res)=>{
     try {
@@ -219,12 +205,12 @@ const bulkUpdate<%-DB_MODEL_FC%>=async(req,res)=>{
 
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="partialUpdate") {_%>
-    <%_methods.push('partialUpdate'+DB_MODEL_FC+',') _%>
+    <%_methods.push('partialUpdate'+DB_MODEL_FC) _%>
 /**
 * @description : partially update document of <%-DB_MODEL_FC%> with data by id;
-* @param {obj} req : request including id in request params and data in request body.
-* @param {obj} res : response of updated <%-DB_MODEL_FC%>.
-* @return {obj} : updated <%-DB_MODEL_FC%>. {status, message, data}
+* @param {object} req : request including id in request params and data in request body.
+* @param {object} res : response of updated <%-DB_MODEL_FC%>.
+* @return {object} : updated <%-DB_MODEL_FC%>. {status, message, data}
 */
 const partialUpdate<%-DB_MODEL_FC%> = async(req,res) => {
     try {
@@ -240,21 +226,7 @@ const partialUpdate<%-DB_MODEL_FC%> = async(req,res) => {
         if (!validateRequest.isValid) {
             return res.inValidParam({message : `Invalid values in parameters, ${validateRequest.message}`});
         }
-        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-        let query = {}
-        if (req.user){
-            query = {
-                "_id": {
-                    "$eq": req.params.id,
-                    "$ne": req.user.id
-                }
-            }
-        }else{
-            return res.badRequest();
-        } 
-        <%_}else{_%>
         let query = {_id:req.params.id}
-        <%_}_%>
         let result = await dbService.findOneAndUpdateDocument(<%-DB_MODEL_FC%>, query, data,{new:true});
         if (!result) {
             return res.recordNotFound();
@@ -272,12 +244,12 @@ const partialUpdate<%-DB_MODEL_FC%> = async(req,res) => {
 
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="findAll") {_%>
-    <%_methods.push('findAll'+DB_MODEL_FC+',') _%>
+    <%_methods.push('findAll'+DB_MODEL_FC) _%>
 /**
 * @description : find all documents of <%-DB_MODEL_FC%> from collection based on query and options.
-* @param {obj} req : request including option and query. {query, options : {page, limit, pagination, populate}, isCountOnly}
-* @param {obj} res : response contains data found from collection.
-* @return {obj} : found <%-DB_MODEL_FC%>(s). {status, message, data}
+* @param {object} req : request including option and query. {query, options : {page, limit, pagination, populate}, isCountOnly}
+* @param {object} res : response contains data found from collection.
+* @return {object} : found <%-DB_MODEL_FC%>(s). {status, message, data}
 */
 const findAll<%-DB_MODEL_FC%> = async(req,res) => {
     try {
@@ -287,19 +259,6 @@ const findAll<%-DB_MODEL_FC%> = async(req,res) => {
         if (req.body.query !== undefined) {
             query = { ...req.body.query }
         }
-        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-        if (req.user){
-            query = {
-                ...query,
-                ...{ '_id': { $ne: req.user.id } } 
-            };
-            if (req.body.query && req.body.query._id) {
-                Object.assign(query._id, { $in: [req.body.query._id] })
-            }
-        }else{
-            return res.badRequest();
-        }
-        <%_}_%>
         if(req.body.isCountOnly){
             <%_         
             nestedCalls={}
@@ -377,12 +336,12 @@ const findAll<%-DB_MODEL_FC%> = async(req,res) => {
 
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="findById") {_%>
-    <%_methods.push('get'+DB_MODEL_FC+',') _%>
+    <%_methods.push('get'+DB_MODEL_FC) _%>
 /**
 * @description : find document of <%-DB_MODEL_FC%> from table by id;
-* @param {obj} req : request including id in request params.
-* @param {obj} res : response contains document retrieved from table.
-* @return {obj} : found <%-DB_MODEL_FC%>. {status, message, data}
+* @param {object} req : request including id in request params.
+* @param {object} res : response contains document retrieved from table.
+* @return {object} : found <%-DB_MODEL_FC%>. {status, message, data}
 */
 const get<%-DB_MODEL_FC%> = async(req,res) => {
     try {
@@ -436,9 +395,9 @@ const get<%-DB_MODEL_FC%> = async(req,res) => {
     <%_methods.push('get'+DB_MODEL_FC+'Count,') _%>
 /**
 * @description : returns total number of documents of <%-DB_MODEL_FC%>.
-* @param {obj} req : request including where object to apply filters in req body 
-* @param {obj} res : response that returns total number of documents.
-* @return {obj} : number of documents. {status, message, data}
+* @param {object} req : request including where object to apply filters in req body 
+* @param {object} res : response that returns total number of documents.
+* @return {object} : number of documents. {status, message, data}
 */
 const get<%-DB_MODEL_FC%>Count = async(req,res) => {
     try {
@@ -467,33 +426,18 @@ const get<%-DB_MODEL_FC%>Count = async(req,res) => {
 
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="delete") {_%>
-    <%_methods.push('delete'+DB_MODEL_FC+',') _%>
+    <%_methods.push('delete'+DB_MODEL_FC) _%>
     <%_ if(DELETE_DEPENDENT_MODEL){_%>
 /**
 * @description : delete document of <%-DB_MODEL_FC%> from table.
-* @param {obj} req : request including id as req param.
-* @param {obj} res : response contains deleted document.
-* @return {obj} : deleted <%-DB_MODEL_FC%>. {status, message, data}
+* @param {object} req : request including id as req param.
+* @param {object} res : response contains deleted document.
+* @return {object} : deleted <%-DB_MODEL_FC%>. {status, message, data}
 */
 const delete<%-DB_MODEL_FC%> =async(req,res) => {
     try{
         if(req.params.id){
-        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-        let query = {}
-        if (req.user){
-            query = {
-                "_id": {
-                    "$eq": req.params.id,
-                    "$ne": req.user.id
-                }
-            }
-        } 
-        else{
-            return res.badRequest();
-        } 
-        <%_}else{_%>
         let query = {_id:req.params.id}
-        <%_}_%>
         if (req.body.isWarning) {
             <%_
                 nestedCalls={}
@@ -540,43 +484,29 @@ const delete<%-DB_MODEL_FC%> =async(req,res) => {
 <%_} else {_%>
 /**
 * @description : delete document of <%-DB_MODEL_FC%> from table.
-* @param {obj} req : request including id as req param.
-* @param {obj} res : response contains deleted document.
-* @return {obj} : deleted <%-DB_MODEL_FC%>. {status, message, data}
+* @param {object} req : request including id as req param.
+* @param {object} res : response contains deleted document.
+* @return {object} : deleted <%-DB_MODEL_FC%>. {status, message, data}
 */
 const delete<%-DB_MODEL_FC%> =async(req,res) => {
     try {
-        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            if (req.user){
-                let query = {
-                    "_id": {
-                        "$eq": req.params.id,
-                        "$ne": req.user.id
-                    }
+        let query = {_id:req.params.id}
+        <%_
+            nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){  
+            nestedCalls = SUPPORT_API[i].NESTED_CALLS
+            if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>              
+                    <%_}}
                 }
-            } 
-            else{
-                return res.badRequest();
-            } 
-            <%_}else{_%>
-            let query = {_id:req.params.id}
-            <%_}_%>
-            <%_
-                nestedCalls={}
-                if(SUPPORT_API[i].IS_NESTED_CALL){  
-                nestedCalls = SUPPORT_API[i].NESTED_CALLS
-                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
-                        for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                            <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>              
-                        <%_}}
-                    }
-                }
-             _%>
-            const result = await dbService.findOneAndDeleteDocument(<%-DB_MODEL_FC%>, query);
-            if(result){
-                return res.ok({data:result});
             }
-            return res.recordNotFound();
+            _%>
+        const result = await dbService.findOneAndDeleteDocument(<%-DB_MODEL_FC%>, query);
+        if(result){
+            return res.ok({data:result});
+        }
+        return res.recordNotFound();
     }
     catch(error){
         return res.failureResponse();
@@ -586,13 +516,13 @@ const delete<%-DB_MODEL_FC%> =async(req,res) => {
 <%_}_%>
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="deleteMany") {_%>
-    <%_methods.push('deleteMany'+DB_MODEL_FC+',') _%>
+    <%_methods.push('deleteMany'+DB_MODEL_FC) _%>
     <%_ if(DELETE_DEPENDENT_MODEL){_%>
 /**
 * @description : delete documents of <%-DB_MODEL_FC%> in table by using ids.
-* @param {obj} req : request including array of ids in request body.
-* @param {obj} res : response contains no of documents deleted.
-* @return {obj} : no of documents deleted. {status, message, data}
+* @param {object} req : request including array of ids in request body.
+* @param {object} res : response contains no of documents deleted.
+* @return {object} : no of documents deleted. {status, message, data}
 */
 const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
     try{
@@ -600,22 +530,7 @@ const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
         if(!ids || !Array.isArray(ids) || ids.length < 1){
             return res.badRequest();
         }
-        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-        let query = {}
-        if (req.user){
-            query = {
-                "_id": {
-                    "$in": ids,
-                    "$ne": req.user.id
-                }
-            }
-        } 
-        else{
-            return res.badRequest();
-        } 
-        <%_}else{_%>
         let query = {_id:{"$in":ids}}
-        <%_}_%>
         if (req.body.isWarning) {
             let result = await deleteDependentService.count<%-DB_MODEL_FC%>(query);
             if(result){
@@ -638,9 +553,9 @@ const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
 <%_} else {_%>
 /**
 * @description : delete documents of <%-DB_MODEL_FC%> in table by using ids.
-* @param {obj} req : request including array of ids in request body.
-* @param {obj} res : response contains no of documents deleted.
-* @return {obj} : no of documents deleted. {status, message, data}
+* @param {object} req : request including array of ids in request body.
+* @param {object} res : response contains no of documents deleted.
+* @return {object} : no of documents deleted. {status, message, data}
 */
 const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
     try{
@@ -648,19 +563,7 @@ const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
         if(!ids || !Array.isArray(ids) || ids.length < 1){
             return res.badRequest(); 
         }
-        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-        let query = {}
-        if (req.user){
-            query = {
-                "_id": {
-                    "$in": ids,
-                    "$ne": req.user.id
-                }
-            }
-        } 
-        <%_}else{_%>
         let query = {"_id":{"$in":ids}}
-        <%_}_%>
         let result = await dbService.deleteMany(<%-DB_MODEL_FC%>,query);
         if(result){
             return res.ok({data:result}); 
@@ -675,29 +578,17 @@ const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
 <%_}_%>
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="softDelete") {_%>
-    <%_methods.push('softDelete'+DB_MODEL_FC+',') _%>
+    <%_methods.push('softDelete'+DB_MODEL_FC) _%>
     <%_ if(DELETE_DEPENDENT_MODEL){_%>
 /**
 * @description : deactivate document of <%-DB_MODEL_FC%> from table by id;
-* @param {obj} req : request including id in request params.
-* @param {obj} res : response contains updated document of <%-DB_MODEL_FC%>.
-* @return {obj} : deactivated <%-DB_MODEL_FC%>. {status, message, data}
+* @param {object} req : request including id in request params.
+* @param {object} res : response contains updated document of <%-DB_MODEL_FC%>.
+* @return {object} : deactivated <%-DB_MODEL_FC%>. {status, message, data}
 */
 const softDelete<%-DB_MODEL_FC%> = async(req,res) => {
     try{
-        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-        let query = {}
-        if (req.user){
-            query = {
-                "_id": {
-                    "$eq": req.params.id,
-                    "$ne": req.user.id
-                }
-            }
-        } 
-        <%_}else{_%>
         let query = {_id:req.params.id}
-        <%_}_%>
         <%_
         nestedCalls={}
         if(SUPPORT_API[i].IS_NESTED_CALL){  
@@ -721,25 +612,13 @@ const softDelete<%-DB_MODEL_FC%> = async(req,res) => {
 <%_} else {_%>
 /**
 * @description : deactivate document of <%-DB_MODEL_FC%> from table by id;
-* @param {obj} req : request including id in request params.
-* @param {obj} res : response contains updated document of <%-DB_MODEL_FC%>.
-* @return {obj} : deactivated <%-DB_MODEL_FC%>. {status, message, data}
+* @param {object} req : request including id in request params.
+* @param {object} res : response contains updated document of <%-DB_MODEL_FC%>.
+* @return {object} : deactivated <%-DB_MODEL_FC%>. {status, message, data}
 */
 const softDelete<%-DB_MODEL_FC%> = async(req,res) => {
     try{
-        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-        let query = {}
-        if (req.user){
-            query = {
-                "_id": {
-                    "$eq": req.params.id,
-                    "$ne": req.user.id
-                }
-            }
-        } 
-        <%_}else{_%>
         let query = {_id:req.params.id}
-        <%_}_%>
         <%_
         nestedCalls={}
         if(SUPPORT_API[i].IS_NESTED_CALL){  
@@ -764,13 +643,13 @@ const softDelete<%-DB_MODEL_FC%> = async(req,res) => {
 <%_}_%>
 <%_}_%>
 <%_ if(SUPPORT_API[i].method=="softDeleteMany") {_%>
-    <%_methods.push('softDeleteMany'+DB_MODEL_FC+',') _%>
+    <%_methods.push('softDeleteMany'+DB_MODEL_FC) _%>
     <%_ if(DELETE_DEPENDENT_MODEL){_%>
 /**
 * @description : deactivate multiple documents of <%-DB_MODEL_FC%> from table by ids;
-* @param {obj} req : request including array of ids in request body.
-* @param {obj} res : response contains updated documents of <%-DB_MODEL_FC%>.
-* @return {obj} : number of deactivated documents of <%-DB_MODEL_FC%>. {status, message, data}
+* @param {object} req : request including array of ids in request body.
+* @param {object} res : response contains updated documents of <%-DB_MODEL_FC%>.
+* @return {object} : number of deactivated documents of <%-DB_MODEL_FC%>. {status, message, data}
 */
 const softDeleteMany<%-DB_MODEL_FC%> = async(req,res) => {
     try{
@@ -778,19 +657,7 @@ const softDeleteMany<%-DB_MODEL_FC%> = async(req,res) => {
         if(!ids || !Array.isArray(ids) || ids.length < 1){
             return res.badRequest();
         }
-        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-        let query = {}
-        if (req.user){
-            query = {
-                "_id": {
-                    "$in": ids,
-                    "$ne": req.user.id
-                }
-            }
-        } 
-        <%_}else{_%>
         let query = {_id:{$in:ids}}
-        <%_}_%>
         let result = await deleteDependentService.softDelete<%-DB_MODEL_FC%>(query<%_if(SUPPORT_API[i].isLogin){_%>,req.user<%_}_%>);
         if (!result) {
             return res.recordNotFound();
@@ -803,9 +670,9 @@ const softDeleteMany<%-DB_MODEL_FC%> = async(req,res) => {
 <%_} else {_%>
 /**
 * @description : deactivate multiple documents of <%-DB_MODEL_FC%> from table by ids;
-* @param {obj} req : request including array of ids in request body.
-* @param {obj} res : response contains updated documents of <%-DB_MODEL_FC%>.
-* @return {obj} : number of deactivated documents of <%-DB_MODEL_FC%>. {status, message, data}
+* @param {object} req : request including array of ids in request body.
+* @param {object} res : response contains updated documents of <%-DB_MODEL_FC%>.
+* @return {object} : number of deactivated documents of <%-DB_MODEL_FC%>. {status, message, data}
 */
 const softDeleteMany<%-DB_MODEL_FC%> = async(req,res) => {
     try{
@@ -813,19 +680,7 @@ const softDeleteMany<%-DB_MODEL_FC%> = async(req,res) => {
         if(!ids || !Array.isArray(ids) || ids.length < 1){
             return res.badRequest();
         }
-        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-        let query = {}
-        if (req.user){
-            query = {
-                "_id": {
-                    "$in": ids,
-                    "$ne": req.user.id
-                }
-            }
-        } 
-        <%_}else{_%>
         let query = {_id:{$in:ids}}
-        <%_}_%>
         let data = await dbService.bulkUpdate(<%-DB_MODEL_FC%>,query, { isDeleted: true<%_if(SUPPORT_API[i].isLogin){_%>,updatedBy:req.user.id<%_}_%> });
         if (!data) {
             return res.recordNotFound();
@@ -841,20 +696,17 @@ const softDeleteMany<%-DB_MODEL_FC%> = async(req,res) => {
 <%_}_%>
 <%_}_%>
 <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){
-    methods.push('changePassword,')
-    methods.push('updateProfile,')%>
+    methods.push('changePassword')
+    methods.push('updateProfile')%>
     /**
     * @description : change password
-    * @param {obj} req : request including user credentials.
-    * @param {obj} res : response contains updated user document.
-    * @return {obj} : updated user document {status, message, data}
+    * @param {object} req : request including user credentials.
+    * @param {object} res : response contains updated user document.
+    * @return {object} : updated user document {status, message, data}
     */
     const changePassword = async(req, res) => {
         try {
             let params = req.body;
-            if(!req.user.id){
-                return res.badRequest();
-            }
             if (!params.newPassword || !params.oldPassword) {
                 return res.inValidParam({message:'Please Provide new Password and Old password'});
             }
@@ -870,15 +722,12 @@ const softDeleteMany<%-DB_MODEL_FC%> = async(req,res) => {
 
 /**
 * @description : update user profile.
-* @param {obj} req : request including user profile details to update in request body.
-* @param {obj} res : updated user document.
-* @return {obj} : updated user document. {status, message, data}
+* @param {object} req : request including user profile details to update in request body.
+* @param {object} res : updated user document.
+* @return {object} : updated user document. {status, message, data}
 */
 const updateProfile = async(req, res) => {
     try {
-        if(!req.body || !req.user.id){
-            return res.badRequest();
-        }
         let data = {
             ...req.body
         };
@@ -913,13 +762,13 @@ const updateProfile = async(req, res) => {
 
 <%_if(CUSTOM_ROUTES){_%>
 <%_ CUSTOM_ROUTES.forEach((v,i)=>{
-    methods.push(v.functionName+',')
+    methods.push(v.functionName)
 _%>
 /**
 * @description : <%-v.functionName%> 
-* @param {obj} req : request
-* @param {obj} res : response 
-* @return {obj} : response of <%-v.functionName%> {status, message, data}
+* @param {object} req : request
+* @param {object} res : response 
+* @return {object} : response of <%-v.functionName%> {status, message, data}
 */
 const <%-v.functionName%>=async(req,res)=>{
     try {
@@ -944,7 +793,5 @@ const <%-v.functionName%>=async(req,res)=>{
 
 
 module.exports = {
-    <%_methods.forEach(v=> {_%>
-    <%-v%>
-    <%_})_%>
+    <%-methods.join()%>
 }

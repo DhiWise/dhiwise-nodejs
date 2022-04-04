@@ -48,7 +48,7 @@ IconBox.propTypes = {
   /**
      * Additional Icon
      */
-  icon: PropTypes.objectOf(PropTypes.any),
+  // icon: PropTypes.objectOf(PropTypes.any),
   /**
      * Additional icon true false
      */
@@ -65,7 +65,7 @@ IconBox.propTypes = {
 
 IconBox.defaultProps = {
   variant: 'primary',
-  icon: null,
+  // icon: null,
   size: 'normal',
   // iconSize: 'normal',
   className: '',

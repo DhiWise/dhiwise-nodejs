@@ -24,7 +24,7 @@ const ejs = require("ejs");
 
 /**
 * @description : service to generate JWT token for authentication.
-* @param {obj} user : user who wants to login.
+* @param {object} user : user who wants to login.
 * @param {string} secret : secret for JWT.
 * @return {string}  : returns JWT token.
 */
@@ -34,19 +34,17 @@ async function generateToken(user,secret){
     });
 }
 
-let auth =  module.exports = {}
-
 /**
 * @description : service of login user.
 * @param {string} username : username of user.
 * @param {string} password : password of user.
 * @param {string} url : url of requested route to login, for platform identification.
 <%_if(ROLE_PERMISSION) {_%>
-* @param {boolean} roleAccess: a flag to request user's role access
+* @param {boolean} roleAccess: a flag to request role access of user
 <%_}_%>
-* @return {obj} : returns authentication status. {flag, data}
+* @return {object} : returns authentication status. {flag, data}
 */
-    auth.loginUser = async(username,password,url<%_if(ROLE_PERMISSION){_%>,roleAccess<%_}_%>) => {
+    const loginUser = async(username,password,url<%_if(ROLE_PERMISSION){_%>,roleAccess<%_}_%>) => {
             try {
                 <%_ if(LOGIN_WITH.length>1){ _%>
                 let where = <%-MULTIPLE_LOGIN%>
@@ -57,11 +55,11 @@ let auth =  module.exports = {}
                 if (user) {
                     let userAuth = await dbService.findOne(model.userAuthSettings, { userId: user.id });
                     <%_if(MAX_DEVICE_ALLOWED){_%>
-                        const userToken = await dbService.count(model.userToken, { [Op.and]:{ tokenExpiredTime: { [Op.gt]: dayjs().toISOString() }, isTokenExpired: 0,userId:user.id} } );
+                        const userToken = await dbService.count(model.userTokens, { [Op.and]:{ tokenExpiredTime: { [Op.gt]: dayjs().toISOString() }, isTokenExpired: 0,userId:user.id} } );
                         if(userToken >= NO_OF_DEVICE_ALLOWED){
                             return {
                                 flag: true,
-                                data: "You've reached your device limit"
+                                data: "You have reached your device limit"
                             }
                         }
                     <%_}_%>
@@ -140,7 +138,7 @@ let auth =  module.exports = {}
                         }
                         <%_}_%>
                         let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
-                        await dbService.createOne(model.userToken, { userId: user.id, token: token,tokenExpiredTime: expire });
+                        await dbService.createOne(model.userTokens, { userId: user.id, token: token,tokenExpiredTime: expire });
                         let userToReturn = { ...userData, ...{ token } };
                         <%_if(ROLE_PERMISSION){_%>
                             let roleAccessData = {};
@@ -169,10 +167,10 @@ let auth =  module.exports = {}
 
 /**
 * @description : service to change password.
-* @param {obj} params : object of new password, old password and user's id.
-* @return {obj}  : returns status of change password. {flag,data}
+* @param {object} params : object of new password, old password and user id.
+* @return {object}  : returns status of change password. {flag,data}
 */
-    auth.changePassword = async(params)=>{
+    const changePassword = async(params)=>{
         try {
             let password = params.newPassword;
             let oldPassword = params.oldPassword;
@@ -198,17 +196,17 @@ let auth =  module.exports = {}
 
 /**
 * @description : service to send notification on reset password.
-* @param {obj} user : user document
+* @param {object} user : user document
 * @return {}  : returns status where notification is sent or not
 */
-    auth.sendResetPasswordNotification = async (user) => {
+    const sendResetPasswordNotification = async (user) => {
         let resultOfEmail=false;
         let resultOfSMS=false;
         try {
             <%_if(FORGOT_WITH_LINK){_%>
             let token = uuid();
             let expires = dayjs();
-            expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRETIME, "minute").toISOString();
+            expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRE_TIME, "minute").toISOString();
             await dbService.updateMany(model.userAuthSettings, {userId:user.id},
             {
                 resetPasswordCode: token, expiredTimeOfResetPasswordCode: expires
@@ -299,7 +297,7 @@ let auth =  module.exports = {}
             <%_if(FORGOT_WITH_OTP){_%>
             let otp = common.randomNumber();
             let expires = dayjs();
-            expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRETIME, "minute").toISOString();
+            expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRE_TIME, "minute").toISOString();
             await dbService.updateMany(model.userAuthSettings, {userId:user.id},
             {
                 resetPasswordCode: token, expiredTimeOfResetPasswordCode: expires
@@ -396,11 +394,11 @@ let auth =  module.exports = {}
     
 /**
 * @description : service to reset password.
-* @param {obj} userId : user's id
+* @param {object} userId : user id
 * @param {string} newPassword : new password to be set.
 * @return {}  : returns status whether new password is set or not. {flag, data}
 */
-    auth.resetPassword = async (userId, newPassword) => {
+    const resetPassword = async (userId, newPassword) => {
         try {
             let where = { id: userId };  
             const dbUser = await dbService.findOne(model.<%-MODEL%>,where);
@@ -440,3 +438,10 @@ let auth =  module.exports = {}
             throw new Error(error.message)
         }
     }
+
+module.exports = {
+    loginUser,
+    changePassword,
+    sendResetPasswordNotification,
+    resetPassword
+}

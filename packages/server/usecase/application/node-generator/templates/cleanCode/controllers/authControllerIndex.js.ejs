@@ -1,13 +1,8 @@
 let  <%-MODEL %>Db = require('../../../data-access/<%-MODEL %>Db');
 const userTokensDb = require("../../../data-access/userTokensDb");
-<%_if(ROLE_PERMISSION){_%>
-const userRoleDb  = require('../../../data-access/userRoleDb');
-const routeRoleDb  =require('../../../data-access/routeRoleDb');
-<%_}_%>
 
 const <%-MODEL %>Schema = require('../../../validation/schema/<%-MODEL %>');
 const createValidation = require('../../../validation')(<%-MODEL %>Schema.createSchema);
-
 
 const authController = require('./authController');
 
@@ -15,15 +10,13 @@ const registerUsecase = require('../../../use-case/authentication/register')({
         <%-MODEL %>Db, 
         createValidation, 
 });
-const authenticationUsecase = require('../../../use-case/authentication/authentication')({ <%-MODEL %>Db, userTokensDb<%_if(ROLE_PERMISSION){_%>,userRoleDb,routeRoleDb<%_ } _%>});
+const authenticationUsecase = require('../../../use-case/authentication/authentication')({ <%-MODEL %>Db, userTokensDb});
 const forgotPasswordUsecase = require('../../../use-case/authentication/forgotPassword')({ <%-MODEL %>Db});
 const resetPasswordUsecase = require('../../../use-case/authentication/resetPassword')({ <%-MODEL %>Db});
 const validateResetPasswordOtpUsecase = require('../../../use-case/authentication/validateResetPasswordOtp')({ <%-MODEL %>Db});
 const logoutUsecase = require('../../../use-case/authentication/logout')({userTokensDb});
-
 const register = authController.register(registerUsecase);
 const authentication = authController.authentication(authenticationUsecase);
-
 const forgotPassword = authController.forgotPassword(forgotPasswordUsecase);
 const resetPassword = authController.resetPassword(resetPasswordUsecase);
 const validateResetPasswordOtp = authController.validateResetPasswordOtp(validateResetPasswordOtpUsecase);

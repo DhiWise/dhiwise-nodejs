@@ -9,9 +9,9 @@ const OPERATORS = ['and', 'or', 'like', 'in', 'eq', 'gt', 'lt', 'gte', 'lte', 'a
 
 /*
  * @description : create any record in database
- * @param  {obj} model : sequelize model
- * @param  {obj} data : {}
- * @return {obj} result : database result
+ * @param  {object} model : sequelize model
+ * @param  {object} data : {}
+ * @return {object} result : database result
  */
 const createOne = async (model, data) => {
   const result = await model.create(data);
@@ -20,10 +20,10 @@ const createOne = async (model, data) => {
 
 /*
  * @description : create many records in database
- * @param  {obj} model : sequelize model
- * @param  {obj} data : {}
- * @param {obj} options : {}
- * @return {obj} result : database result
+ * @param  {object} model : sequelize model
+ * @param  {object} data : {}
+ * @param {object} options : {}
+ * @return {object} result : database result
  */
 const createMany = async (model, data) => {
   if (data && data.length > 0) {
@@ -35,11 +35,11 @@ const createMany = async (model, data) => {
 
 /*
  * @description : update record in database by id
- * @param  {obj} model : sequelize model
+ * @param  {object} model : sequelize model
  * @param  {*} pk : primary field of table
- * @param {obj} data : {}
- * @param {obj} options : {}
- * @return {obj} result : database result
+ * @param {object} data : {}
+ * @param {object} options : {}
+ * @return {object} result : database result
  */
 const updateByPk = async (model, pk, data) => {
   let result = await model.update(data, {
@@ -54,11 +54,11 @@ const updateByPk = async (model, pk, data) => {
 
 /*
  * @description : update many records in database by query
- * @param  {obj} model : sequelize model
+ * @param  {object} model : sequelize model
  * @param  {*} pk : primary field of table
- * @param {obj} data : {}
- * @param {obj} options : {}
- * @return {obj} result : database result
+ * @param {object} data : {}
+ * @param {object} options : {}
+ * @return {object} result : database result
  */
 const updateMany = async (model, query, data) => {
   const result = await model.update(data, {
@@ -70,9 +70,9 @@ const updateMany = async (model, query, data) => {
 
 /*
  * @description : delete any record in database by primary key
- * @param  {obj} model : sequelize model
+ * @param  {object} model : sequelize model
  * @param  {*} pk : primary field of table
- * @return {obj} result : database result
+ * @return {object} result : database result
  */
 const deleteByPk = async (model, pk) => {
   const result = await model.destroy({ where: { [model.primaryKeyField]: pk } });
@@ -81,9 +81,9 @@ const deleteByPk = async (model, pk) => {
 
 /*
  * @description : delete many record in database by query
- * @param  {obj} model : sequelize model
- * @param  {obj} query : {}
- * @return {obj} result : database result
+ * @param  {object} model : sequelize model
+ * @param  {object} query : {}
+ * @return {object} result : database result
  */
 const deleteMany = async (model, query) => {
   const result = await model.destroy({ where: query });
@@ -92,10 +92,10 @@ const deleteMany = async (model, query) => {
 
 /*
  * @description : find single record from table by query
- * @param  {obj} model : sequelize model
- * @param  {obj} query : {}
- * @param {obj} options : {}
- * @return {obj} result : database result
+ * @param  {object} model : sequelize model
+ * @param  {object} query : {}
+ * @param {object} options : {}
+ * @return {object} result : database result
  */
 const findOne = async (model, query, options = {}) => {
   const result = await model.findOne({
@@ -107,10 +107,10 @@ const findOne = async (model, query, options = {}) => {
 
 /*
  * @description : find multiple records from table by query
- * @param  {obj} model : sequelize model
- * @param  {obj} query : {}
- * @param {obj} options : {}
- * @return {obj} result : database result
+ * @param  {object} model : sequelize model
+ * @param  {object} query : {}
+ * @param {object} options : {}
+ * @return {object} result : database result
  */
 const findMany = async (model, query, options = {}) => {
   options = {
@@ -132,10 +132,10 @@ const findMany = async (model, query, options = {}) => {
 
 /*
  * @description : find all records from table
- * @param  {obj} model : sequelize model
- * @param  {obj} query : {}
- * @param {obj} options : {}
- * @return {obj} result : database result
+ * @param  {object} model : sequelize model
+ * @param  {object} query : {}
+ * @param {object} options : {}
+ * @return {object} result : database result
  */
 const findAllRecords = async (model, query, options = {}) => {
   options = {
@@ -148,10 +148,10 @@ const findAllRecords = async (model, query, options = {}) => {
 
 /*
  * @description : deactivate record by primary key
- * @param  {obj} model : sequelize model
+ * @param  {object} model : sequelize model
  * @param  {*} pk : primary key field
- * @param {obj} options : {}
- * @return {obj} result : database result
+ * @param {object} options : {}
+ * @return {object} result : database result
  */
 const softDeleteByPk = async (model, pk, options = {}) => {
   const result = await model.update(
@@ -167,11 +167,11 @@ const softDeleteByPk = async (model, pk, options = {}) => {
 
 /*
  * @description : deactivate records by query
- * @param  {obj} model : sequelize model
- * @param  {obj} query : {}
- * @param  {obj} data : {}
- * @param {obj} options : {}
- * @return {obj} result : database result
+ * @param  {object} model : sequelize model
+ * @param  {object} query : {}
+ * @param  {object} data : {}
+ * @param {object} options : {}
+ * @return {object} result : database result
  */
 const softDeleteMany = async (model, query, options = {}, loggedInUserId) => {
   let result;
@@ -202,10 +202,10 @@ const softDeleteMany = async (model, query, options = {}, loggedInUserId) => {
 
 /*
  * @description : count total records from table by query
- * @param  {obj} model : sequelize model
- * @param  {obj} query : {}
- * @param {obj} options : {}
- * @return {obj} result : database result
+ * @param  {object} model : sequelize model
+ * @param  {object} query : {}
+ * @param {object} options : {}
+ * @return {object} result : database result
  */
 const count = async (model, query, options = {}) => {
   const result = await model.count({
@@ -217,10 +217,10 @@ const count = async (model, query, options = {}) => {
 
 /*
  * @description : get record by primary key
- * @param  {obj} model : sequelize model
- * @param  {obj} param : {}
- * @param {obj} options : {}
- * @return {obj} result : database result
+ * @param  {object} model : sequelize model
+ * @param  {object} param : {}
+ * @param {object} options : {}
+ * @return {object} result : database result
  */
 const findByPk = async (model, param, options = {}) => {
   const result = await model.findByPk(param, options);
@@ -229,10 +229,10 @@ const findByPk = async (model, param, options = {}) => {
 
 /*
  * @description : upsert record in database
- * @param  {obj} model : sequelize model
- * @param  {obj} param : {}
- * @param {obj} options : {}
- * @return {obj} result : database result
+ * @param  {object} model : sequelize model
+ * @param  {object} param : {}
+ * @param {object} options : {}
+ * @return {object} result : database result
  */
 const upsert = async (model, data, options = {}) => {
   const result = await model.upsert(data, options);
@@ -241,8 +241,8 @@ const upsert = async (model, data, options = {}) => {
 
 /*
  * @description : parser for query builder
- * @param  {obj} data : {}
- * @return {obj} data : query
+ * @param  {object} data : {}
+ * @return {object} data : query
  */
 const queryBuilderParser = (data) => {
   if (data) {
@@ -268,8 +268,8 @@ const queryBuilderParser = (data) => {
 
 /*
  * @description : parser for query builder of sort
- * @param  {obj} input : {}
- * @return {obj} data : query
+ * @param  {object} input : {}
+ * @return {object} data : query
  */
 const sortParser = (input) => {
   const newSortedObject = [];

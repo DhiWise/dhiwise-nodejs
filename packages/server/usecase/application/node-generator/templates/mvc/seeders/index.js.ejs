@@ -2,162 +2,232 @@
  * seeder.js
  * @description :: functions that seeds mock data to run the application
  */
+ 
 
-const User = require('../model/<%-MODEL%>');
-const authConstant=require('../constants/authConstant');
-<%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
-<%_for(const model of ROLE_PERMISSION_MODELS){
-    let model_FC=(model).charAt(0).toUpperCase() + (model).slice(1); _%>
-const <%-model_FC%> = require('../model/<%-model%>')
-<%_}_%>
-const { replaceAll } = require('../utils/common');
-
-/* seeds roles */
-async function seedRole() {
-  try{
-    const roles = <%=ROLES%>;
-    for(let i=0; i< roles.length; i++) {
-      let result = await Role.findOne({ name: roles[i], isActive: true, isDeleted: false });
-      if (!result) {
-        await Role.create({
-          name: roles[i],
-          code: roles[i].toUpperCase(),
-          weight: 1
-        });
-      }
-    };
-    console.info('Role model seeded 🍺');
-  }catch(error){
-    console.log('Role seeder failed.')
-  }
-}
-
-/* seeds routes of project */
-async function seedProjectRoutes(routes) {
-  try{
-    if (routes && routes.length) {
-      for (let i = 0; i < routes.length; i++) {
-        const routeMethods = routes[i].methods
-        for (let j = 0; j < routeMethods.length; j++) {
-          const routeObj = {
-            uri: routes[i].path.toLowerCase(),
-            method: routeMethods[j],
-            route_name: `${replaceAll((routes[i].path).toLowerCase().substring(1), '/', '_')}`,
-            isActive: true, 
-            isDeleted: false
-          }
-          if(routeObj.route_name){
-            let result = await ProjectRoute.findOne(routeObj);
-            if (!result) {
-              await ProjectRoute.create(routeObj);
-            }
-          }
-        }
-      }
-      console.info('ProjectRoute model seeded 🍺');
-    }
-  }catch(error){
-    console.log('ProjectRoute seeder failed.')
-  }
-}
-
-/* seeds role for routes */
-async function seedRouteRole() {
-  try{
-    const routeRoles =[ 
-      <%_for(let i=0;i<ROUTE_ROLE_ARRAY.length;i++){_%>
-      <%=ROUTE_ROLE_ARRAY[i]%>,
-      <%_}_%>
-
-    ];
-    if (routeRoles && routeRoles.length) {
-      for (let i = 0; i < routeRoles.length; i++) {
-        let route = await ProjectRoute.findOne({ uri: routeRoles[i].route.toLowerCase(), method: routeRoles[i].method, isActive: true, isDeleted: false }, { id: 1 });
-        let role = await Role.findOne({ code: (routeRoles[i].role).toUpperCase(), isActive: true, isDeleted: false }, { id: 1 });
-        if (route && route.id && role && role.id) {
-          let routeRoleObj = await RouteRole.findOne({
-            roleId: role.id,
-            routeId: route.id,
-            isActive: true, 
-            isDeleted: false
-          });
-          if (!routeRoleObj) {
-            await RouteRole.create({
-              roleId: role.id,
-              routeId: route.id
-            });
-          }
-        }
-      };
-      console.info('RouteRole model seeded 🍺');
-    }
-  }catch(error){
-    console.log('RouteRole seeder failed.')
-  }
-}
-
-/* seeds roles for users */
-async function seedUserRole (){
-  try{
-    <%_for(let i in USER_EXIST_CONDITION){_%>
-    let <%-ROLE_NAME[i].toLowerCase()%> = await User.findOne(<%-JSON.stringify(USER_EXIST_CONDITION[i])%>);
-    let <%-ROLE_NAME[i].toLowerCase()%>Role = await Role.findOne({ code: <%=DEFAULT_ROLE%> }, { id: 1 });
-    if (<%-ROLE_NAME[i].toLowerCase()%> && <%-ROLE_NAME[i].toLowerCase()%>.isPasswordMatch(<%=USER_PASSWORD[i]%>) && <%-ROLE_NAME[i].toLowerCase()%>Role){
-      let count = await UserRole.countDocuments({
-        userId: <%-ROLE_NAME[i].toLowerCase()%>.id,
-        roleId: <%-ROLE_NAME[i].toLowerCase()%>Role.id,
-        isActive: true, 
-        isDeleted: false
-      });
-      if (count == 0) {
-        await UserRole.create({
-          userId: <%-ROLE_NAME[i].toLowerCase()%>.id,
-          roleId: <%-ROLE_NAME[i].toLowerCase()%>Role.id 
-        });
-        console.info('<%-ROLE_NAME[i].toLowerCase()%> seeded 🍺');
-      }   
-    }
+<%_if(IS_AUTH){_%>
+    const bcrypt = require('bcrypt')
+    const <%-AUTH_MODEL_FC%> = require('../model/<%-AUTH_MODEL%>');
+    const authConstant=require('../../constants/authConstant');
+  <%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
+    <%_for(const model of ROLE_PERMISSION_MODELS){
+      let model_FC=(model).charAt(0).toUpperCase() + (model).slice(1); _%>
+      const <%-model_FC%> = require('../model/<%-model%>')
     <%_}_%>
-  }catch(error){
-    console.log('UserRole seeder failed.')
-  }
-}
+    const { replaceAll } = require('../utils/common');
+  <%_}_%>
 <%_}_%>
+const dbService = require('../utils/dbService');
 
-/* seeds default users */
-async function seedUser() {
-  try{
-    <%_for(let i in USER_EXIST_CONDITION){_%>
-      let <%-ROLE_NAME[i].toLowerCase()%>= await User.findOne(<%-JSON.stringify(USER_EXIST_CONDITION[i])%>);
-      if (!<%-ROLE_NAME[i].toLowerCase()%> || !<%-ROLE_NAME[i].toLowerCase()%>.isPasswordMatch(<%=USER_PASSWORD[i]%>) ) {
+<%_if(IS_AUTH){_%>
+  /* seeds default users */
+  async function seedUser() {
+    try{
+      let userToBeInserted = {}
+      <%_for(let i in USER_EXIST_CONDITION){_%>
         <%_var finalStr = new String();
-        USER[i].role=`@@authConstant.USER_ROLE.${ROLE_NAME[i]}@@`;
+        USER[i].userType=`@@authConstant.USER_ROLE.${ROLE_NAME[i]}@@`;
         finalStr = JSON.stringify(USER[i]);
         finalStr = finalStr.replace(/@@"/g, "").replace(/"@@/g, "");
         _%>
-        let <%-ROLE_NAME[i].toLowerCase()%> = new User(<%-finalStr%>)
-        await User.create(<%-ROLE_NAME[i].toLowerCase()%>);
-      }
-    <%_}_%>
-    console.info('Users seeded 🍺');
-  } catch(error){
-    console.log('User seeder failed.')
+        userToBeInserted = <%-finalStr%>
+        userToBeInserted.<%-PASSWORD_FIELD%> = await  bcrypt.hash(userToBeInserted.<%-PASSWORD_FIELD%>, 8)
+        let <%-ROLE_NAME[i].toLowerCase()%> = await dbService.findOneAndUpdateDocument(<%-AUTH_MODEL_FC%>, <%-JSON.stringify(USER_EXIST_CONDITION[i])%>, userToBeInserted,  {
+          upsert: true,
+          new: true
+        })
+      <%_}_%>
+      console.info('Users seeded 🍺');
+    } catch(error){
+      console.log('User seeder failed due to ', error.message)
+    }
   }
-}
+  <%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
+    /* seeds roles */
+    async function seedRole() {
+      try {
+        const roles = <%=ROLES%>;
+        const insertedRoles = await dbService.findAllDocuments(Role, { code: { '$in': roles.map(role => role.toUpperCase()) } });
+        const rolesToInsert = [];
+        roles.forEach(role => {
+          if (!insertedRoles.find(insertedRole => insertedRole.code === role.toUpperCase())) {
+            rolesToInsert.push({
+              name: role,
+              code: role.toUpperCase(),
+              weight: 1
+            });
+          }
+        });
+        if (rolesToInsert.length) {
+          const result = await dbService.bulkInsert(Role, rolesToInsert);
+          if (result) console.log('Role seeded 🍺');
+          else console.log('Role seeder failed!');
+        } else {
+          console.log('Role is up to date 🍺');
+        }
+      } catch (error) {
+        console.log('Role seeder failed due to ', error.message);
+      }
+    }
 
-/* calls of functions to seed mock data into multiple collections */
-<%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
-async function seedData(allRegisterRoutes){
-    await seedUser();
+    /* seeds routes of project */
+    async function seedProjectRoutes(routes) {
+      try {
+        if (routes  && routes.length) {
+          let routeName = '';
+          const dbRoutes = await dbService.findAllDocuments(ProjectRoute, {});
+          let routeArr = [];
+          let routeObj = {};
+          routes.forEach(route => {
+            routeName = `${replaceAll((route.path).toLowerCase(), '/', '_')}`;
+            route.methods.forEach(method => {
+              routeObj = dbRoutes.find(dbRoute => dbRoute.route_name === routeName && dbRoute.method === method);
+              if (!routeObj) {
+                routeArr.push({
+                  'uri': route.path.toLowerCase(),
+                  'method': method,
+                  'route_name': routeName,
+                });
+              }
+            });
+          });
+          if (routeArr.length) {
+            const result = await dbService.bulkInsert(ProjectRoute, routeArr);
+            if (result) console.info('ProjectRoute model seeded 🍺');
+            else console.info('ProjectRoute seeder failed.');
+          } else {
+            console.info('ProjectRoute is up to date 🍺');
+          }
+        }
+      } catch (error) {
+        console.log('ProjectRoute seeder failed due to ', error.message);
+      }
+    }
+
+    /* seeds role for routes */
+    async function seedRouteRole() {
+      try{
+        const routeRoles =[ 
+          <%_for(let i=0;i<ROUTE_ROLE_ARRAY.length;i++){_%>
+          <%=ROUTE_ROLE_ARRAY[i]%>,
+          <%_}_%>
+
+        ];
+        if (routeRoles && routeRoles.length) {
+          const routes = [...new Set(routeRoles.map(routeRole => routeRole.route.toLowerCase()))];
+          const routeMethods = [...new Set(routeRoles.map(routeRole => routeRole.method))];
+          const roles = <%=ROLES%>;
+          const insertedProjectRoute = await dbService.findAllDocuments(ProjectRoute, {
+            uri: { '$in': routes },
+            method: { '$in': routeMethods },
+            'isActive': true,
+            'isDeleted': false
+          });
+          const insertedRoles = await dbService.findAllDocuments(Role, {
+            code: { '$in': roles.map(role => role.toUpperCase()) },
+            'isActive': true,
+            'isDeleted': false
+          });
+          let projectRouteId = '';
+          let roleId = '';
+          let createRouteRoles = routeRoles.map(routeRole => {
+            projectRouteId = insertedProjectRoute.find(pr => pr.uri === routeRole.route.toLowerCase() && pr.method === routeRole.method);
+            roleId = insertedRoles.find(r => r.code === routeRole.role.toUpperCase());
+            if (projectRouteId && roleId) {
+              return {
+                roleId: roleId.id,
+                routeId: projectRouteId.id
+              };
+            }
+          });
+          createRouteRoles = createRouteRoles.filter(Boolean);
+          const routeRolesToBeInserted = [];
+          let routeRoleObj = {};
+
+          await Promise.all(
+            createRouteRoles.map(async routeRole => {
+              routeRoleObj = await dbService.getDocumentByQuery(RouteRole, {
+                routeId: routeRole.routeId,
+                roleId: routeRole.roleId,
+              });
+              if (!routeRoleObj) {
+                routeRolesToBeInserted.push({
+                  routeId: routeRole.routeId,
+                  roleId: routeRole.roleId,
+                });
+              }
+            })
+          );
+          if (routeRolesToBeInserted.length) {
+            const result = await dbService.bulkInsert(RouteRole, routeRolesToBeInserted);
+            if (result) console.log('RouteRole seeded 🍺');
+            else console.log('RouteRole seeder failed!');
+          } else {
+            console.log('RouteRole is up to date 🍺');
+          }
+        }
+      }catch(error){
+        console.log('RouteRole seeder failed due to ', error.message)
+      }
+    }
+
+    /* seeds roles for users */
+    async function seedUserRole (){
+      try {
+        const userRoles = <%-JSON.stringify(USER_ROLE_ARRAY)%>;
+        const defaultRole = await dbService.getDocumentByQuery(Role, { code: <%=DEFAULT_ROLE%> });
+        const insertedUsers = await dbService.findAllDocuments(User, { username: { '$in': userRoles.map(userRole => userRole.username) } });
+        let user = {};
+        const userRolesArr = [];
+        userRoles.map(userRole => {
+          user = insertedUsers.find(user => user.username === userRole.username && user.isPasswordMatch(userRole.password) && user.isActive && !user.isDeleted);
+          if (user) {
+            userRolesArr.push({
+              userId: user.id,
+              roleId: defaultRole.id
+            });
+          }
+        });
+        let userRoleObj = {};
+        const userRolesToBeInserted = [];
+        if (userRolesArr.length) {
+          await Promise.all(
+            userRolesArr.map(async userRole => {
+              userRoleObj = await dbService.getDocumentByQuery(UserRole, {
+                userId: userRole.userId,
+                roleId: userRole.roleId
+              });
+              if (!userRoleObj) {
+                userRolesToBeInserted.push({
+                  userId: userRole.userId,
+                  roleId: userRole.roleId
+                });
+              }
+            })
+          );
+          if (userRolesToBeInserted.length) {
+            const result = await dbService.bulkInsert(UserRole, userRolesToBeInserted);
+            if (result) console.log('UserRole seeded 🍺');
+            else console.log('UserRole seeder failed');
+          } else {
+            console.log('UserRole is up to date 🍺');
+          }
+        }
+      } catch (error) {
+        console.log('UserRole seeder failed due to ', error.message);
+      }
+    }
+  <%_}_%>
+<%_}_%>
+
+async function seedData(<%_if(IS_AUTH && SHOULD_ADD_ROLE_PERMISSION){_%>allRegisterRoutes<%_}_%>){
+<%_if(IS_AUTH){_%>
+  await seedUser();
+  <%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
     await seedRole();
     await seedProjectRoutes(allRegisterRoutes);
     await seedRouteRole();
     await seedUserRole();
-}     
-<%_}else{_%>
-async function seedData(){
-    await seedUser()    
-}   
+  <%_}_%>
 <%_}_%>
-
+};
 module.exports = seedData;

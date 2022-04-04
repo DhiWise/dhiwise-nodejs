@@ -196,6 +196,7 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
       // writeOperations.write(path.join(dir, `/config/${platformName}PassportStrategy.js`), value.passport.render(), MODE_0666);
       writeOperations.write(path.join(dir, `/routes/${platformName}/auth.js`), value.authRoutes.render(), MODE_0666);
       const authPath = replace(value.authController.locals.PATH, { platform: platformName });
+      value.authController.locals.PLATFORM_NAME = platformName.toUpperCase();
       writeOperations.write(path.join(dir, `${authPath}/authController.js`), value.authController.render(), MODE_0666);
     });
 
@@ -210,12 +211,6 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
     // policy
     writeOperations.write(path.join(dir, `${userDirectoryStructure.middlewareFolderPath}/auth.js`), authModule.policy.middleware.render(), MODE_0666);
     writeOperations.write(path.join(dir, `${userDirectoryStructure.middlewareFolderPath}/loginUser.js`), authModule.policy.authUser.render(), MODE_0666);
-
-    /*
-     * common file
-     * writeOperations.copyTemplate(`${templateFolder}/utils/common.js`, `${dir}${userDirectoryStructure.utilsFolderPath}/common.js`);
-     * writeOperations.copyTemplate(`${templateFolder}/utils/common.js`, `${dir}/utils/common.js`);
-     */
 
     // Auth usecase for CC
     _.forEach(authModule.authSetup, (value) => {
@@ -236,7 +231,7 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
   }
 
   if (emailService || isAuth) {
-    pkg.dependencies.nodemailer = '~6.5.0';
+    pkg.dependencies.nodemailer = '~6.7.2';
     writeOperations.mkdir(`${dir}${userDirectoryStructure.viewsFolderPath}`, 'emailTemplate');
     const emailTemp = writeOperations.loadTemplate(`${templateFolder}${templateRegistry.viewsFolderPath}/emailTemplate`);
     writeOperations.write(path.join(dir, `${userDirectoryStructure.viewsFolderPath}/emailTemplate/html.ejs`), emailTemp.render(), MODE_0666);

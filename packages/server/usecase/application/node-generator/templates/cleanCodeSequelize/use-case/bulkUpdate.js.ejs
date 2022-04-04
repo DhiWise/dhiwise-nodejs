@@ -6,9 +6,9 @@ const response = require('../../utils/response');
 
 /**
  * @description : update multiple records of <%-MODEL_NAME%> with data by filter.
- * @param {obj} <%-MODEL_NAME-%>Db : db service instance
- * @param {obj} params : {query: query to find data, data: data to update }
- * @return {obj} : response of bulkUpdate. {status, message, data}
+ * @param {object} <%-MODEL_NAME-%>Db : db service instance
+ * @param {object} params : {query: query to find data, data: data to update }
+ * @return {object} : response of bulkUpdate. {status, message, data}
  */
 const bulkUpdate = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
     let { data, query } = params;

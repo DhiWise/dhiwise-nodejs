@@ -20,9 +20,9 @@ const { uniqueValidation } = require('../../utils/common');
 
 /**
  * @description : user registration 
- * @param {obj} req : request for register
- * @param {obj} res : response for register
- * @return {obj} : response for register {status, message, data}
+ * @param {object} req : request for register
+ * @param {object} res : response for register
+ * @return {object} : response for register {status, message, data}
  */
 const register = async(req, res) => {
     try {
@@ -91,9 +91,9 @@ const register = async(req, res) => {
 
 /**
  * @description : send email or sms to user with OTP on forgot password
- * @param {obj} req : request for forgotPassword
- * @param {obj} res : response for forgotPassword
- * @return {obj} : response for forgotPassword {status, message, data}
+ * @param {object} req : request for forgotPassword
+ * @param {object} res : response for forgotPassword
+ * @return {object} : response for forgotPassword {status, message, data}
  */ 
 const forgotPassword = async (req, res) => {
     const params = req.body;
@@ -125,9 +125,9 @@ const forgotPassword = async (req, res) => {
 
 /**
  * @description : validate OTP
- * @param {obj} req : request for validateResetPasswordOtp
- * @param {obj} res : response for validateResetPasswordOtp
- * @return {obj} : response for validateResetPasswordOtp  {status, message, data}
+ * @param {object} req : request for validateResetPasswordOtp
+ * @param {object} res : response for validateResetPasswordOtp
+ * @return {object} : response for validateResetPasswordOtp  {status, message, data}
  */
 const validateResetPasswordOtp = async (req, res) => {
     const params = req.body;
@@ -152,9 +152,9 @@ const validateResetPasswordOtp = async (req, res) => {
 
 /**
  * @description : reset password with code and new password
- * @param {obj} req : request for resetPassword
- * @param {obj} res : response for resetPassword
- * @return {obj} : response for resetPassword {status, message, data}
+ * @param {object} req : request for resetPassword
+ * @param {object} res : response for resetPassword
+ * @return {object} : response for resetPassword {status, message, data}
  */ 
 const resetPassword = async (req, res) => {
     const params = req.body;
@@ -183,9 +183,9 @@ const resetPassword = async (req, res) => {
 
 /**
  * @description : login with username and password
- * @param {obj} req : request for login 
- * @param {obj} res : response for login
- * @return {obj} : response for login {status, message, data}
+ * @param {object} req : request for login 
+ * @param {object} res : response for login
+ * @return {object} : response for login {status, message, data}
  */
 const login = async(req,res)=>{
     try {
@@ -215,24 +215,21 @@ const login = async(req,res)=>{
 
 /**
  * @description : logout user
- * @param {obj} req : request for logout
- * @param {obj} res : response for logout
- * @return {obj} : response for logout {status, message, data}
+ * @param {object} req : request for logout
+ * @param {object} res : response for logout
+ * @return {object} : response for logout {status, message, data}
  */
 const logout = async (req, res) => {
     try {
-        if (req.user) {
-            let userToken = await dbService.getDocumentByQuery(userTokens, { token: (req.headers.authorization).replace('Bearer ', '') ,userId:req.user.id});
-            let updatedDocument = {
-                isTokenExpired: true
-            }
-            await dbService.updateDocument(userTokens,userToken.id, updatedDocument);
-            return res.requestValidated({message:'Logged Out Successfully'});
+        let userToken = await dbService.getDocumentByQuery(userTokens, { token: (req.headers.authorization).replace('Bearer ', '') ,userId:req.user.id});
+        let updatedDocument = {
+            isTokenExpired: true
         }
-        return res.badRequest();
-        } catch (error) {
+        await dbService.updateDocument(userTokens,userToken.id, updatedDocument);
+        return res.requestValidated({message:'Logged Out Successfully'});
+    } catch (error) {
         return res.failureResponse();
-        }
+    }
 }
 
 module.exports = {

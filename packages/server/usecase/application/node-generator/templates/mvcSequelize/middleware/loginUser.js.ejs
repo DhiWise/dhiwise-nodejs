@@ -1,6 +1,6 @@
 /**
  * loginUser.js
- * @description :: middleware that verifies user's JWT token
+ * @description :: middleware that verifies JWT token
  */
 
 const jwt = require("jsonwebtoken");
@@ -9,8 +9,8 @@ const <%-v.toLowerCase()%>Secret = require("../constants/authConstant").JWT.<%-v
 <%_ }) _%> 
 /**
 * @description : middleware for authenticate user with JWT token
-* @param {obj} req : request of route.
-* @param {obj} res : response of route.
+* @param {object} req : request of route.
+* @param {object} res : response of route.
 * @param {callback} next : executes the next middleware succeeding the current middleware.
 */
 const authenticateJWT = (req, res, next) => {
@@ -32,13 +32,13 @@ const authenticateJWT = (req, res, next) => {
         <%_  }) _%>
         jwt.verify(token,secret, (err, user) => {
             if (err) {
-                return res.unAuthorizedRequest();
+                return res.unAuthorized();
             }
             req.user = user;
             next();
         });
     } else {
-        return res.unAuthorizedRequest();
+        return res.unAuthorized();
     }
 };
 module.exports = authenticateJWT

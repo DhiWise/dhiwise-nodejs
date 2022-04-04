@@ -8,7 +8,7 @@ const <%- MODEL %> = require("../model/<%- MODEL%>")
 
 /**
  * @description : exports authentication strategy for <%-STRATEGY.toLowerCase()%> using passport.js
- * @params {obj} passport : passport object for authentication
+ * @params {object} passport : passport object for authentication
  * @return {callback} : returns callback to be used in middleware
  */
 const <%-STRATEGY.toLowerCase()%>PassportStrategy = (passport) => {

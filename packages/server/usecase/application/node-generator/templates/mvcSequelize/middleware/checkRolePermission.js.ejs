@@ -1,6 +1,6 @@
 /**
  * checkRolePermission.js
- * @description :: middleware that checks logged-in user's access of APIs
+ * @description :: middleware that checks access of APIs of logged-in user
  */
 
 const { Op } = require('sequelize');
@@ -10,12 +10,14 @@ const { replaceAll } = require('../utils/common');
 
 /**
    * @description : middleware for authentication with role and permission.
-   * @param {obj} req : request of route.
-   * @param {obj} res : response of route.
+   * @param {object} req : request of route.
+   * @param {object} res : response of route.
    * @param {callback} next : executes the next middleware succeeding the current middleware.
    */
 const checkRolePermission = async (req, res, next) => {
-  if (req.user) {
+  if (!req.user) {
+    return res.unAuthorized({message:'Authorization token required!'});
+  }
     const loggedInUserId = req.user.id;
     let rolesOfUser = await dbService.findMany(model.userRole, {
 
@@ -45,7 +47,7 @@ const checkRolePermission = async (req, res, next) => {
         if (allowedRoute && allowedRoute.data.length) {
           next();
         } else {
-          return res.unAuthorizedRequest({message:'You are not having permission to access this route!'});
+          return res.unAuthorized({message:'You are not having permission to access this route!'});
         }
       } else {
         next();
@@ -53,10 +55,6 @@ const checkRolePermission = async (req, res, next) => {
     } else {
       next();
     }
-  } else {
-    return res.unAuthorizedRequest({message:'Authorization token required!'});
-  }
-  return undefined;
 };
 
 module.exports = checkRolePermission;

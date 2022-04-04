@@ -1,16 +1,12 @@
 const response = require('../../../utils/response'); 
+const responseHandler = require('../../../utils/response/responseHandler');
 
 <%_ROUTES.forEach((v,i)=>{_%>
-  <%_if(typeof(v.descriptions)!=='undefined'){_%>
-  /* 
-  * <%-v.descriptions%>
-  */
-  <%_}_%>
-  const <%-v.functionName%> = (<%-v.functionName%>Usecase) => async(data,req={},res={}) =>{
+  const <%-v.functionName%> = (<%-v.functionName%>Usecase) => async(req,res) =>{
       try{
-        return await <%-v.functionName%>Usecase(data,req,res);
+        return await <%-v.functionName%>Usecase(req,res);
       }catch(error){
-        return response.internalServerError();
+        return responseHandler(res,response.internalServerError({message:error.message}));
       }
   }
 <%_})_%>

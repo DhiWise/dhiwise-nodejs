@@ -4,7 +4,7 @@
 <%_ usedDb.push(model);  }); _%>
 
 <%_ if(!usedDb.includes(DB_MODEL)){_%>
-const <%-DB_MODEL %>Db = require('../../../data-access/<%-DB_MODEL %>Db');
+const <%-DB_MODEL %>Db = require('../../../data-access/<%-usedDb%>Db');
 <%_ } _%>
 
 const <%-DB_MODEL %>Schema = require('../../../validation/schema/<%-DB_MODEL %>');
@@ -50,17 +50,15 @@ const filterValidation = require('../../../validation')(<%-DB_MODEL %>Schema.fil
     <%_ if(controllerMethod === 'partialUpdate'){ _%>
         const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/partialUpdate')({ <%-DB_MODEL %>Db,updateValidation});
     <%_}_%>
-    <%_ if(controllerMethod === 'aggregate'){ _%>
-        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/aggregate')({ <%-DB_MODEL %>Db});
-    <%_}_%>
 <%_}_%>
 <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>
 const changePasswordUsecase = require('../../../use-case/<%-DB_MODEL %>/changePassword')({ <%-DB_MODEL %>Db});
 const updateProfileUsecase = require('../../../use-case/<%-DB_MODEL %>/updateProfile')({ <%-DB_MODEL %>Db,updateValidation});
+const get<%-DB_MODEL_FC%>Usecase = require('../../../use-case/<%-DB_MODEL %>/findById')({ <%-DB_MODEL %>Db})
 <%_}_%>
 <%_if(CUSTOM_ROUTES){_%>
   <%_CUSTOM_ROUTES.forEach((v,i)=>{_%>
-    const <%-v.functionName%>Usecase = require('../../../use-case/<%-DB_MODEL %>/<%-v.functionName%>')({ <%-DB_MODEL %>Db});
+    const <%-v.functionName%>Usecase = require('../../../use-case/<%-DB_MODEL %>/<%-v.functionName%>')({ <%-v.model%>Db});
   <%_});_%>
 <%_}_%>
 
@@ -103,25 +101,17 @@ const <%-DB_MODEL %>Controller = require('./<%-DB_MODEL %>');
     <%_ if(controllerMethod === 'partialUpdate'){ _%>
         const partialUpdate<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.partialUpdate<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
     <%_}_%>
-    <%_ if(controllerMethod === 'aggregate'){ _%>
-    const get<%-DB_MODEL_FC %>ByAggregate = <%-DB_MODEL %>Controller.get<%-DB_MODEL_FC %>ByAggregate(<%- controllerMethod + DB_MODEL_FC %>Usecase);
-    <%_}_%>
 <%_}_%>
 <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>
 const changePassword = <%-DB_MODEL %>Controller.changePassword(changePasswordUsecase);
 const updateProfile = <%-DB_MODEL %>Controller.updateProfile(updateProfileUsecase);
+const getLoggedInUserInfo = <%-DB_MODEL %>Controller.getLoggedInUserInfo(get<%-DB_MODEL_FC%>Usecase);
 <%_}_%>
 <%_if(CUSTOM_ROUTES){_%>
   <%_CUSTOM_ROUTES.forEach((v,i)=>{_%>
     const <%-v.functionName%> = <%-DB_MODEL %>Controller.<%-v.functionName%>(<%-v.functionName%>Usecase);
   <%_});_%>
 <%_}_%>
-
-
-<%_
-// Code For custom route
-let shouldPassCQ_Imports = false
-_%>
 
 module.exports = {
 <%_for(const controllerMethod in CONTROLLER_METHODS){_%>
@@ -161,13 +151,11 @@ module.exports = {
     <%_ if(controllerMethod === 'partialUpdate'){ _%>
         partialUpdate<%-DB_MODEL_FC %>,
     <%_}_%>
-    <%_ if(controllerMethod === 'aggregate'){ _%>
-        get<%-DB_MODEL_FC %>ByAggregate,
-    <%_}_%>
 <%_}_%>
 <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>
     changePassword,
     updateProfile,
+    getLoggedInUserInfo,
     <%_}_%>
 <%_if(CUSTOM_ROUTES){_%>
   <%_CUSTOM_ROUTES.forEach((v,i)=>{_%>

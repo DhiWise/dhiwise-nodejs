@@ -39,7 +39,7 @@ function makeAuthService({<%-MODEL%>Service,userAuthSettingService,userTokenServ
                         if(userToken >= NO_OF_DEVICE_ALLOWED){
                             return {
                                 flag: true,
-                                data: "You've reached your device limit"
+                                data: "You have reached your device limit"
                             }
                         }
                     <%_}_%>
@@ -179,7 +179,7 @@ function makeAuthService({<%-MODEL%>Service,userAuthSettingService,userTokenServ
             <%_if(FORGOT_WITH_LINK){_%>
             let token = uuid();
             let expires = dayjs();
-            expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRETIME, "minute").toISOString();
+            expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRE_TIME, "minute").toISOString();
             await userAuthSettingService.updateMany({userId:user.id},
             {
                 resetPasswordCode: token, expiredTimeOfResetPasswordCode: expires
@@ -270,7 +270,7 @@ function makeAuthService({<%-MODEL%>Service,userAuthSettingService,userTokenServ
             <%_if(FORGOT_WITH_OTP){_%>
             let otp = common.randomNumber();
             let expires = dayjs();
-            expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRETIME, "minute").toISOString();
+            expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRE_TIME, "minute").toISOString();
             await userAuthSettingService.updateMany({userId:user.id},
             {
                 resetPasswordCode: token, expiredTimeOfResetPasswordCode: expires

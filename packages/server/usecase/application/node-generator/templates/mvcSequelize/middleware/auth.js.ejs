@@ -3,18 +3,13 @@
  * @description :: middleware that checks authentication and authorization of user
  */
 const passport = require('passport');
-const { ROLE_RIGHTS, USER_ROLE 
-<%_if(CUSTOM_ROUTES){_%><%_ for(let platform in CUSTOM_ROUTES){ _%>
-,<%-platform.toUpperCase()%>_CUSTOM_ROUTES  
-<%_ } _%>
-<%_}_%>
-} = require('../constants/authConstant');
+const { USER_ROLE} = require('../constants/authConstant');
 const model = require('../model');
 const dbService = require('../utils/dbService');
 
 /**
  * @description : returns callback that verifies required rights and access
- * @param {obj} req : request of route.
+ * @param {object} req : request of route.
  * @param {callback} resolve : resolve callback for succeeding method.
  * @param {callback} reject : reject callback for error.
  * @param {Array} requiredRights : array of rights for logged-in user.
@@ -27,7 +22,7 @@ const verifyCallback = (req, resolve, reject, requiredRights) => async (err, use
     if (!user.isActive) {
         return reject("User is deactivated");
     }
-    let userToken = await dbService.findOne(model.userToken,{token:(req.headers.authorization).replace('Bearer ',''),userId:user.id});
+    let userToken = await dbService.findOne(model.userTokens,{token:(req.headers.authorization).replace('Bearer ',''),userId:user.id});
     if (!userToken){
         return reject('Token not found');
     }
@@ -50,8 +45,8 @@ const verifyCallback = (req, resolve, reject, requiredRights) => async (err, use
 
 /**
  * @description : authentication middleware for request.
- * @param {obj} req : request of route.
- * @param {obj} res : response of route.
+ * @param {object} req : request of route.
+ * @param {object} res : response of route.
  * @param {callback} next : executes the next middleware succeeding the current middleware.
  * @param {Array} requiredRights : array of rights for particular user.
  */
@@ -74,7 +69,7 @@ let url =req.originalUrl;
         })
         .then(() => next())
         .catch((err) => {
-            return res.unAuthorizedRequest();
+            return res.unAuthorized();
         });
     }
     <%_ }else{ _%>
@@ -92,7 +87,7 @@ let url =req.originalUrl;
         })
         .then(() => next())
         .catch((err) => {
-            return res.unAuthorizedRequest();
+            return res.unAuthorized();
         });
     }
     <%_ } _%> 

@@ -1,5 +1,5 @@
 const {
-  isEmpty, each, forEach, cloneDeep,
+  isEmpty, each, forEach, cloneDeep, snakeCase,
 } = require('lodash');
 const {
   getTemplateByName, getPlatformWiseAPIOfCustomRoutes,
@@ -111,7 +111,7 @@ async function generateAuthConstant (PLATFORM, auth, {
     const entries = Object.entries(sendToConstant);
     for (let i = 0; i < entries.length; i += 1) {
       const [k, v] = entries[i];
-      fpObj[k.toUpperCase()] = v;
+      fpObj[snakeCase(k).toUpperCase()] = v;
     }
     let finalStr = '';
     finalStr = JSON.stringify(fpObj, undefined, 2).toString().replace(/"/g, '');

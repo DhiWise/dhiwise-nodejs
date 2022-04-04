@@ -7,8 +7,8 @@ const message = require('./messages');
 
 /**
  *
- * @param {obj} req : request
- * @param {obj} res : response
+ * @param {object} req : request
+ * @param {object} res : response
  * @param {*} next : executes the middleware succeeding the current middleware.
  */
 const responseHandler = (req, res, next) => {

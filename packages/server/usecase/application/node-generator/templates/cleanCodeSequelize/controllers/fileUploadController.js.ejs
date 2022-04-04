@@ -8,12 +8,11 @@ const AWS = require('aws-sdk');
 const AmazonS3URI = require('amazon-s3-uri');
 <%_}_%>
 
-const message = require("../../../utils/messages")
-
-let allowedFileTypes = <%=VALIDATION_TYPES%>;<%_var max_size = MAX_SIZE ? MAX_SIZE : 5%>
+let allowedFileTypes = <%=VALIDATION_TYPES%>;
+<%_var max_size = MAX_SIZE ? MAX_SIZE : 5%>
 let maxFileSize = <%=max_size%>; //In Megabyte
 
-const upload = async (req) =>{
+const upload = async (req,res) =>{
   try {
 
     // Setting up formidable options.

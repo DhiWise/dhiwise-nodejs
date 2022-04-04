@@ -21,9 +21,9 @@ const customQueryService = require("../../services/customQueryService")
 <%_ROUTES.forEach((v,i)=>{_%>
 /** 
   * @description : <%-v.descriptions%>
-  * @param {obj} req : request for <%-v.functionName%>
-  * @param {obj} res : response for <%-v.functionName%>
-  * @return {obj} : response for <%-v.functionName%>
+  * @param {object} req : request for <%-v.functionName%>
+  * @param {object} res : response for <%-v.functionName%>
+  * @return {object} : response for <%-v.functionName%>
   */
 const <%-v.functionName%>=async (req,res)=>{
 try {

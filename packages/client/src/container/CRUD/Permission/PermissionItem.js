@@ -189,7 +189,7 @@ PermissionItem.propTypes = {
   /**
    * permission object
    */
-  permission: PropTypes.objectOf(PropTypes.any),
+  // permission: PropTypes.objectOf(PropTypes),
   /**
    * function to change checkbox selection
    */
@@ -197,6 +197,6 @@ PermissionItem.propTypes = {
   /**
    * set of permission actions
    */
-  permissionSet: PropTypes.objectOf(PropTypes.any).isRequired,
+  // permissionSet: PropTypes.objectOf(PropTypes).isRequired,
 
 };

@@ -44,7 +44,7 @@ async function makeFileUploadFiles (fileUploadObj) {
       controller,
     });
   });
-  returnObj.packageDependencies.dependencies.formidable = '~1.2.2';
+  returnObj.packageDependencies.dependencies.formidable = '~2.0.1';
   returnObj.packageDependencies.dependencies['valid-url'] = '~1.0.9';
   return returnObj;
 }

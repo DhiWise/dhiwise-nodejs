@@ -52,14 +52,14 @@ module.exports = {
         if(userToken >= NO_OF_DEVICE_ALLOWED){
             return {
                 flag: true,
-                data: "You've reached your device limit"
+                data: "You have reached your device limit"
             }
         }
         <%_}_%>
         const { ...userData } = user.toJSON();
         let token;
         if (!user.role) {
-          return {flag:true, data:'You have no assigned any role'}
+          return {flag:true, data:'You have not been assigned any role'}
         }
         if(platform == undefined){
           return {flag:true, data:'Please Login through Platform'}

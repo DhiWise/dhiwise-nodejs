@@ -10,9 +10,8 @@ let { create,
     findOne,
     findMany,
     paginate,
-    count,    
-    upsert,
-     } = require('../db/sequelize/dbService')(<%-MODEL_NAME_FC-%>);
+    count,
+} = require('../db/sequelize/dbService')(<%-MODEL_NAME_FC-%>);
 
 module.exports = {
     create,
@@ -26,6 +25,5 @@ module.exports = {
     findOne,
     findMany,
     paginate,
-    count,
-    upsert,    
+    count,   
 };

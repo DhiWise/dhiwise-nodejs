@@ -24,13 +24,13 @@ const authenticateJWT = (req, res, next) => {
         <%_  }) _%>
         jwt.verify(token,secret, (err, user) => {
             if (err) {
-                responseHandler(res,message.unAuthorizedRequest())
+                responseHandler(res,message.unAuthorized())
             }
             req.user = user;
             next();
         });
     } else {
-        responseHandler(res,message.unAuthorizedRequest())
+        responseHandler(res,message.unAuthorized())
     }
 };
 module.exports = authenticateJWT

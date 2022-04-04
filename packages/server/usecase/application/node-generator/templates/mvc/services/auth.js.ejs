@@ -25,7 +25,7 @@ const ejs = require("ejs");
 
 /**
 * @description : service to generate JWT token for authentication.
-* @param {obj} user : user who wants to login.
+* @param {object} user : user who wants to login.
 * @param {string} secret : secret for JWT.
 * @return {string}  : returns JWT token.
 */
@@ -34,8 +34,6 @@ const generateToken = async (user,secret) => {
         expiresIn: JWT.EXPIRES_IN * 60
     });
 }
- 
-let auth =  module.exports = {}
 
     /**
     * @description : service of login user.
@@ -43,11 +41,11 @@ let auth =  module.exports = {}
     * @param {string} password : password of user.
     * @param {string} url : url of requested route to login, for platform identification.
         <%_if(ROLE_PERMISSION) {_%>
-    * @param {boolean} roleAccess: a flag to request user's role access
+    * @param {boolean} roleAccess: a flag to request role access of user.
         <%_}_%>
-    * @return {obj} : returns authentication status. {flag, data}
+    * @return {object} : returns authentication status. {flag, data}
     */
-    auth.loginUser=async(username,password,url<%_if(ROLE_PERMISSION){_%>,roleAccess<%_}_%>) => {
+    const loginUser=async(username,password,url<%_if(ROLE_PERMISSION){_%>,roleAccess<%_}_%>) => {
             try {
                 <%_ if(LOGIN_WITH.length>1){ _%>
                 let where = <%-MULTIPLE_LOGIN%>
@@ -61,7 +59,7 @@ let auth =  module.exports = {}
                         if(userToken >= NO_OF_DEVICE_ALLOWED){
                             return {
                                 flag: true,
-                                data: "You've reached your device limit"
+                                data: "You have reached your device limit"
                             }
                         }
                     <%_}_%>
@@ -165,10 +163,10 @@ let auth =  module.exports = {}
 
     /**
     * @description : service to change password.
-    * @param {obj} params : object of new password, old password and user's id.
-    * @return {obj}  : returns status of change password. {flag,data}
+    * @param {object} params : object of new password, old password and user id.
+    * @return {object}  : returns status of change password. {flag,data}
     */
-    auth.changePassword=async(params)=>{
+    const changePassword=async(params)=>{
         try {
             let password = params.newPassword;
             let oldPassword = params.oldPassword;
@@ -197,17 +195,17 @@ let auth =  module.exports = {}
 
     /**
     * @description : service to send notification on reset password.
-    * @param {obj} user : user document
+    * @param {object} user : user document
     * @return {}  : returns status where notification is sent or not
     */
-    auth.sendResetPasswordNotification=async (user) => {
+    const sendResetPasswordNotification=async (user) => {
         let resultOfEmail=false;
         let resultOfSMS=false;
         try {
             <%_if(FORGOT_WITH_LINK){_%>
             let token = uuid();
             let expires = dayjs();
-            expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRETIME, "minute").toISOString();
+            expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRE_TIME, "minute").toISOString();
             await dbService.updateDocument(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,user.id,
                 { resetPasswordLink: { code: token, expireTime: expires } });
             if(FORGOT_PASSWORD_WITH.LINK.email){
@@ -296,7 +294,7 @@ let auth =  module.exports = {}
             <%_if(FORGOT_WITH_OTP){_%>
             let otp = common.randomNumber();
             let expires = dayjs();
-            expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRETIME, "minute").toISOString();
+            expires = expires.add(FORGOT_PASSWORD_WITH.EXPIRE_TIME, "minute").toISOString();
             await dbService.updateDocument(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,user.id,{ resetPasswordLink: { code: otp, expireTime: expires } });
             if(FORGOT_PASSWORD_WITH.OTP.email){
                 <%_if(RESET_PASSWORD_TEMPLATE_NAME && RESET_PASSWORD_NOTIFICATION_TYPE==='EMAIL'){_%> 
@@ -390,11 +388,11 @@ let auth =  module.exports = {}
 
     /**
     * @description : service to reset password.
-    * @param {obj} user : user document
+    * @param {object} user : user document
     * @param {string} newPassword : new password to be set.
     * @return {}  : returns status whether new password is set or not. {flag, data}
     */
-    auth.resetPassword=async (user, newPassword) => {
+    const resetPassword=async (user, newPassword) => {
         try {
             let where = { _id: user.id };  
             const dbUser = await dbService.getDocumentByQuery(<%-MODEL.charAt(0).toUpperCase() + MODEL.slice(1)%>,where);
@@ -431,3 +429,10 @@ let auth =  module.exports = {}
             throw new Error(error.message)
         }
     }
+
+module.exports = {
+    loginUser,
+    changePassword,
+    resetPassword,
+    sendResetPasswordNotification
+}

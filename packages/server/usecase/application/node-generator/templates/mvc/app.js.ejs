@@ -10,7 +10,6 @@ const path = require('path');
 const dotenv = require('dotenv');
 dotenv.config();
 global.__basedir = __dirname;
-const ejs = require("ejs");
 require('./config/db.js');
 <%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
 const listEndpoints = require('express-list-endpoints')

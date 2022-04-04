@@ -9,6 +9,8 @@ const routes  =  express.Router();
 const session = require('express-session');
 <%_}_%>
 const auth = require('../../middleware/auth');
+const { PLATFORM } =  require("../../constants/authConstant");
+
 const authController =  require("../../controller/<%-PLATFORM%>/authController")
 routes.route("/register").post(authController.register);
 routes.post("/login",authController.login);
@@ -23,26 +25,6 @@ routes.get("/login/<%-s.toLowerCase()%>",(req,res)=>{
 })       
 <%_})_%>
 <%_}_%>
-<%_ returnRole = makePolicyRoutes('logout')_%>
-routes.route('/logout').post(auth(...<%=returnRole.LOGOUT_API%>), authController.logout); 
-
-<%_ function makePolicyRoutes(type){
-    try{
-        let returnRoles = {}
-        returnRoles.LOGOUT_API = []
-            for (var [i, v] of Object.entries(LOGIN_ACCESS_PLATFORM)) {
-                switch (type) {
-                    case 'logout':
-                        returnRoles.LOGOUT_API.push(`logoutBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
-                        break;
-                    default:
-                        break;
-                }
-            }
-       return returnRoles;
-    }catch(error){
-        throw error;
-    }
-}_%>
+routes.route('/logout').post(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>), authController.logout); 
 
 module.exports = routes;

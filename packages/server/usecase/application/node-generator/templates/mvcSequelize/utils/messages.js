@@ -7,9 +7,9 @@ const responseCode = require('./responseCode');
 
 /**
  * description: exports response format of all APIS
- * @param {obj | Array} data : object which will returned in response.
- * @param {obj} res : response from controller method.
- * @return {obj} : response for API {status, message, data}
+ * @param {object | Array} data : object which will returned in response.
+ * @param {object} res : response from controller method.
+ * @return {object} : response for API {status, message, data}
  */
 module.exports = {
   successResponse: (data, res) => res.status(responseCode.success).json({

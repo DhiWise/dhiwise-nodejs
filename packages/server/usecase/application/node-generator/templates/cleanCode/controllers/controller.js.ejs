@@ -1,33 +1,36 @@
 const response = require('../../../utils/response');
+const responseHandler = require('../../../utils/response/responseHandler'); 
+
 <%_ var methods = [] _%>
 <%_for(let i=0;i< SUPPORT_API.length;i++){_%>
 <%_ if(SUPPORT_API[i].method=="create") {_%>
-    <%_methods.push('add'+DB_MODEL_FC+',') _%> 
-    const add<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async({data <%_ if(SUPPORT_API[i].isLogin){ _%>, loggedInUser<%_}_%>}) => {
+    <%_methods.push('add'+DB_MODEL_FC) _%> 
+    const add<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) => {
         try{
+            let dataToCreate = {...req.body || {} };
             <%_ if(SUPPORT_API[i].isLogin){ _%>
-            data.<%-SUPPORT_API[i].addedBy%> = loggedInUser.id.toString();
+            dataToCreate.<%-SUPPORT_API[i].addedBy%> = req.user.id.toString();
             <%_ } _%>
-            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data});
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase(dataToCreate);
             <%_if(SUPPORT_API[i].fieldSelection){_%>
             <%_SUPPORT_API[i].fields.push("id")_%>
             result.data = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result.data);
             <%_}_%>
-            return result;
+            return responseHandler(res,result);
         }catch(error){
-          return response.internalServerError();
+          return responseHandler(res,response.internalServerError({message:error.message}));
         }
     }
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="createBulk") {_%>
-    <%_methods.push('bulkInsert'+DB_MODEL_FC+',') _%>
-    const bulkInsert<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async({body <%_ if(SUPPORT_API[i].isLogin){ _%>, loggedInUser<%_}_%>}) => {
+    <%_methods.push('bulkInsert'+DB_MODEL_FC) _%>
+    const bulkInsert<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) => {
         try{
-            let data = body.data
+            let dataToCreate = req.body && req.body.data ? [...req.body.data] : [];
             <%_ if(SUPPORT_API[i].isLogin){ _%>
-            data.map((item) => { item.<%-SUPPORT_API[i].addedBy%> = loggedInUser.id.toString(); return item });
+            dataToCreate.map((item) => { item.<%-SUPPORT_API[i].addedBy%> = req.user.id; return item });
             <%_ } _%>
-            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data});
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase(dataToCreate);
             <%_if(SUPPORT_API[i].fieldSelection){_%>
             if(result.data.length){
                 for(let i=0;i< result.data.length; i++){
@@ -35,144 +38,93 @@ const response = require('../../../utils/response');
                 }
             }
             <%_}_%>
-            return result;
+            return responseHandler(res,result);
         }catch(error){
-            return response.internalServerError();
+            return responseHandler(res,response.internalServerError({message:error.message}));
         }
     }
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="update") {_%>
-    <%_methods.push('update'+DB_MODEL_FC+',') _%>
-    const update<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(data,id<%_if(SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>) =>{
+    <%_methods.push('update'+DB_MODEL_FC) _%>
+    const update<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) =>{
         try{
-            delete data["addedBy"]
-            delete data["updatedBy"]
-            <%_ if(SUPPORT_API[i].isLogin){ _%>
-                data.updatedBy=loggedInUser.id
-            <%_ } _%>
-            if(id && data){
-                <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-                let query = {}
-                if (loggedInUser){
-                    query = {
-                        "_id": {
-                            "$eq": id,
-                            "$ne": loggedInUser.id
-                        }
-                    }
-                } else{
-                    return response.badRequest();
-                }
-                <%_}else{_%>
-                    let query = {_id:id}
-                <%_}_%>
-                <%_         
-                nestedCalls={}
-                if(SUPPORT_API[i].IS_NESTED_CALL){
-                    nestedCalls = SUPPORT_API[i].NESTED_CALLS
-                    if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
-                        for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                            <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>
-                        <%_}}
-                    }                
-                }
-                _%>
-                let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query});
-                <%_if(SUPPORT_API[i].fieldSelection){_%>
-                if(Object.keys(result.data).length){
-                    result.data = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result.data);
-                }
-                <%_}_%>
-                return result;
+            if(!req.params.id){
+                return responseHandler(res,response.badRequest());
             }
-            return response.badRequest();
+            let dataToUpdate = { ...req.body || {} };
+            let query = { _id: req.params.id};
+            <%_ if(SUPPORT_API[i].isLogin){ _%>
+            delete dataToUpdate.addedBy;
+            dataToUpdate.updatedBy=req.user.id
+            <%_ } _%>
+            <%_         
+            nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        query = { ...query, ...<%=JSON.parse(element.filter)%>}
+                    <%_}}
+                }                
+            }
+            _%>
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({dataToUpdate,query});
+            <%_if(SUPPORT_API[i].fieldSelection){_%>
+            if(Object.keys(result.data).length){
+                result.data = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result.data);
+            }
+            <%_}_%>
+            return responseHandler(res,result);
         } catch(error){
-            return response.internalServerError();
+            return responseHandler(res,response.internalServerError({message:error.message}));
         }
     }
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="bulkUpdate") {_%>
-    <%_methods.push('bulkUpdate'+DB_MODEL_FC+',') _%>
-    const bulkUpdate<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(data<%_if(SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>) => {
+    <%_methods.push('bulkUpdate'+DB_MODEL_FC) _%>
+    const bulkUpdate<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) => {
         try{
-            if(data.filter && data.data){
-                delete data.data["addedBy"]
-                delete data.data["updatedBy"]
-                <%_ if(SUPPORT_API[i].isLogin){ _%>
-                    data.data.updatedBy=loggedInUser.id
-                <%_ } _%>
-                <%_         
-                nestedCalls={}
-                if(SUPPORT_API[i].IS_NESTED_CALL){
-                    nestedCalls = SUPPORT_API[i].NESTED_CALLS
-                    if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
-                        for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                            data.filter = <%=JSON.parse(element.filter)%>            
-                        <%_}}
-                    }                
-                }
-                _%>
-                <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-                    let query = {};
-                    if (loggedInUser){
-                        query = {
-                            "_id": {
-                                "$ne": loggedInUser.id
-                            },
-                        ...data.filter
-                        }
-                    } else{
-                        return response.badRequest();
-                    }
-                    <%_}else{_%>
-                    let query = data.filter;
-                    <%_}_%> 
-                    return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data: data.data,query});
+            let dataToUpdate = { ...req.body.data || {} };
+            let query = { ...req.body.filter || {} };
+            <%_ if(SUPPORT_API[i].isLogin){ _%>
+            delete dataToUpdate.addedBy;
+            dataToUpdate.updatedBy=req.user.id
+            <%_ } _%>
+            <%_         
+            nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        query = { ...query, ...<%=JSON.parse(element.filter)%>}           
+                    <%_}}
+                }                
             }
-            return response.badRequest();
+            _%>
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({dataToUpdate,query});
+            return responseHandler(res,result);
         }catch(error){
-            return response.internalServerError();
+            return responseHandler(res,response.internalServerError({message:error.message}));
         }
     }
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="findAll") {_%>
-    <%_methods.push('findAll'+DB_MODEL_FC+',') _%>
-    const findAll<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async({data<%_if(SUPPORT_API[i].isLogin || (typeof USER_MODEL !== 'undefined' && USER_MODEL && SUPPORT_API[i].isAuth)){_%>, loggedInUser<%_}_%>}) => {
+    <%_methods.push('findAll'+DB_MODEL_FC) _%>
+    const findAll<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) => {
         try{
-            let options = {}
-            let query={}
-            let result;
-            if (data.query !== undefined) {
-                query = { ...data.query };
-                }
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){_%>
-            if (loggedInUser){
-                query = {
-                    ...query,
-                    ...{ '_id': { $ne: loggedInUser.id } } 
-                };
-                if (data.query && data.query._id) {
-                    Object.assign(query._id, { $in: [data.query._id] })
-                }
-            }else{
-                return response.badRequest()
-            }
-            <%_}_%>
+            let query= req.body && req.body.query ? {...req.body.query} : {};
+            let options= req.body && req.body.options ? {...req.body.options} : {};
             <%_         
                 nestedCalls={}
                 if(SUPPORT_API[i].IS_NESTED_CALL){
                     nestedCalls = SUPPORT_API[i].NESTED_CALLS
                     if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
                         for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                            <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>
+                            query = { ...query, ...<%=JSON.parse(element.filter)%>}
                         <%_}}
                     }                
                 }
             _%>
- 
-            if (data.options !== undefined) {
-                options = { ...data.options };
-            }
             <%_if(typeof VIRTUAL !== "undefined"){
             let populate = [];
             for(let v of VIRTUAL){
@@ -191,77 +143,50 @@ const response = require('../../../utils/response');
                 options.select=<%=SUPPORT_API[i].fields%>
             }
             <%_}_%>
-            return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query,options});
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query,options,isCountOnly:req.body.isCountOnly || false});
+            return responseHandler(res,result);
         } catch(error){
-            return response.internalServerError();
+            return responseHandler(res,response.internalServerError({message:error.message}));
         }
     }
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="partialUpdate") {_%>
-    <%_methods.push('partialUpdate'+DB_MODEL_FC+',') _%>
-const partialUpdate<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (data,id<%_if(SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>) => {
+    <%_methods.push('partialUpdate'+DB_MODEL_FC) _%>
+const partialUpdate<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (req,res) => {
     try {
-        if(id && data){
-            delete data["addedBy"]
-            delete data["updatedBy"]
-            <%_ if(SUPPORT_API[i].isLogin){ _%>
-                data.updatedBy=loggedInUser.id
-            <%_ } _%> 
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-                let query = {}
-                if (loggedInUser){
-                    query = {
-                        "_id": {
-                            "$eq": id,
-                            "$ne": loggedInUser.id
-                        }
-                    } 
-                }else{
-                    return response.badRequest()
-                }
-            <%_}else{_%>
-                let query = {_id:id}
-            <%_}_%>
-            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query});
-            <%_if(SUPPORT_API[i].fieldSelection){_%>
-            if(Object.keys(result.data).length){
-                result.data = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result.data);
-            }
-            <%_}_%>
-            return result;
-        } else{
-            return response.badRequest();
+        if(!req.params.id){
+            return responseHandler(res,response.badRequest());
         }
+        let query = { _id: req.params.id};
+        let dataToUpdate = {...req.body || {}};
+        <%_ if(SUPPORT_API[i].isLogin){ _%>
+        delete dataToUpdate["addedBy"]
+        dataToUpdate.updatedBy=req.user.id
+        <%_ } _%> 
+        let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({dataToUpdate,query});
+        <%_if(SUPPORT_API[i].fieldSelection){_%>
+        if(Object.keys(result.data).length){
+            result.data = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result.data);
+        }
+        <%_}_%>
+        return responseHandler(res,result);
     } catch(error){
-        return response.internalServerError();
+        return responseHandler(res,response.internalServerError({message:error.message}));
     }
 }
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="findById") {_%>
-    <%_methods.push('get'+DB_MODEL_FC+'ById,') _%>
-    const get<%-DB_MODEL_FC%>ById = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(query, data = {}) =>{
+    <%_methods.push('get'+DB_MODEL_FC+'ById') _%>
+    const get<%-DB_MODEL_FC%>ById = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) =>{
         try{
-            let options = {};
-            if (data && data.populate && data.populate.length) options.populate = data.populate;
-            if (data && data.select && data.select.length) options.select = data.select;
-            <%_if(SUPPORT_API[i].fieldSelection){_%>
-                let fieldSelect = <%=SUPPORT_API[i].fields%>
-                options.select = {
-                    ...options.select,
-                    ...fieldSelect
-                }
-            <%_}_%>
-            <%_         
-            nestedCalls={}
-            if(SUPPORT_API[i].IS_NESTED_CALL){
-                nestedCalls = SUPPORT_API[i].NESTED_CALLS
-                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
-                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                        <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>
-                    <%_}}
-                }                
+            if(!req.params.id){
+                return responseHandler(res,response.badRequest());
             }
-            _%>
+            let query = { _id: req.params.id};
+            let options = {};
+            <%_if(SUPPORT_API[i].fieldSelection){_%>
+            options.select = getSelectObject(<%=SUPPORT_API[i].fields%>)
+            <%_}_%>
             <%_if(typeof VIRTUAL !== "undefined"){
                 let populate = [];
                 for(let v of VIRTUAL){
@@ -270,339 +195,341 @@ const partialUpdate<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>
                     })
                 }
                 _%>
-                const virtualRelationModel = <%-JSON.stringify(populate)%>
-                if(!options.populate) options.populate = virtualRelationModel
-                else options.populate.push(...virtualRelationModel);
+                options.populate = <%-JSON.stringify(populate)%>;
             <%_}_%>
-            return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data, query, options});
+            <%_         
+            nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        query = {...query,...<%=JSON.parse(element.filter)%>}
+                    <%_}}
+                }                
+            }
+            _%>
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query, options});
+            return responseHandler(res,result);
         } catch(error){
-          return response.internalServerError();
+          return responseHandler(res,response.internalServerError({message:error.message}));
         }
     }
 <%_ } _%> 
 <%_ if(SUPPORT_API[i].method=="count") {_%>
-    <%_methods.push('get'+DB_MODEL_FC+'Count,') _%>
-    const get<%-DB_MODEL_FC%>Count = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(data) => {
+    <%_methods.push('get'+DB_MODEL_FC+'Count') _%>
+    const get<%-DB_MODEL_FC%>Count = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) => {
         try {
-            let where = data && data.where ? data.where : {};
+            let where = {...req.body.where || {} };
             <%_         
                 nestedCalls={}
                 if(SUPPORT_API[i].IS_NESTED_CALL){
                     nestedCalls = SUPPORT_API[i].NESTED_CALLS
                     if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
                         for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                            where=...<%=JSON.parse(element.filter)%>                      
+                            where= {...where,...<%=JSON.parse(element.filter)%>}                      
                         <%_}}
                     }                
                 }
                 _%>
-            return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({where});  
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase(where); 
+            return responseHandler(res,result); 
         } catch(error){
-            return response.internalServerError();
+            return responseHandler(res,response.internalServerError({message:error.message}));
         }
     }
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="delete") {_%>
-    <%_methods.push('delete'+DB_MODEL_FC+',') _%>
+    <%_methods.push('delete'+DB_MODEL_FC) _%>
 <%_ if(DELETE_DEPENDENT_MODEL){ _%>
-    const delete<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(data,id<%_if(SUPPORT_API[i].isLogin){_%>,loggedInUser<%_}_%>) => {
+    const delete<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) => {
         try{
-            
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (loggedInUser){
-                query = {
-                    "_id": {
-                        "$eq": id,
-                        "$ne": loggedInUser.id
-                    }
-                }
-            }else{
-                return response.badRequest();
+            if(!req.params.id){
+                return responseHandler(res,response.badRequest());
             }
-            <%_}else{_%>
-            let query = {_id:id}
-            <%_}_%>
-            return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query});
-        } catch(error){
-             return response.internalServerError();
-        }
-    }
-<%_ } else { _%>
-    const delete<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(data,id<%_if(SUPPORT_API[i].isLogin){_%>,loggedInUser<%_}_%>) => {
-        try{
-            if(id){
-                <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-                if (loggedInUser){
-                    query = {
-                        "_id": {
-                            "$eq": id,
-                            "$ne": loggedInUser.id
-                        }
-                    }
-                }else{
-                    return response.badRequest();
-                }
-                <%_}else{_%>
-                let query = {_id:id}
-                <%_}_%>
-                <%_         
+            let query = {_id:req.params.id};
+            <%_         
                 nestedCalls={}
                 if(SUPPORT_API[i].IS_NESTED_CALL){
                     nestedCalls = SUPPORT_API[i].NESTED_CALLS
                     if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
                         for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                            <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>
+                            query= {...query,...<%=JSON.parse(element.filter)%>}
                         <%_}}
                     }                
                 }
                 _%>
-                 return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query});
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query,isWarning:req.body.isWarning || false});
+            return responseHandler(res,result);
+        } catch(error){
+            return responseHandler(res,response.internalServerError({message:error.message}));
+        }
+    }
+<%_ } else { _%>
+    const delete<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) => {
+        try{
+            if(!req.params.id){
+                return responseHandler(res,response.badRequest());
             }
-            return response.badRequest();
+            let query = {_id:req.params.id};
+            <%_         
+            nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        query= {...query,...<%=JSON.parse(element.filter)%>}
+                    <%_}}
+                }                
+            }
+            _%>
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query});
+            return responseHandler(res,result);
         }catch(error){
-            return response.internalServerError();
+            return responseHandler(res,response.internalServerError({message:error.message}));
         }
     }
 <%_ } _%>  
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="deleteMany") {_%>
-    <%_methods.push('deleteMany'+DB_MODEL_FC+',') _%>
+    <%_methods.push('deleteMany'+DB_MODEL_FC) _%>
     <%_ if(DELETE_DEPENDENT_MODEL){ _%>
-const deleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(data<%_if(SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>) => {
+const deleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) => {
     try{
-        if(data && data.ids){
-            let ids = data.ids;
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (loggedInUser){
-                query = {
-                    "_id": {
-                        "$in": ids,
-                        "$ne": loggedInUser.id
-                    }
-                }
-            }else{
-                return response.badRequest()
-            }         
-            <%_}else{_%>
-            let query = {"_id":{"$in":ids}}
-            <%_}_%>
-            return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({ data, query});
+        if(!req.body || !req.body.ids){
+            return responseHandler(res,response.badRequest());
         }
-        return response.badRequest();
+        let ids = req.body.ids;
+        let query = { _id : { $in:ids } };
+        <%_         
+            nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        query= {...query,...<%=JSON.parse(element.filter)%>}
+                    <%_}}
+                }                
+            }
+        _%>
+        let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({ query,isWarning:req.body.isWarning || false},req,res);
+        return responseHandler(res,result);
     } catch(error){
-        return response.internalServerError();
+        return responseHandler(res,response.internalServerError({message:error.message}));
     }
 }
 <%_ } else { _%>
-const deleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(data<%_if(SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>) => {
+const deleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) => {
     try{
-        if(data && data.ids){
-            let ids = data.ids;
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (loggedInUser){
-                query = {
-                    "_id": {
-                        "$in": ids,
-                        "$ne": loggedInUser.id
-                    }
-                }
-            }else{
-                return response.badRequest()
-            }
-            <%_}else{_%>
-            let query = {"_id":{"$in":ids}}
-            <%_}_%>
-           return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query});
+        if(!req.body || !req.body.ids){
+            return responseHandler(res,response.badRequest());
         }
-        return response.badRequest();
+        let ids = req.body.ids;
+        let query = { _id : { $in:ids } };
+        <%_         
+            nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        query= {...query,...<%=JSON.parse(element.filter)%>}
+                    <%_}}
+                }                
+            }
+        _%>
+        let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query},req,res);
+        return responseHandler(res,result);
     } catch(error){
-        return response.internalServerError();
+        return responseHandler(res,response.internalServerError({message:error.message}));
     }
 }
 <%_ } _%>
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="softDelete") {_%>
-    <%_methods.push('softDelete'+DB_MODEL_FC+',') _%>
+    <%_methods.push('softDelete'+DB_MODEL_FC) _%>
 <%_ if(DELETE_DEPENDENT_MODEL){ _%>
-    const softDelete<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (data,id<%_if((typeof USER_MODEL !== 'undefined' && USER_MODEL && SUPPORT_API[i].isAuth) || SUPPORT_API[i].isLogin){_%>,loggedInUser<%_}_%>) => {
+    const softDelete<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (req,res) => {
         try{
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (loggedInUser){
-                query = {
-                    "_id": {
-                        "$eq": id,
-                        "$ne": loggedInUser.id
-                    }
-                }
-            }else{
-                return response.badRequest();
+            if(!req.params.id){
+                return responseHandler(res,response.badRequest());
             }
-            <%_}else{_%>
-            let query = {_id:id}
-            <%_}_%>
-            <%_
+            let query = { _id: req.params.id};
+            let dataToUpdate = {
+                isDeleted: true,
+                <%_if(SUPPORT_API[i].isAuth){ _%>
+                updatedBy: req.user.id,
+                <%_}_%>
+            }
+            <%_         
             nestedCalls={}
-            if(SUPPORT_API[i].IS_NESTED_CALL){  
-            nestedCalls = SUPPORT_API[i].NESTED_CALLS
-            if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
-                for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                    <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>                         
-                <%_}}
-                }
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        query= {...query,...<%=JSON.parse(element.filter)%>}
+                    <%_}}
+                }                
             }
             _%>
-           return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query});
-        }catch(error){
-            return response.internalServerError();
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query,dataToUpdate,isWarning:req.body.isWarning || false},req,res);
+            return responseHandler(res,result);
+        } catch(error){
+            return responseHandler(res,response.internalServerError({message:error.message}));
         }
     }
     <%_ } else { _%>
-    const softDelete<%-DB_MODEL_FC%> =  (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(data,id<%_if((typeof USER_MODEL !== 'undefined' && USER_MODEL && SUPPORT_API[i].isAuth) || SUPPORT_API[i].isLogin){_%>,loggedInUser<%_}_%>)=>{
+    const softDelete<%-DB_MODEL_FC%> =  (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res)=>{
         try{
-            if(id){
-                <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-                let query = {}
-                if (loggedInUser){
-                    query = {
-                        "_id": {
-                            "$eq": id,
-                            "$ne": loggedInUser.id
-                        }
-                    }
-                }else{
-                    return response.badRequest()
-                }
-                <%_}else{_%>
-                let query = {_id:id}
-                <%_}_%>
-                <%_
-                    nestedCalls={}
-                    if(SUPPORT_API[i].IS_NESTED_CALL){  
-                    nestedCalls = SUPPORT_API[i].NESTED_CALLS
-                    if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
-                        for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                            <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>               
-                        <%_}}
-                        }
-                    }
-                _%>
-                return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query});
+            if(!req.params.id){
+                return responseHandler(res,response.badRequest());
             }
-            return response.badRequest();
+            let query = { _id: req.params.id};
+            let dataToUpdate = {
+                isDeleted: true,
+                <%_if(SUPPORT_API[i].isAuth){ _%>
+                updatedBy: req.user.id,
+                <%_}_%>
+            }
+            <%_         
+            nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        query= {...query,...<%=JSON.parse(element.filter)%>}
+                    <%_}}
+                }                
+            }
+            _%>
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query,dataToUpdate},req,res);
+            return responseHandler(res,result);
         }catch(error){
-             return response.internalServerError();
+             return responseHandler(res,response.internalServerError({message:error.message}));
         }
     }
 <%_ } _%>
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="softDeleteMany") {_%>
-    <%_methods.push('softDeleteMany'+DB_MODEL_FC+',') _%>
+    <%_methods.push('softDeleteMany'+DB_MODEL_FC) _%>
 <%_ if(DELETE_DEPENDENT_MODEL){ _%>
-const softDeleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (data<%_if((typeof USER_MODEL !== 'undefined' && USER_MODEL && SUPPORT_API[i].isAuth) || SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>) => {
+const softDeleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (req,res) => {
     try{
-        let ids = data.ids;
-        if (ids && (Array.isArray(ids) && ids.length > 0)) {
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (loggedInUser){
-                query = {
-                    "_id": {
-                        "$in": ids,
-                        "$ne": loggedInUser.id
-                    }
-                }
-            }else{
-                return response.badRequest()
-            } 
-            <%_}else{_%>
-            let query = {_id:{$in:ids}}
-            <%_}_%>
-            return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query });
-        }else{
-            return response.badRequest();
+        if(!req.body || !req.body.ids){
+            return responseHandler(res,response.badRequest());
         }
+        let ids = req.body.ids;
+        let query = { _id : { $in:ids } };
+        let dataToUpdate = {
+            isDeleted: true,
+            <%_if(SUPPORT_API[i].isLogin){ _%>
+            updatedBy: req.user.id,
+            <%_}_%>
+        }
+        <%_         
+            nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        query= {...query,...<%=JSON.parse(element.filter)%>}
+                    <%_}}
+                }                
+            }
+        _%>
+        let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query,dataToUpdate,isWarning:req.body.isWarning || false},req,res);
+        return responseHandler(res,result);
     }catch(error){
-        return response.internalServerError();
+        return responseHandler(res,response.internalServerError({message:error.message}));
     }
 }
 <%_ } else { _%>
-const softDeleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (data<%_if((typeof USER_MODEL !== 'undefined' && USER_MODEL && SUPPORT_API[i].isAuth) || SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>) => {
+const softDeleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (req,res) => {
     try{
-        let ids = data.ids;
-        if (ids && (Array.isArray(ids) && ids.length > 0)) {
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (loggedInUser){
-                query = {
-                    "_id": {
-                        "$in": data.ids,
-                        "$ne": loggedInUser.id
-                    }
-                }
-            }else{
-                return response.badRequest()
-            } 
-            <%_}else{_%>
-            let query = {_id:{$in:data.ids}}
-            <%_}_%>
-            return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query});
-        }else{
-            return response.badRequest();
+        if(!req.body || !req.body.ids){
+            return responseHandler(res,response.badRequest());
         }
+        let ids = req.body.ids;
+        let query = { _id : { $in:ids } };
+        let dataToUpdate = {
+            isDeleted: true,
+            <%_if(SUPPORT_API[i].isLogin){ _%>
+            updatedBy: req.user.id,
+            <%_}_%>
+        }
+        <%_         
+            nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        query= {...query,...<%=JSON.parse(element.filter)%>}
+                    <%_}}
+                }                
+            }
+        _%>
+        let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query,dataToUpdate},req,res);
+        return responseHandler(res,result);
     }catch(error){
-        return response.internalServerError();
+        return responseHandler(res,response.internalServerError({message:error.message}));
     }
 }
 <%_ } _%>
 <%_ } _%>
 <%_ } _%>
 <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>
-    const changePassword = (changePasswordUsecase) => async (params) => {
+<%_methods.push('changePassword') _%>
+<%_methods.push('updateProfile') _%>
+<%_methods.push('getLoggedInUserInfo') _%>
+    const changePassword = (changePasswordUsecase) => async (req,res) => {
         try{
-            return await changePasswordUsecase(params);
+            let result = await changePasswordUsecase(req.body);
+            return responseHandler(res,result);
         }catch(error){
-            return response.internalServerError();
+            return responseHandler(res,response.internalServerError({message:error.message}));
         }
-    }   
-    const updateProfile = (updateProfileUsecase) => async (data,id) => {
+    };
+
+    const updateProfile = (updateProfileUsecase) => async (req,res) => {
         try{
-            return await updateProfileUsecase({data,id});
+            let result = await updateProfileUsecase(req.body,req.params.id);
+            return responseHandler(res,result);
         }catch(error){
-            return response.internalServerError();
+            return responseHandler(res,response.internalServerError({message:error.message}));
         }   
-    }
+    };
+
+    const getLoggedInUserInfo = (get<%-DB_MODEL_FC%>Usecase) => async (req,res) =>{
+        try {
+            if(!req.user){
+                return responseHandler(res,response.badRequest());
+            }
+            const query = {
+                _id : req.user.id,
+                isDeleted: false,
+                isActive:true
+            };
+            let result = await get<%-DB_MODEL_FC%>Usecase({query,options:{}});
+            return responseHandler(res,result);
+        } catch (error) {
+            return responseHandler(res,response.internalServerError({message:error.message}));
+        }
+    };
 
 <%_}_%>
 
 <%_if(CUSTOM_ROUTES){_%>
-  <%_CUSTOM_ROUTES.forEach((v,i)=>{ methods.push(v.functionName+',')_%>
-
-  <%_if(typeof(v.descriptions)!=='undefined'){_%>
-    /* 
-    * <%-v.descriptions%>
-    */
-  <%_}_%>
+  <%_CUSTOM_ROUTES.forEach((v,i)=>{ methods.push(v.functionName)_%>
   const <%-v.functionName%> = (<%-v.functionName%>Usecase) => async(req,res) =>{
     try{
-      return await <%-v.functionName%>Usecase(req,res);
+      let result = await <%-v.functionName%>Usecase(req,res);
+      return responseHandler(res,result);
     }catch(error){
-      return response.internalServerError();
+      return responseHandler(res,response.internalServerError({message:error.message}));
     }
   }
   <%_});_%>
 <%_}_%>
 
 module.exports = {
-    <%_methods.forEach(v=> {_%>
-    <%-v%>
-    <%_})_%>
-    <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>
-    changePassword,
-    updateProfile,
-    <%_}_%>
+   <%-methods.join()%>
 }
 

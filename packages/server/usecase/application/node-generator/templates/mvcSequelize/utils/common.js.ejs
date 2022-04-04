@@ -19,7 +19,7 @@ const replaceAll = (string, search, replace) => string.split(search).join(replac
 
   /**
  * convertObjectToEnum : converts object to enum
- * @param {obj} obj : object to be converted
+ * @param {object} obj : object to be converted
  * @return {array} : converted array
  */
 const convertObjectToEnum = (obj) => {
@@ -48,8 +48,8 @@ const randomNumber = (length = 4) => {
   <%_if(IS_AUTH){ _%>
 /**
  * uniqueValidation: check unique validation while user registration
- * @param {obj} model : sequelize model instance of table
- * @param {obj} data : data, coming from request
+ * @param {object} model : sequelize model instance of table
+ * @param {object} data : data, coming from request
  * @return {boolean} : validation status
  */
 const uniqueValidation = async (Model,data) =>{
@@ -101,9 +101,9 @@ const uniqueValidation = async (Model,data) =>{
   <%_if(ROLE_PERMISSION){ _%>
 /** 
  * getRoleAccessData : returns role access of User
- * @param {obj} model : sequelize model instance of tables
+ * @param {object} model : sequelize model instance of tables
  * @param {int} userId : id of user to find role data
- * @return {obj} : user's role access for APIs of model
+ * @return {object} : role access of user for APIs of model
  */
 const getRoleAccessData = async (model,userId) =>{
   let userRoles = await dbService.findAllRecords(model.userRole, { userId: userId });

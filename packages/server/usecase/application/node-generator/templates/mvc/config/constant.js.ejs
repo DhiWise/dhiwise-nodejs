@@ -37,11 +37,6 @@ let LOGIN_ACCESS ={
 
 const DEFAULT_ROLE= 1
 
-const ROLE_RIGHTS={
-    <% for(var i = 0; i < AUTHORIZE_ROUTE_KEY.length; i++) { %>
-    [USER_ROLE.<%- AUTHORIZE_ROUTE_KEY[i] %>] : <%- JSON.stringify(AUTHORIZE_ROUTE_VALUE[i],null,2) %>,
-    <%}%>
-}
 <%_if(LOGIN_RETRY_LIMIT){_%>
 const MAX_LOGIN_RETRY_LIMIT = <%=LOGIN_RETRY_LIMIT.max%>;
 const LOGIN_REACTIVE_TIME = <%=LOGIN_RETRY_LIMIT.reActiveTime%>;   
@@ -66,7 +61,6 @@ module.exports = {
     JWT,
     USER_ROLE,
     DEFAULT_ROLE,
-    ROLE_RIGHTS,
     PLATFORM,
     <%_if(LOGIN_RETRY_LIMIT){_%>
     MAX_LOGIN_RETRY_LIMIT,

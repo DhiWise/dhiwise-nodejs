@@ -1,6 +1,6 @@
 /**
   * fileUploadController.js
-  * @description :: exports methods related file upload/download
+  * @description :: exports methods related file upload
   */
 
 <%_if(S3_UPLOAD){_%>
@@ -17,9 +17,9 @@ let maxFileSize = <%=max_size%>; //In Megabyte
 
 /**
   * @description : uploads file using formidable.
-  * @param {obj} req : request of file upload API
-  * @param {obj} res : response of file upload API.
-  * @return {obj} : response of file upload. {status, message, data}
+  * @param {object} req : request of file upload API
+  * @param {object} res : response of file upload API.
+  * @return {object} : response of file upload. {status, message, data}
   */
 const upload = async (req,res) => {
   try {
@@ -103,7 +103,7 @@ const upload = async (req,res) => {
 /**
   * @description : generate pre signed url for file
   * @param {string} uri : url of file
-  * @return {obj} : response for generate pre signed url
+  * @return {object} : response for generate pre signed url
   */
 const generatePreSignedURL = async (req, res) => {
     try {
@@ -154,10 +154,10 @@ const generatePreSignedURL = async (req, res) => {
 <%_}_%>
 /**
   * @description : upload files
-  * @param {obj} file : file to upload
-  * @param {obj} fields : fields for file
+  * @param {object} file : file to upload
+  * @param {object} fields : fields for file
   * @param {number} fileCount : total number of files to upload
-  * @return {obj} : response for file upload
+  * @return {object} : response for file upload
   */
 const uploadFiles = async (file,fields,fileCount) => {
 
@@ -204,9 +204,9 @@ const uploadFiles = async (file,fields,fileCount) => {
 
 /**
   * @description : upload file to AWS s3
-  * @param {obj} file : file to upload
+  * @param {object} file : file to upload
   * @param {string} fileName : name of file
-  * @return {obj} : response for file upload to AWS s3
+  * @return {object} : response for file upload to AWS s3
   */
 const uploadToS3 = async (file, fileName) => {
   let S3Config = {
@@ -260,9 +260,9 @@ let maxFileSize = <%=max_size%>; //In Megabyte
 
 /**
   * @description : uploads file using formidable.
-  * @param {obj} req : request of file upload API
-  * @param {obj} res : response of file upload API.
-  * @return {obj} : response of file upload. {status, message, data}
+  * @param {object} req : request of file upload API
+  * @param {object} res : response of file upload API.
+  * @return {object} : response of file upload. {status, message, data}
   */
 const upload = async (req, res) => {
   try {
@@ -372,10 +372,10 @@ const makeDirectory = async (directoryPath) => {
 
 /**
  * @description : upload files
- * @param {obj} file : file to upload
- * @param {obj} fields : fields for file
+ * @param {object} file : file to upload
+ * @param {object} fields : fields for file
  * @param {number} fileCount : total number of files to upload
- * @return {obj} : response for file upload
+ * @return {object} : response for file upload
  */
 const uploadFiles = async  (file, fields, fileCount) => {
 
@@ -452,7 +452,7 @@ const uploadFiles = async  (file, fields, fileCount) => {
 /**
   * @description : unlink(delete) file from specified path
   * @param {string} path : location of file 
-  * @return {obj} : return unlink file status {status, message}
+  * @return {object} : return unlink file status {status, message}
   */
 const unlinkFile = async (path) => {
 

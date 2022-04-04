@@ -6,7 +6,7 @@ const {Op} = require('sequelize');
 const dayjs = require('dayjs');
 
 const <%-MODEL.toLowerCase()%>Db = require("../data-access/<%-MODEL%>Db")
-const userTokensDb = require("../data-access/userTokenDb")
+const userTokensDb = require("../data-access/userTokensDb")
 const { JWT,LOGIN_ACCESS,USER_ROLE,PLATFORM<%_if(RESTRICTION){_%>,NO_OF_DEVICE_ALLOWED<%_}_%>} = require("../constants/authConstant")
 
 module.exports = {
@@ -53,7 +53,7 @@ module.exports = {
         const { ...userData } = user.toJSON();
         let token;
         if (!user.role) {
-          return {flag:true, data:'You have no assigned any role'}
+          return {flag:true, data:'You have not been assigned any role'}
         }
         if(platform == undefined){
           return {flag:true, data:'Please login through Platform'}
@@ -63,7 +63,7 @@ module.exports = {
         if(userToken >= NO_OF_DEVICE_ALLOWED){
             return {
                 flag: true,
-                data: "You've reached your device limit"
+                data: "You have reached your device limit"
             }
         }
         <%_}_%>

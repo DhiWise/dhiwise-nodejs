@@ -5,7 +5,8 @@ if(typeof(AUTH_MODEL_JSON) !== 'undefined'){
       var newString = new String()
       newString=JSON.stringify(AUTH_MODEL_JSON[field].ref);
       newString = newString.replace(/@@"/g, "").replace(/"@@/g, "" );
-      FAKE_DATA_OF_AUTH[field] = `@@inserted_${newString}.insertedId@@`
+      newString = newString.charAt(0).toUpperCase() + newString.slice(1);
+      FAKE_DATA_OF_AUTH[field] = `@@inserted${newString}.insertedId@@`
     }  
   })
 }
@@ -28,7 +29,7 @@ const client = new MongoClient(uri, {
 
 <%_if(typeof(MODELS) !== 'undefined'){_%>
 <%_ Object.keys(MODELS).forEach(function(model) { _%>
-let inserted_<%-MODELS[model]%> = {}
+let inserted<%-MODELS[model].charAt(0).toUpperCase() + MODELS[model].slice(1);%> = {};
 <%_ }); _%> 
 <%_}_%>
 
@@ -40,7 +41,7 @@ beforeAll(async function(){
     <%_if(typeof(FAKE_DATA) !== 'undefined'){_%>
     <%_ Object.keys(FAKE_DATA).forEach(function(model){_%>
     const <%-model%> = db.collection(<%=model%>);
-    inserted_<%-model%> = await <%-model%>.insertOne(<%=JSON.parse(JSON.stringify(FAKE_DATA[model]))%>)
+    inserted<%-model.charAt(0).toUpperCase() + model.slice(1); %> = await <%-model%>.insertOne(<%=JSON.parse(JSON.stringify(FAKE_DATA[model]))%>)
     <%_})_%>
     <%_}_%>
   }
