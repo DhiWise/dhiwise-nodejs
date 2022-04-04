@@ -227,6 +227,7 @@ async function authenticationSetup (platformStrategy, {
   }
   const authController = writeOperations.loadTemplate(`${controllerPath}/authController.js`);
   authController.locals.LOGIN_WITH = userLoginWith.username;
+  authController.locals.PLATFORM = platformStrategy;
   authController.locals.MULTIPLE_LOGIN = orObj;
   authController.locals.USER_MODEL = userModel;
   authController.locals.EMAIL_FIELD = emailField || 'email';

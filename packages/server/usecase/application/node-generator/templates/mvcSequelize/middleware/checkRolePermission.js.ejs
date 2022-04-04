@@ -21,7 +21,7 @@ const { role } = require('../model');
     const loggedInUserId = req.user.id;
     let rolesOfUser = await dbService.findMany(model.userRole, {
       userId: loggedInUserId,
-      <%-ISACTIVE_KEYNAME%>: true,
+      isActive : true,
       isDeleted: false,
 
     },
@@ -38,7 +38,7 @@ const { role } = require('../model');
           [Op.and]: [
             { routeId: route.id },
             { roleId: { [Op.in]: rolesOfUser } },
-            { <%-ISACTIVE_KEYNAME%>: true },
+            { isActive: true },
             { isDeleted: false },
           ],
 

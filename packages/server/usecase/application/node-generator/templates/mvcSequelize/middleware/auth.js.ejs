@@ -25,20 +25,16 @@ const verifyCallback = (req, resolve, reject, platform) => async (err, user, inf
         return reject("Unauthorized User");
     }
     req.user = user;
-    <%_if(IS_ISACTIVE_AVAIL){_%>
-    if (!user.<%-ISACTIVE_KEY%>) {
-        return reject("User is deactivated");
-    }
-    <%_}_%>
-    let userToken = await dbService.findOne(model.userToken,{token:(req.headers.authorization).replace('Bearer ',''),userId:user.id});
+
+    let userToken = await dbService.findOne(model.userTokens,{token:(req.headers.authorization).replace('Bearer ',''),userId:user.id});
     if (!userToken){
         return reject('Token not found');
     }
     if (userToken.isTokenExpired){
         return reject('Token is Expired');
     }
-    if (user.userType) {
-        let allowedPlatforms = LOGIN_ACCESS[user.userType] ? LOGIN_ACCESS[user.userType] : [];
+    if (user.role) {
+        let allowedPlatforms = LOGIN_ACCESS[user.role] ? LOGIN_ACCESS[user.role] : [];
         if (!allowedPlatforms.includes(platform)) {
             return reject('Unauthorized user');
         }

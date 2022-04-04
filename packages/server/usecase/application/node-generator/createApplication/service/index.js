@@ -699,11 +699,11 @@ async function addSeederSequelize (jsonData, filePath, authObj) {
   const seeder = writeOperations.loadTemplate(`${filePath}/index.js`);
   const { userModel } = authObj;
   const credentials = !isEmpty(jsonData.authentication.credentials) ? jsonData.authentication.credentials : {};
-
   const array = []; const userArray = []; const passwordArray = []; const
     getRoles = [];
   const user = {};
   const requiredKeys = [];
+  const userRoleArray = [];
   forEach(models, (allSchema, allModels) => {
     if (allModels === userModel) {
       forEach(allSchema, (nestSchema, nestModel) => {
@@ -753,17 +753,25 @@ async function addSeederSequelize (jsonData, filePath, authObj) {
         isActive: true,
         isDeleted: false,
       };
+      userRoleArray.push({
+        [authObj.userLoginWith.username[0]]: `${authFakeData[authObj.userLoginWith.username[0]]}`,
+        [authObj.userLoginWith.password]: `${authFakeData[authObj.userLoginWith.password]}`,
+      });
       const userPassword = authFakeData[authObj.userLoginWith.password];
       array.push(userFindCondition);
       passwordArray.push(userPassword);
       userArray.push(userToBeSeeded);
       getRoles.push(allRoles);
-
       seeder.locals.USER_EXIST_CONDITION = array;
       seeder.locals.USER_PASSWORD = passwordArray;
       seeder.locals.USER = userArray;
       seeder.locals.MODEL = userModel;
       seeder.locals.ROLE_NAME = getRoles;
+      seeder.locals.IS_AUTH = authObj.isAuth ? authObj.isAuth : false;
+      seeder.locals.PASSWORD_FIELD = authObj.userLoginWith.password;
+      seeder.locals.AUTH_MODEL = userModel;
+      seeder.locals.AUTH_MODEL_FC = userModel.charAt(0).toUpperCase() + userModel.slice(1);
+      seeder.locals.USER_ROLE_ARRAY = userRoleArray;
     }
     // role and permission
     if (!isEmpty(jsonData.rolePermission)) {

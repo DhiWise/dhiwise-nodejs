@@ -9,6 +9,7 @@ const dbService = require("../../utils/dbService");
 const dayjs = require("dayjs");
 const <%-USER_MODEL %>SchemaKey = require("../../utils/validation/<%-USER_MODEL%>Validation");
 const validation = require("../../utils/validateRequest");
+const authConstant = require('../../constants/authConstant');
 const {Op} = require('sequelize');
 <%_if(NOTIFICATION_TYPE==="EMAIL"){_%>
 const emailService = require("../../services/email/emailService")
@@ -76,7 +77,7 @@ const register = async(req, res) => {
         <%_}_%>
         return res.success({data:result});
     } catch (error) {
-        return res.internalServerError();
+        return res.internalServerError({ message:error.message }); 
     }  
 }
 
@@ -104,13 +105,13 @@ const forgotPassword = async (req, res) => {
             } else if (!resultOfEmail && resultOfSMS) { 
                 return res.success({message:"otp successfully send to your mobile number."});
             }else{
-                return res.internalServerError({message:"otp can not be sent due to some issue try again later"});
+                return res.success({message:"otp can not be sent due to some issue try again later"});
             }
         } else {
             return res.recordNotFound();
         }
     } catch (error) {
-        return res.internalServerError();
+        return res.internalServerError({ message:error.message }); 
     }
 }
 
@@ -136,7 +137,7 @@ const validateResetPasswordOtp = async (req, res) => {
         }
         return res.success({message:'Otp verified'});
     } catch (error) {
-        return res.internalServerError();
+        return res.internalServerError({ message:error.message }); 
     }
 }
 
@@ -167,7 +168,7 @@ const resetPassword = async (req, res) => {
         }
         return res.failure({message:response.data});
     } catch (error) {
-        return res.internalServerError();
+        return res.internalServerError({ message:error.message }); 
     }
 }
 
@@ -180,26 +181,24 @@ const resetPassword = async (req, res) => {
 const login = async(req,res)=>{
     try {
         let {username,password} = req.body;
-        let url = req.originalUrl
-        if(username && password){
-            <%_if(ROLE_PERMISSION){_%>
-            let roleAccess = false;
-            if (req.body.includeRoleAccess){
-                roleAccess = req.body.includeRoleAccess;
-            }
-            let result = await authService.loginUser(username, password, url, roleAccess);
-            <%_} else {_%>
-            let result = await authService.loginUser(username,password,url); 
-            <%_}_%>
-            if(!result.flag){
-                return res.success({data:result.data,message:result.message});
-            }
-            return res.badRequest({message:result.data});
-        }else{
+        if(!username || !password){
             return res.badRequest();
         }
+        <%_if(ROLE_PERMISSION){_%>
+        let roleAccess = false;
+        if (req.body.includeRoleAccess){
+            roleAccess = req.body.includeRoleAccess;
+        }
+        let result = await authService.loginUser(username, password, authConstant.PLATFORM.<%-PLATFORM.toUpperCase()%>, roleAccess);
+        <%_} else {_%>
+        let result = await authService.loginUser(username,password,authConstant.PLATFORM.<%-PLATFORM.toUpperCase()%>); 
+        <%_}_%>
+        if(!result.flag){
+            return res.success({data:result.data,message:result.message});
+        }
+        return res.badRequest({message:result.data});
     } catch (error) {
-        return res.internalServerError();
+        return res.internalServerError({ message:error.message }); 
     }
 }
 
@@ -218,7 +217,7 @@ const logout = async (req, res) => {
         await dbService.updateByPk(model.userTokens,id, userTokens.toJSON());
         return res.success({message:'Logged Out Successfully'});
     } catch (error) {
-        return res.internalServerError();
+        return res.internalServerError({ message:error.message }); 
     }
 }
 

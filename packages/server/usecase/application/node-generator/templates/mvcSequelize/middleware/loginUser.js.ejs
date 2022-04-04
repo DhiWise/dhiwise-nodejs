@@ -5,13 +5,9 @@
 
 const jwt = require("jsonwebtoken");
 const {PLATFORM} = require("../constants/authConstant");
-<%_if(NO_PLATFORM){ _%>
-const secret = require("../constants/authConstant").JWT.DEFAULT_SECRET;
-<%_ } else { _%>
 <%_ PLATFORM.forEach((v)=>{ _%>
 const <%-v.toLowerCase()%>Secret = require("../constants/authConstant").JWT.<%-v.toUpperCase()%>_SECRET;
-<%_ }) _%>    
-<%_}_%>
+<%_ }) _%>   
 
 /**
 * @description : middleware for authenticate user with JWT token
@@ -25,7 +21,6 @@ const authenticateJWT = (platform) =>  (req, res, next) => {
         return res.unAuthorized();
     }
     const token = authHeader.split(' ')[1];
-    <%_if(!NO_PLATFORM){ _%>
     let secret = '';
     <%_ let c = 0; PLATFORM.forEach((v)=>{ c++;  _%>
         <%_ if(c===1){ _%>
@@ -38,7 +33,7 @@ const authenticateJWT = (platform) =>  (req, res, next) => {
         }
         <%_ } _%> 
     <%_  }) _%>
-    <%_ }_%>
+    
     jwt.verify(token,secret, (error, user) => {
         if (error) {
             return res.unAuthorized();

@@ -39,28 +39,26 @@ const customQueryService = require("../../services/customQueryService")
 */
 const add<%-DB_MODEL_FC%> = async(req, res) => {
     try {
+        let dataToCreate = {...req.body || {} };
+        delete dataToCreate["addedBy"]
+        delete dataToCreate["updatedBy"]
         let validateRequest = validation.validateParamsWithJoi(
-            req.body,
+            dataToCreate,
             <%-DB_MODEL %>SchemaKey.schemaKeys
         );
         if (!validateRequest.isValid) {
             return res.validationError({message : `Invalid values in parameters, ${validateRequest.message}`});
-        } 
-        delete req.body["addedBy"]
-        delete req.body["updatedBy"]  
-        let data = ({
-           ...req.body,
-            <%_if(SUPPORT_API[i].isLogin){_%>
-            <%-SUPPORT_API[i].addedBy%>:req.user.id
-            <%_}_%>  
-        })
-        let result = await dbService.createOne(<%-DB_MODEL_FC %>,data);
+        }   
+        <%_ if(SUPPORT_API[i].isLogin){ _%>
+        dataToCreate.<%-SUPPORT_API[i].addedBy%> = req.user.id.toString();
+        <%_ } _%>
+        let result = await dbService.createOne(<%-DB_MODEL_FC %>,dataToCreate);
         <%_if(SUPPORT_API[i].fieldSelection){_%>
         result = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result);
         <%_}_%>
         return res.success({data:result});
     } catch (error) {
-        return res.internalServerError(); 
+        return res.internalServerError({ message:error.message }); 
     }
 }
 <%_ } _%>
@@ -74,24 +72,19 @@ const add<%-DB_MODEL_FC%> = async(req, res) => {
 */
 const bulkInsert<%-DB_MODEL_FC %> = async(req, res)=>{
     try{
-        let data;   
-        if(req.body.data !== undefined && req.body.data.length){
-        data = req.body.data;
-        data=data.map(item=>{
+        let dataToCreate = req.body && req.body.data ? [...req.body.data] : [];
+        dataToCreate = dataToCreate.map(item=>{
             delete item.addedBy
             delete item.updatedBy
         <%_if(SUPPORT_API[i].isLogin){_%>
-            item.<%-SUPPORT_API[i].addedBy%>=req.user.id
+            item.<%-SUPPORT_API[i].addedBy%> = req.user.id
         <%_}_%>
-            return item
-        })        
-        let result =await dbService.createMany(<%-DB_MODEL_FC %>,data);
-        return res.success({data:result});
-        }else{
-            return res.badRequest()
-        }  
+            return item;
+        });        
+        let result =await dbService.createMany(<%-DB_MODEL_FC %>,dataToCreate);
+        return res.success({ data:result });  
     }catch(error){
-        return res.internalServerError();
+        return res.internalServerError({ message : error.message });
     }
 }
 <%_ } _%>
@@ -105,33 +98,33 @@ const bulkInsert<%-DB_MODEL_FC %> = async(req, res)=>{
 */
 const update<%-DB_MODEL_FC%> = async(req, res) => {
     try {
-        let data = {
-            ...req.body
+        if(!req.params.id){
+            return res.badRequest();
         }
-        delete data.addedBy
-        delete data.updatedBy
+        let dataToUpdate = { ...req.body || {} };
+        let query = { id: req.params.id};
+        delete dataToUpdate.addedBy
         <%_ if(SUPPORT_API[i].isLogin){ _%>
-        data.updatedBy=req.user.id
+        dataToUpdate.updatedBy=req.user.id
         <%_ } _%>
         let validateRequest = validation.validateParamsWithJoi(
-            data,
-            <%-DB_MODEL%>SchemaKey.schemaKeys
+            dataToUpdate,
+            <%-DB_MODEL%>SchemaKey.updateSchemaKeys
         );
         if (!validateRequest.isValid) {
             return res.validationError({message :  `Invalid values in parameters, ${validateRequest.message}`});
         }
-        let query = {id:req.params.id}
         <%_ 
         nestedCalls={}
         if(SUPPORT_API[i].IS_NESTED_CALL){
             nestedCalls = SUPPORT_API[i].NESTED_CALLS
             if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
             for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>   
-                <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>                   
+                query = { ...query,...<%=JSON.parse(element.filter)%>                   
             <%_}}
         }}
         _%> 
-        let result = await dbService.updateMany(<%-DB_MODEL_FC%>,query,data);
+        let result = await dbService.updateMany(<%-DB_MODEL_FC%>,query,dataToUpdate);
         if(!result){
             return res.recordNotFound();
         }
@@ -141,7 +134,7 @@ const update<%-DB_MODEL_FC%> = async(req, res) => {
         return res.success({data:result});
     }
     catch(error){
-        return res.internalServerError();
+        return res.internalServerError({message:error.message});
     }
 }
 <%_ } _%>
@@ -155,35 +148,29 @@ const update<%-DB_MODEL_FC%> = async(req, res) => {
 */
 const bulkUpdate<%-DB_MODEL_FC%>=async(req, res)=>{
     try {
-        let filter={};
-        let data;
-        if(req.body.filter !== undefined){
-            filter = req.body.filter
+        let query = { ...req.body.filter || {} };
+        let dataToUpdate = { ...req.body.data || {} };
+        <%_ if(SUPPORT_API[i].isLogin){ _%>
+        delete dataToUpdate.addedBy;
+        dataToUpdate.updatedBy=req.user.id;
+        <%_ } _%>
+        <%_ 
+            nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
+                for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>   
+                    query = { ...query ,...<%=JSON.parse(element.filter)%> }; 
+                <%_}}
+            }}
+        _%> 
+        let result = await dbService.updateMany(<%-DB_MODEL_FC%>,query,dataToUpdate);
+        if(!result){
+            return res.recordNotFound()
         }
-        if(req.body.data !== undefined){
-            data = req.body.data;
-            <%_ 
-                nestedCalls={}
-                if(SUPPORT_API[i].IS_NESTED_CALL){
-                    nestedCalls = SUPPORT_API[i].NESTED_CALLS
-                    if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
-                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>   
-                        filter = <%=JSON.parse(element.filter)%>                                   
-                    <%_}}
-                }}
-            _%> 
-            let result = await dbService.updateMany(<%-DB_MODEL_FC%>,filter,data);
-            if(!result){
-                return res.recordNotFound()
-            }
-            return res.success({data:result});
-        }
-        else{
-            return res.internalServerError()
-        }
-    }
-    catch(error){
-        return res.internalServerError(); 
+        return res.success({data:result});
+    } catch(error){
+        return res.internalServerError({ message : error.message }); 
     }
 }
 <%_ } _%>
@@ -197,35 +184,36 @@ const bulkUpdate<%-DB_MODEL_FC%>=async(req, res)=>{
 */
 const partialUpdate<%-DB_MODEL_FC%> = async (req, res) => {
     try {
-        let data = {
-            ...req.body,
+        if(!req.params.id){
+            return res.badRequest();
         }
-        delete data.addedBy
-        delete data.updatedBy
-        <%_if(SUPPORT_API[i].isLogin){_%>
-        data.updatedBy=req.user.id
+        let dataToUpdate = { ...req.body || {} };
+        let query = { id: req.params.id};
+        delete dataToUpdate.addedBy
+        <%_ if(SUPPORT_API[i].isLogin){ _%>
+        dataToUpdate.updatedBy=req.user.id
         <%_ } _%>
-        let validateRequest = validation.validateParamsWithJoi(
-            data,
-            <%-DB_MODEL%>SchemaKey.updateSchemaKeys
-        );
-        if (!validateRequest.isValid) {
-            return res.validationError({message : `Invalid values in parameters, ${validateRequest.message}`});
-        }
-        let query = {id:req.params.id}
-        let result = await dbService.updateMany(<%-DB_MODEL_FC%>, query, data);
-        if (!result) {
+        <%_ 
+        nestedCalls={}
+        if(SUPPORT_API[i].IS_NESTED_CALL){
+            nestedCalls = SUPPORT_API[i].NESTED_CALLS
+            if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
+            for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>   
+                query = { ...query,...<%=JSON.parse(element.filter)%>                   
+            <%_}}
+        }}
+        _%> 
+        let result = await dbService.updateMany(<%-DB_MODEL_FC%>,query,dataToUpdate);
+        if(!result){
             return res.recordNotFound();
-        }   
+        }
         <%_if(SUPPORT_API[i].fieldSelection){_%>
-        let select = {};
-        select.attributes = <%=SUPPORT_API[i].fields%>
-        result = await dbService.findByPk(<%-DB_MODEL_FC%>,req.params.id,select);
+        result = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result);
         <%_}_%>
         return res.success({data:result});
     }
     catch(error){
-        return res.internalServerError()
+        return res.internalServerError({message:error.message});
     }
 }
 <%_ } _%>
@@ -239,22 +227,9 @@ const partialUpdate<%-DB_MODEL_FC%> = async (req, res) => {
 */
 const findAll<%-DB_MODEL_FC%> = async(req, res) => {
     try {
-        let options = {}
-        let query={}
-        let result;
-        if (req.body.query !== undefined) {
-            query = { ...req.body.query }
-        }
+        let query = req.body && req.body.query ? {...req.body.query} : {};
+        let options= req.body && req.body.options ? {...req.body.options} : {};
         query = dbService.queryBuilderParser(query);
-        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-        query = {
-                ...query,
-                id: {[Op.ne]: loggedInUser.id}
-            };
-            if (req.body && req.body.query && req.body.query.id) {
-                Object.assign(query.id, { [Op.in]: [req.body.query.id] })
-            }
-        <%_}_%>
         if(req.body && req.body.isCountOnly){
             <%_         
             nestedCalls={}
@@ -262,19 +237,15 @@ const findAll<%-DB_MODEL_FC%> = async(req, res) => {
                 nestedCalls = SUPPORT_API[i].NESTED_CALLS
                 if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
                     for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                        <%-element.existingVariable%> = <%=JSON.parse(element.filter)%> 
+                        query = { ...query,...<%=JSON.parse(element.filter)%> }
                     <%_}}
                 }                
             }
             _%>
-            result = await dbService.count(<%-DB_MODEL_FC%>, query);
-            result = {totalRecords: result};
-            return res.success({data:result});
+            let totalRecords = await dbService.count(<%-DB_MODEL_FC%>, query);
+            return res.success({data : { totalRecords }});
         }
         else {
-            if (req.body && req.body.options !== undefined) {
-                options = { ...req.body.options };
-            }
             <%_if(SUPPORT_API[i].fieldSelection){_%>
                 if(options.select && options.select.length){
                     options.attributes = <%=SUPPORT_API[i].fields%>.filter(Set.prototype.has, new Set(options.select));
@@ -301,35 +272,7 @@ const findAll<%-DB_MODEL_FC%> = async(req, res) => {
                 options.order = dbService.sortParser(options.sort);
                 delete options.sort;
             }
-            <%_
-                nestedCalls={}
-                if(SUPPORT_API[i].IS_NESTED_CALL){  
-                nestedCalls = SUPPORT_API[i].NESTED_CALLS
-                }
-            _%>
-            <%_ 
-            if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
-                for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                    <%-element.existingVariable%> = <%=JSON.parse(element.filter)%> 
-                    <%_if(element.skip){ %>
-                        options.skip = <%-JSON.stringify(element.skip)_%>;
-                        <%_}_%>
-                        <%_if(element.limit){ %>
-                        options.limit = <%-JSON.stringify(element.limit)_%>;
-                        <%_}_%>
-                        <%_if(element.populate && element.populate.length>0){ %>
-                        options.populate = <%-JSON.stringify(element.populate)_%>;
-                        <%_}_%>
-                        <%_if(element.sort){ %>
-                        options.sort = <%-JSON.stringify(element.sort)_%>;
-                        <%_}_%>
-                        <%_if(element.select){ %>
-                        options.select = <%-JSON.stringify(element.select)_%>;
-                        <%_}_%>
-                <%_}}
-            }
-            _%>
-            result = await dbService.findMany( <%-DB_MODEL_FC%>,query,options);
+            let result = await dbService.findMany( <%-DB_MODEL_FC%>,query,options);
             if(!result){
                 return res.recordNotFound();
             }
@@ -337,7 +280,7 @@ const findAll<%-DB_MODEL_FC%> = async(req, res) => {
         }
     }
     catch(error){
-        return res.internalServerError();
+        return res.internalServerError({ message:error.message });
     }
 }
 
@@ -352,34 +295,28 @@ const findAll<%-DB_MODEL_FC%> = async(req, res) => {
 */
 const get<%-DB_MODEL_FC%> = async(req, res) => {
     try {
-        let query={};
+        if(!req.params.id){
+            return res.badRequest();
+        }
+        let options = {};
         <%_if(SUPPORT_API[i].fieldSelection){_%>
         let select = <%=SUPPORT_API[i].fields%>
-        query.attributes = select;
+        options.attributes = select;
         <%_}_%> 
-        let id=req.params.id
-        <%_                   
-        if(SUPPORT_API[i].IS_NESTED_CALL){  
-            if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
-                for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                    <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>    
-                <%_}}
-            }                
-        }
-        _%>
-        let result = await dbService.findByPk(<%-DB_MODEL_FC%>,id,query);
+        let id = req.params.id
+        let result = await dbService.findByPk(<%-DB_MODEL_FC%>,id,options);
         if(result){    
             return res.success({data:result});
         }
         return res.recordNotFound();
     }
     catch(error){
-        return res.internalServerError()
+        return res.internalServerError({ message : error.message })
     }
 }
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="count") {_%>
-    <%_methods.push('get'+DB_MODEL_FC+'Count,') _%>
+    <%_methods.push('get'+DB_MODEL_FC+'Count') _%>
 /**
 * @description : returns total number of records of <%-DB_MODEL_FC%>.
 * @param {object} req : request including where object to apply filters in request body 
@@ -388,27 +325,23 @@ const get<%-DB_MODEL_FC%> = async(req, res) => {
 */
 const get<%-DB_MODEL_FC%>Count = async(req, res) => {
     try {
-        let where ={};
-        if(req.body.where){
-            where = req.body.where;
-        }
+        let where = {...req.body.where || {} };
         <%_
             nestedCalls={}
             if(SUPPORT_API[i].IS_NESTED_CALL){  
             nestedCalls = SUPPORT_API[i].NESTED_CALLS
             if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
                     for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                        where = <%=JSON.parse(element.filter)%> 
+                        where = {...where, ...<%=JSON.parse(element.filter)%> }
                     <%_}}
                 }
             }
         _%>
-        let result = await dbService.count(<%-DB_MODEL_FC%>,where);
-        result = {totalRecords: result}
-        return res.success({data:result});
+        let totalRecords = await dbService.count(<%-DB_MODEL_FC%>,where);
+        return res.success({data: { totalRecords } });
     }
     catch(error){
-        return res.internalServerError();
+        return res.internalServerError({ message:error.message });
     }
 }
 <%_ } _%>
@@ -423,50 +356,30 @@ const get<%-DB_MODEL_FC%>Count = async(req, res) => {
 */
 const delete<%-DB_MODEL_FC%> =async(req, res) => {
     try{
-        let id = req.params.id;
-        let query = {id:id}
-        if (req.body.isWarning) {
-            <%_
-                nestedCalls={}
-                if(SUPPORT_API[i].IS_NESTED_CALL){  
-                nestedCalls = SUPPORT_API[i].NESTED_CALLS
-                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
-                        for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                            <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>             
-                        <%_}}
-                    }
-                }
-            _%>
-            let result = await deleteDependentService.count<%-DB_MODEL_FC%>(query);
-            if(result){
-                return res.success({data:result});
-            }
-            return res.recordNotFound();
-        } else {
-            let query = {id:id}
-            <%_
-                nestedCalls={}
-                if(SUPPORT_API[i].IS_NESTED_CALL){  
-                nestedCalls = SUPPORT_API[i].NESTED_CALLS
-                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
-                        for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                            <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>               
-                        <%_}}
-                    }
-                }
-            _%>
-            let result = await deleteDependentService.delete<%-DB_MODEL_FC%>(query);
-            if(!result){
-                return res.recordNotFound();
-            }
-            <%_if(SUPPORT_API[i].fieldSelection){_%>
-            result = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result);
-            <%_}_%>
-            return res.success({data:result});  
+        if(!req.params.id){
+            return res.badRequest();
         }
-    }
-    catch(error){
-        return res.internalServerError(); 
+        let query = { id : req.params.id };
+        <%_
+                nestedCalls={}
+                if(SUPPORT_API[i].IS_NESTED_CALL){  
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
+                        for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                            query = { ...query,...<%=JSON.parse(element.filter)%>};
+                        <%_}}
+                    }
+                }
+        _%>
+        let result;
+        if (req.body.isWarning) {
+            result = await deleteDependentService.count<%-DB_MODEL_FC%>(query);
+        } else {
+            result = await deleteDependentService.delete<%-DB_MODEL_FC%>(query); 
+        }
+        return res.success({data : result});
+    } catch(error){
+        return res.internalServerError({ message:error.message }); 
     }
 }
 <%_} else {_%>
@@ -476,27 +389,13 @@ const delete<%-DB_MODEL_FC%> =async(req, res) => {
 * @param {object} res : response contains deleted record.
 * @return {object} : deleted <%-DB_MODEL_FC%>. {status, message, data}
 */
-const delete<%-DB_MODEL_FC%> =async(req, res) => {
+const delete<%-DB_MODEL_FC%> = async (req, res) => {
     try {
-        <%_
-            nestedCalls={}
-            if(SUPPORT_API[i].IS_NESTED_CALL){  
-            nestedCalls = SUPPORT_API[i].NESTED_CALLS
-            if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
-                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                        <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>                  
-                    <%_}}
-                }
-            }
-        _%>  
         const result = await dbService.deleteByPk(<%-DB_MODEL_FC%>,req.params.id);
-        if(result){
-            return res.success({data:result});
-        }
-        return res.recordNotFound();
+        return res.success({data:result});
     }
     catch(error){
-        return res.internalServerError();
+        return res.internalServerError({ message:error.message });
     }
 }
 <%_}_%>
@@ -513,22 +412,22 @@ const delete<%-DB_MODEL_FC%> =async(req, res) => {
 */
 const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
     try{
-        let data = req.body;
-        if(data && data.ids){
-            let query = {id:{[Op.in]:ids}}
-            let result;
-            if(data.isWarning){
-                result = await deleteDependentService.count<%-DB_MODEL_FC%>(query);
-            }
-            else{
-                result = await deleteDependentService.delete<%-DB_MODEL_FC%>(query);
-            }
-            return res.success({data:result});
+        if(!req.body || !req.body.ids){
+            return res.badRequest();
         }
-        return res.badRequest(); 
+        let ids = req.body.ids;
+        let query = {id: { [Op.in] : ids }}
+        let data = req.body;
+        let result;
+        if(data.isWarning){
+            result = await deleteDependentService.count<%-DB_MODEL_FC%>(query);
+        } else{
+            result = await deleteDependentService.delete<%-DB_MODEL_FC%>(query);
+        }
+        return res.success({data:result});
     }
     catch(error){
-        return res.internalServerError(); 
+        return res.internalServerError({message:error.message}); 
     }
 }
 <%_} else {_%>
@@ -544,12 +443,11 @@ const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
         if(!ids || !Array.isArray(ids) || ids.length < 1){
             return res.badRequest();
         }
-        let query = {id:{[Op.in]:ids}}
+        let query = {id:{[Op.in]:ids}};
         let result = await dbService.deleteMany(<%-DB_MODEL_FC%>,query);
         return res.success({data:result});
-    }
-    catch(error){
-        return res.internalServerError(); 
+    } catch(error){
+        return res.internalServerError({ message:error.message }); 
     }
 }
 <%_ } _%>
@@ -566,35 +464,25 @@ const deleteMany<%-DB_MODEL_FC%> =async(req, res) => {
 */
 const softDelete<%-DB_MODEL_FC%> = async (req, res) => {
     try{
-        let id = req.params.id;
-        <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-        let query = {
-                "id": {
-                    [Op.eq]: id,
-                    [Op.ne]: req.user.id
-                }
-            }
-        <%_}else{_%>
-        let query = {id:id}
-        <%_}_%>
+        if(!req.params.id){
+            return res.badRequest();
+        }
+        let query = { id :req.params.id }
         <%_
         nestedCalls={}
         if(SUPPORT_API[i].IS_NESTED_CALL){  
         nestedCalls = SUPPORT_API[i].NESTED_CALLS
         if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
             for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>                         
+                query = { ...query,...<%=JSON.parse(element.filter)%> };
             <%_}}
             }
         }
         _%>
-        let result = await deleteDependentService.softDelete<%-DB_MODEL_FC%>(query<%_if(SUPPORT_API[i].isLogin){_%>,req.user.id<%_ } _%>);
-        if(!result){
-            return res.recordNotFound();
-        }
+        let result = await deleteDependentService.softDelete<%-DB_MODEL_FC%>(query);
         return res.success({data:result});
     }catch(error){
-        return res.internalServerError(); 
+        return res.internalServerError({ message:error.message }); 
     }
 }
 <%_} else {_%>
@@ -606,6 +494,9 @@ const softDelete<%-DB_MODEL_FC%> = async (req, res) => {
 */
 const softDelete<%-DB_MODEL_FC%> = async (req, res) => {
     try{
+        if(!req.params.id){
+            return res.badRequest();
+        }
         let query = {id:req.params.id}
         <%_
         nestedCalls={}
@@ -613,19 +504,16 @@ const softDelete<%-DB_MODEL_FC%> = async (req, res) => {
         nestedCalls = SUPPORT_API[i].NESTED_CALLS
         if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){             
             for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>                         
+               query = { ...query,...<%=JSON.parse(element.filter)%> } 
             <%_}}
             }
         }
         _%>
         let options={};
-        let result = await dbService.softDeleteMany(<%-DB_MODEL_FC%>, query,options <%_if(SUPPORT_API[i].isLogin){_%>,req.user.id<%_}_%>);
-        if(!result){
-            return res.recordNotFound();
-        }
+        let result = await dbService.softDeleteMany(<%-DB_MODEL_FC%>, query,options);
         return res.success({data:result});
     }catch(error){
-        return res.internalServerError(); 
+        return res.internalServerError({ message:error.message }); 
     }
 }
 <%_}_%>
@@ -647,14 +535,10 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (req, res) => {
             return res.badRequest();
         }
         let query = {id:{[Op.in]:ids}}
-        let result = await deleteDependentService.softDelete<%-DB_MODEL_FC%>(query<%_if(SUPPORT_API[i].isLogin){_%>,req.user.id<%_ } _%>);
-        if (!result) {
-            return res.recordNotFound();
-        }
+        let result = await deleteDependentService.softDelete<%-DB_MODEL_FC%>(query);
         return res.success({data:result});
-        
     }catch(error){
-        return res.internalServerError(); 
+        return res.internalServerError({ message:error.message }); 
     }
 }
 <%_} else {_%>
@@ -671,13 +555,10 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (req, res) => {
             return res.badRequest();
         }
         let query = {id:{[Op.in]:ids}};
-        let result = await dbService.softDeleteMany(<%-DB_MODEL_FC%>,query,options,<%_if(SUPPORT_API[i].isLogin){_%>req.user.id<%_}_%>);
-        if (!result) {
-            return res.recordNotFound();
-        }
+        let result = await dbService.softDeleteMany(<%-DB_MODEL_FC%>,query,options);
         return res.success({data:result});
     }catch(error){
-        return res.internalServerError(); 
+        return res.internalServerError({ message:error.message }); 
     }
 }
 <%_}_%>
@@ -688,6 +569,7 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (req, res) => {
 <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){
     methods.push('changePassword');
     methods.push('updateProfile');
+    methods.push('getLoggedInUserInfo');
     _%> 
     /**
     * @description : change password
@@ -707,7 +589,7 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (req, res) => {
             }
             return res.success({message:result.data});
         } catch (error) {
-            return res.internalServerError();
+            return res.internalServerError({ message:error.message }); 
         }
     }
     /**
@@ -718,28 +600,49 @@ const softDeleteMany<%-DB_MODEL_FC%> = async (req, res) => {
     */
     const updateProfile = async (req, res) => {
         try {
-            let data = {
-                ...req.body,
-            };
+            let dataToUpdate = {...req.body || {} };
             let validateRequest = validation.validateParamsWithJoi(
-                data,
+                dataToUpdate,
                 <%-DB_MODEL %>SchemaKey.updateSchemaKeys
             );
             if (!validateRequest.isValid) {
                 return res.validationError({message : `Invalid values in parameters, ${validateRequest.message}`});
             }   
-            delete data.password;
-            delete data.createdAt;
-            delete data.updatedAt;
-            delete data.id;
-            let result = await dbService.updateByPk(<%-DB_MODEL_FC%>, req.user.id ,data);
-            if (!result){
-                return res.recordNotFound();
-            }            
+            delete dataToUpdate.password;
+            delete dataToUpdate.createdAt;
+            delete dataToUpdate.updatedAt;
+            delete dataToUpdate.id;
+            let result = await dbService.updateByPk(<%-DB_MODEL_FC%>, req.user.id ,dataToUpdate);         
             return res.success({data:result});
         }
         catch (error){
-            return res.internalServerError(error.message);
+            return res.internalServerError({message:error.message});
+        }
+    };
+
+    /**
+    * @description : get information of logged-in User.
+    * @param {obj} req : authentication token is required
+    * @param {obj} res : Logged-in user information
+    * @return {obj} : Logged-in user information {status, message, data}
+    */
+    const getLoggedInUserInfo = async (req, res) => {
+        try {
+            if (!req.user && !req.user.id) {
+                return res.badRequest();
+            }
+            const query = {
+                id : req.user.id,
+                isDeleted : false,
+                isActive : true
+            };
+            let result = await dbService.findOne(<%-DB_MODEL_FC%>,query);
+            if (!result) {
+                return res.recordNotFound();
+            }
+            return res.success({ data: result });
+        } catch (error){
+            return res.internalServerError({ data: error.message });
         }
     };
 <%_}_%>
@@ -769,7 +672,7 @@ const <%-v.functionName%>=async (req, res)=>{
         return res.success({data:combinedOutput});
         <%_}_%>
     } catch (error) {
-        return res.internalServerError();
+        return res.internalServerError({ message:error.message }); 
     }  
 }   
 <%_ })_%>

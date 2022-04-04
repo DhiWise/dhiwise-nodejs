@@ -25,6 +25,8 @@ async function generateStaticFilesForMVC (templateFolderName, dir, userDirectory
 async function generateStaticFilesForMVCSequelize (templateFolderName, dir, userDirectoryStructure) {
   writeOperations.copyTemplateMulti(`${templateFolderName}/utils`, `${dir}${userDirectoryStructure.utilsFolderPath}`, '*.js');
   writeOperations.copyTemplate(`${templateFolderName}/views/index.ejs`, `${dir}${userDirectoryStructure.viewsFolderPath}/index.ejs`);
+  writeOperations.mkdir(dir, `${userDirectoryStructure.utilsFolderPath}/response`);
+  writeOperations.copyTemplateMulti(`${templateFolderName}/utils/response/`, `${dir}${userDirectoryStructure.utilsFolderPath}/response`, '*.js');
 }
 async function generateStaticFilesForCCSequelize (templateFolderName, dir, userDirectoryStructure) {
   writeOperations.copyTemplateMulti(`${templateFolderName}/helpers`, `${dir}/helpers`, '*.js');

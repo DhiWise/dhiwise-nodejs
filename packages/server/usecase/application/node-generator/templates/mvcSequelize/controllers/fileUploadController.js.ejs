@@ -93,7 +93,7 @@ const upload = async (req,res) =>{
     if (error.name && error.name == 'validationError') {
       return res.validationError({ message: error.message });
     } else {
-      return res.internalServerError();
+      return res.internalServerError({ message:error.message }); 
     }
   }
 };
@@ -147,7 +147,7 @@ const generatePreSignedURL = async (req, res) => {
             return res.badRequest();
         }
     } catch (error) {
-        return res.internalServerError();
+        return res.internalServerError({ message:error.message }); 
     }
 }
 <%_}_%>
@@ -345,7 +345,7 @@ const upload = async (req, res) => {
     if (error.name && error.name == 'validationError') {
       return res.validationError({ message: error.message });
     } else {
-      return res.internalServerError();
+      return res.internalServerError({ message:error.message }); 
     }
   }
 };
