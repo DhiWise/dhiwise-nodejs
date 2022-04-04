@@ -1,6 +1,5 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import PropTypes from 'prop-types';
 // import ReactTooltip from 'react-tooltip';
 import { cloneDeep, isEmpty } from 'lodash';
 import { Icons } from '@dhiwise/icons';
@@ -181,22 +180,3 @@ function PermissionItem(props) {
   );
 }
 export default PermissionItem;
-PermissionItem.propTypes = {
-  /**
-   * display title
-   */
-  title: PropTypes.string.isRequired,
-  /**
-   * permission object
-   */
-  permission: PropTypes.objectOf(PropTypes.any),
-  /**
-   * function to change checkbox selection
-   */
-  onChange: PropTypes.func.isRequired,
-  /**
-   * set of permission actions
-   */
-  permissionSet: PropTypes.objectOf(PropTypes.any).isRequired,
-
-};
