@@ -10,6 +10,11 @@ const response = require('../../utils/response');
 
 
 <%_ if(DELETE_DEPENDENT_MODEL){ _%>
+/**
+* @description : soft delete record of <%-DB_MODEL_FC%> from database by id;
+* @param {Object} params : request body.
+* @return {Object} : deactivated <%-DB_MODEL_FC%>. {status, message, data}
+*/
 const softDelete = ({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>}) => async (params) => {
     let {query,dataToUpdate,isWarning } = params;
     if (isWarning) {
@@ -23,6 +28,11 @@ const softDelete = ({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- mode
     
 }
 <%_ } else { _%>
+/**
+* @description : soft delete record of <%-DB_MODEL_FC%> from database by id;
+* @param {Object} params : request body.
+* @return {Object} : deactivated <%-DB_MODEL_FC%>. {status, message, data}
+*/
 const softDelete = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
     let { query,dataToUpdate } = params;
     let result = await <%-MODEL_NAME-%>Db.softDelete(query, dataToUpdate);

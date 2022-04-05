@@ -8,6 +8,11 @@ const response = require('../../utils/response');
     const makeSoftDeleteWithDependency = require('./deleteDependent').softDeleteWithDependency;
 <%_ } _%>
 
+/**
+* @description : soft delete multiple records of <%-DB_MODEL_FC%> from database by ids;
+* @param {Object} params : request body.
+* @return {Object} : number of deactivated documents of <%-DB_MODEL_FC%>. {status, message, data}
+*/
 <%_ if(DELETE_DEPENDENT_MODEL){ _%>
 const softDeleteMany = ({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>}) => async (params) => {
     let { query, dataToUpdate,isWarning} = params;

@@ -8,6 +8,11 @@ const response = require('../../utils/response');
     const makeDeleteWithDependency = require('./deleteDependent').deleteWithDependency;
 <%_ } _%>
 
+/**
+* @description : delete record of <%-DB_MODEL_FC%> from database.
+* @param {Object} params : request body including query.
+* @return {Object} : deleted <%-DB_MODEL_FC%>. {status, message, data}
+*/
 <%_ if(DELETE_DEPENDENT_MODEL){ _%>
 const deleteOne = ({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>}) => async (params) => {
     let { query,isWarning } = params;

@@ -1,10 +1,11 @@
-/**
- partialUpdate.js
- */
-
 const <%-MODEL_NAME-%>Entity = require('../../entities/<%-MODEL_NAME-%>');
 const response = require('../../utils/response');
 
+/**
+* @description : partially update record of <%-DB_MODEL_FC%> with data by id;
+* @param {Object} params : request body.
+* @return {obj} : updated <%-DB_MODEL_FC%>. {status, message, data}
+*/
 const partialUpdate = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
     const <%-MODEL_NAME.toLowerCase()-%> = await <%-MODEL_NAME-%>Db.updateOne(params.query,params.partialUpdate);
     if(!<%-MODEL_NAME.toLowerCase()-%>){

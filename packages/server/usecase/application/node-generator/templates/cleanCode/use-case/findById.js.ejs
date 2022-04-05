@@ -1,9 +1,10 @@
-/**
- findById.js
- */
-
 const response = require('../../utils/response');
 
+/**
+* @description : find record of <%-DB_MODEL_FC%> from database by id;
+* @param {Object} params : request body including option and query.
+* @return {Object} : found <%-DB_MODEL_FC%>. {status, message, data}
+*/
 const findById = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
     let result = await <%-MODEL_NAME-%>Db.findOne(params.query, params.options);
     if(!result){

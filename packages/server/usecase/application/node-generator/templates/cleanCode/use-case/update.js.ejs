@@ -1,10 +1,11 @@
-/**
- *update.js
- */
-
 const <%-MODEL_NAME-%>Entity = require('../../entities/<%-MODEL_NAME-%>');
 const response = require('../../utils/response');
 
+/**
+* @description : update record of <%-DB_MODEL_FC%> with data by id.
+* @param {Object} params : request body including query and data.
+* @return {Object} : updated <%-DB_MODEL_FC%>. {status, message, data}
+*/
 const update = ({ <%-MODEL_NAME-%>Db, updateValidation}) => async (params) => {
     let { dataToUpdate, query } = params;
     const validateRequest = await updateValidation(dataToUpdate);

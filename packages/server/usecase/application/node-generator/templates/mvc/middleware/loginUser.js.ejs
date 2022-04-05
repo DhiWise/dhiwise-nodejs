@@ -7,20 +7,20 @@ const jwt = require("jsonwebtoken");
 <%_ PLATFORM.forEach((v)=>{ _%>
 const <%-v.toLowerCase()%>Secret = require("../constants/authConstant").JWT.<%-v.toUpperCase()%>_SECRET;
 <%_ }) _%>
- 
+const { PLATFORM } = require('../constants/authConstant'); 
 
-const authenticateJWT = (req, res, next) => {
+const authenticateJWT = (platform) => async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
         const token = authHeader.split(' ')[1];
         let secret = '';
         <%_ var c = 0; PLATFORM.forEach((v)=>{ c++;  _%>
             <%_ if(c===1){ _%>
-            if(url.includes(<%= v.toLowerCase() %>)){
+            if(platform == PLATFORM.<%- v.toUpperCase() %>){
                 secret = <%-v.toLowerCase()%>Secret;
             }
             <%_ }else{ _%>
-            else if(url.includes(<%= v.toLowerCase()%>)){
+            else if(platform == PLATFORM.<%- v.toUpperCase() %>){
                 secret = <%-v.toLowerCase()%>Secret;
             }
             <%_ } _%> 

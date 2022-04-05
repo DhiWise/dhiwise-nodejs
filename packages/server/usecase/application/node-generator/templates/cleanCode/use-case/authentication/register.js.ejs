@@ -8,6 +8,11 @@ const {sendSMS} = require('../../services/sms/smsService');
 const {sendMail} = require('../../services/email/emailService');
 <%_}_%>
 
+/**
+ * @description : user registration 
+ * @param {Object} params : request for register
+ * @return {Object} : response for register {status, message, data}
+ */
 const register = ({ <%-USER_MODEL-%>Db, createValidation }) => async (params) => {
     let validateSchema = await createValidation(params);
     if (!validateSchema.isValid) {
