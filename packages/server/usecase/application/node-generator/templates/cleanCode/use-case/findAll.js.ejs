@@ -1,9 +1,10 @@
-/**
- *findAll.js
- */
-
 const response = require('../../utils/response');
 
+/**
+* @description : find all records of <%-MODEL_NAME_FC%> from database based on query and options.
+* @param {Object} params : request body including option and query.
+* @return {Object} : found <%-MODEL_NAME_FC%>(s). {status, message, data}
+*/
 const findAll = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
     let { query, options,isCountOnly } = params;
     if(isCountOnly){

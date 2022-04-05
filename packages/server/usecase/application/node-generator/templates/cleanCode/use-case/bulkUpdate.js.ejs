@@ -7,8 +7,8 @@ const response = require('../../utils/response');
 /**
  * @description : update multiple records of <%-MODEL_NAME%> with data by filter.
  * @param {object} <%-MODEL_NAME-%>Db : db service instance
- * @param {object} params : {query: query to find data, data: data to update }
- * @return {object} : response of bulkUpdate. {status, message, data}
+ * @param {object} params :  request body including query and data to update.
+ * @return {object} : updated documents
  */
 const bulkUpdate = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
     const results = await <%-MODEL_NAME-%>Db.updateMany(params.query,params.dataToUpdate);
