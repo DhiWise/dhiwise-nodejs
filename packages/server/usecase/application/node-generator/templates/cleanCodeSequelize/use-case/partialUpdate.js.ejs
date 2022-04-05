@@ -6,7 +6,7 @@ const <%-MODEL_NAME-%>Entity = require('../../entities/<%-MODEL_NAME-%>');
 const response = require('../../utils/response');
 
 const partialUpdate = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
-    const <%-MODEL_NAME.toLowerCase()-%> = await <%-MODEL_NAME-%>Db.updateOne(params.query,params.partialUpdate);
+    const <%-MODEL_NAME.toLowerCase()-%> = await <%-MODEL_NAME-%>Db.updateOne(params.query,params.dataToUpdate);
     if(!<%-MODEL_NAME.toLowerCase()-%>){
         return response.recordNotFound();
     }

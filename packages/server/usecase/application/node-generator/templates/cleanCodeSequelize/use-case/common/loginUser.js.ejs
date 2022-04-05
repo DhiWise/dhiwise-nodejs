@@ -13,7 +13,7 @@ const responseStatus = require('../../utils/response/responseStatus');
 <%_}_%>
 
 
-const loginUser = ({ <%-USER_MODEL-%>Db,userTokensDb<%_if(ROLE_PERMISSION){_%>,userRoleDb,routeRoleDb<%_}_%> })=> async(username,url,password = null <%_if(ROLE_PERMISSION){_%>,roleAccess<%_}_%>) => {
+const loginUser = ({ <%-USER_MODEL-%>Db,userTokensDb<%_if(ROLE_PERMISSION){_%>,userRoleDb,routeRoleDb<%_}_%> })=> async(username,platform,url,password = null <%_if(ROLE_PERMISSION){_%>,roleAccess<%_}_%>) => {
 
     <%_ if(LOGIN_WITH.length>1){ _%>
         let where = <%-MULTIPLE_LOGIN%>
@@ -77,14 +77,14 @@ const loginUser = ({ <%-USER_MODEL-%>Db,userTokensDb<%_if(ROLE_PERMISSION){_%>,u
         }
         <%_for(let i=0; i<PLATFORMS.length; i++){_%>
             <%_if(i===0){_%>
-            if(url.includes('<%-PLATFORMS[i].toLowerCase()%>')){
+            if( platform == PLATFORM.<%-PLATFORMS[i].toUpperCase()%>){
                 if(!LOGIN_ACCESS[user.role].includes(PLATFORM.<%-PLATFORMS[i].toUpperCase()%>)){
                     return response.badRequest({message : 'you are unable to access this platform'});
                 }
                 token = await generateToken(userData,JWT.<%-PLATFORMS[i].toUpperCase()%>_SECRET)
             }
             <%_}else{_%>
-            else if(url.includes('<%-PLATFORMS[i].toLowerCase()%>')){
+            else if( platform == PLATFORM.<%-PLATFORMS[i].toUpperCase()%>){
                 if(!LOGIN_ACCESS[user.role].includes(PLATFORM.<%-PLATFORMS[i].toUpperCase()%>)){
                     return response.badRequest({ message : 'you are unable to access this platform'});
                 }

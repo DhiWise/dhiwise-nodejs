@@ -7,8 +7,8 @@ const response = require('../../utils/response');
 const findAll = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
     let { query, options,isCountOnly } = params;
     if(isCountOnly){
-        result = await <%-MODEL_NAME-%>Db.count(query);
-        let result = { totalRecords: result };
+        let count = await <%-MODEL_NAME-%>Db.count(query);
+        let result = { totalRecords: count };
         return response.success({ data:result });  
     } else {
         let result = await <%-MODEL_NAME-%>Db.paginate(query,options);

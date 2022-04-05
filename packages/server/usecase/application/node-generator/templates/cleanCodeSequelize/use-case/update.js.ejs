@@ -2,7 +2,7 @@
  *update.js
  */
 
-const <%-MODEL_NAME-%>Entity = require('../../entities/<%-MODEL_NAME-%>');
+const <%-MODEL_NAME.toLowerCase()-%>Entity = require('../../entities/<%-MODEL_NAME-%>');
 const response = require('../../utils/response');
 
 const update = ({ <%-MODEL_NAME-%>Db, updateValidation}) => async (params) => {

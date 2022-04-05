@@ -5,7 +5,7 @@ const responseHandler = require("../utils/response/responseHandler");
 <%_ PLATFORM.forEach((v)=>{ _%>
 const <%-v%>Secret = require("../constants/authConstant").JWT.<%-v.toUpperCase()%>_SECRET;
 <%_ }) _%>    
-const authenticateJWT = (req, res, next) => {
+const authenticateJWT = (platform) => async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
         const token = authHeader.split(' ')[1];
@@ -13,11 +13,11 @@ const authenticateJWT = (req, res, next) => {
         let secret = '';
         <%_ var c = 0; PLATFORM.forEach((v)=>{ c++;  _%>
             <%_ if(c===1){ _%>
-            if(url.includes(<%= v %>)){
+            if(platform == PLATFORM.<%- v.toUpperCase() %>){
                 secret = <%-v%>Secret;
             }
             <%_ }else{ _%>
-            else if(url.includes(<%= v%>)){
+            else if(platform == PLATFORM.<%- v.toUpperCase() %>){
                 secret = <%-v%>Secret;
             }
             <%_ } _%> 

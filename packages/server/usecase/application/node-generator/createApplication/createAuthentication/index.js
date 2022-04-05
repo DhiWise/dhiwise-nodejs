@@ -203,9 +203,7 @@ async function authenticationSetup (platformStrategy, {
     or.push(query);
   });
   let orObj = {};
-  if (ORM === ORM_PROVIDERS.MONGOOSE) {
-    orObj.$or = or;
-  } else if (ORM === ORM_PROVIDERS.SEQUELIZE) {
+  if (projectType === PROJECT_TYPE.MVC_SEQUELIZE) {
     orObj['[Op.or]'] = or;
   } else {
     orObj.$or = or;
@@ -313,7 +311,7 @@ async function generateAuthMiddleware (PLATFORM, middlewarePath, platformWiseCus
   };
 }
 async function generateAuthService (platforms, {
-  auth, servicePath, templates, ORM, rolePermission,
+  auth, servicePath, templates, ORM, rolePermission, projectType,
 }) {
   const {
     userModel, userLoginWith,
@@ -326,9 +324,7 @@ async function generateAuthService (platforms, {
     or.push(query);
   });
   let orObj = {};
-  if (ORM === ORM_PROVIDERS.MONGOOSE) {
-    orObj.$or = or;
-  } else if (ORM === ORM_PROVIDERS.SEQUELIZE) {
+  if (projectType === PROJECT_TYPE.MVC_SEQUELIZE) {
     orObj['[Op.or]'] = or;
   } else {
     orObj.$or = or;
