@@ -2,7 +2,7 @@ const {
   PROJECT_TYPE, PROJECT_CREATION_STEP, DB_ADAPTER,
 } = require('../constants/constant');
 
-function getProjectSteps(type) {
+function getProjectSteps (type) {
   if (type === PROJECT_TYPE.MVC) {
     return [
       PROJECT_CREATION_STEP.INPUT_PARSER,
@@ -222,7 +222,7 @@ module.exports = {
           generatedControllerPath: '/controller/{{ platform }}/{{ model }}Controller.js',
           authControllerPath: '/controller/{{ platform }}',
           fileUploadControllerPath: '/controller/{{ platform }}',
-          adminFileUploadControllerPath: `controller/{{ platform }}`,
+          adminFileUploadControllerPath: 'controller/{{ platform }}',
           generatedCustomRouteControllerPath: 'controller/{{ platform }}/{{ controller }}Controller.js',
           dbConnectionFolderPath: '/config/db.js',
           generatedTestCasePath: '/__test__/{{ platform }}/{{ model }}.test.js',
@@ -276,7 +276,7 @@ module.exports = {
           generatedControllerPath: '/controller/{{ platform }}/{{ model }}/{{ model }}.js',
           authControllerPath: '/controller/{{ platform }}/authentication',
           fileUploadControllerPath: '/controller/{{ platform }}/fileUpload',
-          adminFileUploadControllerPath: `controller/{{ platform }}`,
+          adminFileUploadControllerPath: 'controller/{{ platform }}',
           dbConnectionFolderPath: dbConnectionFilePathAccordingORM,
           generatedTestCasePath: '/__test__/{{ platform }}/{{ model }}.test.js',
           testCasePath: '/__test__',
@@ -326,7 +326,7 @@ module.exports = {
           generatedControllerPath: '/controller/{{ platform }}/{{ model }}Controller.js',
           authControllerPath: '/controller/{{ platform }}',
           fileUploadControllerPath: '/controller/{{ platform }}',
-          adminFileUploadControllerPath: `controller/{{ platform }}`,
+          adminFileUploadControllerPath: 'controller/{{ platform }}',
           generatedCustomRouteControllerPath: 'controller/{{ platform }}/{{ controller }}Controller.js',
           dbConnectionFolderPath: '/config/db.js',
           generatedTestCasePath: '/__test__/{{ platform }}/{{ model }}.test.js',
@@ -380,7 +380,7 @@ module.exports = {
           generatedControllerPath: '/controller/{{ platform }}/{{ model }}/{{ model }}.js',
           authControllerPath: '/controller/{{ platform }}/authentication',
           fileUploadControllerPath: '/controller/{{ platform }}/fileUpload',
-          adminFileUploadControllerPath: `/controller/{{ platform }}`,
+          adminFileUploadControllerPath: '/controller/{{ platform }}',
           dbConnectionFolderPath: dbConnectionFilePathAccordingORM,
           generatedTestCasePath: '/__test__/{{ platform }}/{{ model }}.test.js',
           testCasePath: '/__test__',

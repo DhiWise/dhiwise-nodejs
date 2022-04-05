@@ -5,9 +5,7 @@ const {
   getTemplateByName, getPlatformWiseAPIOfCustomRoutes,
 } = require('../utils/common');
 const writeOperations = require('../../writeOperations');
-const {
-  PROJECT_TYPE,
-} = require('../../constants/constant');
+const { PROJECT_TYPE } = require('../../constants/constant');
 
 async function setPackagesForAuth ({
   userLoginRateLimit, socialAuth,

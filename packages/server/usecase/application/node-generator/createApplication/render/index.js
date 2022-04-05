@@ -11,7 +11,7 @@ const { PROJECT_TYPE } = require('../../constants/constant');
 
 dotenv.config({ path: `${__dirname}/../../.env` });
 
-async function createConstantFiles(templateFolder, dir, constants, toPath) {
+async function createConstantFiles (templateFolder, dir, constants, toPath) {
   if (constants) {
     writeOperations.mkdir(dir, toPath);
     _.forEach(constants, (value, key) => {
@@ -23,7 +23,7 @@ async function createConstantFiles(templateFolder, dir, constants, toPath) {
   }
 }
 
-async function startRenderingEJS(dir, templateFolder, renderObject) {
+async function startRenderingEJS (dir, templateFolder, renderObject) {
   const {
     type, app, db, models, controllerDetails, modelWiseRoutes, authModule, authControllerIndex, pkg, emailService,
     smsService, indexRoute, modelValidation, constants, env,
@@ -33,7 +33,7 @@ async function startRenderingEJS(dir, templateFolder, renderObject) {
     commonService, readme, envPostman,
     thirdPartySMSServices, thirdPartyEmailService, templateRegistry, rolePermissionService, customRoutesWithPath, customRouteIndexes, dataAccessFiles, useCaseFiles, commonUseCaseFiles, middlewareIndex,
     customRoutesUsecase, fileUploadService, fileUploadUsecase,
-    fileUploadControllerIndex
+    fileUploadControllerIndex,
   } = renderObject;
 
   // db
@@ -187,21 +187,21 @@ async function startRenderingEJS(dir, templateFolder, renderObject) {
       });
     }
     // ? file upload controller index for cc
-  if (!_.isEmpty(fileUploadControllerIndex)) {
-    _.forEach(fileUploadControllerIndex, (fileUploadCtrlInd) => {
-      if (fileUploadCtrlInd.locals.PLATFORM === 'admin') {
-        if (!fs.existsSync(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload`)) {
-          writeOperations.mkdir(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}`, 'fileUpload');
+    if (!_.isEmpty(fileUploadControllerIndex)) {
+      _.forEach(fileUploadControllerIndex, (fileUploadCtrlInd) => {
+        if (fileUploadCtrlInd.locals.PLATFORM === 'admin') {
+          if (!fs.existsSync(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload`)) {
+            writeOperations.mkdir(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}`, 'fileUpload');
+          }
+          writeOperations.write(path.join(dir, `${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload/index.js`), fileUploadCtrlInd.render(), MODE_0666);
+        } else {
+          if (!fs.existsSync(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload`)) {
+            writeOperations.mkdir(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}`, 'fileUpload');
+          }
+          writeOperations.write(path.join(dir, `${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload/index.js`), fileUploadCtrlInd.render(), MODE_0666);
         }
-        writeOperations.write(path.join(dir, `${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload/index.js`), fileUploadCtrlInd.render(), MODE_0666);
-      } else {
-        if (!fs.existsSync(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload`)) {
-          writeOperations.mkdir(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}`, 'fileUpload');
-        }
-        writeOperations.write(path.join(dir, `${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload/index.js`), fileUploadCtrlInd.render(), MODE_0666);
-      }
-    });
-  }
+      });
+    }
     // middleware index.js
     if (middlewareIndex) {
       writeOperations.write(path.join(dir, `${userDirectoryStructure.middlewareFolderPath}/index.js`), middlewareIndex.render(), MODE_0666);
