@@ -48,7 +48,7 @@ IconBox.propTypes = {
   /**
      * Additional Icon
      */
-  // icon: PropTypes.objectOf(PropTypes.any),
+  icon: PropTypes.node,
   /**
      * Additional icon true false
      */
