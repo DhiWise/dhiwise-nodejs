@@ -11,7 +11,6 @@ const <%-DB_MODEL %>Schema = require('../../../validation/schema/<%-DB_MODEL %>'
 
 const createValidation = require('../../../validation')(<%-DB_MODEL %>Schema.createSchema);
 const updateValidation = require('../../../validation')(<%-DB_MODEL %>Schema.updateSchema);
-const filterValidation = require('../../../validation')(<%-DB_MODEL %>Schema.filterValidationSchema);
 
 <%_for(const controllerMethod in CONTROLLER_METHODS){_%>
     <%_ if(controllerMethod === 'create'){ _%>
@@ -24,13 +23,13 @@ const filterValidation = require('../../../validation')(<%-DB_MODEL %>Schema.fil
         const <%-controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/deleteOne')({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>});
     <%_}_%>
     <%_ if(controllerMethod === 'findById'){ _%>
-        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/findById')({ <%-DB_MODEL %>Db, filterValidation});
+        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/findById')({ <%-DB_MODEL %>Db});
     <%_}_%>
     <%_ if(controllerMethod === 'findAll'){ _%>
-        const <%-controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/findAll')({ <%-DB_MODEL %>Db, filterValidation});
+        const <%-controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/findAll')({ <%-DB_MODEL %>Db});
     <%_}_%>
     <%_ if(controllerMethod === 'count'){ _%>
-        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/count')({ <%-DB_MODEL %>Db,filterValidation});
+        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/count')({ <%-DB_MODEL %>Db});
     <%_}_%>
         <%_ if(controllerMethod === 'createBulk'){ _%>
         const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/createBulk')({ <%-DB_MODEL %>Db});

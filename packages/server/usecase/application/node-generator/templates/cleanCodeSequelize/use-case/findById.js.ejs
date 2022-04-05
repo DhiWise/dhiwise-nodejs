@@ -5,11 +5,10 @@
 const response = require('../../utils/response');
 
 const findById = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
-    let { query, options  } = params;
-    let result = await <%-MODEL_NAME-%>Db.findOne(query, options);
-    if(result){
-        return response.success({data:result});
+    let result = await <%-MODEL_NAME-%>Db.findOne(params.query, params.options);
+    if(!result){
+        return response.recordNotFound();
     }
-    return response.recordNotFound();
+    return response.success({data:result});
 }
 module.exports = findById;

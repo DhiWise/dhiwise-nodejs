@@ -11,8 +11,7 @@ const response = require('../../utils/response');
  * @return {object} : response of count. {status, message, data}
  */
 const count = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
-   let { where } = params;
-    let result = await <%-MODEL_NAME-%>Db.count(where);
+    let result = await <%-MODEL_NAME-%>Db.count(params);
     result = {totalRecords:result}
     return response.success({data:result});
 }

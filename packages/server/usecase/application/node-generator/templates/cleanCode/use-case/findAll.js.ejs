@@ -6,13 +6,12 @@ const response = require('../../utils/response');
 
 const findAll = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
     let { query, options,isCountOnly } = params;
-    let result;
     if(isCountOnly){
         result = await <%-MODEL_NAME-%>Db.count(query);
-        result = { totalRecords: result };
+        let result = { totalRecords: result };
         return response.success({ data:result });  
     } else {
-        result = await <%-MODEL_NAME-%>Db.paginate(query,options);
+        let result = await <%-MODEL_NAME-%>Db.paginate(query,options);
         if(!result){
             return response.recordNotFound();
         }

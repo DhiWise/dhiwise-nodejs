@@ -10,12 +10,10 @@ const response = require('../../utils/response');
 
 <%_ if(DELETE_DEPENDENT_MODEL){ _%>
 const softDeleteMany = ({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>}) => async (params) => {
-   let {data, query} = params;
-   const dataToUpdate = { isDeleted: true };
-    let result = {};
-    if (data.isWarning) {
+   let { query, dataToUpdate,isWarning} = params;
+    if (isWarning) {
         const getDependencyCount = makeGetDependencyCount({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>}) //dependency injection
-        result = await getDependencyCount(query);
+        let result = await getDependencyCount(query);
         return response.success({data:result});
     } else {
         const softDeleteWithDependency = makeSoftDeleteWithDependency({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>}) //dependency injection
@@ -25,13 +23,12 @@ const softDeleteMany = ({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- 
 }
 <%_ } else { _%>
 const softDeleteMany = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
-    let { query } = params;
-    const dataToUpdate = { isDeleted: true };
+    let { query,dataToUpdate } = params;
     let result = await <%-MODEL_NAME-%>Db.softDeleteMany(query, dataToUpdate);
-    if(result){
-        return response.success({data:result});
+    if(!result){
+        return response.recordNotFound();
     }
-    return response.recordNotFound();
+    return response.success({data:result});
 }
 <%_ } _%>
 module.exports = softDeleteMany;
