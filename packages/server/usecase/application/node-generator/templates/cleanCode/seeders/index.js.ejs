@@ -16,7 +16,7 @@ const { replaceAll } = require('../utils/common');
       let userToBeInserted = {}
       <%_for(let i in USER_EXIST_CONDITION){_%>
         <%_var finalStr = new String();
-        USER[i].userType=`@@authConstant.USER_ROLE.${ROLE_NAME[i]}@@`;
+        USER[i].role=`@@authConstant.USER_ROLE.${ROLE_NAME[i]}@@`;
         finalStr = JSON.stringify(USER[i]);
         finalStr = finalStr.replace(/@@"/g, "").replace(/"@@/g, "");
         _%>

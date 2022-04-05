@@ -194,7 +194,7 @@ const getDocumentByQuery = (model, where, select = []) => new Promise((resolve, 
  * @param  {object} options : {} *optional
  * @return Promise
  */
-const findOneAndUpdateDocument = (model, filter, data, options = {}) => new Promise((resolve, reject) => {
+const findOneAndUpdateDocument = (model, filter, data, options = { new: true }) => new Promise((resolve, reject) => {
   model.findOneAndUpdate(filter, data, options, (err, result) => {
     if (err) reject(err);
     else resolve(result);
@@ -208,7 +208,7 @@ const findOneAndUpdateDocument = (model, filter, data, options = {}) => new Prom
  * @param  {object} options : {} *optional
  * @return Promise
  */
-const findOneAndDeleteDocument = (model, filter, options = {}) => new Promise((resolve, reject) => {
+const findOneAndDeleteDocument = (model, filter, options = { new: true }) => new Promise((resolve, reject) => {
   model.findOneAndDelete(filter, options, (err, data) => {
     if (err) reject(err);
     else resolve(data);
@@ -229,6 +229,30 @@ const deleteMany = (model, filter, options = {}) => new Promise((resolve, reject
   });
 });
 
+/*
+ * @description : find all the mongoose document
+ * @param  {Object} model   : mongoose model
+ * @param {Object} query    : {}
+ * @param {Object} options  : {}
+ * @return Promise
+ */
+const findAllDocuments = (model, filter = {}, options = {}) => new Promise((resolve, reject) => {
+  let query = model.find(filter);
+  if (options.select) {
+    query = query.select(options.select);
+  }
+  if (options.populate) {
+    query = query.populate(options.populate);
+  }
+  if (options.lean) {
+    query = query.lean();
+  }
+  query.exec((error, data) => {
+    if (error) reject(error);
+    else resolve(data);
+  });
+});
+
 module.exports = {
   createDocument,
   getAllDocuments,
@@ -244,4 +268,5 @@ module.exports = {
   findOneAndUpdateDocument,
   findOneAndDeleteDocument,
   deleteMany,
+  findAllDocuments,
 };

@@ -9,7 +9,7 @@ const responseHandler = require('../../../utils/response/responseHandler');
         try{
             let dataToCreate = {...req.body || {} };
             <%_ if(SUPPORT_API[i].isLogin){ _%>
-            dataToCreate.<%-SUPPORT_API[i].addedBy%> = req.user.id.toString();
+            dataToCreate.<%-SUPPORT_API[i].addedBy%> = req.user.id;
             <%_ } _%>
             let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase(dataToCreate);
             <%_if(SUPPORT_API[i].fieldSelection){_%>
@@ -55,7 +55,7 @@ const responseHandler = require('../../../utils/response/responseHandler');
             let query = { _id: req.params.id};
             <%_ if(SUPPORT_API[i].isLogin){ _%>
             delete dataToUpdate.addedBy;
-            dataToUpdate.updatedBy=req.user.id
+            dataToUpdate.<%-SUPPORT_API[i].updatedBy%>=req.user.id
             <%_ } _%>
             <%_         
             nestedCalls={}
@@ -87,8 +87,8 @@ const responseHandler = require('../../../utils/response/responseHandler');
             let dataToUpdate = { ...req.body.data || {} };
             let query = { ...req.body.filter || {} };
             <%_ if(SUPPORT_API[i].isLogin){ _%>
-            delete dataToUpdate.addedBy;
-            dataToUpdate.updatedBy=req.user.id
+            delete dataToUpdate.<%-SUPPORT_API[i].addedBy%>;
+            dataToUpdate.<%-SUPPORT_API[i].updatedBy%>=req.user.id
             <%_ } _%>
             <%_         
             nestedCalls={}
@@ -161,7 +161,7 @@ const partialUpdate<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>
         let dataToUpdate = {...req.body || {}};
         <%_ if(SUPPORT_API[i].isLogin){ _%>
         delete dataToUpdate["addedBy"]
-        dataToUpdate.updatedBy=req.user.id
+        dataToUpdate.<%-SUPPORT_API[i].updatedBy%>=req.user.id
         <%_ } _%> 
         let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({dataToUpdate,query});
         <%_if(SUPPORT_API[i].fieldSelection){_%>
@@ -176,8 +176,8 @@ const partialUpdate<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>
 }
 <%_ } _%>
 <%_ if(SUPPORT_API[i].method=="findById") {_%>
-    <%_methods.push('get'+DB_MODEL_FC+'ById') _%>
-    const get<%-DB_MODEL_FC%>ById = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) =>{
+    <%_methods.push('get'+DB_MODEL_FC) _%>
+    const get<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) =>{
         try{
             if(!req.params.id){
                 return responseHandler(res,response.badRequest());
@@ -277,7 +277,7 @@ const partialUpdate<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>
                 nestedCalls = SUPPORT_API[i].NESTED_CALLS
                 if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
                     for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                        query= {...query,...<%=JSON.parse(element.filter)%>}
+                        query= {...query,...<%=JSON.parse(element.filter)%>};
                     <%_}}
                 }                
             }
@@ -356,7 +356,7 @@ const deleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Use
             let dataToUpdate = {
                 isDeleted: true,
                 <%_if(SUPPORT_API[i].isAuth){ _%>
-                updatedBy: req.user.id,
+                <%-SUPPORT_API[i].updatedBy%>: req.user.id,
                 <%_}_%>
             }
             <%_         
@@ -386,7 +386,7 @@ const deleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Use
             let dataToUpdate = {
                 isDeleted: true,
                 <%_if(SUPPORT_API[i].isAuth){ _%>
-                updatedBy: req.user.id,
+                <%-SUPPORT_API[i].updatedBy%>: req.user.id,
                 <%_}_%>
             }
             <%_         
@@ -421,7 +421,7 @@ const softDeleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %
         let dataToUpdate = {
             isDeleted: true,
             <%_if(SUPPORT_API[i].isLogin){ _%>
-            updatedBy: req.user.id,
+            <%-SUPPORT_API[i].updatedBy%>: req.user.id,
             <%_}_%>
         }
         <%_         
@@ -452,7 +452,7 @@ const softDeleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %
         let dataToUpdate = {
             isDeleted: true,
             <%_if(SUPPORT_API[i].isLogin){ _%>
-            updatedBy: req.user.id,
+            <%-SUPPORT_API[i].updatedBy%>: req.user.id,
             <%_}_%>
         }
         <%_         

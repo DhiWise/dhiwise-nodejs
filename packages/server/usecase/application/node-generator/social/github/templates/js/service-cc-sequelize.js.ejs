@@ -90,7 +90,7 @@ module.exports = {
             token: token,
             tokenExpiredTime: expire 
         });
-        const userToReturn = { ...userData, ...{ token } };
+        const userToReturn = { ...userData, token };
         return {flag:false,data:userToReturn}
       }
       else {

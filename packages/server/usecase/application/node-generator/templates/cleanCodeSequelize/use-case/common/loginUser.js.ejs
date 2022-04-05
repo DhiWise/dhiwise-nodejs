@@ -99,7 +99,7 @@ const loginUser = ({ <%-USER_MODEL-%>Db,userTokensDb<%_if(ROLE_PERMISSION){_%>,u
         <%_}_%>
         let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
         await userTokensDb.create({ userId: user.id, token: token,tokenExpiredTime: expire });                  
-        let userToReturn = { ...userData, ...{ token } };
+        let userToReturn = { ...userData, token };
         <%_if(ROLE_PERMISSION){_%>
             let roleAccessData = {};
             if (roleAccess){

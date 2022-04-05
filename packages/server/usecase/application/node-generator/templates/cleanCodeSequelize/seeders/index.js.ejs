@@ -17,7 +17,7 @@
         <%_for(let i in USER_EXIST_CONDITION){_%>
           userToBeInserted = await <%-AUTH_MODEL%>DbService.findOne(<%-JSON.stringify(USER_EXIST_CONDITION[i])%>);
           <%_var finalStr = new String();
-            USER[i].userType=`@@authConstant.USER_ROLE.${ROLE_NAME[i]}@@`;
+            USER[i].role=`@@authConstant.USER_ROLE.${ROLE_NAME[i]}@@`;
             finalStr = JSON.stringify(USER[i]);
             finalStr = finalStr.replace(/@@"/g, "").replace(/"@@/g, "");
           _%>

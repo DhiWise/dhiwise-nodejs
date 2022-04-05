@@ -1034,7 +1034,7 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 body.mode = 'raw';
                 body.raw = JSON.stringify({ isWarning: true, ids: [id] }, undefined, 2);
                 requestObj.name = `deleteMany${key}`;
-                requestObj.method = 'DELETE';
+                requestObj.method = 'POST';
                 requestObj.body = body;
                 header.length ? requestObj.header = header : '';
                 requestObj.auth = security
@@ -1083,7 +1083,7 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 let responseJsonData = {
                     "status": "SUCCESS",
                     "message": "Your request is successfully executed",
-                    "data": [bodyRawData]
+                    "data": 1
                 };
                 responseJsonData = JSON.stringify(responseJsonData, undefined, 2)
                 responseObject.body = responseJsonData;

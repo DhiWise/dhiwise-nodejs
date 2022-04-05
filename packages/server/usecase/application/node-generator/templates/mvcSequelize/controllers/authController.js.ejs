@@ -9,6 +9,7 @@ const dbService = require("../../utils/dbService");
 const dayjs = require("dayjs");
 const <%-USER_MODEL %>SchemaKey = require("../../utils/validation/<%-USER_MODEL%>Validation");
 const validation = require("../../utils/validateRequest");
+const authConstant = require('../../constants/authConstant');
 const {Op} = require('sequelize');
 <%_if(NOTIFICATION_TYPE==="EMAIL"){_%>
 const emailService = require("../../services/email/emailService")
@@ -31,11 +32,11 @@ const register = async(req, res) => {
             <%-USER_MODEL %>SchemaKey.schemaKeys
         );
         if (!validateRequest.isValid) {
-            return res.inValidParam({message :  `Invalid values in parameters, ${validateRequest.message}`});
+            return res.validationError({message :  `Invalid values in parameters, ${validateRequest.message}`});
         }
         let unique = await uniqueValidation(model.<%-USER_MODEL%>,req.body);   
         if (!unique){ 
-            return res.inValidParam({message:'User Registration Failed, Duplicate Data found'});
+            return res.validationError({message:'User Registration Failed, Duplicate Data found'});
         }     
         const result = await dbService.createOne(model.<%-USER_MODEL%>,{...req.body});
         <%_if(NOTIFICATION_TYPE==="SMS"){_%>
@@ -74,9 +75,9 @@ const register = async(req, res) => {
         };
         await emailService.sendEmail(mailObj);
         <%_}_%>
-        return  res.ok({data:result});
+        return res.success({data:result});
     } catch (error) {
-        return res.failureResponse();
+        return res.internalServerError({ message:error.message }); 
     }  
 }
 
@@ -90,7 +91,7 @@ const forgotPassword = async (req, res) => {
     const params = req.body;
     try {
         if (!params.email) {
-            return res.insufficientParameters();
+            return res.badRequest();
         }
         let where = {<%-EMAIL_FIELD%>: params.email};
         params.email = params.email.toString().toLowerCase();
@@ -98,19 +99,19 @@ const forgotPassword = async (req, res) => {
         if (isUser) {
             let {resultOfEmail,resultOfSMS} = await authService.sendResetPasswordNotification(isUser);
             if(resultOfEmail && resultOfSMS){
-                return res.requestValidated({message:"otp successfully send."});
+                return res.success({message:"otp successfully send."});
             }else if(resultOfEmail && !resultOfSMS) {
-                return res.requestValidated({message:"otp successfully send to your email."});
+                return res.success({message:"otp successfully send to your email."});
             } else if (!resultOfEmail && resultOfSMS) { 
-                return res.requestValidated({message:"otp successfully send to your mobile number."});
+                return res.success({message:"otp successfully send to your mobile number."});
             }else{
-                return res.failureResponse({message:"otp can not be sent due to some issue try again later"});
+                return res.success({message:"otp can not be sent due to some issue try again later"});
             }
         } else {
             return res.recordNotFound();
         }
     } catch (error) {
-        return res.failureResponse();
+        return res.internalServerError({ message:error.message }); 
     }
 }
 
@@ -124,19 +125,19 @@ const validateResetPasswordOtp = async (req, res) => {
     const params = req.body;
     try {
         if (!params || !params.otp) {
-            return res.insufficientParameters();
+            return res.badRequest();
         }
         let isUser = await dbService.findOne(model.userAuthSettings, { resetPasswordCode: params.otp });
         if (!isUser || !isUser.resetPasswordCode) {
-            return res.invalidRequest({message:"Invalid OTP"});
+            return res.failure({message:"Invalid OTP"});
         }
         // link expire
         if (dayjs(new Date()).isAfter(dayjs(isUser.expiredTimeOfResetPasswordCode))) {
-            return res.invalidRequest({message:"Your reset password link is expired or invalid"});
+            return res.failure({message:"Your reset password link is expired or invalid"});
         }
-        return res.requestValidated({message:'Otp verified'});
+        return res.success({message:'Otp verified'});
     } catch (error) {
-        return res.failureResponse();
+        return res.internalServerError({ message:error.message }); 
     }
 }
 
@@ -150,24 +151,24 @@ const resetPassword = async (req, res) => {
     const params = req.body;
     try {
         if (!params.code || !params.newPassword) {
-            return res.insufficientParameters();
+            return res.badRequest();
         }
         let userAuth = await dbService.findOne(model.userAuthSettings, { resetPasswordCode: params.code });
         if (userAuth && userAuth.expiredTimeOfResetPasswordCode) {
             if (dayjs(new Date()).isAfter(dayjs(userAuth.expiredTimeOfResetPasswordCode))) {// link expire
-                return res.invalidRequest({message:"Your reset password link is expired or invalid"});
+                return res.failure({message:"Your reset password link is expired or invalid"});
             }
         } else {
             // invalid code
-            return res.invalidRequest({message:"Invalid Code"});
+            return res.failure({message:"Invalid Code"});
         }
         let response = await authService.resetPassword(userAuth.userId, params.newPassword);
         if(response && !response.flag){
-            return res.requestValidated({message:response.data});
+            return res.success({message:response.data});
         }
-        return res.invalidRequest({message:response.data});
+        return res.failure({message:response.data});
     } catch (error) {
-        return res.failureResponse();
+        return res.internalServerError({ message:error.message }); 
     }
 }
 
@@ -180,26 +181,24 @@ const resetPassword = async (req, res) => {
 const login = async(req,res)=>{
     try {
         let {username,password} = req.body;
-        let url = req.originalUrl
-        if(username && password){
-            <%_if(ROLE_PERMISSION){_%>
-            let roleAccess = false;
-            if (req.body.includeRoleAccess){
-                roleAccess = req.body.includeRoleAccess;
-            }
-            let result = await authService.loginUser(username, password, url, roleAccess);
-            <%_} else {_%>
-            let result = await authService.loginUser(username,password,url); 
-            <%_}_%>
-            if(!result.flag){
-                return res.loginSuccess({data:result.data});
-            }
-            return res.loginFailed({message:result.data});
-        }else{
-            return res.insufficientParameters();
+        if(!username || !password){
+            return res.badRequest();
         }
+        <%_if(ROLE_PERMISSION){_%>
+        let roleAccess = false;
+        if (req.body.includeRoleAccess){
+            roleAccess = req.body.includeRoleAccess;
+        }
+        let result = await authService.loginUser(username, password, authConstant.PLATFORM.<%-PLATFORM.toUpperCase()%>, roleAccess);
+        <%_} else {_%>
+        let result = await authService.loginUser(username,password,authConstant.PLATFORM.<%-PLATFORM.toUpperCase()%>); 
+        <%_}_%>
+        if(!result.flag){
+            return res.success({data:result.data,message:result.message});
+        }
+        return res.badRequest({message:result.data});
     } catch (error) {
-        return res.failureResponse();
+        return res.internalServerError({ message:error.message }); 
     }
 }
 
@@ -216,9 +215,9 @@ const logout = async (req, res) => {
         let id = userTokens.id;
         delete userTokens.id;
         await dbService.updateByPk(model.userTokens,id, userTokens.toJSON());
-        return res.requestValidated({message:'Logged Out Successfully'});
+        return res.success({message:'Logged Out Successfully'});
     } catch (error) {
-        return res.failureResponse();
+        return res.internalServerError({ message:error.message }); 
     }
 }
 

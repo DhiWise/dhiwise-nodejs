@@ -330,8 +330,8 @@ const {Op} = require("sequelize");
       };
   <%_}_%>
   <%_ if(SUPPORT_API[i].method=="findById") {_%>
-    <%_methods.push('get'+DB_MODEL_FC+'ById') _%>
-   const get<%-DB_MODEL_FC%>ById = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) =>{
+    <%_methods.push('get'+DB_MODEL_FC) _%>
+   const get<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(query, data = {}) =>{
       try {
         if(!req.params.id){
             return responseHandler(res,response.badRequest());

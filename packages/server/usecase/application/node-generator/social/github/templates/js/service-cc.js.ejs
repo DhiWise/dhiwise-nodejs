@@ -84,7 +84,7 @@ module.exports = {
         <%_}_%>
         let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
         await userTokenService.create({ userId: user.id, token: token,tokenExpiredTime: expire });                              
-        const userToReturn = { ...userData, ...{ token } };
+        const userToReturn = { ...userData, token };
         return {flag:false,data:userToReturn};
       }
       else {

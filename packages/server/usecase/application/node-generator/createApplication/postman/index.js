@@ -173,8 +173,8 @@ async function getPostmanCollectionsForLogin(platformStr, userModel, loginWith, 
     requestObj.body = body;
     const jsonDataForgetPassword = {
         "status": "SUCCESS",
-        "message": "Your request is successfully executed",
-        "data": "otp successfully send to your email."
+        "message": "otp successfully send to your email.",
+        "data": {}
     };
     const responseObjectForgetPassword = {};
     responseObjectForgetPassword.name = `Forgot Password in ${platformStr}_response`;
@@ -206,8 +206,8 @@ async function getPostmanCollectionsForLogin(platformStr, userModel, loginWith, 
     requestObj.body = body;
     const validateOTPResponse = {
         "status": "SUCCESS",
-        "message": "Your request is successfully executed",
-        "data": "Invalid OTP"
+            "message": "Invalid OTP",
+            "data": {}
     };
     const responseObjectValidateOTP = {};
     responseObjectValidateOTP.name = `Validate OTP in ${platformStr}_response`;
@@ -273,8 +273,7 @@ async function getPostmanCollectionsForLogin(platformStr, userModel, loginWith, 
     const changePasswordResponse = {
         "status": "SUCCESS",
         "message": "Password changed successfully",
-        "data": null
-
+        "data": {}
     };
     const responseForChangePassword = {};
     responseForChangePassword.name = `Change Password in ${platformStr}_response`;
@@ -307,8 +306,8 @@ async function getPostmanCollectionsForLogin(platformStr, userModel, loginWith, 
     requestObj.body = body;
     const resetPasswordResponse = {
         "status": "SUCCESS",
-        "message": "Your request is successfully executed",
-        "data": "Password reset successfully"
+        "message": "Password reset successfully",
+        "data": {}
     };
     const responseForResetPassword = {};
     responseForResetPassword.name = `Reset password in ${platformStr}_response~`;
@@ -917,7 +916,11 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 let responseJsonData = {
                     "status": "SUCCESS",
                     "message": "Your request is successfully executed",
-                    "data": [bodyRawData]
+                    "data": {
+                        "n": 2,
+                        "nModified": 2,
+                        "ok": 1
+                    }
                 };
                 responseJsonData = JSON.stringify(responseJsonData, undefined, 2)
                 responseObject.body = responseJsonData;
@@ -1083,7 +1086,7 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 body.mode = 'raw';
                 body.raw = JSON.stringify({ isWarning: true, ids: [id] }, undefined, 2);
                 requestObj.name = `deleteMany${key}`;
-                requestObj.method = 'DELETE';
+                requestObj.method = 'POST';
                 requestObj.body = body;
                 header.length ? requestObj.header = header : '';
                 requestObj.auth = security
@@ -1223,7 +1226,7 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
         let responseJsonData = {
             "status": "SUCCESS",
             "message": "Your request is successfully executed",
-            "data": [bodyRawData]
+            "data": bodyRawData
         };
         responseJsonData = JSON.stringify(responseJsonData, undefined, 2)
         responseObject.body = responseJsonData;

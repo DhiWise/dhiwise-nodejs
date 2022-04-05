@@ -699,7 +699,6 @@ async function addSeederSequelize (jsonData, filePath, authObj) {
   const seeder = writeOperations.loadTemplate(`${filePath}/index.js`);
   const { userModel } = authObj;
   const credentials = !isEmpty(jsonData.authentication.credentials) ? jsonData.authentication.credentials : {};
-
   const array = []; const userArray = []; const passwordArray = []; const
     getRoles = [];
   const user = {};
@@ -765,7 +764,6 @@ async function addSeederSequelize (jsonData, filePath, authObj) {
       passwordArray.push(userPassword);
       userArray.push(userToBeSeeded);
       getRoles.push(allRoles);
-
       seeder.locals.USER_EXIST_CONDITION = array;
       seeder.locals.USER_PASSWORD = passwordArray;
       seeder.locals.USER = userArray;

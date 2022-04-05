@@ -78,13 +78,13 @@ const upload = async (req,res) =>{
     
     if (uploadFileRes.uploadSuccess.length > 0) {
       let message = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
-      return res.ok({
+      return res.success({
         message: message,
         data: uploadFileRes
       });
     } else {
       let message = 'Failed to upload files.';
-      return res.invalidRequest({
+      return res.failure({
         message: message,
         data: uploadFileRes
       });
@@ -93,7 +93,7 @@ const upload = async (req,res) =>{
     if (error.name && error.name == 'validationError') {
       return res.validationError({ message: error.message });
     } else {
-      return res.failureResponse();
+      return res.internalServerError({ message:error.message }); 
     }
   }
 };
@@ -134,20 +134,20 @@ const generatePreSignedURL = async (req, res) => {
 
             await s3.getSignedUrl('getObject', options, (err, url) => {
               if (err) {
-                  return res.invalidRequest({ message: err });
+                  return res.failure({ message: err });
               } else {
-                  return res.ok({data: url})
+                  return res.success({data: url})
               }
             });
 
           } catch (err) {
-            return res.invalidRequest({ message: `${uri} is not a valid S3 uri` });
+            return res.failure({ message: `${uri} is not a valid S3 uri` });
           }
         } else {
             return res.badRequest();
         }
     } catch (error) {
-        return res.failureResponse();
+        return res.internalServerError({ message:error.message }); 
     }
 }
 <%_}_%>
@@ -330,13 +330,13 @@ const upload = async (req, res) => {
     
     if (uploadFileRes.uploadSuccess.length > 0) {
       let message = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
-      return res.ok({
+      return res.success({
         message: message,
         data: uploadFileRes
       });
     } else {
       let message = 'Failed to upload files.';
-      return res.invalidRequest({
+      return res.failure({
         message: message,
         data: uploadFileRes
       });
@@ -345,7 +345,7 @@ const upload = async (req, res) => {
     if (error.name && error.name == 'validationError') {
       return res.validationError({ message: error.message });
     } else {
-      return res.failureResponse();
+      return res.internalServerError({ message:error.message }); 
     }
   }
 };

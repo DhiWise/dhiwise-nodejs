@@ -159,6 +159,7 @@ async function generateController (apis, platformName, controllers, ormProvider,
           Object.assign(apiObject, {
             isLogin: value.isAuth && controllers.auth.isAuth,
             addedBy: 'addedBy',
+            updatedBy: 'updatedBy',
             login: controllers.auth.userModel,
           });
 
