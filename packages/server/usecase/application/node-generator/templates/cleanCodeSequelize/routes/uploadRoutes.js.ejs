@@ -2,20 +2,20 @@ let express = require('express');
 let router = express.Router();
 const fileUploadController = require("../../controller/<%-PLATFORM%>/fileUpload/fileUploadController");
 <%_ if(IS_AUTH){ _%>
-const auth = require("../../middleware/auth");
-const { PLATFORM } =  require("../../constants/authConstant"); 
+const { auth } = require('../../middleware');
 <%_ } _%>
+const { PLATFORM }=require('../../constants/authConstant')
 
 <%_ if(IS_AUTH){ _%>
-router.post("/<%-PLATFORM_PREFIX%>/upload",auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),fileUploadController.upload);
+router.route("/<%-PLATFORM_PREFIX%>/upload").post(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),fileUploadController.upload);
 <%_ }else{ _%>
-router.post("/<%-PLATFORM_PREFIX%>/upload",fileUploadController.upload);
+router.route("/<%-PLATFORM_PREFIX%>/upload").post(fileUploadController.upload);
 <%_ } _%>
 <%_ if(S3_UPLOAD_PRIVATE){_%>
 <%_ if(IS_AUTH){ _%>
-router.post("/<%-PLATFORM_PREFIX%>/generate-pre-signed-url",auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),fileUploadController.generatePreSignedURL);
+router.route("/<%-PLATFORM_PREFIX%>/generate-pre-signed-url").post(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),fileUploadController.generatePreSignedURL);
 <%_ }else{ _%>
-router.post("/<%-PLATFORM_PREFIX%>/generate-pre-signed-url",fileUploadController.generatePreSignedURL);
+router.route("/<%-PLATFORM_PREFIX%>/generate-pre-signed-url").post(fileUploadController.generatePreSignedURL);
 <%_ } _%>
 <%_ } _%>
 

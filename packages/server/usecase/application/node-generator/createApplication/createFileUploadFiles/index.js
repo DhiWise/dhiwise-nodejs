@@ -1,5 +1,7 @@
-const { forEach } = require('lodash');
+const { forEach, isEmpty, find } = require('lodash');
 const writeOperations = require('../../writeOperations');
+const {getImportPath} = require('../utils/common')
+
 
 async function makeFileUploadFiles (fileUploadObj) {
   const { jsonData } = fileUploadObj;
@@ -48,5 +50,60 @@ async function makeFileUploadFiles (fileUploadObj) {
   returnObj.packageDependencies.dependencies['valid-url'] = '~1.0.9';
   return returnObj;
 }
+async function makeFileUploadService(templatePath, fileUploadData) {
+  const fileUploadService = writeOperations.loadTemplate(`${templatePath}/fileUpload.js`);
+  const s3Upload = find(fileUploadData, (fileUpload) => fileUpload.storage.toLowerCase() === 's3' || fileUpload.storage.toLowerCase() === 's3_private');
+  const s3Private = find(fileUploadData, (fileUpload) => fileUpload.storage.toLowerCase() === 's3_private');
+  const local = find(fileUploadData, (fileUpload) => fileUpload.storage.toLowerCase() === 'local');
 
-module.exports = { makeFileUploadFiles };
+  fileUploadService.locals.LOCAL_UPLOAD = local ? true : false;
+  fileUploadService.locals.S3_UPLOAD = s3Upload ? true : false;;
+  fileUploadService.locals.S3_UPLOAD_PRIVATE = s3Private ? true : false;
+  return fileUploadService;
+}
+
+async function makeFileUploadUsecase(templatePath, uploadsFunctions) {
+
+  const fileUploadUsecase = [];
+  if (!isEmpty(uploadsFunctions)) {
+    forEach(uploadsFunctions, (uploadsFunctionDetails) => {
+      //console.log(uploadsFunctionDetails); process.exit(1);
+      const uploadsFunction = writeOperations.loadTemplate(`${templatePath}/fileUpload.js`);
+      uploadsFunction.locals.LOCAL_UPLOAD = uploadsFunctionDetails.storage === 'local' ? true : false;
+
+      uploadsFunction.locals.S3_UPLOAD = (uploadsFunctionDetails.storage.toLowerCase() === 's3' || uploadsFunctionDetails.storage.toLowerCase() === 's3_private') ? true : false;
+
+      uploadsFunction.locals.S3_UPLOAD_PRIVATE = (uploadsFunctionDetails.storage.toLowerCase() === 's3_private') ? true : false;
+
+      uploadsFunction.locals.ALLOWED_TYPE = uploadsFunctionDetails.validationType || null;
+      uploadsFunction.locals.MAX_SIZE = uploadsFunctionDetails.maxSize || null;
+
+      fileUploadUsecase.push(uploadsFunction);
+      delete uploadsFunction;
+    });
+  }
+
+  return fileUploadUsecase;
+}
+
+const makeFileUploadControllerIndex = async (templatePath, platforms, userDirectoryStructure) => {
+  const fileUploadControllerIndex = [];
+  forEach(platforms, (platform) => {
+    const fileUploadCtrlInd = writeOperations.loadTemplate(`${templatePath}/fileUploadControllerIndex.js`);
+    fileUploadCtrlInd.locals.PLATFORM = platform;
+    // if(platform === 'admin'){
+    //   fileUploadCtrlInd.locals.USECASE_PATH  = getImportPath(userDirectoryStructure.adminFileUploadControllerPath, userDirectoryStructure.useCaseFolderPath)
+    // }else{
+      fileUploadCtrlInd.locals.USECASE_PATH  = getImportPath(userDirectoryStructure.fileUploadControllerPath, userDirectoryStructure.useCaseFolderPath)
+   // }
+    fileUploadControllerIndex.push(fileUploadCtrlInd);
+    fileUploadControllerIndex.push(fileUploadCtrlInd);
+    delete fileUploadCtrlInd;
+  });
+  return fileUploadControllerIndex;
+}
+
+module.exports = {
+  makeFileUploadFiles, makeFileUploadService, makeFileUploadUsecase, makeFileUploadControllerIndex
+};
+

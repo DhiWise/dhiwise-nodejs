@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 const {
   isEmpty, forEach, pickBy, find, cloneDeep, has,
 } = require('lodash');
@@ -818,4 +817,4 @@ module.exports = {
   addSeederSequelize,
   commonServiceFile,
   createEnvFileSequelize,
-};
+}

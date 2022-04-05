@@ -21,7 +21,9 @@ const { makeIndividualPolicy } = require('./createApplication/makeCustomPolicy')
 const {
   makeCustomRoutes, makeControllerIndexForCustomRoutes, makeServiceForNonExistingService, makeCustomRoutesUsecase,
 } = require('./createApplication/createCustomRoutes');
-const { makeFileUploadFiles } = require('./createApplication/createFileUploadFiles');
+const {
+  makeFileUploadFiles, makeFileUploadService, makeFileUploadUsecase, makeFileUploadControllerIndex,
+} = require('./createApplication/createFileUploadFiles/index');
 const { startRenderingEJS } = require('./createApplication/render');
 const { addSocialLogin } = require('./createApplication/thirdPartyIntegrations');
 const { createEntities } = require('./createApplication/createEntities');
@@ -46,14 +48,14 @@ const {
 } = require('./createApplication/createUseCaseFiles');
 
 class CodeGenerator {
-  constructor (projectType, databaseAdapter) {
+  constructor(projectType, databaseAdapter) {
     this.projectType = projectType;
     this.databaseAdapter = databaseAdapter;
     const settingJson = projectSetting.setup(this.projectType, this.databaseAdapter);
     this.setup = settingJson[this.projectType];
   }
 
-  async createApp (params) {
+  async createApp(params) {
     const {
       steps, templateFolderName, templateRegistry, userDirectoryStructure,
     } = this.setup;
@@ -238,10 +240,10 @@ class CodeGenerator {
         database: this.jsonData.config.databaseName,
         port: this.jsonData.config.port,
       },
-      {
-        socialAuth: _.cloneDeep(this.auth.socialAuth),
-        env,
-      });
+        {
+          socialAuth: _.cloneDeep(this.auth.socialAuth),
+          env,
+        });
       this.env = envs;
       this.jsonData = jsonData;
       this.postmanCollection.config = this.jsonData.config;
@@ -256,9 +258,9 @@ class CodeGenerator {
         envs, jsonData,
       } = await generateService.createEnvFileSequelize(this.setup.templateFolderName,
         this.jsonData, {
-          database: this.jsonData.config.databaseName,
-          port: this.jsonData.config.port,
-        },
+        database: this.jsonData.config.databaseName,
+        port: this.jsonData.config.port,
+      },
         {
           socialAuth: this.auth.socialAuth,
           env,
@@ -540,7 +542,23 @@ class CodeGenerator {
         }
       }
     }
+    // Create controller index file for file upload
+    if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_FIE_UPLOAD_CONTROLLER_INDEX)) {
+      if (!_.isEmpty(this.jsonData.fileUpload) && !_.isEmpty(this.jsonData.fileUpload.uploads)) {
+        const templatePath = `${this.setup.templateFolderName}${templateRegistry.controllerFolderPath}`;
+        const platform = (this.jsonData.fileUpload.uploads).map((upload) => upload.platform);
+        this.fileUploadControllerIndex = await makeFileUploadControllerIndex(templatePath, platform, userDirectoryStructure);
+      }
+    }
 
+    // create Usecase file For file upload in cc
+    if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_FILE_UPLOAD_USECASE)) {
+      if (!_.isEmpty(this.jsonData.fileUpload) && !_.isEmpty(this.jsonData.fileUpload.uploads)) {
+        const uploadsFunctions = this.jsonData.fileUpload.uploads;
+        const templatePath = `${this.setup.templateFolderName}${templateRegistry.useCaseFolderPath}`;
+        this.fileUploadUsecase = await makeFileUploadUsecase(templatePath, uploadsFunctions, this.jsonData.config.platform);
+      }
+    }
     // ? add Social Login
     if (_.includes(steps, PROJECT_CREATION_STEP.ADD_SOCIAL_LOGIN)) {
       if (this.jsonData.authentication.isSocialMediaAuth && this.auth.isAuth) {
@@ -672,6 +690,9 @@ class CodeGenerator {
         commonUseCaseFiles: this.commonUseCaseFiles,
         middlewareIndex: this.middlewareIndex,
         customRoutesUsecase: this.customRoutesUsecase,
+        fileUploadService: this.fileUploadService,
+        fileUploadUsecase: this.fileUploadUsecase,
+        fileUploadControllerIndex: this.fileUploadControllerIndex,
       };
       await startRenderingEJS(rootDirectory, this.setup.templateFolderName, renderObject);
     }
@@ -684,7 +705,7 @@ class CodeGenerator {
   }
 
   // ? create root directory
-  async createProjectRootDirectory (directory, projectName) {
+  async createProjectRootDirectory(directory, projectName) {
     writeOperations.mkdir(directory, projectName);
     writeOperations.mkdir(`${directory}${path.sep}${projectName}`, 'logs');
     return `${directory}${path.sep}${projectName}`;

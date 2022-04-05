@@ -1,0 +1,214 @@
+const formidable = require('formidable');
+<%_if(S3_UPLOAD){_%>
+  
+<%_} else {_%>
+  const validUrl = require('valid-url');
+<%_}_%>
+
+const response = require('../../utils/response');
+const makeDirectory = require('../../utils/makeDirectory');
+
+<%_if(LOCAL_UPLOAD){_%>
+const {uploadFilesOnLocalServer} = require('../../services/fileUpload');
+<%_}_%> 
+<%_if(S3_UPLOAD){_%>
+  const {uploadFilesOnS3} = require('../../services/fileUpload');
+<%_ }else if(S3_UPLOAD && S3_UPLOAD_PRIVATE){_%>
+  const {uploadFilesOnS3,generatePreSignedURL} = require('../../services/fileUpload');
+<%_}_%>
+
+const upload =async(req,res) =>{
+          <%_if(S3_UPLOAD){_%>
+          let combinedOutput = {};
+          let allowedFileTypes = <%=ALLOWED_TYPE%>;
+          <%_var max_size = MAX_SIZE ? MAX_SIZE : 5%>
+          let maxFileSize = <%=max_size%>; //In Megabyte
+
+          // Setting up formidable options.
+          const form = new formidable.IncomingForm();
+          form.multiples = true;
+          form.maxFileSize = 300 * 1024 * 1024; //300 MB
+          form.maxFieldsSize = 100 * 1024 * 1024; //50 MB
+
+          //Parse Form data
+          const {
+            fields, files
+          } = await new Promise(async (resolve, reject) => {
+            form.parse(req, function (error, fields, files) {
+              if (error) reject(error);
+              resolve({
+                fields,
+                files
+              });
+            });
+          });
+
+          let uploadSuccess = [];
+          let uploadFailed = [];
+          let fileCount = 1;
+
+          let fileArr = [];
+          if (!files['file[]'] || files['file[]'].size == 0) {
+            return response.badRequest({message : 'Select at least one file to upload.'});
+          }
+          if (!Array.isArray(files['file[]'])) {
+            fileArr.push(files['file[]']);
+            files['file[]'] = fileArr;
+          }
+
+          for (let file of files['file[]']) {
+            let response = await uploadFilesOnS3(file, fields, fileCount++, allowedFileTypes, maxFileSize);
+            if (response.status == false) {
+              uploadFailed.push({
+                'name': file.name,
+                'error': response.message,
+                'status': false
+              });
+            } else {
+              let url = response.data;
+              if (!validUrl.isUri(response.data)) {
+                response.data = response.data.replace('/public', '');
+                url = `${response.data}`;
+              }
+              uploadSuccess.push({
+                'name': file.name,
+                'path': url,
+                'status': true
+              });
+            }
+          }
+
+          let uploadFileRes = {
+            uploadSuccess,
+            uploadFailed
+          };
+
+          <%_if(S3_UPLOAD_PRIVATE){_%>
+            let finalResponse = [];
+            if (Array.isArray(uploadFileRes.uploadSuccess) && uploadFileRes.uploadSuccess.length) {
+              uploadFileRes.uploadSuccess = await new Promise(async (resolve, reject) => {
+                for (let u of uploadFileRes.uploadSuccess) {
+                  if (u.status && u.path) {
+                    let presignedUrl = await generatePreSignedURL(u.path);
+                    if (presignedUrl && presignedUrl.status) {
+                      u.path = presignedUrl.path;
+                    }
+                    finalResponse.push(u);
+                  }
+                }
+                resolve(finalResponse);
+              });
+            }
+          <%_}_%>
+          let fileUploadResponseObj = {};
+          if (uploadFileRes.uploadSuccess.length > 0) {
+            let message = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
+            fileUploadResponseObj = {
+              message: message,
+              data: uploadFileRes
+            };
+          } else {
+            let message = 'Failed to upload files.';
+            fileUploadResponseObj = {
+              message: message,
+              data: uploadFileRes
+            };
+          }
+
+          combinedOutput.uploadFileRes = fileUploadResponseObj;
+          if (combinedOutput) {
+            return response.success({ data: combinedOutput });
+          }
+        <%_} else {_%>
+          let combinedOutput = {};
+          let defaultDirectory = 'public/assets';
+          let allowedFileTypes = <%=ALLOWED_TYPE%>;
+          <%_ let max_size = MAX_SIZE ? MAX_SIZE : 5 _%>
+          let maxFileSize = <%=max_size%>; //In Megabyte
+
+          // Create Directory if not exist.
+          await makeDirectory(defaultDirectory);
+          
+          // Setting up formidable options.
+          const form = new formidable.IncomingForm();
+          form.multiples = true;
+          form.maxFileSize = 300 * 1024 * 1024; //300 MB
+          form.maxFieldsSize = 100 * 1024 * 1024; //50 MB
+
+          //Parse Form data
+          const {
+            fields, files
+          } = await new Promise(async (resolve, reject) => {
+            form.parse(req, function (error, fields, files) {
+              if (error) reject(error);
+              resolve({
+                fields,
+                files
+              });
+            });
+          });
+          
+          let uploadSuccess = [];
+          let uploadFailed = [];
+          let fileCount = 1;
+
+          let fileArr = [];
+          if (!files['file[]'] || files['file[]'].size == 0) {
+            return response.badRequest({message : 'Select at least one file to upload.'});
+          }
+          if (!Array.isArray(files['file[]'])) {
+            fileArr.push(files['file[]']);
+            files['file[]'] = fileArr;
+          }
+
+          for (let file of files['file[]']) {
+            let response = await uploadFilesOnLocalServer(file, fields, fileCount++, allowedFileTypes, maxFileSize, defaultDirectory);
+            if (response.status == false) {
+              uploadFailed.push({
+                'name': file.name,
+                'error': response.message,
+                'status': false
+              });
+            } else {
+              let url = response.data;
+              if (!validUrl.isUri(response.data)) {
+                response.data = response.data.replace('/public', '');
+                url = `${response.data}`;
+              }
+              uploadSuccess.push({
+                'name': file.name,
+                'path': url,
+                'status': true
+              });
+            }
+          }
+
+          let uploadFileRes = {
+            uploadSuccess,
+            uploadFailed
+          };
+
+          let fileUploadResponseObj = {};
+          if (uploadFileRes.uploadSuccess.length > 0) {
+            let message = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
+            fileUploadResponseObj = {
+              message: message,
+              data: uploadFileRes
+            };
+          } else {
+            let message = 'Failed to upload files.';
+            fileUploadResponseObj = {
+              message: message,
+              data: uploadFileRes
+            };
+          }
+
+          combinedOutput.uploadFileRes = fileUploadResponseObj;
+          if (combinedOutput) {
+            return response.success({ data: combinedOutput });
+          }
+          
+        <%_ } _%>
+}
+
+module.exports = upload;

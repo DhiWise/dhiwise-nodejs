@@ -2,7 +2,7 @@ const {
   PROJECT_TYPE, PROJECT_CREATION_STEP, DB_ADAPTER,
 } = require('../constants/constant');
 
-function getProjectSteps (type) {
+function getProjectSteps(type) {
   if (type === PROJECT_TYPE.MVC) {
     return [
       PROJECT_CREATION_STEP.INPUT_PARSER,
@@ -56,6 +56,8 @@ function getProjectSteps (type) {
       PROJECT_CREATION_STEP.GENERATE_STATIC_FILES_CC,
       PROJECT_CREATION_STEP.CREATE_POSTMAN,
       PROJECT_CREATION_STEP.CREATE_FILE_UPLOAD_FILES,
+      PROJECT_CREATION_STEP.CREATE_FIE_UPLOAD_CONTROLLER_INDEX,
+      PROJECT_CREATION_STEP.CREATE_FILE_UPLOAD_USECASE,
       PROJECT_CREATION_STEP.ADD_SOCIAL_LOGIN,
       PROJECT_CREATION_STEP.CREATE_VALIDATION_FILE,
       PROJECT_CREATION_STEP.CREATE_CUSTOM_POLICY,
@@ -138,6 +140,8 @@ function getProjectSteps (type) {
       PROJECT_CREATION_STEP.GENERATE_STATIC_FILES_CC_SEQUELIZE,
       PROJECT_CREATION_STEP.CREATE_POSTMAN_SEQUELIZE,
       PROJECT_CREATION_STEP.CREATE_FILE_UPLOAD_FILES,
+      PROJECT_CREATION_STEP.CREATE_FIE_UPLOAD_CONTROLLER_INDEX,
+      PROJECT_CREATION_STEP.CREATE_FILE_UPLOAD_USECASE,
       PROJECT_CREATION_STEP.ADD_SOCIAL_LOGIN,
       PROJECT_CREATION_STEP.CREATE_SEQUELIZE_VALIDATION_FILE,
       PROJECT_CREATION_STEP.CREATE_CUSTOM_POLICY,
@@ -218,6 +222,7 @@ module.exports = {
           generatedControllerPath: '/controller/{{ platform }}/{{ model }}Controller.js',
           authControllerPath: '/controller/{{ platform }}',
           fileUploadControllerPath: '/controller/{{ platform }}',
+          adminFileUploadControllerPath: `controller/{{ platform }}`,
           generatedCustomRouteControllerPath: 'controller/{{ platform }}/{{ controller }}Controller.js',
           dbConnectionFolderPath: '/config/db.js',
           generatedTestCasePath: '/__test__/{{ platform }}/{{ model }}.test.js',
@@ -271,6 +276,7 @@ module.exports = {
           generatedControllerPath: '/controller/{{ platform }}/{{ model }}/{{ model }}.js',
           authControllerPath: '/controller/{{ platform }}/authentication',
           fileUploadControllerPath: '/controller/{{ platform }}/fileUpload',
+          adminFileUploadControllerPath: `controller/{{ platform }}`,
           dbConnectionFolderPath: dbConnectionFilePathAccordingORM,
           generatedTestCasePath: '/__test__/{{ platform }}/{{ model }}.test.js',
           testCasePath: '/__test__',
@@ -320,6 +326,7 @@ module.exports = {
           generatedControllerPath: '/controller/{{ platform }}/{{ model }}Controller.js',
           authControllerPath: '/controller/{{ platform }}',
           fileUploadControllerPath: '/controller/{{ platform }}',
+          adminFileUploadControllerPath: `controller/{{ platform }}`,
           generatedCustomRouteControllerPath: 'controller/{{ platform }}/{{ controller }}Controller.js',
           dbConnectionFolderPath: '/config/db.js',
           generatedTestCasePath: '/__test__/{{ platform }}/{{ model }}.test.js',
@@ -373,6 +380,7 @@ module.exports = {
           generatedControllerPath: '/controller/{{ platform }}/{{ model }}/{{ model }}.js',
           authControllerPath: '/controller/{{ platform }}/authentication',
           fileUploadControllerPath: '/controller/{{ platform }}/fileUpload',
+          adminFileUploadControllerPath: `/controller/{{ platform }}`,
           dbConnectionFolderPath: dbConnectionFilePathAccordingORM,
           generatedTestCasePath: '/__test__/{{ platform }}/{{ model }}.test.js',
           testCasePath: '/__test__',

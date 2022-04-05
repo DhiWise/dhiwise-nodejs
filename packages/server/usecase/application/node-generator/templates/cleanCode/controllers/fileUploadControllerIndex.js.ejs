@@ -1,0 +1,6 @@
+const fileUploadUsecase = require('<%-USECASE_PATH%>/fileUpload/upload');
+const fileUploadController = require('./fileUploadController');
+
+const upload = fileUploadController.upload(fileUploadUsecase);
+
+module.exports = { upload };

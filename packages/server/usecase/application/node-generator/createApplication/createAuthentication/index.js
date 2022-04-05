@@ -6,7 +6,7 @@ const {
 } = require('../utils/common');
 const writeOperations = require('../../writeOperations');
 const {
-  ORM_PROVIDERS, PROJECT_TYPE,
+  PROJECT_TYPE,
 } = require('../../constants/constant');
 
 async function setPackagesForAuth ({
@@ -183,7 +183,7 @@ async function generateAuthUsecase (useCaseFolderPath, {
 }
 
 async function authenticationSetup (platformStrategy, {
-  auth, configPath, controllerPath, routePath, authControllerPath, templates, ORM, rolePermission, projectType, useCaseFolderPath, middlewarePath,
+  auth, configPath, controllerPath, routePath, authControllerPath, templates, rolePermission, projectType, useCaseFolderPath, middlewarePath,
 }) {
   const socialPlatforms = [];
   if (auth.socialAuth.platforms.length) {
@@ -311,7 +311,7 @@ async function generateAuthMiddleware (PLATFORM, middlewarePath, platformWiseCus
   };
 }
 async function generateAuthService (platforms, {
-  auth, servicePath, templates, ORM, rolePermission, projectType,
+  auth, servicePath, templates, rolePermission, projectType,
 }) {
   const {
     userModel, userLoginWith,

@@ -35,7 +35,6 @@
         console.log('User seeder failed due to ', error.message)
       }   
     }
-
   <%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
     async function seedRole() {
       try {
@@ -96,14 +95,12 @@
       }
     }
   
-
     async function seedRouteRole() {
       try{
         const routeRoles =[ 
           <%_for(let i=0;i < ROUTE_ROLE_ARRAY.length;i++){_%>
           <%=ROUTE_ROLE_ARRAY[i]%>,
           <%_}_%>
-
         ];
         if (routeRoles && routeRoles.length) {
           const routes = [...new Set(routeRoles.map(routeRole => routeRole.route.toLowerCase()))];

@@ -2,7 +2,7 @@
 /* global MESSAGE, _ */
 const uuid4 = require('uuid').v4;
 const fakeData = require('../generateFakeData/index');
-const { APIS} = require('../../constants/constant');
+const { APIS } = require('../../constants/constant');
 const { forEach, values, isEmpty, create, keys } = require('lodash');
 const fakerStatic = require('faker');
 let dayjs = require('dayjs');
@@ -206,8 +206,8 @@ async function getPostmanCollectionsForLogin(platformStr, userModel, loginWith, 
     requestObj.body = body;
     const validateOTPResponse = {
         "status": "SUCCESS",
-            "message": "Invalid OTP",
-            "data": {}
+        "message": "Invalid OTP",
+        "data": {}
     };
     const responseObjectValidateOTP = {};
     responseObjectValidateOTP.name = `Validate OTP in ${platformStr}_response`;
@@ -917,9 +917,11 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                     "status": "SUCCESS",
                     "message": "Your request is successfully executed",
                     "data": {
-                        "n": 2,
-                        "nModified": 2,
-                        "ok": 1
+                        "acknowledged": true,
+                        "modifiedCount": 59,
+                        "upsertedId": null,
+                        "upsertedCount": 0,
+                        "matchedCount": 59
                     }
                 };
                 responseJsonData = JSON.stringify(responseJsonData, undefined, 2)
@@ -1026,9 +1028,11 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                     "status": "SUCCESS",
                     "message": "Your request is successfully executed",
                     "data": {
-                        "n": 1,
-                        "nModified": 1,
-                        "ok": 1
+                        "acknowledged": true,
+                        "modifiedCount": 1,
+                        "upsertedId": null,
+                        "upsertedCount": 0,
+                        "matchedCount": 1
                     }
                 };
                 responseJsonData = JSON.stringify(responseJsonData, undefined, 2)
@@ -1150,9 +1154,11 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                     "status": "SUCCESS",
                     "message": "Your request is successfully executed",
                     "data": {
-                        "n": 2,
-                        "nModified": 2,
-                        "ok": 1
+                        "acknowledged": true,
+                        "modifiedCount": 1,
+                        "upsertedId": null,
+                        "upsertedCount": 0,
+                        "matchedCount": 1
                     }
                 };
                 responseJsonData = JSON.stringify(responseJsonData, undefined, 2)
@@ -1167,7 +1173,7 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
         }
 
     }
-    if (isAuth && isRole) {
+    if (isAuth && isRole && _.includes(platformStr)) {
         let requestObj = {};
         let body = {};
         const header = [];
@@ -1233,6 +1239,64 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
         responseObject.header = [
             { "key": "Content-Type", "value": "application/json" }
         ];
+        responseObject.cookie = [];
+        requestObj.response = [responseObject];
+        platformObj.request.push(requestObj);
+
+        // GET loggedInUserInfo 
+        requestObj = {};
+        body = {};
+        header = [];
+        header.push({
+            key: 'Content-Type',
+            value: 'application/json',
+            description: '',
+        });
+        security = {
+            "type": "bearer",
+            "bearer": {
+                "token": "{{token}}"
+            }
+        }
+        // body.mode = 'raw';
+        requestObj.name = `get loggedin User`;
+        requestObj.method = 'GET',
+            requestObj.url = platformStr.toLowerCase() !== 'admin' ? `{{url}}/${platformStr.toLowerCase()}/api/v1/${key.toLowerCase()}/me` : `{{url}}/${platformStr.toLowerCase()}/${key.toLowerCase()}/me`;
+        header.length ? requestObj.header = header : '';
+        requestObj.auth = security
+        // body.raw = JSON.stringify(data[key], undefined, 2);
+        // requestObj.body = body;
+        responseObject = {};
+        responseObject.name = `loggedInUserInfo_response`;
+        responseObject.originalRequest = {
+            method: 'GET',
+            header: [],
+            url: {
+                raw: requestObj.url,
+            },
+        };
+        responseObject.status = 'OK';
+        responseObject.code = 200;
+        responseObject._postman_previewlanguage = 'json';
+        bodyRawData = _.cloneDeep(data[key]);
+        if (!('id' in bodyRawData)) {
+            Object.assign(bodyRawData, { id: 101 });
+        }
+       // Object.assign(bodyRawData, defaultKeyObject);
+        if (addDataFormate && addDataFormate[key]) {
+            bodyRawData = await filterResponseBasedOnFormate(addDataFormate[key], bodyRawData);
+        }
+        if (Object.keys(modelPrivateAttribute).length) {
+            bodyRawData = await removePrivateAttibutesFromResponse(bodyRawData, modelPrivateAttribute)
+        }
+
+        responseJsonData = {
+            "status": "SUCCESS",
+            "message": "Your request is successfully executed",
+            "data": bodyRawData
+        };
+        responseObject.body = JSON.stringify(responseJsonData, undefined, 2);
+        responseObject.header = [];
         responseObject.cookie = [];
         requestObj.response = [responseObject];
         platformObj.request.push(requestObj);
@@ -1335,7 +1399,7 @@ async function getPostmanCollectionForFileUpload(platform, fileObject) {
         requestObj.response = [responseObject];
         platformObj.request.push(requestObj);
 
-        if (fileObject.storage !== undefined && fileObject.storage.toLowerCase() === 's3_private'){
+        if (fileObject.storage !== undefined && fileObject.storage.toLowerCase() === 's3_private') {
             //download api for s3 private
             requestObj = {};
             requestObj.body = {};
@@ -1348,7 +1412,7 @@ async function getPostmanCollectionForFileUpload(platform, fileObject) {
             else {
                 requestObj.url = `{{url}}/${platform.toLowerCase()}/generate-pre-signed-url`;
             }
-            requestObj.body.raw = JSON.stringify({uri:"s3 URL"},undefined,2);
+            requestObj.body.raw = JSON.stringify({ uri: "s3 URL" }, undefined, 2);
             requestObj.header = [];
             requestObj.header.push({
                 key: 'Content-Type',
@@ -1393,7 +1457,7 @@ async function getPostmanCollectionForFileUpload(platform, fileObject) {
             requestObj.response = [responseObject];
             platformObj.request.push(requestObj);
         }
-        
+
         return platformObj;
 
     } catch (error) {
@@ -1591,7 +1655,7 @@ async function getCollectionForPostman(jsonData, isAuth, userModel, userLoginWit
                 requestObj.method = `${p.method.toUpperCase()}`
                 requestObj.url = `{{url}}${p.api}`
                 body.raw = "{}"
-                requestObj.body = body; 
+                requestObj.body = body;
                 platformObj.request.push(requestObj)
             });
             pfWiseItems["Custom Routes"].item.push(platformObj)

@@ -11,7 +11,7 @@ const { PROJECT_TYPE } = require('../../constants/constant');
 
 dotenv.config({ path: `${__dirname}/../../.env` });
 
-async function createConstantFiles (templateFolder, dir, constants, toPath) {
+async function createConstantFiles(templateFolder, dir, constants, toPath) {
   if (constants) {
     writeOperations.mkdir(dir, toPath);
     _.forEach(constants, (value, key) => {
@@ -23,7 +23,7 @@ async function createConstantFiles (templateFolder, dir, constants, toPath) {
   }
 }
 
-async function startRenderingEJS (dir, templateFolder, renderObject) {
+async function startRenderingEJS(dir, templateFolder, renderObject) {
   const {
     type, app, db, models, controllerDetails, modelWiseRoutes, authModule, authControllerIndex, pkg, emailService,
     smsService, indexRoute, modelValidation, constants, env,
@@ -32,7 +32,8 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
     deleteDependent, userDirectoryStructure, servicesOfCustomRoutes, tableRelationships, dbConnection, customRoutePackageDependencies, testCases,
     commonService, readme, envPostman,
     thirdPartySMSServices, thirdPartyEmailService, templateRegistry, rolePermissionService, customRoutesWithPath, customRouteIndexes, dataAccessFiles, useCaseFiles, commonUseCaseFiles, middlewareIndex,
-    customRoutesUsecase,
+    customRoutesUsecase, fileUploadService, fileUploadUsecase,
+    fileUploadControllerIndex
   } = renderObject;
 
   // db
@@ -169,7 +170,38 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
         /*  */
       });
     }
+    // ? file Upload Service
+    if (!_.isEmpty(fileUploadService)) {
+      if (!fs.existsSync(`${dir}${userDirectoryStructure.serviceFolderPath}/fileUpload`)) { writeOperations.mkdir(`${dir}${userDirectoryStructure.serviceFolderPath}`, 'fileUpload'); }
 
+      writeOperations.write(path.join(dir, `${userDirectoryStructure.serviceFolderPath}/fileUpload/index.js`), fileUploadService.render(), MODE_0666);
+    }
+
+    // ? file upload use-case
+    if (!_.isEmpty(fileUploadUsecase)) {
+      if (!fs.existsSync(`${dir}${userDirectoryStructure.useCaseFolderPath}/fileUpload`)) { writeOperations.mkdir(`${dir}${userDirectoryStructure.useCaseFolderPath}`, 'fileUpload'); }
+
+      _.forEach(fileUploadUsecase, (usecase) => {
+        // currently only one object in array from input so here file name is not dynamic
+        writeOperations.write(path.join(dir, `${userDirectoryStructure.useCaseFolderPath}/fileUpload/upload.js`), usecase.render(), MODE_0666);
+      });
+    }
+    // ? file upload controller index for cc
+  if (!_.isEmpty(fileUploadControllerIndex)) {
+    _.forEach(fileUploadControllerIndex, (fileUploadCtrlInd) => {
+      if (fileUploadCtrlInd.locals.PLATFORM === 'admin') {
+        if (!fs.existsSync(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload`)) {
+          writeOperations.mkdir(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}`, 'fileUpload');
+        }
+        writeOperations.write(path.join(dir, `${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload/index.js`), fileUploadCtrlInd.render(), MODE_0666);
+      } else {
+        if (!fs.existsSync(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload`)) {
+          writeOperations.mkdir(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}`, 'fileUpload');
+        }
+        writeOperations.write(path.join(dir, `${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload/index.js`), fileUploadCtrlInd.render(), MODE_0666);
+      }
+    });
+  }
     // middleware index.js
     if (middlewareIndex) {
       writeOperations.write(path.join(dir, `${userDirectoryStructure.middlewareFolderPath}/index.js`), middlewareIndex.render(), MODE_0666);
@@ -399,6 +431,7 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
 
   // fileUpload
   if (!_.isEmpty(fileUpload)) {
+    console.log(fileUpload);
     _.forEach(fileUpload.controllers, (f) => {
       if (f.platform === 'common') {
         if (!fs.existsSync(`${dir}${userDirectoryStructure.controllerFolderPath}/common`)) {
