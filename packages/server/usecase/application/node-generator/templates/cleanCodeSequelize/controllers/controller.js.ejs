@@ -1,23 +1,23 @@
 const response = require('../../../utils/response');
-const responseHandler = require('../../../response/responseHandler'); 
+const responseHandler = require('../../../utils/response/responseHandler'); 
 const {Op} = require("sequelize");
 <%_ var methods = [] _%>
 
 <%_for(let i=0;i< SUPPORT_API.length;i++){ _%>
   <%_ if(SUPPORT_API[i].method=="create") {_%>
       <%_methods.push('add'+DB_MODEL_FC) _%> 
-      const add<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async ({ data <%_ if(SUPPORT_API[i].isLogin){ _%> ,loggedInUser <%_}_%>}) => {
+      const add<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (req,res) => {
           try {
-              const originalData = data;
-              delete originalData.updatedBy
-              <%_ if(SUPPORT_API[i].isLogin){ _%>
-                originalData.addedBy=loggedInUser.id
-              <%_ } _%>
-              let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data :originalData});
+            let dataToCreate = { ...req.body || {} };
+            delete dataToCreate.updatedBy
+            <%_ if(SUPPORT_API[i].isLogin){ _%>
+            dataToCreate.<%-SUPPORT_API[i].addedBy%> = req.user.id.toString();
+            <%_ } _%>
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase(dataToCreate);
               <%_if(SUPPORT_API[i].fieldSelection){_%>
               result.data = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result.data);
               <%_}_%>
-              return result;
+              return responseHandler(res,result);
             } catch (error) {
                return responseHandler(res,response.internalServerError({message:error.message}));
             }
@@ -25,10 +25,13 @@ const {Op} = require("sequelize");
   <%_}_%>
   <%_ if(SUPPORT_API[i].method=="createBulk") {_%>
     <%_methods.push('bulkInsert'+DB_MODEL_FC) _%>
-    const bulkInsert<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async({body<%_ if(SUPPORT_API[i].isLogin){ _%> ,loggedInUser <%_}_%>})=>{
+    const bulkInsert<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res)=>{
       try{
-        let data = body.data;
-        let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data});
+        let dataToCreate = req.body && req.body.data ? [...req.body.data] : [];
+        <%_ if(SUPPORT_API[i].isLogin){ _%>
+        dataToCreate.map((item) => { item.<%-SUPPORT_API[i].addedBy%> = req.user.id; return item });
+        <%_ } _%>
+        let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase(dataToCreate);
         <%_if(SUPPORT_API[i].fieldSelection){_%>
           if(result.data.length){
             for(let i=0;i< result.data.length; i++){
@@ -36,7 +39,7 @@ const {Op} = require("sequelize");
             }
           }
         <%_}_%>
-        return result;
+        return responseHandler(res,result);
       }catch(error){
         return responseHandler(res,response.internalServerError({message:error.message}));
       }
@@ -44,84 +47,50 @@ const {Op} = require("sequelize");
   <%_}_%>
   <%_ if(SUPPORT_API[i].method=="partialUpdate") {_%>
     <%_methods.push('partialUpdate'+DB_MODEL_FC) _%>
-    const partialUpdate<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) =>  async (id,data<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) =>{
+    const partialUpdate<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) =>  async (req,res) =>{
         try {
-          if (data && id){          
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-              let query = {}
-              if (loggedInUser){
-                  query = {
-                      "id": {
-                          [Op.eq]: id,
-                          [Op.ne]: loggedInUser.id
-                      }
-                  }
-              } else{
-                return response.badRequest();
-              }
-            <%_}else{_%>
-              let query = {id:id}
-            <%_}_%>
-            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query});
-            <%_if(SUPPORT_API[i].fieldSelection){_%>
-              if(Object.keys(result.data).length){
-                result.data = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result.data);
-              }
-            <%_}_%>
-            return result;
+          if(!req.params.id){
+            return responseHandler(res,response.badRequest());
           }
-          return response.badRequest();
-        }
-        catch (error){
+          let query = { id: req.params.id};
+          let dataToUpdate = {...req.body || {}};
+          <%_ if(SUPPORT_API[i].isLogin){ _%>
+          delete dataToUpdate["addedBy"]
+          dataToUpdate.updatedBy=req.user.id
+          <%_ } _%> 
+          let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({dataToUpdate,query});
+          <%_if(SUPPORT_API[i].fieldSelection){_%>
+            if(Object.keys(result.data).length){
+              result.data = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result.data);
+            }
+          <%_}_%>
+          return responseHandler(res,result);
+        } catch (error){
           return responseHandler(res,response.internalServerError({message:error.message}));
         }
       }
   <%_}_%>
   <%_ if(SUPPORT_API[i].method=="update") {_%>
     <%_methods.push('update'+DB_MODEL_FC) _%>
-    const update<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (data, id<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) =>{
-        try {
-          if (id){          
-            delete data.addedBy
-            delete data.updatedBy
-            <%_ if(SUPPORT_API[i].isLogin){ _%>
-                data.updatedBy=loggedInUser.id
-            <%_ } _%>
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (loggedInUser){
-                query = {
-                    "id": {
-                        [Op.eq]: id,
-                        [Op.ne]: loggedInUser.id
-                    }
-                }
-            } else{
-              return response.badRequest();
+    const update<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (req,res) =>{
+      try {
+        if(!req.params.id){
+          return responseHandler(res,response.badRequest());
+        }
+        let dataToUpdate = { ...req.body || {} };
+        let query = { id: req.params.id};
+        <%_ if(SUPPORT_API[i].isLogin){ _%>
+          delete dataToUpdate.addedBy;
+          dataToUpdate.updatedBy = req.user.id;
+          <%_ } _%>
+          
+          let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({dataToUpdate,query});
+          <%_if(SUPPORT_API[i].fieldSelection){_%>
+            if(Object.keys(result.data).length){
+              result.data = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result.data);
             }
-            <%_}else{_%>
-            let query = {id:id}
-            <%_}_%>
-            <%_         
-            let nestedCalls={}
-            if(SUPPORT_API[i].IS_NESTED_CALL){
-                nestedCalls = SUPPORT_API[i].NESTED_CALLS
-                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
-                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                        <%-element.existingVariable%> = <%=JSON.parse(element.filter)%>
-                    <%_}}
-                }                
-            }
-            _%>
-            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query});
-            <%_if(SUPPORT_API[i].fieldSelection){_%>
-              if(Object.keys(result.data).length){
-                result.data = (({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}) => ({<%_SUPPORT_API[i].fields.forEach((item,index)=>{_%><%-item%><%_if(SUPPORT_API[i].fields.length-1 !== index){_%>,<%_}_%><%_})_%>}))(result.data);
-              }
-            <%_}_%>
-            return result;
-          }
-          return response.badRequest();
+          <%_}_%>
+          return responseHandler(res,result);
         }
         catch (error){
           return responseHandler(res,response.internalServerError({message:error.message}));
@@ -130,15 +99,15 @@ const {Op} = require("sequelize");
   <%_}_%>
   <%_ if(SUPPORT_API[i].method=="bulkUpdate") {_%>
     <%_methods.push('bulkUpdate'+DB_MODEL_FC) _%>
-    const bulkUpdate<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) =>  async(data<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) =>{
+    const bulkUpdate<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) =>  async(req,res) =>{
       try{
-        if(data.filter && data.data){
-          delete data.data.addedBy
-          delete data.data.updatedBy
-          <%_ if(SUPPORT_API[i].isLogin){ _%>
-              data.data.updatedBy=loggedInUser.id
-          <%_ } _%>
-          <%_         
+        let dataToUpdate = { ...req.body.data || {} };
+        let query = { ...req.body.filter || {} };
+        <%_ if(SUPPORT_API[i].isLogin){ _%>
+          delete dataToUpdate.addedBy;
+          dataToUpdate.updatedBy=req.user.id
+        <%_ } _%>
+        <%_         
           nestedCalls={}
           if(SUPPORT_API[i].IS_NESTED_CALL){
               nestedCalls = SUPPORT_API[i].NESTED_CALLS
@@ -149,10 +118,8 @@ const {Op} = require("sequelize");
               }                
           }
           _%>
-          return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data: data.data,query :data.filter});
-        }else{
-          return response.badRequest();
-        }
+          let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({dataToUpdate,query});
+          return responseHandler(res,result);
       }catch(error){
         return responseHandler(res,response.internalServerError({message:error.message}));
       }
@@ -160,26 +127,12 @@ const {Op} = require("sequelize");
   <%_}_%>
   <%_ if(SUPPORT_API[i].method=="delete") {_%>
     <%_methods.push('delete'+DB_MODEL_FC) _%>
-      const delete<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (data,id<%_if(SUPPORT_API[i].isLogin){_%>,loggedInUser,<%_}_%>options={})=>{
+      const delete<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (req,res)=>{
         try {
-          if(!id){
-            return response.badRequest();
+          if(!req.params.id){
+            return responseHandler(res,response.badRequest());
           }
-          <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-          let query = {}
-          if (loggedInUser){
-              query = {
-                  "id": {
-                      [Op.eq]: id,
-                      [Op.ne]: loggedInUser.id
-                  }
-              }
-          } else{
-              return response.badRequest();
-          }
-          <%_}else{_%>
-          let query = {id:id}
-          <%_}_%>
+          let query = {id:req.params.id};
           <%_         
           nestedCalls={}
           if(SUPPORT_API[i].IS_NESTED_CALL){
@@ -191,7 +144,7 @@ const {Op} = require("sequelize");
               }                
           }
           _%>
-          return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query});
+          return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query,isWarning:req.body.isWarning || false});
         } catch (error) {
           return responseHandler(res,response.internalServerError({message:error.message}));
         }
@@ -200,63 +153,32 @@ const {Op} = require("sequelize");
   <%_ if(SUPPORT_API[i].method=="deleteMany") {_%>
       <%_methods.push('deleteMany'+DB_MODEL_FC) _%>
       <%_ if(DELETE_DEPENDENT_MODEL){ _%>
-  const deleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(data<%_if(SUPPORT_API[i].isLogin){_%>, loggedInUser<%_}_%>) => {
+  const deleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) => {
       try{
-          if(data && data.ids){
-            let ids = data.ids
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (loggedInUser){
-                query = {
-                    id: {
-                        [Op.in]: ids,
-                        [Op.ne]: loggedInUser.id
-                    }
-                }
-            } else{
-              return response.badRequest();
-            }
-            <%_}else{_%>
-              let query = {id:{[Op.in]: ids}}
-            <%_}_%>
-            return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({ data, query});
-          }
-          return response.badRequest();
+        if(!req.body || !req.body.ids){
+          return responseHandler(res,response.badRequest());
+        }
+        let ids = req.body.ids;
+        let query = {id:{[Op.in]: ids}}
+
+        return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query,isWarning:req.body.isWarning || false,req,res});
+        return responseHandler(res,result);
       }
       catch(error){
         return responseHandler(res,response.internalServerError({message:error.message}));
       }
     }
   <%_ } else { _%>
-  const deleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(data<%_if(typeof USER_MODEL !== 'undefined' && USER_MODEL){_%>, loggedInUser<%_}_%>) => {
+  const deleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req, res) => {
       try{
-        let ids = data.ids;
-        if (ids && (Array.isArray(ids) && ids.length > 0)) {
-              <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-              let query = {}
-              if (loggedInUser){
-                  query = {
-                      id: {
-                          [Op.in]: ids,
-                          [Op.ne]: loggedInUser.id
-                      }
-                  }
-              } else{
-                return response.badRequest();
-              }
-              <%_}else{_%>
-              let query = {id:{[Op.in]: ids}}
-              <%_}_%>
-              const dataToUpdate = {
-                isDeleted: true,
-                <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-                updatedBy: loggedInUser.id,
-                <%_}_%>
-              }
-              return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({dataToUpdate,query});
-          }else{
-            return response.badRequest();
-          }
+        if(!req.body || !req.body.ids){
+          return responseHandler(res,response.badRequest());
+        }
+        let ids = req.body.ids;
+        let query = {id:{[Op.in]: ids}};
+
+        let result =  await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query},req,res);
+        return responseHandler(res,result);
       }
       catch(error){
         return responseHandler(res,response.internalServerError({message:error.message}));
@@ -267,26 +189,13 @@ const {Op} = require("sequelize");
 
   <%_ if(SUPPORT_API[i].method=="softDelete") {_%>
     <%_methods.push('softDelete'+DB_MODEL_FC) _%>
-    const softDelete<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) =>  async({data,id<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>},options={})=>{
+    const softDelete<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) =>  async(req,res)=>{
       try{
-          if(id){
-            let updated<%-DB_MODEL_FC%>
-            <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-            let query = {}
-            if (loggedInUser){
-                query = {
-                    id: {
-                        [Op.eq]: id,
-                        [Op.ne]: loggedInUser.id
-                    }
-                }
-            }else{
-              return response.badRequest();
-            }
-            <%_}else{_%>
-            let query={id:id}
-            <%_}_%>
-            <%_         
+        if(!req.params.id){
+            return responseHandler(res,response.badRequest());
+        }
+        let query = { id: req.params.id};
+        <%_         
             nestedCalls={}          
             if(SUPPORT_API[i].IS_NESTED_CALL){
                 nestedCalls = SUPPORT_API[i].NESTED_CALLS
@@ -296,72 +205,88 @@ const {Op} = require("sequelize");
                     <%_}}
                 }                
             }
-            _%>
-            const dataToUpdate = {
-              isDeleted: true,
-              <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-              updatedBy: loggedInUser.id,
-              <%_}_%>
-            }
-            return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,dataToUpdate,query});
-          }
-          return response.badRequest();
+        _%>
+        let dataToUpdate = {
+            isDeleted: true,
+            <%_if(SUPPORT_API[i].isAuth){ _%>
+            updatedBy: req.user.id,
+            <%_}_%>
+        }
+        let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query,dataToUpdate,isWarning:req.body.isWarning || false});
+        return responseHandler(res,result);
       }catch(error){
         return responseHandler(res,response.internalServerError({message:error.message}));
       }
     }
   <%_}_%>
   <%_ if(SUPPORT_API[i].method=="softDeleteMany") {_%>
-      <%_methods.push('softDeleteMany'+DB_MODEL_FC) _%>
-      <%_ if(DELETE_DEPENDENT_MODEL){ _%>
-  const softDeleteMany<%-DB_MODEL_FC%> =  (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (data,ids<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) => {
-      try{
-         if (ids && (Array.isArray(ids) && ids.length > 0)) {
-              <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-              let query = {}
-              if (loggedInUser){
-                  query = {
-                      id: {
-                          [Op.in]: ids,
-                          [Op.ne]: loggedInUser.id
-                      }
-                  }
-              } else{
+    <%_methods.push('softDeleteMany'+DB_MODEL_FC) _%>
+    <%_ if(DELETE_DEPENDENT_MODEL){ _%>
+        const softDeleteMany<%-DB_MODEL_FC%> =  (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (req,res) => {
+            try{
+                if(!req.body || !req.body.ids){
+                    return responseHandler(res,response.badRequest());
+                }
+                let ids = req.body.ids;
+                let query = {id:{[Op.in]: ids}}
+                let dataToUpdate = {
+                    isDeleted: true,
+                    <%_if(SUPPORT_API[i].isLogin){ _%>
+                    updatedBy: req.user.id,
+                    <%_}_%>
+                }
+
+                if (ids && (Array.isArray(ids) && ids.length > 0)) {
+                    <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
+                    let query = {}
+                    if (loggedInUser){
+                        query = {
+                            id: {
+                                [Op.in]: ids,
+                                [Op.ne]: loggedInUser.id
+                            }
+                        }
+                    } else{
+                        return response.badRequest();
+                    }
+                    <%_}else{_%>
+                        let query = {id:{[Op.in]: ids,}}
+                    <%_}_%>
+                    let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query,dataToUpdate,isWarning:req.body.isWarning || false},req,res);
+                    return responseHandler(res,result);
+                }
                 return response.badRequest();
-              }
-              <%_}else{_%>
-              let query = {id:{[Op.in]: ids,}}
-              <%_}_%>
-             return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query });
-          }
-          return response.badRequest();
-      }catch(error){
-        return responseHandler(res,response.internalServerError({message:error.message}));
-      }
-  }
+            }catch(error){
+                return responseHandler(res,response.internalServerError({message:error.message}));
+            }
+        }
   <%_ } else { _%>
-  const softDeleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (ids<%_if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>) => {
-      try{
-           if (ids && (Array.isArray(ids) && ids.length > 0)) {
-              <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-              let query = {}
-              if (loggedInUser){
-                  query = {
-                      id: {
-                          [Op.in]: ids,
-                          [Op.ne]: loggedInUser.id
-                      }
-                  }
-              } else{
-                return response.badRequest();
-              }
-              <%_}else{_%>
-              let query = {id:{[Op.in]: ids,}}
-              <%_}_%>
-              const options={}
-             return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query});
-          }
-          return response.badRequest();
+  const softDeleteMany<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (req,res) => {
+    try{
+        if(!req.body || !req.body.ids){
+            return responseHandler(res,response.badRequest());
+        }
+        let ids = req.body.ids;
+        let query = {id:{[Op.in]: ids}}
+        let dataToUpdate = {
+            isDeleted: true,
+            <%_if(SUPPORT_API[i].isLogin){ _%>
+            updatedBy: req.user.id,
+            <%_}_%>
+        }
+        <%_         
+            nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        query= {...query,...<%=JSON.parse(element.filter)%>}
+                    <%_}}
+                }                
+            }
+        _%>
+        let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query,dataToUpdate},req,res);
+        return responseHandler(res,result);
       }catch(error){
         return responseHandler(res,response.internalServerError({message:error.message}));
       }
@@ -371,52 +296,33 @@ const {Op} = require("sequelize");
 
   <%_ if(SUPPORT_API[i].method=="findAll") {_%>
     <%_methods.push('findAll'+DB_MODEL_FC) _%>
-      const findAll<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async ({ data<%_ if(SUPPORT_API[i].isLogin){ _%>,loggedInUser<%_}_%>}) => {
+      const findAll<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async (req,res) => {
         try {
-          let query = {};
-          let options = {};
-          if (data.query !== undefined){
-            query = { ...data.query };
-          }
-          if(data.options !== undefined){
-            options = { ...data.options };
-          }
-          <%_ if(typeof USER_MODEL !== "undefined" && USER_MODEL && SUPPORT_API[i].isAuth){ _%>
-          if (loggedInUser){
-              query = {
-                ...query,
-              id: { [Op.ne]: loggedInUser.id }
-              }
-              if (data.query && data.query.id) {
-                  Object.assign(query.id, { [Op.in]: [data.query.id] })
-              }
-          } else{
-              return response.badRequest();
-          }
-          <%_}_%>
-          <%_if(SUPPORT_API[i].fieldSelection){_%>
+            let query= req.body && req.body.query ? {...req.body.query} : {};
+            let options= req.body && req.body.options ? {...req.body.options} : {};
+            <%_if(SUPPORT_API[i].fieldSelection){_%>
             if(options && options.select && options.select.length){
                 options.attributes = <%=SUPPORT_API[i].fields%>.filter(Set.prototype.has, new Set(options.select));
             }else{
                 options.attributes=<%=SUPPORT_API[i].fields%>
             }
-          <%_} else {_%>
-          if(options && options.select && options.select.length){
+            <%_} else {_%>
+            if(options && options.select && options.select.length){
             options.attributes = options.select;
-          }
-          <%_}_%>
-          <%_         
-          nestedCalls={}
-          if(SUPPORT_API[i].IS_NESTED_CALL){
-              nestedCalls = SUPPORT_API[i].NESTED_CALLS
-              if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
-                  for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                      <%-element.existingVariable%> = <%=JSON.parse(element.filter)%> 
-                  <%_}}
-              }                
-          }
-          _%> 
-          return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data,query,options});
+            }
+            <%_}_%>
+            <%_         
+            nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        <%-element.existingVariable%> = <%=JSON.parse(element.filter)%> 
+                    <%_}}
+                }                
+            }
+            _%> 
+          return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query,options,isCountOnly:req.body.isCountOnly || false});
         }
         catch (error){
           return responseHandler(res,response.internalServerError({message:error.message}));
@@ -427,17 +333,20 @@ const {Op} = require("sequelize");
     <%_methods.push('get'+DB_MODEL_FC) _%>
    const get<%-DB_MODEL_FC%> = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(query, data = {}) =>{
       try {
-       let options = {};
-            if (data && data.populate && data.populate.length) options.populate = data.populate;
-            if (data && data.select && data.select.length) options.select = data.select;
-            <%_if(SUPPORT_API[i].fieldSelection){_%>
-                let fieldSelect = <%=SUPPORT_API[i].fields%>
-                options.select = {
-                    ...options.select,
-                    ...fieldSelect
-                }
-            <%_}_%>
-        return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({data, query, options});  
+        if(!req.params.id){
+            return responseHandler(res,response.badRequest());
+        }
+        let query = { id: req.params.id};
+        let options = {};
+        <%_if(SUPPORT_API[i].fieldSelection){_%>
+            let fieldSelect = <%=SUPPORT_API[i].fields%>
+            options.select = {
+                ...options.select,
+                ...fieldSelect
+            }
+        <%_}_%>
+        let result =  await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({query, options}); 
+        return responseHandler(res,result); 
       }
       catch (error){
         return responseHandler(res,response.internalServerError({message:error.message}));
@@ -446,21 +355,22 @@ const {Op} = require("sequelize");
   <%_}_%>
   <%_ if(SUPPORT_API[i].method=="count") {_%>
     <%_methods.push('get'+DB_MODEL_FC+'Count') _%>
-    const get<%-DB_MODEL_FC%>Count = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(data) => {
+    const get<%-DB_MODEL_FC%>Count = (<%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase) => async(req,res) => {
         try {
-            let where = data && data.where ? data.where : {};
-            <%_         
-                nestedCalls={}
-                if(SUPPORT_API[i].IS_NESTED_CALL){
-                    nestedCalls = SUPPORT_API[i].NESTED_CALLS
-                    if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
-                        for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
-                            where=...<%=JSON.parse(element.filter)%>                      
-                        <%_}}
-                    }                
-                }
-                _%>
-            return await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase({where});  
+          let where = {...req.body.where || {} };
+          <%_         
+            nestedCalls={}
+            if(SUPPORT_API[i].IS_NESTED_CALL){
+                nestedCalls = SUPPORT_API[i].NESTED_CALLS
+                if(nestedCalls && nestedCalls.pre && nestedCalls.pre.length>0){ 
+                    for(const element of nestedCalls.pre){ if(element.existingVariable && element.filter!==undefined){_%>
+                        where=...<%=JSON.parse(element.filter)%>                      
+                    <%_}}
+                }                
+            }
+          _%>
+            let result = await <%-SUPPORT_API[i].method + DB_MODEL_FC %>Usecase(where); 
+            return responseHandler(res,result);  
         } catch(error){
             return responseHandler(res,response.internalServerError({message:error.message}));
         }
@@ -469,22 +379,44 @@ const {Op} = require("sequelize");
 <%_}_%>
 
 <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>
-  <%_methods.push('changePassword'); methods.push('updateProfile');  _%>
+  <%_
+  methods.push('changePassword'); 
+  methods.push('updateProfile'); 
+  methods.push('getLoggedInUserInfo');  _%>
    
-   const changePassword = (changePasswordUsecase) => async (params) => {
+   const changePassword = (changePasswordUsecase) => async (req,res) => {
         try{
-            return await changePasswordUsecase(params);
+            let result = await changePasswordUsecase(req.body);
+            return responseHandler(res,result);
         }catch(error){
             return responseHandler(res,response.internalServerError({message:error.message}));
         }
     }   
-    const updateProfile = (updateProfileUsecase) => async (data,id) => {
+    const updateProfile = (updateProfileUsecase) => async (req,res) => {
         try{
-            return await updateProfileUsecase({data,id});
+            let result = await updateProfileUsecase(req.body,req.params.id);
+            return responseHandler(res,result);
         }catch(error){
             return responseHandler(res,response.internalServerError({message:error.message}));
         }   
     }
+
+    const getLoggedInUserInfo = (get<%-DB_MODEL_FC%>Usecase) => async (req,res) =>{
+        try {
+            if(!req.user){
+                return responseHandler(res,response.badRequest());
+            }
+            const query = {
+                id : req.user.id,
+                isDeleted: false,
+                isActive:true
+            };
+            let result = await get<%-DB_MODEL_FC%>Usecase({query,options:{}});
+            return responseHandler(res,result);
+        } catch (error) {
+            return responseHandler(res,response.internalServerError({message:error.message}));
+        }
+    };
   
 <%_}_%>
 

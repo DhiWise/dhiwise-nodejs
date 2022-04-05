@@ -32,7 +32,7 @@ const dbService = require('../utils/dbService');
         }else{
           userToBeInserted = <%-finalStr%>
           userToBeInserted.password = await bcrypt.hash(userToBeInserted.password, 8)
-          await dbService.updateByQuery(model.<%-AUTH_MODEL%>, <%-JSON.stringify(USER_EXIST_CONDITION[i])%>, userToBeInserted);
+          await dbService.updateMany(model.<%-AUTH_MODEL%>, <%-JSON.stringify(USER_EXIST_CONDITION[i])%>, userToBeInserted);
         }
       <%_}_%>
       console.info('User model seeded 🍺');

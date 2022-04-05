@@ -11,8 +11,7 @@ const response = require('../../utils/response');
  * @return {object} : response of bulkUpdate. {status, message, data}
  */
 const bulkUpdate = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
-    let { data, query } = params;
-    const results = await <%-MODEL_NAME-%>Db.updateMany(query,data);
+    const results = await <%-MODEL_NAME-%>Db.updateMany(params.query,params.dataToUpdate);
     return response.success({ data:results });
 }
 module.exports = bulkUpdate;

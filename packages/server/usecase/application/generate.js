@@ -437,7 +437,7 @@ const getDirectoryAndFiles = (source) => {
 };
 
 const overwriteProject = async (generatedId, projectName) => {
-  await fsExtra.copy(`./output/${generatedId}/${projectName}/.env`, `./output/${generatedId}/${projectName}_dhiwise_temp_app/.env`);
+  await fsExtra.copy(`./output/${generatedId}/${projectName}_dhiwise_temp_app/.env`, `./output/${generatedId}/${projectName}/.env`);
 
   const outputProjectDir = `./output/${generatedId}/${projectName}`;
   // fsExtra.emptyDirSync(directory);

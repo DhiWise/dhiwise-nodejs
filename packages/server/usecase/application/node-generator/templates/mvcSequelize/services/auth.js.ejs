@@ -38,13 +38,13 @@ async function generateToken(user,secret){
 * @description : service of login user.
 * @param {string} username : username of user.
 * @param {string} password : password of user.
-* @param {string} url : url of requested route to login, for platform identification.
+* @param {string} platform : platform of requested route to login, for platform identification.
 <%_if(ROLE_PERMISSION) {_%>
 * @param {boolean} roleAccess: a flag to request role access of user
 <%_}_%>
 * @return {object} : returns authentication status. {flag, data}
 */
-    const loginUser = async(username,password,url<%_if(ROLE_PERMISSION){_%>,roleAccess<%_}_%>) => {
+    const loginUser = async(username,password,platform<%_if(ROLE_PERMISSION){_%>,roleAccess<%_}_%>) => {
             try {
                 <%_ if(LOGIN_WITH.length>1){ _%>
                 let where = <%-MULTIPLE_LOGIN%>
@@ -114,14 +114,14 @@ async function generateToken(user,secret){
                         }
                         <%_for(let i=0; i<PLATFORMS.length; i++){_%>
                             <%_if(i===0){_%>
-                            if(url.includes('<%-PLATFORMS[i].toLowerCase()%>')){
+                            if(platform == PLATFORM.<%-PLATFORMS[i].toUpperCase()%>){
                                 if(!LOGIN_ACCESS[user.role].includes(PLATFORM.<%-PLATFORMS[i].toUpperCase()%>)){
                                     return {flag:true, data:'you are unable to access this platform'}
                                 }
                                 token = await generateToken(userData,JWT.<%-PLATFORMS[i].toUpperCase()%>_SECRET)
                             }
                             <%_}else{_%>
-                            else if(url.includes('<%-PLATFORMS[i].toLowerCase()%>')){
+                            else if(platform == PLATFORM.<%-PLATFORMS[i].toUpperCase()%>){
                                 if(!LOGIN_ACCESS[user.role].includes(PLATFORM.<%-PLATFORMS[i].toUpperCase()%>)){
                                     return {flag:true, data:'you are unable to access this platform'}
                                 }
@@ -163,7 +163,7 @@ async function generateToken(user,secret){
             } catch (error) {
                 throw new Error(error.message)
             }
-    },
+    };
 
 /**
 * @description : service to change password.
@@ -192,7 +192,7 @@ async function generateToken(user,secret){
         } catch (error) {
             throw new Error(error.message)
         }
-    },
+    };
 
 /**
 * @description : service to send notification on reset password.
@@ -390,7 +390,7 @@ async function generateToken(user,secret){
         } catch (error) {
             throw new Error(error.message)
         }
-    },
+    };
     
 /**
 * @description : service to reset password.
@@ -437,7 +437,7 @@ async function generateToken(user,secret){
         } catch (error) {
             throw new Error(error.message)
         }
-    }
+    };
 
 module.exports = {
     loginUser,
