@@ -6,7 +6,7 @@ const upload = (fileUploadUsecase) => async (req,res) => {
     let result = await fileUploadUsecase(req,res);
     return responseHandler(res,result);
   } catch (error) {
-    return responseHandler(res,response.internalServerError({ message:error.message }));
+    return responseHandler(res,response.internalServerError({message:error.message}));
   }
 };
 

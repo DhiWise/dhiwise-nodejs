@@ -495,6 +495,13 @@ class CodeGenerator {
         });
       }
     }
+      // file upload service
+      if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_FILE_UPLOAD_SERVICE)) {
+        const templatePath = `${this.setup.templateFolderName}${templateRegistry.serviceFolderPath}`;
+        const fileUploadData = this.jsonData.fileUpload.uploads || [];
+  
+        this.fileUploadService = await makeFileUploadService(templatePath, fileUploadData);
+      }
 
     // common use-case files for cc
     if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_COMMON_USE_CASE_FILES)) {

@@ -1,11 +1,10 @@
 let express = require('express');
 let router = express.Router();
-const fileUploadController = require("../../controller/<%-PLATFORM%>/fileUpload/fileUploadController");
+const fileUploadController = require("../../controller/<%-PLATFORM%>/fileUpload");
 <%_ if(IS_AUTH){ _%>
 const auth = require("../../middleware/auth");
 const { PLATFORM } =  require("../../constants/authConstant");  
 <%_ } _%>
-const { PLATFORM }=require('../../constants/authConstant')
 
 <%_ if(IS_AUTH){ _%>
 router.post("/<%-PLATFORM_PREFIX%>/upload",auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),fileUploadController.upload);

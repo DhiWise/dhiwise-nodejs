@@ -13,10 +13,8 @@ const path = require('path');
   mongoose.connect(mongoServer.getUri(), {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    /*
-     * useFindAndModify: false,
-     * useCreateIndex: true,
-     */
+    // useFindAndModify: false,
+    // useCreateIndex: true,
   });
   const db = mongoose.connection;
 
