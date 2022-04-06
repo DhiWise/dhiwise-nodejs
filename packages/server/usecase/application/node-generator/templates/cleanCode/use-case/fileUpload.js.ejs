@@ -116,9 +116,7 @@ const upload =async(req,res) =>{
           }
 
           combinedOutput.uploadFileRes = fileUploadResponseObj;
-          if (combinedOutput) {
-            return response.success({ data: combinedOutput });
-          }
+          return response.success({ data: combinedOutput });
         <%_} else {_%>
           let combinedOutput = {};
           let defaultDirectory = 'public/assets';
@@ -204,10 +202,7 @@ const upload =async(req,res) =>{
           }
 
           combinedOutput.uploadFileRes = fileUploadResponseObj;
-          if (combinedOutput) {
-            return response.success({ data: combinedOutput });
-          }
-          
+          return response.success({ data: combinedOutput });
         <%_ } _%>
 }
 
