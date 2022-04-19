@@ -22,7 +22,7 @@ const {
   makeCustomRoutes, makeControllerIndexForCustomRoutes, makeServiceForNonExistingService, makeCustomRoutesUsecase,
 } = require('./createApplication/createCustomRoutes');
 const {
-  makeFileUploadFiles, makeFileUploadUsecase, makeFileUploadControllerIndex,
+  makeFileUploadFiles, makeFileUploadUsecase, makeFileUploadControllerIndex, makeFileUploadService,
 } = require('./createApplication/createFileUploadFiles/index');
 const { startRenderingEJS } = require('./createApplication/render');
 const { addSocialLogin } = require('./createApplication/thirdPartyIntegrations');
@@ -495,13 +495,13 @@ class CodeGenerator {
         });
       }
     }
-      // file upload service
-      if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_FILE_UPLOAD_SERVICE)) {
-        const templatePath = `${this.setup.templateFolderName}${templateRegistry.serviceFolderPath}`;
-        const fileUploadData = this.jsonData.fileUpload.uploads || [];
-  
-        this.fileUploadService = await makeFileUploadService(templatePath, fileUploadData);
-      }
+    // file upload service
+    if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_FILE_UPLOAD_SERVICE)) {
+      const templatePath = `${this.setup.templateFolderName}${templateRegistry.serviceFolderPath}`;
+      const fileUploadData = this.jsonData.fileUpload.uploads || [];
+
+      this.fileUploadService = await makeFileUploadService(templatePath, fileUploadData);
+    }
 
     // common use-case files for cc
     if (_.includes(steps, PROJECT_CREATION_STEP.CREATE_COMMON_USE_CASE_FILES)) {
