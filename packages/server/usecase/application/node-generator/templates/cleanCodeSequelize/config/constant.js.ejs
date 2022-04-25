@@ -6,13 +6,8 @@ const JWT={
 }
 
 const USER_ROLE ={
-    <%_ let index_role = 0; _%>
-    <%_ if( USER_ROLE.includes('admin') || USER_ROLE.includes('Admin')) {_%>
-        <%_ USER_ROLE = USER_ROLE.filter(e=>e!=='admin'&&e!=='Admin') _%>
-        Admin :<%= index_role+=1 %>,
-    <%_ } _%>    
     <%_ USER_ROLE.forEach(function (role,index) { _%>
-        <%- role %>:<%- index_role+=1 %>,
+        <%- role %>:<%- index+=1 %>,
     <%_ }); _%>
 }
 
@@ -33,11 +28,6 @@ let LOGIN_ACCESS ={
 
 const DEFAULT_ROLE= 1
 
-const ROLE_RIGHTS={
-    <% for(var i = 0; i < AUTHORIZE_ROUTE_KEY.length; i++) { %>
-    [USER_ROLE.<%- AUTHORIZE_ROUTE_KEY[i] %>] : <%- JSON.stringify(AUTHORIZE_ROUTE_VALUE[i],null,2) %>,
-    <%}%>
-}
 <%_if(LOGIN_RETRY_LIMIT){_%>
 const MAX_LOGIN_RETRY_LIMIT = <%=LOGIN_RETRY_LIMIT.max%>;   
 const LOGIN_REACTIVE_TIME = <%=LOGIN_RETRY_LIMIT.reActiveTime%>;
@@ -64,7 +54,6 @@ module.exports = {
     JWT,
     USER_ROLE,
     DEFAULT_ROLE,
-    ROLE_RIGHTS,
     PLATFORM,
     <%_if(LOGIN_RETRY_LIMIT){_%>
     MAX_LOGIN_RETRY_LIMIT,

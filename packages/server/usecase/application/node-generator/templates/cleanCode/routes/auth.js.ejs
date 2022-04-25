@@ -3,73 +3,22 @@ const router = express.Router();
 <%_if(SOCIAL_PLATFORMS.length){ _%>
 const session = require('express-session');
 <%_}_%>
-const adaptRequest = require("../../helpers/adaptRequest");
-const responseHandler = require('../../utils/response/responseHandler');
 const {auth} = require('../../middleware');
 const authController = require("../../controller/<%-PLATFORM%>/authentication");
-router.post("/register",(req,res,next)=>{
-  req = adaptRequest(req);
-  authController.register(req.body).then((result)=>{
-    responseHandler(res,result);
-  })
-});
-router.post('/login',(req,res,next)=>{
-  req = adaptRequest(req);
-  authController.authentication(req.body,req.url).then((result) => {
-    responseHandler(res,result);
-  });
-});
-router.post("/forgot-password", (req, res, next) => {
-  req = adaptRequest(req);
-  authController.forgotPassword(req.body).then((result) => {
-    responseHandler(res, result)
-  });
-});
-router.post("/validate-otp",(req,res,next)=>{
-  req = adaptRequest(req);
-  authController.validateResetPasswordOtp(req.body).then((result) => {
-    responseHandler(res, result)
-  })
-});
-router.put("/reset-password",(req,res,next)=>{
-  req = adaptRequest(req);
-  authController.resetPassword(req.body).then((result) => {
-    responseHandler(res, result)
-  });
-});
+const { PLATFORM } =  require("../../constants/authConstant");
+router.post("/register",authController.register);
+router.post('/login',authController.authentication);
+router.post("/forgot-password",authController.forgotPassword);
+router.post("/validate-otp",authController.validateResetPasswordOtp);
+router.put("/reset-password",authController.resetPassword);
 <%_if(SOCIAL_PLATFORMS.length) { 
   SOCIAL_PLATFORMS.forEach(s=>{ _%>
 router.get("/<%-s.toLowerCase()%>",(req,res)=>{
-req = adaptRequest(req);
 req.session.platform = <%=PLATFORM%>
 res.redirect(`http://localhost:${process.env.PORT}/auth/<%-s.toLowerCase()%>`);
 })
 <%_})_%>
 <%_}_%>
-<%_ returnRole = makePolicyRoutes('logout')_%>
-router.post('/logout',auth(...<%=returnRole.LOGOUT_API%>),(req,res,next)=>{
-  req = adaptRequest(req);
-  authController.logout(req.user,req.headers.authorization).then((result) => {
-    responseHandler(res, result)
-  });
-});
+router.post('/logout',auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),authController.logout);
   
 module.exports = router;
-<%_ function makePolicyRoutes(type){
-    try{
-        let returnRoles = {}
-        returnRoles.LOGOUT_API = []
-            for (var [i, v] of Object.entries(LOGIN_ACCESS_PLATFORM)) {
-                switch (type) {
-                    case 'logout':
-                        returnRoles.LOGOUT_API.push(`logoutBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
-                        break;
-                    default:
-                        break;
-                }
-            }
-       return returnRoles;
-    }catch(error){
-        throw error;
-    }
-}_%>

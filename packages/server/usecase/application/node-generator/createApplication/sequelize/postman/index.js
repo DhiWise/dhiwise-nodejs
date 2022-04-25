@@ -844,18 +844,21 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 responseObject.status = 'OK';
                 responseObject.code = 200;
                 responseObject._postman_previewlanguage = 'json';
-                let updateBulkDataResponse = {
+                // let updateBulkDataResponse = {
+                //     "status": "SUCCESS",
+                //     "message": "Your request is successfully executed",
+                //     "data": [
+                //         null,
+                //         1
+                //     ]
+                // };
+                let responseJsonData = {
                     "status": "SUCCESS",
                     "message": "Your request is successfully executed",
                     "data": [
                         null,
                         1
                     ]
-                };
-                let responseJsonData = {
-                    "status": "SUCCESS",
-                    "message": "Your request is successfully executed",
-                    "data": updateBulkDataResponse
                 };
                 responseJsonData = JSON.stringify(responseJsonData, undefined, 2)
                 responseObject.body = responseJsonData;
@@ -888,18 +891,21 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 responseObject.status = 'OK';
                 responseObject.code = 200;
                 responseObject._postman_previewlanguage = 'json';
-                let partialUpdateJsonData = {
-                    "status": "SUCCESS",
-                    "message": "Your request is successfully executed",
-                    "data": [
-                        null,
-                        1
-                    ]
-                };
+                // let partialUpdateJsonData = {
+                //     "status": "SUCCESS",
+                //     "message": "Your request is successfully executed",
+                //     "data": [
+                //         null,
+                //         1
+                //     ]
+                // };
                 let responseJsonData = {
                     "status": "SUCCESS",
                     "message": "Your request is successfully executed",
-                    "data": partialUpdateJsonData
+                    "data":  [
+                        null,
+                        1
+                    ]
                 };
                 responseJsonData = JSON.stringify(responseJsonData, undefined, 2)
                 responseObject.body = responseJsonData;
@@ -1034,7 +1040,7 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 body.mode = 'raw';
                 body.raw = JSON.stringify({ isWarning: true, ids: [id] }, undefined, 2);
                 requestObj.name = `deleteMany${key}`;
-                requestObj.method = 'DELETE';
+                requestObj.method = 'POST';
                 requestObj.body = body;
                 header.length ? requestObj.header = header : '';
                 requestObj.auth = security
@@ -1083,7 +1089,7 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 let responseJsonData = {
                     "status": "SUCCESS",
                     "message": "Your request is successfully executed",
-                    "data": [bodyRawData]
+                    "data": 1
                 };
                 responseJsonData = JSON.stringify(responseJsonData, undefined, 2)
                 responseObject.body = responseJsonData;
@@ -1116,7 +1122,9 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
                 let softDeleteManyResponse = {
                     "status": "SUCCESS",
                     "message": "Your request is successfully executed",
-                    "data": null
+                    "data": [
+                        1
+                    ]
                 };
                 let responseJsonData = {
                     "status": "SUCCESS",
@@ -1190,7 +1198,7 @@ async function getPostmanCollections(platformStr, key, platform, data = {}, isRo
         const responseJsonData = {
             "status": "SUCCESS",
             "message": "Your request is successfully executed",
-            "data": JSON.stringify([bodyRawData])
+            "data": bodyRawData
         };
         responseObject.body = JSON.stringify(responseJsonData.data,undefined,2);
         responseObject.header = [];

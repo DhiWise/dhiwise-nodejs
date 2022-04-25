@@ -9,17 +9,16 @@ const authConstant = require('../../constants/authConstant');
 
 /**
  * @description : create documents of document of <%-MODEL_NAME-%> in mongodb collection
- * @param {obj} <%-MODEL_NAME-%>Db : db service instance
- * @param {obj} params : {data: data to add}
- * @return {obj} : response of create. {status, message, data}
+ * @param {object} <%-MODEL_NAME-%>Db : db service instance
+ * @param {object} dataToCreate : data to create in database
+ * @return {object} : response of create. {status, message, data}
  */
-const create = ({ <%-MODEL_NAME-%>Db,createValidation }) => async (params) => {
-    let { data } = params;
-    const validateRequest = await createValidation(data);
+const create = ({ <%-MODEL_NAME-%>Db,createValidation }) => async (dataToCreate) => {
+    const validateRequest = await createValidation(dataToCreate);
     if (!validateRequest.isValid) {
         return response.validationError({ message : `Invalid values in parameters, ${validateRequest.message}` });
     }
-    let <%-MODEL_NAME-%> = <%-MODEL_NAME-%>Entity(data);
+    let <%-MODEL_NAME-%> = <%-MODEL_NAME-%>Entity(dataToCreate);
     <%-MODEL_NAME-%> = await <%-MODEL_NAME-%>Db.create(<%-MODEL_NAME-%>);
     return response.success({data:<%-MODEL_NAME-%>});
 }

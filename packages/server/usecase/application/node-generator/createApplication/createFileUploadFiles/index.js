@@ -1,5 +1,8 @@
-const { forEach } = require('lodash');
+const {
+  forEach, isEmpty, find,
+} = require('lodash');
 const writeOperations = require('../../writeOperations');
+const { getImportPath } = require('../utils/common');
 
 async function makeFileUploadFiles (fileUploadObj) {
   const { jsonData } = fileUploadObj;
@@ -44,9 +47,59 @@ async function makeFileUploadFiles (fileUploadObj) {
       controller,
     });
   });
-  returnObj.packageDependencies.dependencies.formidable = '~1.2.2';
+  returnObj.packageDependencies.dependencies.formidable = '~2.0.1';
   returnObj.packageDependencies.dependencies['valid-url'] = '~1.0.9';
   return returnObj;
 }
+async function makeFileUploadService (templatePath, fileUploadData) {
+  const fileUploadService = writeOperations.loadTemplate(`${templatePath}/fileUpload.js`);
+  const s3Upload = find(fileUploadData, (fileUpload) => fileUpload.storage.toLowerCase() === 's3' || fileUpload.storage.toLowerCase() === 's3_private');
+  const s3Private = find(fileUploadData, (fileUpload) => fileUpload.storage.toLowerCase() === 's3_private');
+  const local = find(fileUploadData, (fileUpload) => fileUpload.storage.toLowerCase() === 'local');
 
-module.exports = { makeFileUploadFiles };
+  fileUploadService.locals.LOCAL_UPLOAD = !!local;
+  fileUploadService.locals.S3_UPLOAD = !!s3Upload;
+  fileUploadService.locals.S3_UPLOAD_PRIVATE = !!s3Private;
+  return fileUploadService;
+}
+
+async function makeFileUploadUsecase (templatePath, uploadsFunctions) {
+  const fileUploadUsecase = [];
+  if (!isEmpty(uploadsFunctions)) {
+    forEach(uploadsFunctions, (uploadsFunctionDetails) => {
+      // console.log(uploadsFunctionDetails); process.exit(1);
+      const uploadsFunction = writeOperations.loadTemplate(`${templatePath}/fileUpload.js`);
+      uploadsFunction.locals.LOCAL_UPLOAD = uploadsFunctionDetails.storage === 'local';
+
+      uploadsFunction.locals.S3_UPLOAD = !!((uploadsFunctionDetails.storage.toLowerCase() === 's3' || uploadsFunctionDetails.storage.toLowerCase() === 's3_private'));
+
+      uploadsFunction.locals.S3_UPLOAD_PRIVATE = (uploadsFunctionDetails.storage.toLowerCase() === 's3_private');
+
+      uploadsFunction.locals.ALLOWED_TYPE = uploadsFunctionDetails.validationType || null;
+      uploadsFunction.locals.MAX_SIZE = uploadsFunctionDetails.maxSize || null;
+
+      fileUploadUsecase.push(uploadsFunction);
+    });
+  }
+
+  return fileUploadUsecase;
+}
+
+const makeFileUploadControllerIndex = async (templatePath, platforms, userDirectoryStructure) => {
+  const fileUploadControllerIndex = [];
+  forEach(platforms, (platform) => {
+    const fileUploadCtrlInd = writeOperations.loadTemplate(`${templatePath}/fileUploadControllerIndex.js`);
+    fileUploadCtrlInd.locals.PLATFORM = platform;
+    fileUploadCtrlInd.locals.USECASE_PATH = getImportPath(userDirectoryStructure.fileUploadControllerPath, userDirectoryStructure.useCaseFolderPath);
+    fileUploadControllerIndex.push(fileUploadCtrlInd);
+    fileUploadControllerIndex.push(fileUploadCtrlInd);
+  });
+  return fileUploadControllerIndex;
+};
+
+module.exports = {
+  makeFileUploadFiles,
+  makeFileUploadService,
+  makeFileUploadUsecase,
+  makeFileUploadControllerIndex,
+};

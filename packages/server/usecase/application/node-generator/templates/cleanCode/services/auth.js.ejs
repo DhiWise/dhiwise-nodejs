@@ -112,7 +112,7 @@ function makeAuthService({model,<%-MODEL%>Service,userTokenService<%_if(ROLE_PER
                     <%_}_%>
                     let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
                     await userTokenService.createDocument({ userId: user.id, token: token,tokenExpiredTime: expire });                  
-                    let userToReturn = { ...userData, ...{ token } };
+                    let userToReturn = { ...userData, token };
                     <%_if(ROLE_PERMISSION){_%>
                     let roleAccessData = {};
                     if (roleAccess){

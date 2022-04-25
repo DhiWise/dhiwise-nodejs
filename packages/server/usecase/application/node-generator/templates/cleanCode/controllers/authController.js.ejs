@@ -1,51 +1,60 @@
-const response = require('../../../utils/response');  
+const authConstant = require("../../../constants/authConstant");
+const response = require('../../../utils/response'); 
+const responseHandler = require('../../../utils/response/responseHandler');  
 
-const register = (registerUsecase) => async (data) => {
+const register = (registerUsecase) => async (req,res) => {
     try{
-        return await registerUsecase(data);
+        let result = await registerUsecase(req.body);
+        return responseHandler(res,result);
     }catch (error) {
-        return response.internalServerError();
+        return responseHandler(res,response.internalServerError({message:error.message}));
     }
 }
 
-const forgotPassword = (forgotPasswordUsecase) => async (data) => {
+const forgotPassword = (forgotPasswordUsecase) => async (req,res) => {
     try{
-        return await forgotPasswordUsecase(data);
+        let result = await forgotPasswordUsecase(req.body);
+        return responseHandler(res,result);
     } catch (error) {
-        return response.internalServerError();
+        return responseHandler(res,response.internalServerError({message:error.message}));
     }
 }
     
-const validateResetPasswordOtp = (validateResetPasswordOtpUsecase) => async (data) => {
+const validateResetPasswordOtp = (validateResetPasswordOtpUsecase) => async (req,res) => {
     try{
-        return await validateResetPasswordOtpUsecase(data);
+        let result = await validateResetPasswordOtpUsecase(req.body);
+        return responseHandler(res,result);
     } catch (error) {
-        return response.internalServerError();
+        return responseHandler(res,response.internalServerError({message:error.message}));
     }
 }
  
-const resetPassword = (resetPasswordUsecase) => async (data) => {
+const resetPassword = (resetPasswordUsecase) => async (req,res) => {
     try {
-        return await resetPasswordUsecase(data);
+        let result = await resetPasswordUsecase(req.body);
+        return responseHandler(res,result);
     } catch (error) {
-        return response.internalServerError();
+        return responseHandler(res,response.internalServerError({message:error.message}));
     }
 }
 
-const authentication = (authenticationUsecase) => async (data, url)=>{
+const authentication = (authenticationUsecase) => async (req,res)=>{
     try {
-        return await authenticationUsecase(data, url);
+        let result = await authenticationUsecase(req.body,authConstant.PLATFORM.<%-PLATFORM_NAME.toUpperCase()%>);
+        return responseHandler(res,result);
     } catch (error) {
-        return response.internalServerError();
+        return responseHandler(res,response.internalServerError({message:error.message}));
     }
 }
 
-const logout = (logoutUsecase) => async (user, token) => {
+const logout = (logoutUsecase) => async (req,res) => {
     try {
-        token = token.replace('Bearer ', '');
-        return await logoutUsecase(user, token);
+        let user = req.user;
+        let token = req.headers.authorization.token.replace('Bearer ', '');
+        let result = await logoutUsecase(user, token);
+        return responseHandler(res,result);
     } catch (error) {
-        return response.internalServerError();
+        return responseHandler(res,response.internalServerError({message:error.message}));
     }
 }
 

@@ -1,311 +1,117 @@
 const express = require('express');
 const router = express.Router();
-const <%-DB_MODEL%>Controller = require("../../controller/<%-MODULE%>/<%-DB_MODEL%>");
+const <%-DB_MODEL%>Controller = require("../../controller/<%-PLATFORM%>/<%-DB_MODEL%>");
 <%_ if(CONTROLLERS_TO_IMPORT && CONTROLLERS_TO_IMPORT.length){ _%>
 <%_ for(let i=0;i < CONTROLLERS_TO_IMPORT.length;i++){ 
     if(CONTROLLERS_TO_IMPORT[i] != DB_MODEL){ _%>
-const <%-CONTROLLERS_TO_IMPORT[i]-%>Controller = require('../../controller/<%-MODULE%>/<%-CONTROLLERS_TO_IMPORT[i]-%>');
+const <%-CONTROLLERS_TO_IMPORT[i]-%>Controller = require('../../controller/<%-CONTROLLERS_TO_IMPORT[i]-%>');
 <%_ } }_%>  
 <%_ } _%> 
-const adaptRequest = require("../../helpers/adaptRequest");
-const responseHandler = require('../../utils/response/responseHandler');
-<%_ if(IS_AUTH){ _%>
-const {auth} = require('../../middleware');
-<%_ } _%>
 <%_ if(CUSTOM_POLICY.length){ 
     if(CUSTOM_POLICY.includes('auth')){ let arrayIndex = CUSTOM_POLICY.indexOf('auth'); delete CUSTOM_POLICY[arrayIndex]; CUSTOM_POLICY =  CUSTOM_POLICY.filter(Boolean);}
-_%>
+_%><%_ } _%>
+<%_ if(IS_AUTH){ _%>
+const { auth, <%_for(let i=0;i < CUSTOM_POLICY.length;i++){_%><%-CUSTOM_POLICY[i]-%>,<%_}_%> } = require("../../middleware");
+<%_ }else{ _%>
 <%_ for(let i=0;i < CUSTOM_POLICY.length;i++){ _%>
-const {<%-CUSTOM_POLICY[i]-%>} = require("../../middleware");
+const <%-CUSTOM_POLICY[i]-%> = require('../../middleware/<%-CUSTOM_POLICY[i]-%>');
 <%_ } _%> <%_ } _%> 
+const { PLATFORM } =  require("../../constants/authConstant");
+<%_ if(USER_MODEL){ _%>
+<%_ if(typeof IS_AUTH !== "undefined" && IS_AUTH){_%>
+router.route('/<%-ROUTE_PREFIX%>/me').get(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),<%-DB_MODEL%>Controller.getLoggedInUserInfo);
+<%_ } _%>
+<%_ } _%>
 <%_ for(let i=0; i < SUPPORT_API.length; i++){ _%>
 <%_ if(SUPPORT_API[i].method=="create"){ _%>
-<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("create") ; _%>
-router.post('/<%-ROUTE_PREFIX%>/create',auth(...<%=returnRole.CREATE_API %>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.add<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data: req.body, loggedInUser:req.user}).then((result)=>{
-        responseHandler(res, result);(res, result);
-    });
-})
+<%_ if(SUPPORT_API[i].isAuth){ _%>
+router.route('/<%-ROUTE_PREFIX%>/create').post(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.add<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_ }else{ _%>
-router.post('/<%-ROUTE_PREFIX%>/create',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.add<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data:req.body}).then((result)=>{
-        responseHandler(res, result);
-    });
-})
+router.route('/<%-ROUTE_PREFIX%>/create').post(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.add<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_ } _%><%_ } _%>
 <%_ if(SUPPORT_API[i].method=="createBulk") {_%>
-<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("createBulk") ; _%>
-router.post('/<%-ROUTE_PREFIX%>/addBulk',auth(...<%= returnRole.CREATE_BULK_API %>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    <%-DB_MODEL%>Controller.bulkInsert<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({body: req.body,loggedInUser: req.user}).then((result)=>{
-        responseHandler(res,result)
-    });
-})
+<%_ if(SUPPORT_API[i].isAuth){ _%>
+router.route('/<%-ROUTE_PREFIX%>/addBulk').post(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.bulkInsert<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_ }else{ _%>
-router.post('/<%-ROUTE_PREFIX%>/addBulk',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.bulkInsert<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({body: req.body}).then((result)=>{
-        responseHandler(res,result)
-    });
-})
+router.route('/<%-ROUTE_PREFIX%>/addBulk').post(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.bulkInsert<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_ } _%><%_ } _%>
 <%_ if(SUPPORT_API[i].method=="findAll"){ _%>
-<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("findAll") ; _%>
-router.post('/<%-ROUTE_PREFIX%>/list',auth(...<%=returnRole.READ_ALL_API %>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.findAll<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data: req.body, loggedInUser:req.user}).then((result)=>{
-        responseHandler(res,result)
-    });
-})
+<%_ if(SUPPORT_API[i].isAuth){_%>
+router.route('/<%-ROUTE_PREFIX%>/list').post(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.findAll<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_ }else{ _%>
-router.post('/<%-ROUTE_PREFIX%>/list',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.findAll<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data:req.body}).then((result)=>{
-        responseHandler(res,result)
-    });
-})
+router.route('/<%-ROUTE_PREFIX%>/list').post(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.findAll<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_ } _%><%_ } _%>
 <%_ if(SUPPORT_API[i].method=="findById"){ _%>
-<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("findById") ; _%>
-router.get('/<%-ROUTE_PREFIX%>/:id',auth(...<%= returnRole.READ_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>ById({ id: req.pathParams.id}).then((result)=>{
-        responseHandler(res,result)
-    });
-});
+<%_ if(SUPPORT_API[i].isAuth){ _%>
+router.route('/<%-ROUTE_PREFIX%>/:id').get(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>);
 <%_ }else{ _%>
-router.get('/<%-ROUTE_PREFIX%>/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>ById(req.pathParams.id).then((result)=>{
-        responseHandler(res,result)
-    });
-});
+router.route('/<%-ROUTE_PREFIX%>/:id').get(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>);
 <%_ } _%><%_ } _%>
 <%_ if(SUPPORT_API[i].method=="count"){ _%>
-<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("count") ; _%>
-router.route('/<%-ROUTE_PREFIX%>/count').post(auth(...<%=returnRole.COUNT_API%>), <%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>Count(req.body).then((result)=>{
-        responseHandler(res,result)
-    });
-});
+<%_ if(SUPPORT_API[i].isAuth){ _%>
+router.route('/<%-ROUTE_PREFIX%>/count').post(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>), <%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>Count);
 <%_ }else{ _%>
-router.route('/<%-ROUTE_PREFIX%>/count').post(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.findAll<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data:{iCountOnly:true}}).then((result)=>{
-        responseHandler(res,result)
-    });
-});
+router.route('/<%-ROUTE_PREFIX%>/count').post(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.get<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>Count);
 <%_ } _%><%_ } _%>
 <%_if(SUPPORT_API[i].method=="update"){_%>
-<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("update") ; _%>
-router.put('/<%-ROUTE_PREFIX%>/update/:id',auth(...<%=returnRole.UPDATE_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.update<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.pathParams.id,req.user).then((result)=>{
-        responseHandler(res,result)
-    });
-})   
+<%_ if(SUPPORT_API[i].isAuth){ _%>
+router.route('/<%-ROUTE_PREFIX%>/update/:id').put(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.update<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)   
 <%_ }else{ _%>
-router.put('/<%-ROUTE_PREFIX%>/update/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.update<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.pathParams.id,req.body).then((result)=>{
-        responseHandler(res,result)
-    });
-})  
+router.route('/<%-ROUTE_PREFIX%>/update/:id').put(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.update<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)  
 <%_}_%><%_}_%>
 <%_if(SUPPORT_API[i].method=="partialUpdate"){_%>
-<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("partialUpdate") ; _%>
-router.put('/<%-ROUTE_PREFIX%>/partial-update/:id',auth(...<%=returnRole.PARTIAL_UPDATE_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.partialUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.pathParams.id,req.body,req.user).then((result)=>{
-        responseHandler(res,result)
-    });
-})   
+<%_ if(SUPPORT_API[i].isAuth){ _%>
+router.route('/<%-ROUTE_PREFIX%>/partial-update/:id').put(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.partialUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)   
 <%_ }else{ _%>
-router.put('/<%-ROUTE_PREFIX%>/partial-update/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.partialUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.pathParams.id,req.body).then((result)=>{
-        responseHandler(res,result)
-    });
-})  
+router.route('/<%-ROUTE_PREFIX%>/partial-update/:id').put(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.partialUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)  
 <%_}_%><%_}_%>
 <%_if(SUPPORT_API[i].method=="bulkUpdate"){_%>
-<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("bulkUpdate") ; _%>
-router.put('/<%-ROUTE_PREFIX%>/updateBulk',auth(...<%=returnRole.UPDATE_BULK_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.bulkUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.user).then((result)=>{
-        responseHandler(res,result)
-    });
-}) 
+<%_ if(SUPPORT_API[i].isAuth){ _%>
+router.route('/<%-ROUTE_PREFIX%>/updateBulk').put(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.bulkUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>) 
 <%_ }else{ _%>
-router.put('/<%-ROUTE_PREFIX%>/updateBulk',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.bulkUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body).then((result)=>{
-        responseHandler(res,result)
-    });
-})
+router.route('/<%-ROUTE_PREFIX%>/updateBulk').put(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.bulkUpdate<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_}_%><%_}_%>
 <%_if(SUPPORT_API[i].method=="delete"){_%>
-<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("delete") ; _%>
-router.delete('/<%-ROUTE_PREFIX%>/delete/:id',auth(...<%=returnRole.DELETE_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.delete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.pathParams.id,req.user).then((result)=>{
-        responseHandler(res,result)
-    });
-})
+<%_ if(SUPPORT_API[i].isAuth){ _%>
+router.route('/<%-ROUTE_PREFIX%>/delete/:id').delete(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.delete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_ }else{ _%>
-router.delete('/<%-ROUTE_PREFIX%>/delete/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.delete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.pathParams.id).then((result)=>{
-        responseHandler(res,result)
-    });
-})
+router.route('/<%-ROUTE_PREFIX%>/delete/:id').delete(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.delete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_}_%><%_}_%>
 <%_if(SUPPORT_API[i].method=="deleteMany"){_%>
-<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("deleteMany") ; _%>
-router.delete('/<%-ROUTE_PREFIX%>/deleteMany',auth(...<%=returnRole.DELETE_MANY_API%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.deleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.user).then((result)=>{
-        responseHandler(res,result)
-    });
-})
+<%_ if(SUPPORT_API[i].isAuth){ _%>
+router.route('/<%-ROUTE_PREFIX%>/deleteMany').post(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.deleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_ }else{ _%>
-router.delete('/<%-ROUTE_PREFIX%>/deleteMany',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.deleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body).then((result)=>{
-        responseHandler(res,result)
-    });
-})
+router.route('/<%-ROUTE_PREFIX%>/deleteMany').post(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.deleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_}_%><%_}_%>
 <%_if(SUPPORT_API[i].method=="softDelete"){_%>
-<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("softDelete") ; _%>
-router.put('/<%-ROUTE_PREFIX%>/softDelete/:id',auth(...<%=returnRole.SOFT_DELETE_API%>), <%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.softDelete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data : req.body,id:req.pathParams.id,loggedInUser: req.user}).then((result)=>{
-        responseHandler(res,result)
-    });
-})
+<%_ if(SUPPORT_API[i].isAuth){_%>
+router.route('/<%-ROUTE_PREFIX%>/softDelete/:id').put(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>), <%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.softDelete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_ }else{ _%>
-router.put('/<%-ROUTE_PREFIX%>/softDelete/:id',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.softDelete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>({data : req.body,id:req.pathParams.id}).then((result)=>{
-        responseHandler(res,result)
-    });
-})
+router.route('/<%-ROUTE_PREFIX%>/softDelete/:id').put(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.softDelete<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_}_%><%_}_%>
 <%_if(SUPPORT_API[i].method=="softDeleteMany"){_%>
-<%_ if(SUPPORT_API[i].isAuth){ let returnRole = makePolicyRoutes("softDeleteMany") ; _%>
-router.put('/<%-ROUTE_PREFIX%>/softDeleteMany',auth(...<%=returnRole.SOFT_DELETE_MANY_API%>), <%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-        <%-DB_MODEL%>Controller.softDeleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.body.ids,req.user).then((result)=>{
-        responseHandler(res,result)
-    });
-})
+<%_ if(SUPPORT_API[i].isAuth){ _%>
+router.route('/<%-ROUTE_PREFIX%>/softDeleteMany').put(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>), <%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.softDeleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_ }else{ _%>
-router.put('/<%-ROUTE_PREFIX%>/softDeleteMany',<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%>(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.softDeleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>(req.body,req.body.ids).then((result)=>{
-        responseHandler(res,result)
-    });
-})
+router.route('/<%-ROUTE_PREFIX%>/softDeleteMany').put(<%_ if(SUPPORT_API[i].policy.length) { _%><%_ for(let j=0;j < SUPPORT_API[i].policy.length;j++){ _%><%-SUPPORT_API[i].policy[j]%>,<%_ } _%><%_ } _%><%-DB_MODEL%>Controller.softDeleteMany<%-DB_MODEL.charAt(0).toUpperCase() + DB_MODEL.slice(1);%>)
 <%_}_%><%_}_%>
 <%_}_%>
 <%_ if(USER_MODEL){ _%>
-<%_ if(typeof IS_AUTH !== "undefined" && IS_AUTH){ let returnRole = makePolicyRoutes("changePassword"); let profile = makePolicyRoutes("updateProfile"); _%>
-router.route('/<%-ROUTE_PREFIX%>/change-password').put(auth(...<%=returnRole.CHANGE_PASSWORD%>),(req,res,next)=>{
-    req = adaptRequest(req);
-    let params = {...req.body,userId:req.user.id}
-    <%-DB_MODEL%>Controller.changePassword(params).then((result)=>{
-        responseHandler(res,result)
-    });
-});
-router.route('/<%-ROUTE_PREFIX%>/update-profile').put(auth(...<%=profile.UPDATE_PROFILE%>),(req,res,next)=>{
-    req = adaptRequest(req);
-    <%-DB_MODEL%>Controller.updateProfile(req.body,req.user.id).then((result)=>{
-        responseHandler(res,result)
-    });
-});
+<%_ if(typeof IS_AUTH !== "undefined" && IS_AUTH){ _%>
+router.route('/<%-ROUTE_PREFIX%>/change-password').put(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),<%-DB_MODEL%>Controller.changePassword);
+router.route('/<%-ROUTE_PREFIX%>/update-profile').put(auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),<%-DB_MODEL%>Controller.updateProfile);
 <%_ } _%>
 <%_ } _%>
 <%_if(CUSTOM_ROUTES && CUSTOM_ROUTES.length){_%>
 <%_ CUSTOM_ROUTES.forEach((v,i)=> {_%>
-router.route("<%-v.api%>").<%-v.method%>( <%_if(v.policies && v.policies.length){_%>
+router.route("<%-v.api%>").<%-v.method%>(<%_if(v.policies && v.policies.length){_%>
 <%_v.policies.forEach((policy)=>{_%>
-<%_if(policy==='auth'){_%>auth(...[]),
+<%_if(policy==='auth'){_%>auth(PLATFORM.<%-PLATFORM.toUpperCase()%>),
 <%_}else{_%>
 <%-policy%>,<%_}_%>
 <%_})_%>
-    <%_}_%>(req, res, next) => {
-    req = adaptRequest(req);
-    <%-v.controller%>Controller.<%- v.functionName %>(req.body).then((result)=>{
-        responseHandler(res, result);
-    });
-})
-<%_})_%>
-<%_}_%>
-<%_ function makePolicyRoutes(type){
-    try{
-        let returnRoles = {}
-        returnRoles.CREATE_API = [],returnRoles.CREATE_BULK_API = [],returnRoles.READ_ALL_API = [],
-        returnRoles.READ_API = [],returnRoles.COUNT_API = [],returnRoles.UPDATE_API = [],returnRoles.UPDATE_BULK_API = [],
-        returnRoles.PARTIAL_UPDATE_API = [],returnRoles.SOFT_DELETE_API = [],returnRoles.DELETE_API = [],
-        returnRoles.CHANGE_PASSWORD = [],returnRoles.UPDATE_PROFILE = [],returnRoles.DELETE_MANY_API=[], returnRoles.SOFT_DELETE_MANY_API=[];
-        if (IS_AUTH) {
-            for (var [i, v] of Object.entries(LOGIN_ACCESS_PLATFORM)) {
-                if (v.includes(MODULE)) {
-                    switch (type) {
-                        case 'create':
-                            returnRoles.CREATE_API.push(`createBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
-                            break;
-                        case 'createBulk':
-                            returnRoles.CREATE_BULK_API.push(`addBulkBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
-                            break;
-                        case 'findAll':
-                            returnRoles.READ_ALL_API.push(`getAllBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
-                            break;
-                        case 'findById':
-                            returnRoles.READ_API.push(`getBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
-                            break;
-                        case 'count':
-                            returnRoles.COUNT_API.push(`getCountBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
-                            break;
-                        case 'update': 
-                            returnRoles.UPDATE_API.push(`updateBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
-                            break;
-                        case 'bulkUpdate':
-                            returnRoles.UPDATE_BULK_API.push(`updateBulkBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
-                            break;
-                        case 'partialUpdate':
-                            returnRoles.PARTIAL_UPDATE_API.push(`partialUpdateBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`)
-                            break;
-                        case 'softDelete':
-                            returnRoles.SOFT_DELETE_API.push(`softDeleteBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`)
-                            break;
-                        case 'delete':
-                            returnRoles.DELETE_API.push(`deleteBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
-                            break;
-                        case 'changePassword':
-                            returnRoles.CHANGE_PASSWORD.push(`changePasswordBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
-                            break;
-                        case 'updateProfile':
-                            returnRoles.UPDATE_PROFILE.push(`updateProfileBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
-                            break;
-                        case 'deleteMany':
-                            returnRoles.DELETE_MANY_API.push(`deleteManyBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
-                            break;
-                        case 'softDeleteMany':
-                            returnRoles.SOFT_DELETE_MANY_API.push(`softDeleteManyBy${i}In${MODULE.charAt(0).toUpperCase() + MODULE.slice(1)}Platform`);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-        }
-       return returnRoles;
-    }catch(error){
-        throw error;
-    }
-}_%>
+<%_}_%><%-v.controller%>Controller.<%-v.functionName%>)
+<%_})_%> 
+<%_}%>
+
 module.exports = router;

@@ -51,7 +51,7 @@ module.exports = {
               header: null,
               body: null,
               description: '',
-              auth: '',
+              auth: {},
             };
             const itemData = {
               name: '',
@@ -217,6 +217,10 @@ module.exports = {
             request.method = r.method;
             request.header = r.header ? r.header : header;
             request.auth = r.auth || {};
+            // if (r.auth && r.auth.type === 'bearer') {
+
+            // }
+
             // request.body = r.body ? r.body : body;
             if (r.body) {
               if (isEmpty(r.body.raw)) {

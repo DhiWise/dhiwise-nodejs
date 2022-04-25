@@ -11,8 +11,7 @@ let { create,
     findMany,
     paginate,
     count,
-    upsert,
-    aggregate } = require('../db/mongoDB/dbService')(<%-MODEL_NAME_FC-%>);
+    upsert } = require('../db/mongoDB/dbService')(<%-MODEL_NAME_FC-%>);
 
 module.exports = {
     create,
@@ -27,6 +26,5 @@ module.exports = {
     findMany,
     paginate,
     count,
-    upsert,
-    aggregate
+    upsert
 };

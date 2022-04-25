@@ -32,7 +32,8 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
     deleteDependent, userDirectoryStructure, servicesOfCustomRoutes, tableRelationships, dbConnection, customRoutePackageDependencies, testCases,
     commonService, readme, envPostman,
     thirdPartySMSServices, thirdPartyEmailService, templateRegistry, rolePermissionService, customRoutesWithPath, customRouteIndexes, dataAccessFiles, useCaseFiles, commonUseCaseFiles, middlewareIndex,
-    customRoutesUsecase,
+    customRoutesUsecase, fileUploadService, fileUploadUsecase,
+    fileUploadControllerIndex,
   } = renderObject;
 
   // db
@@ -169,7 +170,38 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
         /*  */
       });
     }
+    // ? file Upload Service
+    if (!_.isEmpty(fileUploadService)) {
+      if (!fs.existsSync(`${dir}${userDirectoryStructure.serviceFolderPath}/fileUpload`)) { writeOperations.mkdir(`${dir}${userDirectoryStructure.serviceFolderPath}`, 'fileUpload'); }
 
+      writeOperations.write(path.join(dir, `${userDirectoryStructure.serviceFolderPath}/fileUpload/index.js`), fileUploadService.render(), MODE_0666);
+    }
+
+    // ? file upload use-case
+    if (!_.isEmpty(fileUploadUsecase)) {
+      if (!fs.existsSync(`${dir}${userDirectoryStructure.useCaseFolderPath}/fileUpload`)) { writeOperations.mkdir(`${dir}${userDirectoryStructure.useCaseFolderPath}`, 'fileUpload'); }
+
+      _.forEach(fileUploadUsecase, (usecase) => {
+        // currently only one object in array from input so here file name is not dynamic
+        writeOperations.write(path.join(dir, `${userDirectoryStructure.useCaseFolderPath}/fileUpload/upload.js`), usecase.render(), MODE_0666);
+      });
+    }
+    // ? file upload controller index for cc
+    if (!_.isEmpty(fileUploadControllerIndex)) {
+      _.forEach(fileUploadControllerIndex, (fileUploadCtrlInd) => {
+        if (fileUploadCtrlInd.locals.PLATFORM === 'admin') {
+          if (!fs.existsSync(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload`)) {
+            writeOperations.mkdir(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}`, 'fileUpload');
+          }
+          writeOperations.write(path.join(dir, `${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload/index.js`), fileUploadCtrlInd.render(), MODE_0666);
+        } else {
+          if (!fs.existsSync(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload`)) {
+            writeOperations.mkdir(`${dir}${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}`, 'fileUpload');
+          }
+          writeOperations.write(path.join(dir, `${userDirectoryStructure.controllerFolderPath}/${fileUploadCtrlInd.locals.PLATFORM}/fileUpload/index.js`), fileUploadCtrlInd.render(), MODE_0666);
+        }
+      });
+    }
     // middleware index.js
     if (middlewareIndex) {
       writeOperations.write(path.join(dir, `${userDirectoryStructure.middlewareFolderPath}/index.js`), middlewareIndex.render(), MODE_0666);
@@ -196,6 +228,7 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
       // writeOperations.write(path.join(dir, `/config/${platformName}PassportStrategy.js`), value.passport.render(), MODE_0666);
       writeOperations.write(path.join(dir, `/routes/${platformName}/auth.js`), value.authRoutes.render(), MODE_0666);
       const authPath = replace(value.authController.locals.PATH, { platform: platformName });
+      value.authController.locals.PLATFORM_NAME = platformName.toUpperCase();
       writeOperations.write(path.join(dir, `${authPath}/authController.js`), value.authController.render(), MODE_0666);
     });
 
@@ -210,12 +243,6 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
     // policy
     writeOperations.write(path.join(dir, `${userDirectoryStructure.middlewareFolderPath}/auth.js`), authModule.policy.middleware.render(), MODE_0666);
     writeOperations.write(path.join(dir, `${userDirectoryStructure.middlewareFolderPath}/loginUser.js`), authModule.policy.authUser.render(), MODE_0666);
-
-    /*
-     * common file
-     * writeOperations.copyTemplate(`${templateFolder}/utils/common.js`, `${dir}${userDirectoryStructure.utilsFolderPath}/common.js`);
-     * writeOperations.copyTemplate(`${templateFolder}/utils/common.js`, `${dir}/utils/common.js`);
-     */
 
     // Auth usecase for CC
     _.forEach(authModule.authSetup, (value) => {
@@ -236,7 +263,7 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
   }
 
   if (emailService || isAuth) {
-    pkg.dependencies.nodemailer = '~6.5.0';
+    pkg.dependencies.nodemailer = '~6.7.2';
     writeOperations.mkdir(`${dir}${userDirectoryStructure.viewsFolderPath}`, 'emailTemplate');
     const emailTemp = writeOperations.loadTemplate(`${templateFolder}${templateRegistry.viewsFolderPath}/emailTemplate`);
     writeOperations.write(path.join(dir, `${userDirectoryStructure.viewsFolderPath}/emailTemplate/html.ejs`), emailTemp.render(), MODE_0666);
@@ -404,6 +431,7 @@ async function startRenderingEJS (dir, templateFolder, renderObject) {
 
   // fileUpload
   if (!_.isEmpty(fileUpload)) {
+    console.log(fileUpload);
     _.forEach(fileUpload.controllers, (f) => {
       if (f.platform === 'common') {
         if (!fs.existsSync(`${dir}${userDirectoryStructure.controllerFolderPath}/common`)) {

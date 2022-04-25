@@ -5,8 +5,8 @@
 
 /**
  * @description : validate request body parameter with joi.
- * @param {obj} payload : body from request.
- * @param {obj} schemaKeys : model wise schema keys. ex. user validation.
+ * @param {object} payload : body from request.
+ * @param {object} schemaKeys : model wise schema keys. ex. user validation.
  * @returns : returns validation with message {isValid, message}
  */
 exports.validateParamsWithJoi = (payload, schemaKeys) => {

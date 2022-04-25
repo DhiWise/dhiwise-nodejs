@@ -51,23 +51,23 @@ async function createPackageJson ({
       'cookie-parser': '~1.4.4',
       debug: '~2.6.9',
       express: '~4.16.1',
-      mongoose: '~5.11.8',
-      dayjs: '^1.10.7',
+      mongoose: '~6.2.5',
+      dayjs: '~1.10.7',
       'mongoose-paginate-v2': '~1.3.12',
       morgan: '~1.9.1',
       joi: '~17.3.0',
       'mongoose-id-validator': '~0.6.0',
-      'mongoose-unique-validator': '~2.0.3',
+      'mongoose-unique-validator': '~3.0.0',
       dotenv: '~8.2.0',
       ejs: '~3.1.6',
       'express-rate-limit': '~5.2.6',
       cors: '~2.8.5',
     },
     devDependencies: {
-      eslint: '~7.12.1',
+      eslint: '~8.10.0',
       'eslint-config-airbnb': '~18.2.1',
-      'eslint-plugin-import': '~2.22.1',
-      nodemon: '^2.0.15',
+      'eslint-plugin-import': '~2.25.4',
+      nodemon: '~2.0.15',
     },
   };
   forEach(packages?.dependencies, (depValue, depName) => {
@@ -89,7 +89,7 @@ async function createPackageJson ({
     Object.assign(pkg.dependencies, { 'mongoose-sequence': '~5.3.1' });
   }
   if (!isEmpty(jsonData.rolePermission)) {
-    Object.assign(pkg.dependencies, { 'express-list-endpoints': '^5.0.0' });
+    Object.assign(pkg.dependencies, { 'express-list-endpoints': '~5.0.0' });
   }
   return pkg;
 }
@@ -114,11 +114,11 @@ async function createPackageJsonForSequelize ({
       joi: '~17.3.0',
       dotenv: '~8.2.0',
       ejs: '~3.1.6',
-      dayjs: '^1.10.7',
+      dayjs: '~1.10.7',
       'express-rate-limit': '~5.2.6',
       cors: '~2.8.5',
-      'sequelize-paginate': '1.1.6',
-      'sequelize-transforms': '2.0.0',
+      'sequelize-paginate': '~1.1.6',
+      'sequelize-transforms': '~2.0.0',
     },
   };
   forEach(packages?.dependencies, (depValue, depName) => {
@@ -146,7 +146,7 @@ async function createPackageJsonForSequelize ({
       Object.assign(pkg.dependencies, { pg: '~8.6.0' });
     }
     if (!isEmpty(jsonData.rolePermission)) {
-      Object.assign(pkg.dependencies, { 'express-list-endpoints': '^5.0.0' });
+      Object.assign(pkg.dependencies, { 'express-list-endpoints': '~5.0.0' });
     }
   }
   return pkg;
@@ -601,6 +601,7 @@ async function addSeederMongoose (jsonData, filePath, authObj) {
     getRoles = [];
   const requiredKeys = [];
   const user = {};
+  const userRoleArray = [];
   forEach(models, (allSchema, allModels) => {
     if (allModels === userModel) {
       forEach(allSchema, (nestSchema, nestModel) => {
@@ -653,6 +654,12 @@ async function addSeederMongoose (jsonData, filePath, authObj) {
         isActive: true,
         isDeleted: false,
       };
+
+      userRoleArray.push({
+        [authObj.userLoginWith.username[0]]: `${authFakeData[authObj.userLoginWith.username[0]]}`,
+        [authObj.userLoginWith.password]: `${authFakeData[authObj.userLoginWith.password]}`,
+      });
+
       const userPassword = authFakeData[authObj.userLoginWith.password];
       array.push(userFindCondition);
       passwordArray.push(userPassword);
@@ -662,8 +669,11 @@ async function addSeederMongoose (jsonData, filePath, authObj) {
       seeder.locals.USER_EXIST_CONDITION = array;
       seeder.locals.USER_PASSWORD = passwordArray;
       seeder.locals.USER = userArray;
-      seeder.locals.MODEL = userModel;
+      seeder.locals.AUTH_MODEL = userModel;
       seeder.locals.ROLE_NAME = getRoles;
+      seeder.locals.IS_AUTH = authObj.isAuth ? authObj.isAuth : false;
+      seeder.locals.PASSWORD_FIELD = authObj.userLoginWith.password;
+      seeder.locals.AUTH_MODEL_FC = userModel.charAt(0).toUpperCase() + userModel.slice(1);
     }
     // role permission
     if (!isEmpty(jsonData.rolePermission)) {
@@ -674,6 +684,7 @@ async function addSeederMongoose (jsonData, filePath, authObj) {
       seeder.locals.DEFAULT_ADMIN_EMAIL = DEFAULT_ADMIN_EMAIL;
       seeder.locals.DEFAULT_ADMIN_USERNAME = DEFAULT_ADMIN_USERNAME;
       seeder.locals.DEFAULT_ROLE = DEFAULT_ROLE;
+      seeder.locals.USER_ROLE_ARRAY = userRoleArray;
     } else {
       seeder.locals.SHOULD_ADD_ROLE_PERMISSION = false;
     }
@@ -688,11 +699,11 @@ async function addSeederSequelize (jsonData, filePath, authObj) {
   const seeder = writeOperations.loadTemplate(`${filePath}/index.js`);
   const { userModel } = authObj;
   const credentials = !isEmpty(jsonData.authentication.credentials) ? jsonData.authentication.credentials : {};
-
   const array = []; const userArray = []; const passwordArray = []; const
     getRoles = [];
   const user = {};
   const requiredKeys = [];
+  const userRoleArray = [];
   forEach(models, (allSchema, allModels) => {
     if (allModels === userModel) {
       forEach(allSchema, (nestSchema, nestModel) => {
@@ -742,17 +753,27 @@ async function addSeederSequelize (jsonData, filePath, authObj) {
         isActive: true,
         isDeleted: false,
       };
+
+      userRoleArray.push({
+        [authObj.userLoginWith.username[0]]: `${authFakeData[authObj.userLoginWith.username[0]]}`,
+        [authObj.userLoginWith.password]: `${authFakeData[authObj.userLoginWith.password]}`,
+      });
+
       const userPassword = authFakeData[authObj.userLoginWith.password];
       array.push(userFindCondition);
       passwordArray.push(userPassword);
       userArray.push(userToBeSeeded);
       getRoles.push(allRoles);
-
       seeder.locals.USER_EXIST_CONDITION = array;
       seeder.locals.USER_PASSWORD = passwordArray;
       seeder.locals.USER = userArray;
       seeder.locals.MODEL = userModel;
       seeder.locals.ROLE_NAME = getRoles;
+      seeder.locals.IS_AUTH = authObj.isAuth ? authObj.isAuth : false;
+      seeder.locals.PASSWORD_FIELD = authObj.userLoginWith.password;
+      seeder.locals.AUTH_MODEL = userModel;
+      seeder.locals.AUTH_MODEL_FC = userModel.charAt(0).toUpperCase() + userModel.slice(1);
+      seeder.locals.USER_ROLE_ARRAY = userRoleArray;
     }
     // role and permission
     if (!isEmpty(jsonData.rolePermission)) {

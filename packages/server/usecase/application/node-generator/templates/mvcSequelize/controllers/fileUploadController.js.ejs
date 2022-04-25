@@ -16,9 +16,9 @@ let allowedFileTypes = <%=VALIDATION_TYPES%>;<%_var max_size = MAX_SIZE ? MAX_SI
 let maxFileSize = <%=max_size%>; //In Megabyte
 /**
   * @description : uploads file using formidable.
-  * @param {obj} req : request of file upload API
-  * @param {obj} res : response of file upload API.
-  * @return {obj} : response of file upload. {status, message, data}
+  * @param {object} req : request of file upload API
+  * @param {object} res : response of file upload API.
+  * @return {object} : response of file upload. {status, message, data}
   */
 const upload = async (req,res) =>{
   try {
@@ -78,13 +78,13 @@ const upload = async (req,res) =>{
     
     if (uploadFileRes.uploadSuccess.length > 0) {
       let message = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
-      return res.ok({
+      return res.success({
         message: message,
         data: uploadFileRes
       });
     } else {
       let message = 'Failed to upload files.';
-      return res.invalidRequest({
+      return res.failure({
         message: message,
         data: uploadFileRes
       });
@@ -93,7 +93,7 @@ const upload = async (req,res) =>{
     if (error.name && error.name == 'validationError') {
       return res.validationError({ message: error.message });
     } else {
-      return res.failureResponse();
+      return res.internalServerError({ message:error.message }); 
     }
   }
 };
@@ -102,7 +102,7 @@ const upload = async (req,res) =>{
 /**
   * @description : generate pre signed url for file
   * @param {string} uri : url of file
-  * @return {obj} : response for generate pre signed url
+  * @return {object} : response for generate pre signed url
   */
 const generatePreSignedURL = async (req, res) => {
     try {
@@ -134,29 +134,29 @@ const generatePreSignedURL = async (req, res) => {
 
             await s3.getSignedUrl('getObject', options, (err, url) => {
               if (err) {
-                  return res.invalidRequest({ message: err });
+                  return res.failure({ message: err });
               } else {
-                  return res.ok({data: url})
+                  return res.success({data: url})
               }
             });
 
           } catch (err) {
-            return res.invalidRequest({ message: `${uri} is not a valid S3 uri` });
+            return res.failure({ message: `${uri} is not a valid S3 uri` });
           }
         } else {
             return res.badRequest();
         }
     } catch (error) {
-        return res.failureResponse();
+        return res.internalServerError({ message:error.message }); 
     }
 }
 <%_}_%>
 /**
   * @description : upload files
-  * @param {obj} file : file to upload
-  * @param {obj} fields : fields for file
+  * @param {object} file : file to upload
+  * @param {object} fields : fields for file
   * @param {number} fileCount : total number of files to upload
-  * @return {obj} : response for file upload
+  * @return {object} : response for file upload
   */
 async function uploadFiles (file,fields,fileCount){
 
@@ -202,9 +202,9 @@ async function uploadFiles (file,fields,fileCount){
 }
 /**
   * @description : upload file to AWS s3
-  * @param {obj} file : file to upload
+  * @param {object} file : file to upload
   * @param {string} fileName : name of file
-  * @return {obj} : response for file upload to AWS s3
+  * @return {object} : response for file upload to AWS s3
   */
 async function uploadToS3 (file, fileName){
   let S3Config = {
@@ -258,9 +258,9 @@ let maxFileSize = <%=max_size%>; //In Megabyte
 
 /**
   * @description : uploads file using formidable.
-  * @param {obj} req : request of file upload API
-  * @param {obj} res : response of file upload API.
-  * @return {obj} : response of file upload. {status, message, data}
+  * @param {object} req : request of file upload API
+  * @param {object} res : response of file upload API.
+  * @return {object} : response of file upload. {status, message, data}
   */
 const upload = async (req, res) => {
   try {
@@ -330,13 +330,13 @@ const upload = async (req, res) => {
     
     if (uploadFileRes.uploadSuccess.length > 0) {
       let message = `${uploadFileRes.uploadSuccess.length} File uploaded successfully out of ${uploadFileRes.uploadSuccess.length + uploadFileRes.uploadFailed.length}`;
-      return res.ok({
+      return res.success({
         message: message,
         data: uploadFileRes
       });
     } else {
       let message = 'Failed to upload files.';
-      return res.invalidRequest({
+      return res.failure({
         message: message,
         data: uploadFileRes
       });
@@ -345,7 +345,7 @@ const upload = async (req, res) => {
     if (error.name && error.name == 'validationError') {
       return res.validationError({ message: error.message });
     } else {
-      return res.failureResponse();
+      return res.internalServerError({ message:error.message }); 
     }
   }
 };
@@ -370,10 +370,10 @@ const makeDirectory = async (directoryPath) => {
 
 /**
  * @description : upload files
- * @param {obj} file : file to upload
- * @param {obj} fields : fields for file
+ * @param {object} file : file to upload
+ * @param {object} fields : fields for file
  * @param {number} fileCount : total number of files to upload
- * @return {obj} : response for file upload
+ * @return {object} : response for file upload
  */
 async function uploadFiles (file, fields, fileCount) {
 
@@ -450,7 +450,7 @@ async function uploadFiles (file, fields, fileCount) {
 /**
   * @description : unlink(delete) file from specified path
   * @param {string} path : location of file 
-  * @return {obj} : return unlink file status {status, message}
+  * @return {object} : return unlink file status {status, message}
   */
 async function unlinkFile (path) {
 

@@ -1,6 +1,12 @@
 const response = require('../../utils/response');
 
-const logout = ({userTokensDb}) => async (user, token,req={},res={}) => {
+/**
+ * @description : logout user
+ * @param {Object} user : user information.
+ * @param {String} token : token of user.
+ * @return {Object} : response for logout {status, message, data}
+ */
+const logout = ({userTokensDb}) => async (user, token) => {
     let userToken = await userTokensDb.findOne({ token:token ,userId:user.id });
     let updatedDocument = {
         isTokenExpired : true

@@ -53,17 +53,17 @@ module.exports = {
         const { ...userData } = user.toJSON();
         let token;
         if (!user.role) {
-          return {flag:true, data:'You have no assigned any role'}
+          return {flag:true, data:'You have not been assigned any role'}
         }
         if(platform == undefined){
           return {flag:true, data:'Please login through Platform'}
         }
         <%_if(RESTRICTION){_%>
-        const userToken = await dbService.count(model.userToken,{ [Op.and]:{ tokenExpiredTime: { [Op.gt]: dayjs().toISOString() }, isTokenExpired: 0,userId: user.id} } );
+        const userToken = await dbService.count(model.userTokens,{ [Op.and]:{ tokenExpiredTime: { [Op.gt]: dayjs().toISOString() }, isTokenExpired: 0,userId: user.id} } );
         if(userToken >= NO_OF_DEVICE_ALLOWED){
             return {
                 flag: true,
-                data: "You've reached your device limit"
+                data: "You have reached your device limit"
             }
         }
         <%_}_%>
@@ -85,12 +85,12 @@ module.exports = {
         <%_}_%>
         <%_}_%>
         let expire = dayjs().add(JWT.EXPIRES_IN, 'second').toISOString();
-        await dbService.createOne(model.userToken,{
+        await dbService.createOne(model.userTokens,{
             userId: user.id,
             token: token,
             tokenExpiredTime: expire 
         });
-        const userToReturn = { ...userData, ...{ token } };
+        const userToReturn = { ...userData, token };
         return {flag:false,data:userToReturn};
       }
       else {

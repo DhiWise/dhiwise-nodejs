@@ -1,13 +1,11 @@
 const {
-  isEmpty, each, forEach, cloneDeep,
+  isEmpty, each, forEach, cloneDeep, snakeCase,
 } = require('lodash');
 const {
   getTemplateByName, getPlatformWiseAPIOfCustomRoutes,
 } = require('../utils/common');
 const writeOperations = require('../../writeOperations');
-const {
-  ORM_PROVIDERS, PROJECT_TYPE,
-} = require('../../constants/constant');
+const { PROJECT_TYPE } = require('../../constants/constant');
 
 async function setPackagesForAuth ({
   userLoginRateLimit, socialAuth,
@@ -111,7 +109,7 @@ async function generateAuthConstant (PLATFORM, auth, {
     const entries = Object.entries(sendToConstant);
     for (let i = 0; i < entries.length; i += 1) {
       const [k, v] = entries[i];
-      fpObj[k.toUpperCase()] = v;
+      fpObj[snakeCase(k).toUpperCase()] = v;
     }
     let finalStr = '';
     finalStr = JSON.stringify(fpObj, undefined, 2).toString().replace(/"/g, '');
@@ -183,7 +181,7 @@ async function generateAuthUsecase (useCaseFolderPath, {
 }
 
 async function authenticationSetup (platformStrategy, {
-  auth, configPath, controllerPath, routePath, authControllerPath, templates, ORM, rolePermission, projectType, useCaseFolderPath, middlewarePath,
+  auth, configPath, controllerPath, routePath, authControllerPath, templates, rolePermission, projectType, useCaseFolderPath, middlewarePath,
 }) {
   const socialPlatforms = [];
   if (auth.socialAuth.platforms.length) {
@@ -203,9 +201,7 @@ async function authenticationSetup (platformStrategy, {
     or.push(query);
   });
   let orObj = {};
-  if (ORM === ORM_PROVIDERS.MONGOOSE) {
-    orObj.$or = or;
-  } else if (ORM === ORM_PROVIDERS.SEQUELIZE) {
+  if (projectType === PROJECT_TYPE.MVC_SEQUELIZE) {
     orObj['[Op.or]'] = or;
   } else {
     orObj.$or = or;
@@ -227,6 +223,7 @@ async function authenticationSetup (platformStrategy, {
   }
   const authController = writeOperations.loadTemplate(`${controllerPath}/authController.js`);
   authController.locals.LOGIN_WITH = userLoginWith.username;
+  authController.locals.PLATFORM = platformStrategy;
   authController.locals.MULTIPLE_LOGIN = orObj;
   authController.locals.USER_MODEL = userModel;
   authController.locals.EMAIL_FIELD = emailField || 'email';
@@ -312,7 +309,7 @@ async function generateAuthMiddleware (PLATFORM, middlewarePath, platformWiseCus
   };
 }
 async function generateAuthService (platforms, {
-  auth, servicePath, templates, ORM, rolePermission,
+  auth, servicePath, templates, rolePermission, projectType,
 }) {
   const {
     userModel, userLoginWith,
@@ -325,9 +322,7 @@ async function generateAuthService (platforms, {
     or.push(query);
   });
   let orObj = {};
-  if (ORM === ORM_PROVIDERS.MONGOOSE) {
-    orObj.$or = or;
-  } else if (ORM === ORM_PROVIDERS.SEQUELIZE) {
+  if (projectType === PROJECT_TYPE.MVC_SEQUELIZE) {
     orObj['[Op.or]'] = or;
   } else {
     orObj.$or = or;

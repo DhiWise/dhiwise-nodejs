@@ -627,7 +627,7 @@ const addingModelKeysSequelize = (jsonData) => {
         }
     }
     if (jsonData.authentication.isAuthentication) {
-        const userToken = {
+        const userTokens = {
             userId: {
                 type: "INTEGER",
                 ref: jsonData.authentication.authModel,
@@ -671,7 +671,7 @@ const addingModelKeysSequelize = (jsonData) => {
                 "type": "DATE",
             }
         };
-        Object.assign(jsonData.models, { userAuthSettings, userToken });
+        Object.assign(jsonData.models, { userAuthSettings, userTokens });
     }
     forEach(jsonData.models, model => {
         Object.assign(model, { isActive: { type: 'BOOLEAN' }, isDeleted: { type: 'BOOLEAN' } })

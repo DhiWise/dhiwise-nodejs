@@ -27,7 +27,7 @@ passport.deserializeUser(function (user, cb) {
 });
 
 router.get('<%-ERROR_URL%>', (req, res) => {
-  return res.loginFailed();
+  return res.badRequest();
 });
 
 router.get('/auth/linkedin', passport.authenticate('linkedin', {
@@ -40,12 +40,12 @@ router.get('<%-CALLBACK_URL%>',
   function (req, res) {
     loginUser(req.user.email,req.session.platform).then(result=>{
       if (result.flag){
-        return res.loginFailed({message:result.data});
+        return res.badRequest({message:result.data});
       }
-      return res.loginSuccess({message:result.data});
+      return res.success({data:result.data});
     })
       .catch(error=>{
-        return res.failureResponse();
+        return res.internalServerError();
       });
   }
 );

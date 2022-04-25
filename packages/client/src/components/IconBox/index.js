@@ -65,7 +65,7 @@ IconBox.propTypes = {
 
 IconBox.defaultProps = {
   variant: 'primary',
-  icon: null,
+  // icon: null,
   size: 'normal',
   // iconSize: 'normal',
   className: '',

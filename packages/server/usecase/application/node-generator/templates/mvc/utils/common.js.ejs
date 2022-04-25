@@ -14,12 +14,12 @@ const dbService = require('./dbService');
 
 /**
  * convertObjectToEnum : converts object to enum
- * @param {obj} obj : object to be converted
+ * @param {object} object : object to be converted
  * @return {array} : converted array
  */
-function convertObjectToEnum (obj) {
+function convertObjectToEnum (object) {
   const enumArr = [];
-  Object.values(obj).map((val) => enumArr.push(val));
+  Object.values(object).map((val) => enumArr.push(val));
   return enumArr;
 }
 
@@ -51,8 +51,8 @@ function replaceAll (string, search, replace) {
 <%_if(IS_AUTH){ _%>
 /**
  * uniqueValidation: check unique validation while user registration
- * @param {obj} model : mongoose model instance of collection
- * @param {obj} data : data, coming from request
+ * @param {object} model : mongoose model instance of collection
+ * @param {object} data : data, coming from request
  * @return {boolean} : validation status
  */
 async function uniqueValidation (Model,data){
@@ -108,7 +108,7 @@ function getDifferenceOfTwoDatesInTime(currentDate,toDate){
 /** 
  * getRoleAccessData: returns role access of User
  * @param {objectId} userId : id of user to find role data
- * @return {obj} : user's role access for APIs of model
+ * @return {object} : role access of user for APIs of model
  */
 async function getRoleAccessData (userId) {
   let userRole = await dbService.getAllDocuments(UserRole, { userId: userId },{pagination:false});

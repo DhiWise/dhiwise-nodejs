@@ -3,7 +3,7 @@
  * @description :: middleware that checks authentication and authorization of user
  */
 
-const { ROLE_RIGHTS, USER_ROLE
+const { LOGIN_ACCESS,PLATFORM
 <%_if(CUSTOM_ROUTES){_%><%_ for(let platform in CUSTOM_ROUTES){ _%>
 ,<%-platform.toUpperCase()%>_CUSTOM_ROUTES  
 <%_ } _%>
@@ -13,47 +13,37 @@ const responseHandler = require('../utils/response/responseHandler');
 const { unAuthorized } = require('../utils/response');
 
 
-const verifyCallback = (userTokenDb, req, resolve, reject, rights) => async (err, user, info) => {
-    if (err || info || !user) {
+const verifyCallback = (userTokensDb, req, resolve, reject, platform) => async (error, user, info) => {
+    if (error || info || !user) {
         return reject("Unauthorized User");
     }
     req.user = user;
     if (!user.isActive) {
         return reject("User is deactivated");
     }
-    let userToken = await userTokenDb.findOne({token:(req.headers.authorization).replace('Bearer ',''),userId:user.id});
+    let userToken = await userTokensDb.findOne({token:(req.headers.authorization).replace('Bearer ',''),userId:user.id});
     if (!userToken){
         return reject('Token not found');
     }
     if (userToken.isTokenExpired){
         return reject('Token is Expired');
     }
-    if (rights.length) {
-        for(role in USER_ROLE){
-            if(USER_ROLE[role]===user.role){
-                const userRights = ROLE_RIGHTS[user.role];
-                const hasRequiredRights = rights.some((requiredRight) => userRights.includes(requiredRight));
-                if (!hasRequiredRights || !user.id) {
-                    return reject('Unauthorized user');
-                }
-            }
+    if (user.role) {
+        let allowedPlatforms = LOGIN_ACCESS[user.role] ? LOGIN_ACCESS[user.role] : [];
+        if (!allowedPlatforms.includes(platform)) {
+            return reject('Unauthorized user');
         }
     }
     resolve();
 };
 
-const auth = ({passport, userTokenDb}) => (...rights) => async (req, res, next) => {
+const auth = ({passport, userTokensDb}) => (platform) => async (req, res, next) => {
 <% var c = 0; %>
-let url =req.originalUrl;
     <% PLATFORM.forEach((v)=>{ c++;  %>
         <%_ if(c===1){ _%>
-            <%_ if(CUSTOM_ROUTES && CUSTOM_ROUTES.hasOwnProperty(v)){ _%>
-            if(url.includes(<%= v.toLowerCase() %>) || <%-v.toUpperCase()%>_CUSTOM_ROUTES.includes(url)){    
-            <%_}else{_%>
-            if(url.includes(<%= v.toLowerCase() %>)){
-            <%_}_%>
+            if(platform == PLATFORM.<%- v.toUpperCase() %>){
                 return new Promise((resolve, reject) => {
-                    passport.authenticate('<%-v.toLowerCase()%>-rule', { session: false }, verifyCallback(userTokenDb,req, resolve, reject, rights))(
+                    passport.authenticate('<%-v.toLowerCase()%>-rule', { session: false }, verifyCallback(userTokensDb,req, resolve, reject, platform))(
                         req,
                         res,
                         next
@@ -65,20 +55,16 @@ let url =req.originalUrl;
                  });
             }
         <%_ }else{ _%>
-            <%_ if(CUSTOM_ROUTES && CUSTOM_ROUTES.hasOwnProperty(v)){ _%>
-            else if(url.includes(<%= v.toLowerCase() %>) || <%-v.toUpperCase()%>_CUSTOM_ROUTES.includes(url)){    
-            <%_}else{_%>
-            else if(url.includes(<%= v.toLowerCase() %>)){
-            <%_}_%>
+            else if(platform == PLATFORM.<%- v.toUpperCase() %>){
                 return new Promise((resolve, reject) => {
-                    passport.authenticate('<%-v.toLowerCase()%>-rule', { session: false }, verifyCallback(userTokenDb,req, resolve, reject, rights))(
+                    passport.authenticate('<%-v.toLowerCase()%>-rule', { session: false }, verifyCallback(userTokensDb,req, resolve, reject, platform))(
                         req,
                         res,
                         next
                     );
                 })
                 .then(() => next())
-                .catch((err) => {
+                .catch((error) => {
                     responseHandler(res,unAuthorized())
                  });
             }

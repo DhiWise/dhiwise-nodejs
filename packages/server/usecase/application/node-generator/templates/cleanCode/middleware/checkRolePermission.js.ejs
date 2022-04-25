@@ -1,13 +1,15 @@
 /**
  * checkRolePermission.js
- * @description :: middleware that checks logged-in user's access of APIs
+ * @description :: middleware that checks access of APIs of logged-in user
  */
 const response = require('../utils/response');
 const responseHandler = require('../utils/response/responseHandler');
 const db = require('mongoose');
 
 const checkRolePermission = ({userRoleDb, routeRoleDb,projectRouteDb}) =>async (req, res, next) => {
-  if (req.user) { 
+  if (!req.user) { 
+    return responseHandler(res, response.unAuthorized());
+  }
     const loggedInUserId = req.user.id;
     let rolesOfUser = await userRoleDb.findMany({ userId: loggedInUserId, isActive: true, isDeleted: false }, {
       roleId: 1,
@@ -40,9 +42,6 @@ const checkRolePermission = ({userRoleDb, routeRoleDb,projectRouteDb}) =>async (
     }else{
       next();
     } 
-  } else {
-    return responseHandler(res, response.unAuthorized());
-  }
 }
 
 

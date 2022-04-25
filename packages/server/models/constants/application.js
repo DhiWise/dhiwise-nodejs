@@ -106,7 +106,7 @@ module.exports = {
       DEVICE_SECRET: 'myjwtdevicesecret',
       CLIENT_SECRET: 'myjwtclientsecret',
       DESKTOP_SECRET: 'myjwtdesktopsecret',
-      EXPIRESIN: 10000,
+      EXPIRES_IN: 10000,
     },
     USER_ROLE: {
       Admin: 1,

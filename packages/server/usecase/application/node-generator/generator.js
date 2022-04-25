@@ -16,7 +16,6 @@ function trimModelNameFromInput (models) {
   });
   newModelNames = _.uniq(newModelNames);
   if (_.isEqual(oldModelNames, newModelNames)) { return models; }
-
   throw new Error('modelName should not contain spaces');
 }
 

@@ -252,6 +252,11 @@ const useCase = (applicationRepo, schemaRepo, projectRepo) => async (params) => 
           authModule: defaultSchemaDetails.name,
         };
 
+        appConfigParams.loginWith = {
+          username: ['username', 'email'],
+          password: 'password',
+        };
+
         const credentials = [];
         if (created?.configInput?.types) {
           const userTypes = _.cloneDeep(created.configInput.types);

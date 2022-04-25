@@ -4,8 +4,6 @@ const path = require('path');
 const dotenv = require('dotenv');
 dotenv.config();
 global.__basedir = __dirname;
-const ejs = require("ejs");
-//require('./config/db');
 <%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
 const listEndpoints = require('express-list-endpoints')
 <%_}_%>
@@ -21,7 +19,6 @@ const passport = require("passport")
 
 <%_ if(typeof PLATFORM !== "undefined" && PLATFORM){ _%>
 <%_ for(const platform of PLATFORM){ _%>
-//const {<%-platform.toLowerCase()%>PassportStrategy} = require("./config/<%-platform%>PassportStrategy");
 const {<%-platform.toLowerCase()%>PassportStrategy} = require('./middleware');
 <%_ } _%>
 <%_ } _%>
@@ -37,7 +34,6 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 <%_ if(!NO_PLATFORM && typeof IS_ROUTE!=="undefined" && IS_ROUTE) { _%>
-//all routes 
 const routes =  require("./routes/index")
 <%_ } _%>
 

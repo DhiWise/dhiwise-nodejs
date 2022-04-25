@@ -7,7 +7,13 @@ module.exports = (<%-ENTITY_NAME-%>) => {
     };
 
     // remove undefined values
-    Object.keys(new<%-ENTITY_NAME_FC-%>).forEach(key => new<%-ENTITY_NAME_FC-%>[key] === undefined && delete new<%-ENTITY_NAME_FC-%>[key]);
+    if(new<%-ENTITY_NAME_FC-%>.id){
+        Object.keys(new<%-ENTITY_NAME_FC-%>).forEach(key =>{
+            if(new<%-ENTITY_NAME_FC-%>[key] === undefined) return new<%-ENTITY_NAME_FC-%>[key]=null
+        });
+    }else{
+        Object.keys(new<%-ENTITY_NAME_FC-%>).forEach(key => new<%-ENTITY_NAME_FC-%>[key] === undefined && delete new<%-ENTITY_NAME_FC-%>[key]);
+    }
 
     // To validate Entity uncomment this block
 

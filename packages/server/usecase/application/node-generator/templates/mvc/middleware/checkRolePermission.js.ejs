@@ -1,6 +1,6 @@
 /**
  * checkRolePermission.js
- * @description :: middleware that checks logged-in user's access of APIs
+ * @description :: middleware that checks access of APIs of logged-in user
  */
 
 const mongoose = require('mongoose');
@@ -10,7 +10,9 @@ const ProjectRoute = require('../model/projectRoute');
 const { replaceAll } = require('../utils/common');
 
 const checkRolePermission = async (req, res, next) => {
-  if (req.user) {
+  if (!req.user) {
+    return res.unAuthorized({message:'Authorization token required!'});
+  }
     const loggedInUserId = req.user.id;
     let rolesOfUser = await UserRole.find({
       userId: loggedInUserId,
@@ -36,7 +38,7 @@ const checkRolePermission = async (req, res, next) => {
         if (allowedRoute && allowedRoute.length) {
           next();
         } else {
-          return res.unAuthorizedRequest({message:'You are not having permission to access this route!'});
+          return res.unAuthorized({message:'You are not having permission to access this route!'});
         }
       } else {
         next();
@@ -44,9 +46,6 @@ const checkRolePermission = async (req, res, next) => {
     } else {
       next();
     }
-  } else {
-    return res.unAuthorizedRequest({message:'Authorization token required!'});
-  }
   return undefined;
 };
 

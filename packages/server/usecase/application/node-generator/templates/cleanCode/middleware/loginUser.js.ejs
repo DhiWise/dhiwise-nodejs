@@ -1,35 +1,36 @@
 const jwt = require("jsonwebtoken");
-const message = require("../utils/messages");
+const response = require("../utils/response");
 const responseHandler = require("../utils/response/responseHandler");
 <%_ PLATFORM.forEach((v)=>{ _%>
 const <%-v%>Secret = require("../constants/authConstant").JWT.<%-v.toUpperCase()%>_SECRET;
-<%_ }) _%>    
-const authenticateJWT = (req, res, next) => {
+<%_ }) _%>  
+const {PLATFORM} = require("../constants/authConstant");
+
+const authenticateJWT = (platform) => (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
         const token = authHeader.split(' ')[1];
-        let url = req.originalUrl;
         let secret = '';
         <%_ var c = 0; PLATFORM.forEach((v)=>{ c++;  _%>
             <%_ if(c===1){ _%>
-            if(url.includes(<%= v %>)){
+            if(platform == PLATFORM.<%- v.toUpperCase() %>)){
                 secret = <%-v%>Secret;
             }
             <%_ }else{ _%>
-            else if(url.includes(<%= v%>)){
+            else if(platform == PLATFORM.<%- v.toUpperCase() %>){
                 secret = <%-v%>Secret;
             }
             <%_ } _%> 
         <%_  }) _%>
         jwt.verify(token,secret, (err, user) => {
             if (err) {
-                responseHandler(res,message.unAuthorizedRequest());
+                responseHandler(res,response.unAuthorized());
             }
             req.user = user;
             next();
         });
     } else {
-        responseHandler(res,message.unAuthorizedRequest());
+        responseHandler(res,response.unAuthorized());
     }
 };
 module.exports = authenticateJWT

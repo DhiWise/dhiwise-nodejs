@@ -9,9 +9,14 @@ const response = require('../../utils/response');
 const authConstant = require('../../constants/authConstant');
 <%_}_%>
 
-const createBulk = ({ <%-MODEL_NAME-%>Db,createValidation }) => async (params) => {
-    let { data } = params;
-    let <%-MODEL_NAME.toLowerCase()-%>Entities = data.map(item => <%-MODEL_NAME-%>Entity(item))
+/**
+ * @description : create documents of <%-MODEL_NAME-%> in mongodb collection
+ * @param {object} <%-MODEL_NAME-%>Db : db service instance
+ * @param {object} dataToCreate : data to create in database
+ * @return {object} : response of create. {status, message, data}
+ */
+const createBulk = ({ <%-MODEL_NAME-%>Db,createValidation }) => async (dataToCreate) => {
+    let <%-MODEL_NAME.toLowerCase()-%>Entities = dataToCreate.map(item => <%-MODEL_NAME-%>Entity(item))
     let results = await <%-MODEL_NAME-%>Db.createMany(<%-MODEL_NAME.toLowerCase()-%>Entities);
     return response.success({data:results});
 }

@@ -190,14 +190,6 @@ const createUseCaseFiles = (rootTemplateDirPath, {
         allUseCases[model][operationName] = findByIdUseCase;
       }
 
-      if (operationName === 'aggregate') {
-        const aggregateUseCase = writeOperations.loadTemplate(`${rootTemplateDirPath}/aggregate.js`);
-        aggregateUseCase.locals.MODEL_NAME_FC = modelFc;
-        aggregateUseCase.locals.MODEL_NAME = model;
-        aggregateUseCase.locals.FILE_NAME = operationName;
-        allUseCases[model][operationName] = aggregateUseCase;
-      }
-
       if (auth.isAuth && auth.userModel === model) {
         const changePassword = writeOperations.loadTemplate(`${rootTemplateDirPath}/changePassword.js`);
         changePassword.locals.MODEL_NAME_FC = modelFc;

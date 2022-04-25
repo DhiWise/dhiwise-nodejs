@@ -10,7 +10,6 @@ const path = require('path');
 const dotenv = require('dotenv');
 dotenv.config();
 global.__basedir = __dirname;
-const ejs = require("ejs");
 <%_if(SHOULD_ADD_ROLE_PERMISSION){_%>
 const listEndpoints = require('express-list-endpoints')
 <%_}_%>
@@ -36,7 +35,6 @@ const {<%-platform.toLowerCase()%>PassportStrategy} = require("./config/<%-platf
 <%_ } _%>
 
 const app = express();
-app.use(require('./utils/responseHandler'));
 const corsOptions = {
     origin: process.env.ALLOW_ORIGIN,
 }
@@ -45,6 +43,7 @@ app.use(cors(corsOptions));
 //template engine
 app.set('view engine', 'ejs'); 
 app.set('views', path.join(__dirname, 'views'));
+app.use(require('./utils/response/responseHandler'));
 
 <% uses.forEach(function (use) { -%>
 app.use(<%- use %>);

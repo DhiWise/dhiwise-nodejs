@@ -11,7 +11,6 @@ const <%-DB_MODEL %>Schema = require('../../../validation/schema/<%-DB_MODEL %>'
 
 const createValidation = require('../../../validation')(<%-DB_MODEL %>Schema.createSchema);
 const updateValidation = require('../../../validation')(<%-DB_MODEL %>Schema.updateSchema);
-const filterValidation = require('../../../validation')(<%-DB_MODEL %>Schema.filterValidationSchema);
 
 <%_for(const controllerMethod in CONTROLLER_METHODS){_%>
     <%_ if(controllerMethod === 'create'){ _%>
@@ -24,13 +23,13 @@ const filterValidation = require('../../../validation')(<%-DB_MODEL %>Schema.fil
         const <%-controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/deleteOne')({<%_ DB_DEPENDENCY_INJECTION.forEach((model) => {_%><%- model %>Db<%_ if(DB_DEPENDENCY_INJECTION[DB_DEPENDENCY_INJECTION.length - 1] != model ){%>,<%_} }); %>});
     <%_}_%>
     <%_ if(controllerMethod === 'findById'){ _%>
-        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/findById')({ <%-DB_MODEL %>Db, filterValidation});
+        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/findById')({ <%-DB_MODEL %>Db});
     <%_}_%>
     <%_ if(controllerMethod === 'findAll'){ _%>
-        const <%-controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/findAll')({ <%-DB_MODEL %>Db, filterValidation});
+        const <%-controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/findAll')({ <%-DB_MODEL %>Db});
     <%_}_%>
     <%_ if(controllerMethod === 'count'){ _%>
-        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/count')({ <%-DB_MODEL %>Db,filterValidation});
+        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/count')({ <%-DB_MODEL %>Db});
     <%_}_%>
         <%_ if(controllerMethod === 'createBulk'){ _%>
         const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/createBulk')({ <%-DB_MODEL %>Db});
@@ -50,17 +49,15 @@ const filterValidation = require('../../../validation')(<%-DB_MODEL %>Schema.fil
     <%_ if(controllerMethod === 'partialUpdate'){ _%>
         const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/partialUpdate')({ <%-DB_MODEL %>Db,updateValidation});
     <%_}_%>
-    <%_ if(controllerMethod === 'aggregate'){ _%>
-        const <%- controllerMethod + DB_MODEL_FC %>Usecase = require('../../../use-case/<%-DB_MODEL %>/aggregate')({ <%-DB_MODEL %>Db});
-    <%_}_%>
 <%_}_%>
 <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>
 const changePasswordUsecase = require('../../../use-case/<%-DB_MODEL %>/changePassword')({ <%-DB_MODEL %>Db});
 const updateProfileUsecase = require('../../../use-case/<%-DB_MODEL %>/updateProfile')({ <%-DB_MODEL %>Db,updateValidation});
+const get<%-DB_MODEL_FC%>Usecase = require('../../../use-case/<%-DB_MODEL %>/findById')({ <%-DB_MODEL %>Db})
 <%_}_%>
 <%_if(CUSTOM_ROUTES){_%>
   <%_CUSTOM_ROUTES.forEach((v,i)=>{_%>
-    const <%-v.functionName%>Usecase = require('../../../use-case/<%-DB_MODEL %>/<%-v.functionName%>')({ <%-DB_MODEL %>Db});
+    const <%-v.functionName%>Usecase = require('../../../use-case/<%-DB_MODEL %>/<%-v.functionName%>')({ <%-v.model%>Db});
   <%_});_%>
 <%_}_%>
 
@@ -77,7 +74,7 @@ const <%-DB_MODEL %>Controller = require('./<%-DB_MODEL %>');
         const delete<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.delete<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
     <%_}_%>
     <%_ if(controllerMethod === 'findById'){ _%>
-        const get<%-DB_MODEL_FC %>ById = <%-DB_MODEL %>Controller.get<%-DB_MODEL_FC %>ById(<%- controllerMethod + DB_MODEL_FC %>Usecase);
+        const get<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.get<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
     <%_}_%>
     <%_ if(controllerMethod === 'findAll'){ _%>
         const findAll<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.findAll<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
@@ -103,25 +100,17 @@ const <%-DB_MODEL %>Controller = require('./<%-DB_MODEL %>');
     <%_ if(controllerMethod === 'partialUpdate'){ _%>
         const partialUpdate<%-DB_MODEL_FC %> = <%-DB_MODEL %>Controller.partialUpdate<%-DB_MODEL_FC %>(<%- controllerMethod + DB_MODEL_FC %>Usecase);
     <%_}_%>
-    <%_ if(controllerMethod === 'aggregate'){ _%>
-    const get<%-DB_MODEL_FC %>ByAggregate = <%-DB_MODEL %>Controller.get<%-DB_MODEL_FC %>ByAggregate(<%- controllerMethod + DB_MODEL_FC %>Usecase);
-    <%_}_%>
 <%_}_%>
 <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>
 const changePassword = <%-DB_MODEL %>Controller.changePassword(changePasswordUsecase);
 const updateProfile = <%-DB_MODEL %>Controller.updateProfile(updateProfileUsecase);
+const getLoggedInUserInfo = <%-DB_MODEL %>Controller.getLoggedInUserInfo(get<%-DB_MODEL_FC%>Usecase);
 <%_}_%>
 <%_if(CUSTOM_ROUTES){_%>
   <%_CUSTOM_ROUTES.forEach((v,i)=>{_%>
     const <%-v.functionName%> = <%-DB_MODEL %>Controller.<%-v.functionName%>(<%-v.functionName%>Usecase);
   <%_});_%>
 <%_}_%>
-
-
-<%_
-// Code For custom route
-let shouldPassCQ_Imports = false
-_%>
 
 module.exports = {
 <%_for(const controllerMethod in CONTROLLER_METHODS){_%>
@@ -135,7 +124,7 @@ module.exports = {
         delete<%-DB_MODEL_FC %>,
     <%_}_%>
     <%_ if(controllerMethod === 'findById'){ _%>
-        get<%-DB_MODEL_FC %>ById,
+        get<%-DB_MODEL_FC %>,
     <%_}_%>
     <%_ if(controllerMethod === 'findAll'){ _%>
         findAll<%-DB_MODEL_FC %>,
@@ -161,13 +150,11 @@ module.exports = {
     <%_ if(controllerMethod === 'partialUpdate'){ _%>
         partialUpdate<%-DB_MODEL_FC %>,
     <%_}_%>
-    <%_ if(controllerMethod === 'aggregate'){ _%>
-        get<%-DB_MODEL_FC %>ByAggregate,
-    <%_}_%>
 <%_}_%>
 <%_if(typeof USER_MODEL !== "undefined" && USER_MODEL){_%>
     changePassword,
     updateProfile,
+    getLoggedInUserInfo,
     <%_}_%>
 <%_if(CUSTOM_ROUTES){_%>
   <%_CUSTOM_ROUTES.forEach((v,i)=>{_%>

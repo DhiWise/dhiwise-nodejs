@@ -1,22 +1,22 @@
-/**
- *findAll.js
- */
-
 const response = require('../../utils/response');
 
+/**
+* @description : find all records of <%-MODEL_NAME_FC%> from database based on query and options.
+* @param {Object} params : request body including option and query.
+* @return {Object} : found <%-MODEL_NAME_FC%>(s). {status, message, data}
+*/
 const findAll = ({ <%-MODEL_NAME-%>Db }) => async (params) => {
-    let { data, query, options } = params;
-    let result;
-    if(data.isCountOnly){
+    let { query, options,isCountOnly } = params;
+    if(isCountOnly){
         result = await <%-MODEL_NAME-%>Db.count(query);
-        result = { totalRecords: result };
+        let result = { totalRecords: result };
         return response.success({ data:result });  
     } else {
-        result = await <%-MODEL_NAME-%>Db.paginate(query,options);
-        if(result){
-            return response.success({ data:result });
+        let result = await <%-MODEL_NAME-%>Db.paginate(query,options);
+        if(!result){
+            return response.recordNotFound();
         }
-        return response.recordNotFound();
+        return response.success({ data:result });
     }
 }
 module.exports = findAll;

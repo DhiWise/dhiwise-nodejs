@@ -2,21 +2,15 @@
 const response = require('../../utils/response');
 const makeLoginUser = require('../common/loginUser'); 
 
-const authentication = ({ <%-USER_MODEL-%>Db,userTokenDb<%_if(ROLE_PERMISSION){_%>,userRoleDb,routeRoleDb<%_}_%> }) => async (data, url) => {
-    let username = data.username;
-    let password = data.password;
+const authentication = ({ <%-USER_MODEL-%>Db,userTokensDb<%_if(ROLE_PERMISSION){_%>,userRoleDb,routeRoleDb<%_}_%> }) => async (params, platform) => {
+    let username = params.username;
+    let password = params.password;
 
     if(!username || !password){
         return response.badRequest()
     }
-    
-    let roleAccess = null;
-    <%_if(ROLE_PERMISSION){_%>
-        if (data.includeRoleAccess){
-            roleAccess = data.includeRoleAccess;
-        }
-    <%_}_%>   
-    const loginUser = makeLoginUser({<%-USER_MODEL-%>Db,userTokenDb<%_if(ROLE_PERMISSION){_%>,userRoleDb,routeRoleDb<%_}_%>});
-    return  await loginUser(username, url, password, roleAccess);
+
+    const loginUser = makeLoginUser({<%-USER_MODEL-%>Db,userTokensDb<%_if(ROLE_PERMISSION){_%>,userRoleDb,routeRoleDb<%_}_%>});
+    return await loginUser(username, platform, password);
 }
 module.exports = authentication;
