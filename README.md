@@ -23,6 +23,7 @@ Most importantly, the Node.js code generator gives developers total code ownersh
 ## Get started 
 After a successful run, a user can configure different settings using UI, and build an app to generate the code.
 1. To run ```npm i && npm run start```
+> :warning: Note: Use ```npm i --force``` If your npm installation fails. As Node version >= 14 will give you errors if peer dependency in different packages have ambiguation in versions.
 2. With ```npm run start``` project will run on 3000 port.
 3. Run http://localhost:3000 and you will see "create application" form. After creating an application you can configure modules and build the app to get the source code.
 <img src="https://development-dhvs.s3.ap-south-1.amazonaws.com/uploads/user-profile/open-source.gif" alt="create-application"/>
