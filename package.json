@@ -27,6 +27,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.15.8",
     "commitizen": "^4.2.4",
     "conventional-github-releaser": "^3.1.2",
     "cz-lerna-changelog": "^2.0.3",
