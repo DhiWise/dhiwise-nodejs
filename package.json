@@ -6,6 +6,10 @@
     "name": "DhiWise",
     "url": "https://www.dhiwise.com"
   },
+  "engines": {
+    "node": "^16.14.0",
+    "npm": "^8.5.5"
+  },
   "scripts": {
     "start": "lerna run start",
     "install": "lerna clean -y && lerna bootstrap --hoist",
@@ -37,9 +41,6 @@
     "eslint-plugin-react": "^7.26.1",
     "eslint-plugin-react-hooks": "^4.2.0",
     "lerna": "^4.0.0",
-    "react-app-rewire-aliases": "^0.2.0",
-    "react-app-rewired": "^2.1.8",
-    "react-error-overlay": "^6.0.9",
     "supertest": "^6.1.6"
   },
   "config": {

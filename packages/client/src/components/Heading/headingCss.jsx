@@ -1,0 +1,16 @@
+export const HeadingCss = {
+  pageTitle: 'block text-primary-text font-title',
+  titleh1: 'xl:text-5xl md:text-4xl sm:text-2xl leading-tight font-semibold',
+  titleh2: 'md:text-3xl sm:text-xl font-semibold',
+  titleh2Light: 'md:text-3xl sm:text-xl font-normal',
+  titleh3: 'text-2xl leading-10 font-medium',
+  titleh3Light: 'text-2xl leading-10 font-normal',
+  titleh4: 'text-xl font-semibold leading-8',
+  titleh4Light: 'text-xl font-normal leading-8',
+  titleh5: 'text-base font-semibold',
+  titleh5Light: 'text-base font-normal',
+  titleh6: 'text-sm font-semibold',
+  titleh6Light: 'text-sm font-normal',
+  titlesmall: 'text-base font-semibold',
+  titlenormal: 'text-3xl leading-10 font-semibold',
+};

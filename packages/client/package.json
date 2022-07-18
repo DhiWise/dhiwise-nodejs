@@ -34,8 +34,6 @@
     "prop-types": "^15.7.2",
     "rc-drawer": "^4.4.2",
     "react": "^17.0.2",
-    "react-app-rewire-aliases": "^0.2.0",
-    "react-app-rewired": "^2.1.8",
     "react-awesome-query-builder": "^4.7.0",
     "react-content-loader": "^6.0.3",
     "react-datepicker": "^4.2.1",
@@ -53,7 +51,6 @@
     "react-redux": "^7.2.5",
     "react-router": "^5.2.1",
     "react-router-dom": "^5.3.0",
-    "react-scripts": "4.0.3",
     "react-scrollbar": "^0.5.6",
     "react-select": "^5.1.0",
     "react-sortable-hoc": "^2.0.0",
@@ -75,11 +72,9 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "npm run watch:css && react-app-rewired start",
-    "build": "npm run watch:css && react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-scripts eject",
-    "fix:lint": "npx eslint --fix --ext .js src",
+    "start": "npm run watch:css && vite",
+    "build": "npm run watch:css && vite build",
+    "fix:lint": "npx eslint --fix src",
     "watch:css": "postcss src/assets/css/tailwind.css -o src/assets/css/main.css"
   },
   "eslintConfig": {
@@ -104,12 +99,15 @@
     "@babel/eslint-parser": "^7.15.8",
     "@babel/plugin-proposal-class-properties": "^7.14.5",
     "@babel/plugin-transform-react-jsx": "^7.14.9",
+    "@vitejs/plugin-react": "^2.0.0",
     "eslint": "^7.32.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.22.2",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.26.1",
-    "eslint-plugin-react-hooks": "^4.2.0"
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "vite": "^3.0.1",
+    "vite-plugin-require": "^1.0.1"
   }
 }
