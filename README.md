@@ -64,7 +64,7 @@ The Model-View-Controller (MVC) is an architectural pattern that separates an ap
 
 ## Documentation
 
-Here's the Documentation of <a href="https://docs.dhiwise.com/knowledgehub/generated-node.js-apis">How you can use generated APIs</a>
+Here's the Documentation of <a href="https://docs.dhiwise.com/docs/node/generate-apis/">How you can use generated APIs</a>
 
 ## Contribution
 Have you found a bug? :lady_beetle: <a href="https://github.com/DhiWise/nodejs-code-generator/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=">Please report it here</a>
