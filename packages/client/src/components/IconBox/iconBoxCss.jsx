@@ -1,0 +1,28 @@
+export const iconBoxCss = {
+  boxprimary: 'bg-primary-dark hover:bg-primary-hoverdark primaryShadow',
+  boxsucess: 'bg-activebg successShadow',
+  boxsucess_outine: 'border border-gray-activebg',
+  boxdanger: 'bg-deactivebg dangerShadow',
+  boxdanger_outine: 'border border-gray-deactivebg dangerShadow',
+  boxoutline: 'border-1 border-gray-70 hover:bg-gray-200 outlineShadow',
+  boxdashed: 'border-1 text-base border-dashed border-primary-buttonOutline ',
+  boxsecondary: 'border-gray-300 border-1 bg-gray-200 hover:bg-gray-100 secondaryShadow',
+  boxrounded: 'rounded-3',
+  boxroundedFull: 'rounded-full',
+  boxicon: 'cursor-pointer flex items-center justify-center focus:outline-none',
+  boxnormal: 'h-9 w-9',
+  boxmedium: 'w-8 h-8',
+  boxsmallmedium: 'w-7 h-7',
+  boxextraSmall: 'h-4 w-4',
+  boxsmall: 'h-6 w-6',
+
+  boxImgiconMedium: 'w-3 h-3',
+  boxImgiconExtraSmall: 'xl:w-2 xl:h-2 xxl:w-2 h-2',
+  boxImgicon: 'w-4 h-4 flex items-center',
+  boxImgiconSmall: 'w-3 h-3 flex items-center',
+  boxghost: 'h-auto',
+
+  Iconsmall: 'w-4 h-auto',
+  Iconnormal: 'w-5 h-5',
+  boxdisabled: 'cursor-not-allowed opacity-20',
+};

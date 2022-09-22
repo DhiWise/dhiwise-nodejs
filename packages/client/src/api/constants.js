@@ -1,4 +1,4 @@
-const projectServiceUrl = process?.env?.REACT_APP_PROJECT_SERVICE_URL;
+const projectServiceUrl = import.meta.env.VITE_APP_PROJECT_SERVICE_URL;
 
 const version = 'web/v1';
 
