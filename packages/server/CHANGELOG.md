@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/DhiWise/dhiwise-nodejs/compare/v1.3.0...v1.3.1) (2022-09-28)
+
+
+### Bug Fixes
+
+* **server:** missing constant ([eeccc59](https://github.com/DhiWise/dhiwise-nodejs/commit/eeccc59c8890d3f43ff6e36d243659c27158f7f8))
+
+
+
+
+
 # [1.3.0](https://github.com/DhiWise/dhiwise-nodejs/compare/v1.2.0...v1.3.0) (2022-04-25)
 
 
