@@ -8,7 +8,6 @@ const {
 
 router.post('/create', create);
 router.post('/applicationRestriction', applicationRestriction);
-router.post('/create', create);
 router.post('/paginate', paginate);
 router.put('/:id', update);
 router.put('/archive/:id', upsert);
